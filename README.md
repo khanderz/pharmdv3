@@ -1,24 +1,45 @@
-# README
+# PharmDs in IT
 
-This README would normally document whatever steps are necessary to get the
-application up and running.
+## Description:
 
-Things you may want to cover:
+Angellist (now Wellfound) for pharmacists and other healthcare professionals looking to career transition into technology.
 
-* Ruby version
+## Deployment:
 
-* System dependencies
+## Contents
 
-* Configuration
+- [Tech Stack](#tech-stack)
+- [APIs Integrated](#api)
+- [Features](#features)
+- [Installation](#installation)
+- [Links](#links)
 
-* Database creation
+## <a name="tech-stack"></a>Tech Stack:
 
-* Database initialization
+- Ruby on Rails
+- TypeScript
+- JavaScript
+- HTML
+- CSS
+- React
+- Material UI
+- React MUI-X
+- Node.js
 
-* How to run the test suite
+## <a name="api"></a>APIs Integrated:
 
-* Services (job queues, cache servers, search engines, etc.)
+- Greenhouse
+- Lever
+- Crunchbase
+- LinkedIn
 
-* Deployment instructions
+## <a name="features"></a>Features:
 
-* ...
+- Directory
+- Pathfinder [TBB]
+- Live Job Reel [TBB]
+
+## <a name="links"></a>Links:
+
+- https://www.linkedin.com/in/khanh-mai-33190/
+- https://www.linkedin.com/company/coderx/
