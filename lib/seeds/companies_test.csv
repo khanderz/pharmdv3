@@ -1,0 +1,15 @@
+company_name,operating_status,company_type,company_ats_type,company_size,last_funding_type,linkedin_url,is_public,year_founded,company_city,company_country,acquired_by,ats_id
+Truepill,TRUE,PH,L,,,https://www.linkedin.com/company/truepill/,,,,,,
+TEST 2,FALSE,OC,,,,www.test2.com,,,,,,
+TEST 3,FALSE,DH,,,,www.test3.com,,,,,,
+Evolution IQ,TRUE,DH,GH,,,https://www.linkedin.com/company/evolution-iq/,,,,United States,,
+Alto Pharmacy,TRUE,PH,,"501-1,000",SE,https://www.linkedin.com/company/altopharmacy/,,2015,San Francisco,United States,,alto
+Capsule,TRUE,PH,GH,"501-1,000",SD,https://www.linkedin.com/company/capsule-co/,,,New York City,United States,,capsulecares
+Divvydose,FALSE,PH,EF,,,https://www.linkedin.com/company/divvydose/,,,,United States,Optum,
+10X Genomics,TRUE,DH,,"1,001-5,000",,https://www.linkedin.com/company/10xgenomics,true,2012,Pleasanton,United States,,
+1upHealth,TRUE,DH,,51-200,,https://www.linkedin.com/company/1uphealth,false,2017,Boston,United States,,
+23andMe,TRUE,DH,,,,https://www.linkedin.com/company/23andme,true,2006,Sunnyvale,United States,,
+54gene,TRUE,DH,,,,https://www.linkedin.com/company/54gene,false,2019,Washington,United States,,
+89bio,TRUE,DH,,,,https://www.linkedin.com/company/89bio,false,2018,San Francisco,United States,,
+98point6,TRUE,DH,GH,201-500,,https://www.linkedin.com/company/98point6-inc.,false,2015,Seattle,United States,,98point6
+A Place for Mom,TRUE,DH,,"501-1,000",PE,https://www.linkedin.com/company/a-place-for-mom,false,2000,New York,United States,,

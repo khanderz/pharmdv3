@@ -1,0 +1,15 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  tech_skills: one
+  soft_skills: one
+  resource_name: MyString
+  resource_description: MyText
+  resource_url: MyString
+
+two:
+  tech_skills: two
+  soft_skills: two
+  resource_name: MyString
+  resource_description: MyText
+  resource_url: MyString

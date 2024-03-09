@@ -1,0 +1,87 @@
+<%= form_with(model: company) do |form| %>
+  <% if company.errors.any? %>
+    <div style="color: red">
+      <h2><%= pluralize(company.errors.count, "error") %> prohibited this company from being saved:</h2>
+
+      <ul>
+        <% company.errors.each do |error| %>
+          <li><%= error.full_message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div>
+    <%= form.label :company_name, style: "display: block" %>
+    <%= form.text_field :company_name %>
+  </div>
+
+  <div>
+    <%= form.label :operating_status, style: "display: block" %>
+    <%= form.check_box :operating_status %>
+  </div>
+
+  <div>
+    <%= form.label :company_type, style: "display: block" %>
+    <%= form.text_field :company_type %>
+  </div>
+
+  <div>
+    <%= form.label :company_ats_type, style: "display: block" %>
+    <%= form.text_field :company_ats_type %>
+  </div>
+
+  <div>
+    <%= form.label :company_size, style: "display: block" %>
+    <%= form.text_field :company_size %>
+  </div>
+
+  <div>
+    <%= form.label :last_funding_type, style: "display: block" %>
+    <%= form.text_field :last_funding_type %>
+  </div>
+
+  <div>
+    <%= form.label :linkedin_url, style: "display: block" %>
+    <%= form.text_field :linkedin_url %>
+  </div>
+
+  <div>
+    <%= form.label :is_public, style: "display: block" %>
+    <%= form.check_box :is_public %>
+  </div>
+
+  <div>
+    <%= form.label :year_founded, style: "display: block" %>
+    <%= form.number_field :year_founded %>
+  </div>
+
+  <div>
+    <%= form.label :company_city, style: "display: block" %>
+    <%= form.text_field :company_city %>
+  </div>
+
+  <div>
+    <%= form.label :company_state, style: "display: block" %>
+    <%= form.text_field :company_state %>
+  </div>
+
+  <div>
+    <%= form.label :company_country, style: "display: block" %>
+    <%= form.text_field :company_country %>
+  </div>
+
+  <div>
+    <%= form.label :acquired_by, style: "display: block" %>
+    <%= form.text_field :acquired_by %>
+  </div>
+
+  <div>
+    <%= form.label :ats_id, style: "display: block" %>
+    <%= form.text_field :ats_id %>
+  </div>
+
+  <div>
+    <%= form.submit %>
+  </div>
+<% end %>

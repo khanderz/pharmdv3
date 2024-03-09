@@ -1,0 +1,33 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  companies: one
+  job_title: MyString
+  job_description: MyText
+  job_url: MyString
+  job_location: MyString
+  job_dept: MyString
+  job_posted: 2024-03-09 17:07:03
+  job_updated: 2024-03-09 17:07:03
+  job_active: false
+  job_internal_id: 1
+  job_internal_id_string: MyString
+  job_salary_min: 1
+  job_salary_max: 1
+  job_salary_range: MyString
+
+two:
+  companies: two
+  job_title: MyString
+  job_description: MyText
+  job_url: MyString
+  job_location: MyString
+  job_dept: MyString
+  job_posted: 2024-03-09 17:07:03
+  job_updated: 2024-03-09 17:07:03
+  job_active: false
+  job_internal_id: 1
+  job_internal_id_string: MyString
+  job_salary_min: 1
+  job_salary_max: 1
+  job_salary_range: MyString
