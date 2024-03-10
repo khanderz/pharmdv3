@@ -3,6 +3,7 @@ Rails.application.routes.draw do
   get 'navbar', to: 'home#navbar'
   get 'hello_world', to: 'hello_world#index'
   root to: 'home#navbar'
+  
 
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
 
