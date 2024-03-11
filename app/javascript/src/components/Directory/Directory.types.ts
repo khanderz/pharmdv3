@@ -1,25 +1,21 @@
 export interface Company {
   companyId: number
   companyName: string
-  companyActive: boolean
+  operatingStatus: boolean
   companyType: string
-  companyHrType: string
-  companySize: number
-}
-export interface Pharmacy {
-  company: Company
-  pharmacyId: number
-  pharmacyType: string
-  pharmacyLogo: string
-  pharmacyUrl: string
-  pharmacyDescription: string
+  companyAtsType?: string
+  companySize?: string
+  lastFundingType?: string
+  linkedinUrl?: string
+  isPublic?: boolean
+  yearFounded: number
+  companyCity: string
+  companyState: string
+  companyCountry: string
+  acquiredBy?: string
+  atsId?: string
+  createdAt: Date
+  updatedAt: Date
 }
 
-export interface DigitalHealth {
-  company: Company
-  digitalHealthId: number
-  digitalHealthType: string
-  digitalHealthLogo: string
-  digitalHealthUrl: string
-  digitalHealthDescription: string
-}
+export interface CompanyType {}

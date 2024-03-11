@@ -1,7 +1,6 @@
 Rails.application.routes.draw do
   get 'directory/directory'
   resources :companies
-  get 'navbar', to: 'home#navbar'
   root to: 'home#home'
 
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html

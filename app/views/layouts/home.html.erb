@@ -1,14 +1,16 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>ReactOnRailsWithShakapacker</title>
+    <title>PharmDs in IT</title>
     <%= csrf_meta_tags %>
     <%= javascript_pack_tag 'nav-bar-bundle' %>
+    
   </head>
 
-  <body>
+  <body style="margin:0;padding:0" >
   <%= react_component("NavBar",  prerender: false) %>
-
+  <div>
+  </div>
     <%= yield %>
   </body>
 </html>

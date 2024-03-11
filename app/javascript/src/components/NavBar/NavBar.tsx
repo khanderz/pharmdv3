@@ -1,4 +1,4 @@
-import React, { useState, MouseEvent } from "react";
+import React, { useState, MouseEvent } from 'react'
 import {
   AppBar,
   Box,
@@ -10,16 +10,15 @@ import {
   MenuItem,
   Button,
   Tooltip,
-  Avatar,
-} from "@mui/material";
+  Avatar
+} from '@mui/material'
 // import { LicenseInfo } from "@mui/x-license-pro";
 
-const pages = ["Directory", "Pathfinder", "Admin"];
-const settings = ["Profile", "Account", "Dashboard", "Logout"];
+const pages = ['Directory', 'Pathfinder', 'Admin']
+const settings = ['Profile', 'Account', 'Dashboard', 'Logout']
 
-function NavBar(props: any) {
-  console.log(props.test);
-  const [key, setKey] = React.useState("test");
+function NavBar() {
+  const [key, setKey] = React.useState('test')
   //   const REACT_MUIX_API_KEY = fetch("http://localhost:8000/api/muix/"); // dev
   //   // const REACT_MUIX_API_KEY = fetch(`http://${PROD_IP}:80/api/muix/`); // prod
   //   REACT_MUIX_API_KEY.then(res => {
@@ -29,23 +28,23 @@ function NavBar(props: any) {
   //   });
   //   LicenseInfo.setLicenseKey(key);
 
-  const [anchorElNav, setAnchorElNav] = useState<null | HTMLElement>(null);
-  const [anchorElUser, setAnchorElUser] = useState<null | HTMLElement>(null);
+  const [anchorElNav, setAnchorElNav] = useState<null | HTMLElement>(null)
+  const [anchorElUser, setAnchorElUser] = useState<null | HTMLElement>(null)
 
   const handleOpenNavMenu = (event: MouseEvent<HTMLElement>) => {
-    setAnchorElNav(event.currentTarget);
-  };
+    setAnchorElNav(event.currentTarget)
+  }
   const handleOpenUserMenu = (event: MouseEvent<HTMLElement>) => {
-    setAnchorElUser(event.currentTarget);
-  };
+    setAnchorElUser(event.currentTarget)
+  }
 
   const handleCloseNavMenu = () => {
-    setAnchorElNav(null);
-  };
+    setAnchorElNav(null)
+  }
 
   const handleCloseUserMenu = () => {
-    setAnchorElUser(null);
-  };
+    setAnchorElUser(null)
+  }
 
   return (
     <AppBar position="static">
@@ -54,13 +53,13 @@ function NavBar(props: any) {
           <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
             PharmDs in IT
           </Typography>
-          <Box sx={{ flexGrow: 1, display: { xs: "none", md: "flex" } }}>
+          <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}>
             {pages.map((page) => (
               <Button
                 key={page}
                 onClick={handleCloseNavMenu}
                 href={`/${page.toLowerCase()}`}
-                sx={{ my: 2, color: "white", display: "block" }}
+                sx={{ my: 2, color: 'white', display: 'block' }}
               >
                 {page}
               </Button>
@@ -70,22 +69,22 @@ function NavBar(props: any) {
           <Box sx={{ flexGrow: 0 }}>
             <Tooltip title="Open settings">
               <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-                <Avatar alt="Remy Sharp" src="/static/images/avatar/2.jpg" />{" "}
-                {/*TO DO: change icon  */}
+                <Avatar alt="Remy Sharp" src="/static/images/avatar/2.jpg" />{' '}
+                {/*TODO change icon  */}
               </IconButton>
             </Tooltip>
             <Menu
-              sx={{ mt: "45px" }}
+              sx={{ mt: '45px' }}
               id="menu-appbar"
               anchorEl={anchorElUser}
               anchorOrigin={{
-                vertical: "top",
-                horizontal: "right",
+                vertical: 'top',
+                horizontal: 'right'
               }}
               keepMounted
               transformOrigin={{
-                vertical: "top",
-                horizontal: "right",
+                vertical: 'top',
+                horizontal: 'right'
               }}
               open={Boolean(anchorElUser)}
               onClose={handleCloseUserMenu}
@@ -106,6 +105,6 @@ function NavBar(props: any) {
         </Toolbar>
       </Container>
     </AppBar>
-  );
+  )
 }
-export default NavBar;
+export default NavBar
