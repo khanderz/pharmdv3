@@ -6,4 +6,13 @@ class HomeController < ApplicationController
 #   def navbar
 #     @navbar_props = { test: "test"}
 #   end
+
+  def route_to_directory
+  end
+
+  def route_to_pathfinder
+  end
+
+  def route_to_admin_page
+  end
 end

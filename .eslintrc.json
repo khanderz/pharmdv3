@@ -27,6 +27,7 @@
             "warn"
         ],
         "@typescript-eslint/no-explicit-any": "off",
+        "@typescript-eslint/ban-ts-ignore": "off",
         "react/jsx-filename-extension": [
             1,
             {

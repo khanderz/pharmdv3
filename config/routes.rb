@@ -1,5 +1,6 @@
 Rails.application.routes.draw do
-  get 'directory/directory'
+  get 'directory' => 'directory'
+  
   resources :companies
   root to: 'home#home'
 

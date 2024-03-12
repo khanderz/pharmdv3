@@ -13,6 +13,7 @@ import {
   Avatar
 } from '@mui/material'
 // import { LicenseInfo } from "@mui/x-license-pro";
+import { Directory } from '../Directory/Directory'
 
 const pages = ['Directory', 'Pathfinder', 'Admin']
 const settings = ['Profile', 'Account', 'Dashboard', 'Logout']
