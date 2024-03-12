@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react'
 import { Box, Container, Grid, Tab, Typography } from '@mui/material'
 import { TabList, TabContext } from '@mui/lab'
 import { TABNAMES, TableProps } from './DirectoryTable.types'
-import { fetchData } from '../../queries/queryDirectory'
+// import { fetchData } from '../../queries/queryDirectory'
 // import { DirectoryTable } from '../components/DirectoryTable'
 
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -16,6 +16,16 @@ const tablePropsToPass = (companyTypeFilter: TableProps['tab']): string => {
   }
   if (companyTypeFilter === 'Digital Health') {
     return 'digitalHealths'
+  }
+}
+
+const fetchData = async () => {
+  try {
+    const response = await fetch('https://api.example.com/data')
+    const data = await response.json()
+    return data
+  } catch (error) {
+    throw new Error('Failed to fetch data')
   }
 }
 
