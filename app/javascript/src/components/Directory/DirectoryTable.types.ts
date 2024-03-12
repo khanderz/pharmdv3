@@ -18,6 +18,5 @@ export interface Jobs {
 export interface TableProps {
   data: Array<Company>
   rows: number
-  tab: 'Companies' | 'Pharmacies' | 'Digital Health'
   loading?: boolean
 }

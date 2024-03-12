@@ -1,75 +1,41 @@
 import React, { useState, useEffect } from 'react'
 import { Box, Container, Grid, Tab, Typography } from '@mui/material'
 import { TabList, TabContext } from '@mui/lab'
-import { TABNAMES, TableProps } from './DirectoryTable.types'
-// import { fetchData } from '../../queries/queryDirectory'
-// import { DirectoryTable } from '../components/DirectoryTable'
-
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-ignore
-const tablePropsToPass = (companyTypeFilter: TableProps['tab']): string => {
-  if (companyTypeFilter === 'Companies') {
-    return 'companies'
-  }
-  if (companyTypeFilter === 'Pharmacies') {
-    return 'pharmacies'
-  }
-  if (companyTypeFilter === 'Digital Health') {
-    return 'digitalHealths'
-  }
-}
-
-const fetchData = async () => {
-  try {
-    const response = await fetch('https://api.example.com/data')
-    const data = await response.json()
-    return data
-  } catch (error) {
-    throw new Error('Failed to fetch data')
-  }
-}
+import { TABNAMES } from './DirectoryTable.types'
+import { DirectoryTable } from './DirectoryTable'
 
 export const Directory = () => {
   const [state, setState] = useState<JSX.Element | null>(null)
-  const [companyTypeFilter, setCompanyTypeFilter] =
-    useState<TableProps['tab']>('Companies')
 
-  const loadingState = <Typography> Loading... </Typography>
+  const [items, setItems] = useState<any[]>([])
 
-  const data = fetchData()
-
-  const handleChange = (
-    event: React.SyntheticEvent,
-    newValue: TableProps['tab']
-  ) => {
-    setCompanyTypeFilter(newValue)
-  }
   useEffect(() => {
-    data?.then((data: any) => {
-      if (data.loading) {
-        setState(loadingState)
-      } else if (data?.data.companies) {
-        setState(null)
-        //   <DirectoryTable
-        //     data={data?.data[tablePropsToPass(companyTypeFilter)]}
-        //     rows={data?.data[tablePropsToPass(companyTypeFilter)].length}
-        //     tab={companyTypeFilter}
-        //   />
-      }
-    })
-
-    data.catch((error) => {
-      const errorState = <Typography> {error.message} </Typography>
-      setState(errorState)
-    })
-  }, [companyTypeFilter])
+    fetch('/companies')
+      .then((response) => response.json())
+      .then((data) => {
+        if (data.loading) {
+          setState(loadingState)
+        } else if (data) {
+          setItems(data)
+          setState(null)
+          setState(<DirectoryTable data={data} rows={data.length} />)
+        } else if (data.catch) {
+          data.catch((error: Error) => {
+            const errorState = <Typography> {error.message} </Typography>
+            setState(errorState)
+          })
+        }
+      })
+  }, [])
+  console.log(items)
+  const loadingState = <Typography> Loading... </Typography>
 
   return (
     <Box>
       <Container>
         <Grid>
-          <TabContext value={companyTypeFilter}>
-            <TabList onChange={handleChange} variant="fullWidth">
+          <TabContext value="Companies">
+            <TabList variant="fullWidth">
               {TABNAMES.map((name) => (
                 <Tab label={name} value={name} key={name} />
               ))}

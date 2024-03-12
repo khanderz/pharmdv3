@@ -1,71 +1,74 @@
-// import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect } from 'react'
+import {
+  DataGridPremium,
+  GridRowParams,
+  MuiEvent,
+  useGridApiRef,
+  DataGridPremiumProps
+} from '@mui/x-data-grid-premium'
+import {
+  Box,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Typography
+} from '@mui/material'
+import { TableProps } from './DirectoryTable.types'
+import { getTableData } from '../../hooks/get_table_data'
+import { dataHeaders } from '../../hooks/get_table_headers'
 // import {
-//   DataGridPremium,
-//   GridRowParams,
-//   MuiEvent,
-//   useGridApiRef,
-//   DataGridPremiumProps
-// } from '@mui/x-data-grid-premium'
-// import {
-//   Box,
-//   Table,
-//   TableBody,
-//   TableCell,
-//   TableContainer,
-//   TableHead,
-//   TableRow,
-//   Typography
-// } from '@mui/material'
-// // import {
-// //   Jobs,
-// //   TABLEHEADERS,
-// //   tableHeaderTypes,
-// //   TableProps
-// // } from '../types/directory_table_types'
-// // import { fetchCompanyJobs } from '../queries/query_job_posts'
-// // import { Company, DigitalHealth, Pharmacy } from '../types/directory_types'
-// // import { getTableData } from '../hooks/get_table_data'
-// // import { dataHeaders } from '../hooks/get_table_headers'
-// // import { JobsTable } from './JobsTable'
+//   Jobs,
+//   TABLEHEADERS,
+//   tableHeaderTypes,
+//   TableProps
+// } from '../types/directory_table_types'
+// import { fetchCompanyJobs } from '../queries/query_job_posts'
+// import { Company, DigitalHealth, Pharmacy } from '../types/directory_types'
 
-// export const DirectoryTable = ({ data, rows, tab }: TableProps) => {
-//   const [open, setOpen] = useState(false)
-//   const apiRef = useGridApiRef()
+// import { JobsTable } from './JobsTable'
 
-//   const renderDataHeaders = dataHeaders({ tab, open })
-//   const dataAccessors = renderDataHeaders.map((key) => key['field'])
-//   const tableData = getTableData({ tab, data, dataAccessors })
+export const DirectoryTable = ({
+  data,
+  rows,
+  tab
+}: TableProps): React.JSX.Element => {
+  const [open, setOpen] = useState(false)
+  const apiRef = useGridApiRef()
 
-//   const handleUpdateRow = (
-//     params: GridRowParams,
-//     event: MuiEvent<React.MouseEvent>
-//   ) => {
-//     setOpen(!open)
-//     if (open) {
-//     }
-//   }
+  const renderDataHeaders = dataHeaders({ tab, open })
+  const dataAccessors = renderDataHeaders.map((key: any) => key['field'])
+  const tableData = getTableData({ tab, data, dataAccessors })
 
-//   const getDetailPanelContent = React.useCallback<
-//     NonNullable<DataGridPremiumProps['getDetailPanelContent']>
-//     // @ts-ignore
-//   >(({ id, row, columns }) => <JobsTable companyId={id} />, [])
+  const handleUpdateRow = (
+    params: GridRowParams,
+    event: MuiEvent<React.MouseEvent>
+  ) => {
+    setOpen(!open)
+  }
 
-//   const getDetailPanelHeight = React.useCallback(() => 400, [])
+  //   const getDetailPanelContent = React.useCallback<
+  //     NonNullable<DataGridPremiumProps['getDetailPanelContent']>
+  //   >(({ id, row, columns }) => <JobsTable companyId={id} />, [])
 
-//   return (
-//     <Box sx={{ height: 400, width: '100%' }}>
-//       <DataGridPremium
-//         rows={tableData}
-//         apiRef={apiRef}
-//         columns={renderDataHeaders}
-//         getRowId={(row) => row.id}
-//         onRowClick={(
-//           params: GridRowParams<any>,
-//           event: MuiEvent<React.MouseEvent<Element, MouseEvent>>
-//         ) => handleUpdateRow(params, event)}
-//         getDetailPanelContent={getDetailPanelContent}
-//         getDetailPanelHeight={getDetailPanelHeight}
-//       />
-//     </Box>
-//   )
-// }
+  const getDetailPanelHeight = React.useCallback(() => 400, [])
+
+  return (
+    <Box sx={{ height: 400, width: '100%' }}>
+      <DataGridPremium
+        rows={tableData}
+        apiRef={apiRef}
+        columns={renderDataHeaders}
+        getRowId={(row) => row.id}
+        onRowClick={(
+          params: GridRowParams<any>,
+          event: MuiEvent<React.MouseEvent<Element, MouseEvent>>
+        ) => handleUpdateRow(params, event)}
+        // getDetailPanelContent={getDetailPanelContent}
+        getDetailPanelHeight={getDetailPanelHeight}
+      />
+    </Box>
+  )
+}
