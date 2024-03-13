@@ -18,24 +18,44 @@ export const Directory = () => {
   const [state, setState] = useState<JSX.Element | null>(null)
 
   const [items, setItems] = useState<Company[]>([])
-  console.log({ items })
-  useMemo(() => {
-    fetch('/companies')
-      .then((response) => response.json())
-      .then((data) => {
-        if (data.loading) {
-          setState(loadingState)
-        } else if (data.length > 0) {
-          setItems(data)
-          setState(<DirectoryTable data={items} rows={items.length} />)
-        } else if (data.catch) {
-          data.catch((error: Error) => {
-            const errorState = <Typography> {error.message} </Typography>
-            setState(errorState)
-          })
-        }
+
+  const fetchItems = async () => {
+    const response = await fetch('/companies')
+    const newItems = await response.json()
+    console.log({ newItems })
+    if (newItems.loading) {
+      console.log('loading')
+      setState(loadingState)
+    }
+
+    if (newItems.length > 0) {
+      console.log('newItems')
+      setItems(newItems)
+    }
+
+    if (newItems.catch) {
+      console.log('error')
+      newItems.catch((error: Error) => {
+        const errorState = <Typography> {error.message} </Typography>
+        setState(errorState)
       })
+    }
+  }
+
+  useMemo(() => {
+    fetchItems()
+  }, [])
+
+  useEffect(() => {
+    setState(<DirectoryTable data={items} rows={items.length} />)
   }, [items])
+  // useEffect(() => {
+  //   const interval = setInterval(() => {
+  //     fetchItems()
+  //   }, 1000)
+
+  //   return () => clearInterval(interval)
+  // }, [items])
 
   const loadingState = <Typography> Loading... </Typography>
 
