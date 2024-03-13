@@ -23,8 +23,9 @@ Angellist (now Wellfound) for pharmacists and other healthcare professionals loo
 - CSS
 - React
 - Material UI
-- React MUI-X
+- MUI-X
 - Node.js
+- Postgresql
 
 ## <a name="api"></a>APIs Integrated:
 
