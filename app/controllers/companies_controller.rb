@@ -6,7 +6,7 @@ class CompaniesController < ApplicationController
     @companies = Company.all
     render json: @companies
   end
-
+  
   # GET /companies/1 or /companies/1.json
   def show
   end

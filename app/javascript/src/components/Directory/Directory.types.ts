@@ -4,7 +4,7 @@ export interface Company {
   operatingStatus: boolean
   companyType: string
   companyAtsType?: string
-  companySize?: string
+  companySize?: string | number
   lastFundingType?: string
   linkedinUrl?: string
   isPublic?: boolean

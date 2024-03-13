@@ -17,7 +17,7 @@ import {
   Typography
 } from '@mui/material'
 import { TableProps } from './DirectoryTable.types'
-import { getTableData } from '../../hooks/get_table_data'
+import { CompanyRowProps, getTableData } from '../../hooks/get_table_data'
 import { dataHeaders } from '../../hooks/get_table_headers'
 // import {
 //   Jobs,
@@ -32,15 +32,14 @@ import { dataHeaders } from '../../hooks/get_table_headers'
 
 export const DirectoryTable = ({
   data,
-  rows,
-  tab
+  rows
 }: TableProps): React.JSX.Element => {
   const [open, setOpen] = useState(false)
   const apiRef = useGridApiRef()
 
-  const renderDataHeaders = dataHeaders({ tab, open })
+  const renderDataHeaders = dataHeaders({ open })
   const dataAccessors = renderDataHeaders.map((key: any) => key['field'])
-  const tableData = getTableData({ tab, data, dataAccessors })
+  const tableData = getTableData({ data, dataAccessors })
 
   const handleUpdateRow = (
     params: GridRowParams,
@@ -61,7 +60,7 @@ export const DirectoryTable = ({
         rows={tableData}
         apiRef={apiRef}
         columns={renderDataHeaders}
-        getRowId={(row) => row.id}
+        getRowId={(row: CompanyRowProps) => row.id}
         onRowClick={(
           params: GridRowParams<any>,
           event: MuiEvent<React.MouseEvent<Element, MouseEvent>>

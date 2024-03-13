@@ -1,5 +1,6 @@
 Rails.application.routes.draw do
   get 'directory', to: 'directory#directory'
+  get 'mui', to: 'companies#mui'
   
   resources :companies
   root to: 'home#home'

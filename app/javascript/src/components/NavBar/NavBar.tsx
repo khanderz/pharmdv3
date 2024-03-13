@@ -12,23 +12,11 @@ import {
   Tooltip,
   Avatar
 } from '@mui/material'
-// import { LicenseInfo } from "@mui/x-license-pro";
-import { Directory } from '../Directory/Directory'
 
 const pages = ['Directory', 'Pathfinder', 'Admin']
 const settings = ['Profile', 'Account', 'Dashboard', 'Logout']
 
 function NavBar() {
-  const [key, setKey] = React.useState('test')
-  //   const REACT_MUIX_API_KEY = fetch("http://localhost:8000/api/muix/"); // dev
-  //   // const REACT_MUIX_API_KEY = fetch(`http://${PROD_IP}:80/api/muix/`); // prod
-  //   REACT_MUIX_API_KEY.then(res => {
-  //     res.json().then(data => {
-  //       setKey(data);
-  //     });
-  //   });
-  //   LicenseInfo.setLicenseKey(key);
-
   const [anchorElNav, setAnchorElNav] = useState<null | HTMLElement>(null)
   const [anchorElUser, setAnchorElUser] = useState<null | HTMLElement>(null)
 

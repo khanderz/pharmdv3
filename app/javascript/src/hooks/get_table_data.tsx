@@ -1,26 +1,41 @@
 import { Company } from '../components/Directory/Directory.types'
 
 interface TableDataProps {
-  tab: 'Companies'
   data: Array<Company>
   dataAccessors: Array<string>
 }
 
 export interface CompanyRowProps {
-  id: number
-  companyName: string
-  companyType: string
-  companyAtsType: string
-  companySize: number
-  operatingStatus: boolean
+  id: Company['companyId']
+  companyName: Company['companyName']
+  companyType: Company['companyType']
+  companyAtsType: Company['companyAtsType']
+  companySize: Company['companySize']
+  operatingStatus: Company['operatingStatus']
 }
 
 export const getTableData = ({
-  tab,
   data,
   dataAccessors
 }: TableDataProps): Array<CompanyRowProps> => {
-  const TableData = data?.map((value: any) => {
+  function snakeToCamel(obj: any): any {
+    if (Array.isArray(obj)) {
+      return obj.map((item) => snakeToCamel(item))
+    } else if (obj !== null && typeof obj === 'object') {
+      return Object.keys(obj).reduce((acc, key) => {
+        const camelKey = key.replace(/_([a-z])/g, (match, p1) =>
+          p1.toUpperCase()
+        )
+        acc[camelKey] = snakeToCamel(obj[key])
+        return acc
+      }, {} as any)
+    }
+    return obj
+  }
+
+  const parsedData = snakeToCamel(data)
+
+  const TableData = parsedData?.map((value: any) => {
     const row: CompanyRowProps = {
       id: value?.companyId || 0,
       companyName: '',
@@ -29,12 +44,13 @@ export const getTableData = ({
       companySize: 0,
       operatingStatus: false
     }
-    dataAccessors?.forEach((key: string) => {
+    dataAccessors?.forEach((key: string, indexNumber: number) => {
       if (key === 'companyName') {
         row[key] = value?.['company']?.['companyName']
         row.id = value?.['company']?.['companyId']
       } else {
         ;(row as any)[key] = value[key]
+        row.id = indexNumber
       }
     })
     return row
