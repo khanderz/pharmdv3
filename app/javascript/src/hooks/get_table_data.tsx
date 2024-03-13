@@ -45,13 +45,8 @@ export const getTableData = ({
       operatingStatus: false
     }
     dataAccessors?.forEach((key: string, indexNumber: number) => {
-      if (key === 'companyName') {
-        row[key] = value?.['company']?.['companyName']
-        row.id = value?.['company']?.['companyId']
-      } else {
-        ;(row as any)[key] = value[key]
-        row.id = indexNumber
-      }
+      ;(row as any)[key] = value[key]
+      row.id = value?.['id']
     })
     return row
   })

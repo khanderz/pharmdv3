@@ -53,7 +53,7 @@ export const DirectoryTable = ({
   //   >(({ id, row, columns }) => <JobsTable companyId={id} />, [])
 
   const getDetailPanelHeight = React.useCallback(() => 400, [])
-
+  console.log({ tableData })
   return (
     <Box sx={{ height: 400, width: '100%' }}>
       <DataGridPremium

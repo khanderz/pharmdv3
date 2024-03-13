@@ -22,19 +22,16 @@ export const Directory = () => {
   const fetchItems = async () => {
     const response = await fetch('/companies')
     const newItems = await response.json()
-    console.log({ newItems })
+
     if (newItems.loading) {
-      console.log('loading')
       setState(loadingState)
     }
 
     if (newItems.length > 0) {
-      console.log('newItems')
       setItems(newItems)
     }
 
     if (newItems.catch) {
-      console.log('error')
       newItems.catch((error: Error) => {
         const errorState = <Typography> {error.message} </Typography>
         setState(errorState)
