@@ -2,7 +2,7 @@ module LastFundingTypesEnum
   extend ActiveSupport::Concern
 
   included do
-    enum fundingType: {
+    enum lastFundingType: {
       ANGEL: 'Angel',
       CONVERTIBLE_NOTE: 'Convertible Note',
       CORPORATE_ROUND: 'Corporate Round',
@@ -34,7 +34,7 @@ module LastFundingTypesEnum
       OTHER: 'Other'
     }
 
-    validates :last_funding_type, inclusion: { in: Company.fundingTypes.keys }
+    validates :last_funding_type, inclusion: { in: Company.lastFundingTypes.keys }
   end
 end
 

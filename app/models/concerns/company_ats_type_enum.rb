@@ -1,8 +1,8 @@
-module AtsEnum
+module company_ats_type_enum
   extend ActiveSupport::Concern
 
   included do
-    enum atsEnum: {    
+    enum company_ats_type: {    
       GREENHOUSE: 'Greenhouse',
       LEVER: 'Lever',
       BAMBOOHR: 'BambooHR',
@@ -15,6 +15,6 @@ module AtsEnum
     }
 
     # plural ? atsEnums
-    validates :company_ats_type, inclusion: { in: Company.atsEnums.keys }
+    validates :company_ats_type, inclusion: { in: Company.company_ats_types.keys }
   end
 end
