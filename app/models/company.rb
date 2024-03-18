@@ -1,7 +1,7 @@
 class Company < ApplicationRecord
 
   # ATS type enum
-  enum company_ats_type: {    
+  enum :company_ats_type, {    
       GREENHOUSE: 'Greenhouse',
       LEVER: 'Lever',
       BAMBOOHR: 'BambooHR',
@@ -9,14 +9,14 @@ class Company < ApplicationRecord
       WELLFOUND: 'WellFound',
       LINKEDIN: 'LinkedIn',
       PROPRIETARY: 'Proprietary',
-      OTHER: 'Other',
+      OTHERATS: 'Other',
       EIGHTFOLD: 'EightFold'
     }
 
-    validates :company_ats_type, inclusion: { in: Company.company_ats_types.keys }
+    validates :company_ats_type, inclusion: { in: Company.company_ats_types.keys }, allow_blank: true
 
     # last funding type enum
-    enum lastFundingType: {
+    enum :last_funding_type, {
       ANGEL: 'Angel',
       CONVERTIBLE_NOTE: 'Convertible Note',
       CORPORATE_ROUND: 'Corporate Round',
@@ -45,10 +45,10 @@ class Company < ApplicationRecord
       SERIES_J: 'Series J',
       SERIES_UNKNOWN_VENTURE: 'Venture - Series Unknown',
       UNDISCLOSED: 'Undisclosed',
-      OTHER: 'Other'
+      OTHERFUNDING: 'Other'
     }
 
-    validates :last_funding_type, inclusion: { in: Company.lastFundingTypes.keys }
+    validates :last_funding_type, inclusion: { in: Company.last_funding_types.keys }, allow_blank: true
 
 
     #  company type
@@ -86,8 +86,8 @@ class Company < ApplicationRecord
         WORKFLOW_DIGITIZATION_AND_AUTOMATION: 'Workflow Digitization & Automation',
         COMPUTER_AIDED_IMAGING: 'Computer-Aided Imaging',
         RESEARCH: 'Biotechnology & Research',
-        MEDIA: 'Media'
-        REVENUE_CYCLE_MANAGEMENT: 'Revenue Cycle Management',
+        MEDIA: 'Media',
+        REVENUE_CYCLE_MANAGEMENT: 'Revenue Cycle Management'
       },
       OTHER: {
         HEALTH_INSURANCE: 'Health Insurance',
@@ -100,7 +100,23 @@ class Company < ApplicationRecord
         HEALTH_MEDIA: 'Health Media'
       }
     }
-    
-    validates :company_type, inclusion: { in: Company.company_types.keys }
 
+    # validates :company_type, inclusion: { in: Company.company_types.keys }, allow_blank: true
+
+    # validates :company_type_value, inclusion: { in: Company.company_types.values.flatten }, allow_blank: true
+    validate :validate_company_type
+
+    def validate_company_type
+      unless company_type.present? && Company.company_types.keys.include?(company_type.to_sym)
+        errors.add(:company_type, 'is not valid')
+      end
+  
+      if company_type.present? && Company.company_types[company_type.to_sym].present?
+        unless company_type_value.present? && Company.company_types[company_type.to_sym].values.flatten.include?(company_type_value)
+          errors.add(:company_type_value, 'is not valid')
+        end
+      end
+    end
+
+    has_many :job_posts, dependent: :destroy 
 end

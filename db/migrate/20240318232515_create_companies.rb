@@ -4,6 +4,7 @@ class CreateCompanies < ActiveRecord::Migration[7.1]
       t.string :company_name
       t.boolean :operating_status
       t.string :company_type
+      t.string :company_type_value
       t.string :company_ats_type
       t.string :company_size
       t.string :last_funding_type

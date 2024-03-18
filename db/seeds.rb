@@ -1,6 +1,6 @@
 require 'csv'
 
-drop_table :companies if ActiveRecord::Base.connection.table_exists? :companies
+# drop_table :companies if ActiveRecord::Base.connection.table_exists? :companies
 
 begin
   ActiveRecord::Base.transaction do
@@ -12,6 +12,8 @@ begin
       c.company_name = row['company_name']
       c.operating_status = row['operating_status']
       c.company_type = row['company_type']
+      c.company_type_value = row['company_type2']
+      puts "#{c.company_type} #{c.company_type_value} saved"
       c.company_ats_type = row['company_ats_type']
       c.company_size = row['company_size']
       c.last_funding_type = row['last_funding_type']
