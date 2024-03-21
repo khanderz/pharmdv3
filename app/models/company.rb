@@ -14,8 +14,18 @@ class Company < ApplicationRecord
     }
 
     validates :company_ats_type, inclusion: { in: Company.company_ats_types.keys }, allow_blank: true
+    validate :validate_company_ats_type
 
-    # last funding type enum
+    def validate_company_ats_type
+      return if company_ats_type.blank?
+
+      ats_keys = Company.company_ats_types.keys
+      puts "ats_keys: #{company_ats_type}"
+
+      errors.add(:company_ats_type, :inclusion, message: "is not included in the list") unless ats_keys.include?(company_ats_type)
+    end
+
+    # # last funding type enum
     enum :last_funding_type, {
       ANGEL: 'Angel',
       CONVERTIBLE_NOTE: 'Convertible Note',
@@ -49,10 +59,42 @@ class Company < ApplicationRecord
     }
 
     validates :last_funding_type, inclusion: { in: Company.last_funding_types.keys }, allow_blank: true
+    validate :validate_last_funding_type
+
+    def validate_last_funding_type
+      return if last_funding_type.blank?
+
+      puts "last_funding_type: #{last_funding_type}"
+
+      funding_keys = Company.last_funding_types.keys
+      puts "funding_keys: #{last_funding_type}"
+
+      errors.add(:last_funding_type, :inclusion, message: "is not included in the list") unless funding_keys.include?(last_funding_type)
+    end
 
 
-    #  company type
+    # #  company type
     enum company_type: {
+      PHARMA: 'Pharma',
+      DIGITAL_HEALTH: 'Digital Health',
+      OTHER: 'Other'
+    }
+
+    validates :company_type, inclusion: { in: Company.company_types.keys }, allow_blank: true
+
+    validate :validate_company_type
+
+    def validate_company_type
+      return if company_type.blank?
+
+      company_keys = Company.company_types.keys
+      puts "company_type: #{company_type}"
+
+      errors.add(:company_type, :inclusion, message: "is not included in the list") unless company_keys.include?(company_type)
+    end
+
+    #  company_type_value
+    enum company_type_value: {
       PHARMA: {
         VIRTUAL_PHARMACY: 'Virtual Pharmacy',
         DIGITAL_THERAPEUTICS: 'Digital Therapeutics',
@@ -101,22 +143,22 @@ class Company < ApplicationRecord
       }
     }
 
-    # validates :company_type, inclusion: { in: Company.company_types.keys }, allow_blank: true
+    puts "company_type_values: #{Company.company_type_values[company_type]}"
 
-    # validates :company_type_value, inclusion: { in: Company.company_types.values.flatten }, allow_blank: true
-    validate :validate_company_type
+    validates :company_type_value, inclusion: { in: Company.company_type_values[company_type].keys }, allow_blank: true
 
-    def validate_company_type
-      unless company_type.present? && Company.company_types.keys.include?(company_type.to_sym)
-        errors.add(:company_type, 'is not valid')
-      end
+    validate :validate_company_type_value
   
-      if company_type.present? && Company.company_types[company_type.to_sym].present?
-        unless company_type_value.present? && Company.company_types[company_type.to_sym].values.flatten.include?(company_type_value)
-          errors.add(:company_type_value, 'is not valid')
-        end
-      end
+    def validate_company_type_value
+      return if company_type_value.blank?
+
+      company_type_values = Company.company_type_values[company_type].keys
+      puts "company_type_value: #{company_type_value}"
+
+      errors.add(:company_type_value, :inclusion, message: "is not included in the list") unless company_type_values.include?(company_type_value)
     end
+
+    # validates :company_name, presence: true, uniqueness: true
 
     has_many :job_posts, dependent: :destroy 
 end

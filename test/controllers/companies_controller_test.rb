@@ -17,7 +17,7 @@ class CompaniesControllerTest < ActionDispatch::IntegrationTest
 
   test "should create company" do
     assert_difference("Company.count") do
-      post companies_url, params: { company: { acquired_by: @company.acquired_by, ats_id: @company.ats_id, company_ats_type: @company.company_ats_type, company_city: @company.company_city, company_country: @company.company_country, company_name: @company.company_name, company_size: @company.company_size, company_state: @company.company_state, company_type: @company.company_type, is_public: @company.is_public, last_funding_type: @company.last_funding_type, linkedin_url: @company.linkedin_url, operating_status: @company.operating_status, year_founded: @company.year_founded } }
+      post companies_url, params: { company: { acquired_by: @company.acquired_by, ats_id: @company.ats_id, company_ats_type: @company.company_ats_type, company_city: @company.company_city, company_country: @company.company_country, company_name: @company.company_name, company_size: @company.company_size, company_state: @company.company_state, company_type: @company.company_type, company_type_value: @company.company_type_value, is_public: @company.is_public, last_funding_type: @company.last_funding_type, linkedin_url: @company.linkedin_url, operating_status: @company.operating_status, year_founded: @company.year_founded } }
     end
 
     assert_redirected_to company_url(Company.last)
@@ -34,7 +34,7 @@ class CompaniesControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "should update company" do
-    patch company_url(@company), params: { company: { acquired_by: @company.acquired_by, ats_id: @company.ats_id, company_ats_type: @company.company_ats_type, company_city: @company.company_city, company_country: @company.company_country, company_name: @company.company_name, company_size: @company.company_size, company_state: @company.company_state, company_type: @company.company_type, is_public: @company.is_public, last_funding_type: @company.last_funding_type, linkedin_url: @company.linkedin_url, operating_status: @company.operating_status, year_founded: @company.year_founded } }
+    patch company_url(@company), params: { company: { acquired_by: @company.acquired_by, ats_id: @company.ats_id, company_ats_type: @company.company_ats_type, company_city: @company.company_city, company_country: @company.company_country, company_name: @company.company_name, company_size: @company.company_size, company_state: @company.company_state, company_type: @company.company_type, company_type_value: @company.company_type_value, is_public: @company.is_public, last_funding_type: @company.last_funding_type, linkedin_url: @company.linkedin_url, operating_status: @company.operating_status, year_founded: @company.year_founded } }
     assert_redirected_to company_url(@company)
   end
 
