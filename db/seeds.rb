@@ -15,7 +15,7 @@ companies.each do |row|
   c.company_name = row['company_name']
   c.operating_status = row['operating_status']
   c.company_type = row['company_type']
-  c.company_type_value = row['company_type2']
+  c.company_type_value = row['company_type_value']
   c.company_ats_type = row['company_ats_type']
   c.company_size = row['company_size']
   c.last_funding_type = row['last_funding_type']
@@ -27,12 +27,12 @@ companies.each do |row|
   c.company_country = row['company_country']
   c.acquired_by = row['acquired_by']
   c.ats_id = row['ats_id']
-  if c.valid?
-    c.save
+  # if c.valid?
+    c.save!
     puts "#{c.company_name} saved"
-  else
-    puts "#{c.company_name} not saved - validation failed: #{c.errors.full_messages.join(', ')}"
-  end
+  # else
+  #   puts "#{c.company_name} not saved - validation failed: #{c.errors.full_messages.join(', ')}"
+  # end
 end
 
 puts "There are now #{Company.count} rows in the companies table"

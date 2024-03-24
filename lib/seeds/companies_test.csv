@@ -1,6 +1,6 @@
-company_name,operating_status,company_type,company_type2,company_ats_type,company_size,last_funding_type,linkedin_url,is_public,year_founded,company_city,company_country,acquired_by,ats_id
+company_name,operating_status,company_type,company_type_value,company_ats_type,company_size,last_funding_type,linkedin_url,is_public,year_founded,company_city,company_country,acquired_by,ats_id
 Truepill,TRUE,PHARMA,VIRTUAL_PHARMACY,LEVER,,,https://www.linkedin.com/company/truepill/,,,,,,
-TEST 2,FALSE,OTHER,OTHER,OTHERATS,,,www.test2.com,,,,,,
+TEST 2,FALSE,OTHER,,OTHERATS,,,www.test2.com,,,,,,
 TEST 3,FALSE,DIGITAL_HEALTH,CLINICAL_INTELLIGENCE,PROPRIETARY,,,www.test3.com,,,,,,
 Evolution IQ,TRUE,DIGITAL_HEALTH,BILLING_AND_PAYMENTS,GREENHOUSE,,,https://www.linkedin.com/company/evolution-iq/,,,,United States,,
 Alto Pharmacy,TRUE,PHARMA,VIRTUAL_PHARMACY,,"501-1,000",SEED,https://www.linkedin.com/company/altopharmacy/,,2015,San Francisco,United States,,alto

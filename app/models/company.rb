@@ -9,7 +9,7 @@ class Company < ApplicationRecord
       WELLFOUND: 'WellFound',
       LINKEDIN: 'LinkedIn',
       PROPRIETARY: 'Proprietary',
-      OTHERATS: 'Other',
+      OTHERATS: 'OtherAts',
       EIGHTFOLD: 'EightFold'
     }
 
@@ -73,71 +73,50 @@ class Company < ApplicationRecord
     end
 
     #  company_type
-    enum company_type: {
-      PHARMA: {
-        VIRTUAL_PHARMACY: 'Virtual Pharmacy',
-        DIGITAL_THERAPEUTICS: 'Digital Therapeutics',
-        CHRONIC_DISEASE_MGMT: 'Chronic Disease Management',
-        PERSONALIZED_PHARMACY_SERVICES: 'Personalized Pharmacy Services',
-        PHARMACOGENOMICS: 'Pharmacogenomics',
-        VITAMINS_SUPPLEMENTS: 'Vitamins & Supplements',
-        HOME_LAB_TESTING_MONITORING: 'Home Lab Testing & Monitoring',
-        HOSPITAL_PHARMACY: 'Hospital Pharmacy',
-        NOVEL_PHARMA: 'Novel Pharma',
-        DTC_PHARMACY_SERVICES: 'DTC Pharmacy Services',
-        PHARM_SERVICES_WORKFLOW_EXPANSION: 'Pharm Services Workflow Expansion',
-        PHARMACY_MEDIA: 'Pharmacy Media',
-        CLINICAL_TRIALS: 'Clinical Trials'
-      },
-      DIGITAL_HEALTH: {
-        MENTAL_HEALTH: 'Mental Health',
-        GENETICS: 'Genetics',
-        PROVIDER_DIRECTORIES_AND_CARE_NAVIGATION: 'Provider Directories & Care Navigation',
-        HYBRID_VIRTUAL_INPERSON_CARE: 'Hybrid Virtual In-Person Care',
-        DIGITAL_THERAPEUTICS: 'Digital Therapeutics',
-        BILLING_AND_PAYMENTS: 'Billing & Payments',
-        APP_DEPLOYMENT: 'App Deployment',
-        SCREENING_MONITORING_DIAGNOSTICS: 'Screening, Monitoring, Diagnostics',
-        DATA_INTEGRATION_ANALYTICS: 'Interoperability, Data, and Analytics',
-        CLINICAL_INTELLIGENCE: 'Clinical Intelligence',
-        HOME_HEALTH_TECH: 'Home Health Tech',
-        VIRTUAL_CARE: 'Virtual Care',
-        PATIENT_ENGAGEMENT: 'Digital Front Door & Patient Engagement',
-        CARE_COORDINATION_COLLABORATION: 'Care Coordination & Collaboration',
-        WORKFLOW_DIGITIZATION_AND_AUTOMATION: 'Workflow Digitization & Automation',
-        COMPUTER_AIDED_IMAGING: 'Computer-Aided Imaging',
-        RESEARCH: 'Biotechnology & Research',
-        MEDIA: 'Media',
-        REVENUE_CYCLE_MANAGEMENT: 'Revenue Cycle Management'
-      },
-      OTHER: {
-        HEALTH_INSURANCE: 'Health Insurance',
-        MEDICAL_DEVICES: 'Medical Devices',
-        HEALTHCARE_CONSULTING: 'Healthcare Consulting',
-        HEALTH_TECH_STARTUP_INCUBATOR: 'Health Tech Startup Incubator',
-        HEALTH_NONPROFIT: 'Health Nonprofit',
-        HEALTH_RESEARCH_INSTITUTE: 'Health Research Institute',
-        HEALTH_POLICY_ADVOCACY: 'Health Policy Advocacy',
-        HEALTH_MEDIA: 'Health Media'
-      }
+    validate :valid_company_type
+    validate :valid_company_type_value
+  
+    COMPANY_TYPES = ["PHARMA", "DIGITAL_HEALTH", "OTHER"]
+  
+    COMPANY_TYPE_VALUES = {
+      "PHARMA" => [
+        "VIRTUAL_PHARMACY", "DIGITAL_THERAPEUTICS", "CHRONIC_DISEASE_MGMT",
+        "PERSONALIZED_PHARMACY_SERVICES", "PHARMACOGENOMICS", "VITAMINS_SUPPLEMENTS",
+        "HOME_LAB_TESTING_MONITORING", "HOSPITAL_PHARMACY", "NOVEL_PHARMA",
+        "DTC_PHARMACY_SERVICES", "PHARM_SERVICES_WORKFLOW_EXPANSION", "PHARMACY_MEDIA",
+        "CLINICAL_TRIALS"
+      ],
+      "DIGITAL_HEALTH" => [
+        "MENTAL_HEALTH", "GENETICS", "PROVIDER_DIRECTORIES_AND_CARE_NAVIGATION",
+        "HYBRID_VIRTUAL_INPERSON_CARE", "DIGITAL_THERAPEUTICS", "BILLING_AND_PAYMENTS",
+        "APP_DEPLOYMENT", "SCREENING_MONITORING_DIAGNOSTICS", "DATA_INTEGRATION_ANALYTICS",
+        "CLINICAL_INTELLIGENCE", "HOME_HEALTH_TECH", "VIRTUAL_CARE",
+        "PATIENT_ENGAGEMENT", "CARE_COORDINATION_COLLABORATION",
+        "WORKFLOW_DIGITIZATION_AND_AUTOMATION", "COMPUTER_AIDED_IMAGING", "RESEARCH",
+        "MEDIA", "REVENUE_CYCLE_MANAGEMENT"
+      ],
+      "OTHER" => [
+        "HEALTH_INSURANCE", "MEDICAL_DEVICES", "HEALTHCARE_CONSULTING",
+        "HEALTH_TECH_STARTUP_INCUBATOR", "HEALTH_NONPROFIT", "HEALTH_RESEARCH_INSTITUTE",
+        "HEALTH_POLICY_ADVOCACY", "HEALTH_MEDIA"
+      ]
     }
-
-    validates :company_type, inclusion: { in: company_types.keys }, allow_blank: true
-
-    validate :validate_company_type_value
   
-    def validate_company_type_value
-      return if company_type.blank? || company_type_value.blank?
-
+    def valid_company_type
+      return if company_type.blank?
   
-      nested_keys = Company.company_types[company_type].keys
-
-      puts "company_type: #{company_type}, company_type_value: #{company_type_value}"
-
-      errors.add(:company_type_value, :inclusion, message: "is not included in the list") unless nested_keys.include?(company_type_value)
+      unless COMPANY_TYPES.include?(company_type)
+        errors.add(:company_type, "is not a valid company type")
+      end
     end
-
-    # validates :company_name, presence: true, uniqueness: true
+  
+    def valid_company_type_value
+      return if company_type.blank? || company_type_value.blank?
+  
+      unless COMPANY_TYPE_VALUES[company_type].include?(company_type_value)
+        errors.add(:company_type_value, "is not a valid value for company type #{company_type}")
+      end
+    end
 
     has_many :job_posts, dependent: :destroy 
 end
