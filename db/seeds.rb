@@ -2,8 +2,8 @@ require 'csv'
 
 # drop_table :companies if ActiveRecord::Base.connection.table_exists? :companies
 
-# begin
-#   ActiveRecord::Base.transaction do
+begin
+  ActiveRecord::Base.transaction do
 companies_csv = File.read(Rails.root.join('lib', 'seeds', 'companies_test.csv'))
 companies = CSV.parse(companies_csv, :headers => true, :encoding => 'ISO-8859-1')
 
@@ -27,15 +27,20 @@ companies.each do |row|
   c.company_country = row['company_country']
   c.acquired_by = row['acquired_by']
   c.ats_id = row['ats_id']
-  # puts "c: #{c.inspect}"
-  c.save
-  puts "#{c.company_name} saved"
+  if c.valid?
+    c.save
+    puts "#{c.company_name} saved"
+  else
+    puts "#{c.company_name} not saved - validation failed: #{c.errors.full_messages.join(', ')}"
+  end
 end
 
 puts "There are now #{Company.count} rows in the companies table"
-#   end
+  end
   
-# rescue StandardError => e
-#   puts "Error: #{e.message}"
-#   raise ActiveRecord::Rollback
-# end
+rescue StandardError => e
+  puts "Error: #{e.message}"
+  raise ActiveRecord::Rollback
+end
+
+

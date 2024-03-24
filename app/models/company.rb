@@ -20,7 +20,7 @@ class Company < ApplicationRecord
       return if company_ats_type.blank?
 
       ats_keys = Company.company_ats_types.keys
-      puts "ats_keys: #{company_ats_type}"
+      # puts "ats_keys: #{company_ats_type}"
 
       errors.add(:company_ats_type, :inclusion, message: "is not included in the list") unless ats_keys.include?(company_ats_type)
     end
@@ -64,37 +64,16 @@ class Company < ApplicationRecord
     def validate_last_funding_type
       return if last_funding_type.blank?
 
-      puts "last_funding_type: #{last_funding_type}"
+      # puts "last_funding_type: #{last_funding_type}"
 
       funding_keys = Company.last_funding_types.keys
-      puts "funding_keys: #{last_funding_type}"
+      # puts "funding_keys: #{last_funding_type}"
 
       errors.add(:last_funding_type, :inclusion, message: "is not included in the list") unless funding_keys.include?(last_funding_type)
     end
 
-
-    # #  company type
+    #  company_type
     enum company_type: {
-      PHARMA: 'Pharma',
-      DIGITAL_HEALTH: 'Digital Health',
-      OTHER: 'Other'
-    }
-
-    validates :company_type, inclusion: { in: Company.company_types.keys }, allow_blank: true
-
-    validate :validate_company_type
-
-    def validate_company_type
-      return if company_type.blank?
-
-      company_keys = Company.company_types.keys
-      puts "company_type: #{company_type}"
-
-      errors.add(:company_type, :inclusion, message: "is not included in the list") unless company_keys.include?(company_type)
-    end
-
-    #  company_type_value
-    enum company_type_value: {
       PHARMA: {
         VIRTUAL_PHARMACY: 'Virtual Pharmacy',
         DIGITAL_THERAPEUTICS: 'Digital Therapeutics',
@@ -143,19 +122,19 @@ class Company < ApplicationRecord
       }
     }
 
-    puts "company_type_values: #{Company.company_type_values[company_type]}"
-
-    validates :company_type_value, inclusion: { in: Company.company_type_values[company_type].keys }, allow_blank: true
+    validates :company_type, inclusion: { in: company_types.keys }, allow_blank: true
 
     validate :validate_company_type_value
   
     def validate_company_type_value
-      return if company_type_value.blank?
+      return if company_type.blank? || company_type_value.blank?
 
-      company_type_values = Company.company_type_values[company_type].keys
-      puts "company_type_value: #{company_type_value}"
+  
+      nested_keys = Company.company_types[company_type].keys
 
-      errors.add(:company_type_value, :inclusion, message: "is not included in the list") unless company_type_values.include?(company_type_value)
+      puts "company_type: #{company_type}, company_type_value: #{company_type_value}"
+
+      errors.add(:company_type_value, :inclusion, message: "is not included in the list") unless nested_keys.include?(company_type_value)
     end
 
     # validates :company_name, presence: true, uniqueness: true
