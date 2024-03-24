@@ -15,6 +15,15 @@ class CreateJobPosts < ActiveRecord::Migration[7.1]
       t.integer :job_salary_min
       t.integer :job_salary_max
       t.string :job_salary_range
+      t.string :job_country
+      t.string :job_setting
+      t.text :job_additional
+      t.string :job_commitment
+      t.string :job_team
+      t.string :job_allLocations
+      t.text :job_responsibilities
+      t.text :job_qualifications
+      t.text :job_applyUrl
 
       t.timestamps
     end

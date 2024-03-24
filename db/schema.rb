@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_03_18_233209) do
+ActiveRecord::Schema[7.1].define(version: 2024_03_24_212933) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -30,6 +30,7 @@ ActiveRecord::Schema[7.1].define(version: 2024_03_18_233209) do
     t.string "company_country"
     t.string "acquired_by"
     t.string "ats_id"
+    t.text "company_description"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["company_name"], name: "index_companies_on_company_name", unique: true
@@ -51,6 +52,15 @@ ActiveRecord::Schema[7.1].define(version: 2024_03_18_233209) do
     t.integer "job_salary_min"
     t.integer "job_salary_max"
     t.string "job_salary_range"
+    t.string "job_country"
+    t.string "job_setting"
+    t.text "job_additional"
+    t.string "job_commitment"
+    t.string "job_team"
+    t.string "job_allLocations"
+    t.text "job_responsibilities"
+    t.text "job_qualifications"
+    t.text "job_applyUrl"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["companies_id"], name: "index_job_posts_on_companies_id"
@@ -65,61 +75,5 @@ ActiveRecord::Schema[7.1].define(version: 2024_03_18_233209) do
     t.index ["role_name"], name: "index_job_roles_on_role_name", unique: true
   end
 
-  create_table "resources", force: :cascade do |t|
-    t.bigint "tech_skills_id", null: false
-    t.bigint "soft_skills_id", null: false
-    t.string "resource_name"
-    t.text "resource_description"
-    t.string "resource_url"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.index ["resource_name"], name: "index_resources_on_resource_name", unique: true
-    t.index ["resource_url"], name: "index_resources_on_resource_url", unique: true
-    t.index ["soft_skills_id"], name: "index_resources_on_soft_skills_id"
-    t.index ["tech_skills_id"], name: "index_resources_on_tech_skills_id"
-  end
-
-  create_table "soft_skills", force: :cascade do |t|
-    t.string "soft_skill_name"
-    t.text "soft_skill_description"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.index ["soft_skill_name"], name: "index_soft_skills_on_soft_skill_name", unique: true
-  end
-
-  create_table "tags", force: :cascade do |t|
-    t.bigint "job_posts_id", null: false
-    t.string "tag_name"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.index ["job_posts_id"], name: "index_tags_on_job_posts_id"
-    t.index ["tag_name"], name: "index_tags_on_tag_name", unique: true
-  end
-
-  create_table "tech_skills", force: :cascade do |t|
-    t.string "tech_skill_name"
-    t.text "tech_skill_description"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.index ["tech_skill_name"], name: "index_tech_skills_on_tech_skill_name", unique: true
-  end
-
-  create_table "users", force: :cascade do |t|
-    t.string "first_name"
-    t.string "last_name"
-    t.string "email"
-    t.string "password"
-    t.string "user_type"
-    t.string "user_resume"
-    t.string "user_photo"
-    t.datetime "user_last_login", precision: nil
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.index ["email"], name: "index_users_on_email", unique: true
-  end
-
   add_foreign_key "job_posts", "companies", column: "companies_id"
-  add_foreign_key "resources", "soft_skills", column: "soft_skills_id"
-  add_foreign_key "resources", "tech_skills", column: "tech_skills_id"
-  add_foreign_key "tags", "job_posts", column: "job_posts_id"
 end

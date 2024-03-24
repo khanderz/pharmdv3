@@ -1,2 +1,0 @@
-class TechSkill < ApplicationRecord
-end

@@ -7,14 +7,23 @@ one:
   job_url: MyString
   job_location: MyString
   job_dept: MyString
-  job_posted: 2024-03-18 18:30:50
-  job_updated: 2024-03-18 18:30:50
+  job_posted: 2024-03-24 16:29:33
+  job_updated: 2024-03-24 16:29:33
   job_active: false
   job_internal_id: 1
   job_internal_id_string: MyString
   job_salary_min: 1
   job_salary_max: 1
   job_salary_range: MyString
+  job_country: MyString
+  job_setting: MyString
+  job_additional: MyText
+  job_commitment: MyString
+  job_team: MyString
+  job_allLocations: MyString
+  job_responsibilities: MyText
+  job_qualifications: MyText
+  job_applyUrl: MyText
 
 two:
   companies: two
@@ -23,11 +32,20 @@ two:
   job_url: MyString
   job_location: MyString
   job_dept: MyString
-  job_posted: 2024-03-18 18:30:50
-  job_updated: 2024-03-18 18:30:50
+  job_posted: 2024-03-24 16:29:33
+  job_updated: 2024-03-24 16:29:33
   job_active: false
   job_internal_id: 1
   job_internal_id_string: MyString
   job_salary_min: 1
   job_salary_max: 1
   job_salary_range: MyString
+  job_country: MyString
+  job_setting: MyString
+  job_additional: MyText
+  job_commitment: MyString
+  job_team: MyString
+  job_allLocations: MyString
+  job_responsibilities: MyText
+  job_qualifications: MyText
+  job_applyUrl: MyText

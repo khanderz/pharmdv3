@@ -16,6 +16,7 @@ one:
   company_country: MyString
   acquired_by: MyString
   ats_id: MyString
+  company_description: MyText
 
 two:
   company_name: MyString
@@ -33,3 +34,4 @@ two:
   company_country: MyString
   acquired_by: MyString
   ats_id: MyString
+  company_description: MyText

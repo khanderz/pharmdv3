@@ -16,6 +16,7 @@ class CreateCompanies < ActiveRecord::Migration[7.1]
       t.string :company_country
       t.string :acquired_by
       t.string :ats_id
+      t.text :company_description
 
       t.timestamps
     end
