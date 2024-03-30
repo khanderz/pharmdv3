@@ -4,12 +4,12 @@ require 'json'
 class JobPost < ApplicationRecord
   belongs_to :companies, foreign_key: "companies_id" 
 
-  def self.fetch_lever_jobs
-    Company.where(company_ats_type: 'LEVER').each do |company|
+  def self.fetch_lever_jobs(company)
+    # Company.where(company_ats_type: 'LEVER').each do |company|
       jobs = get_lever_jobs(company)
       save_lever_jobs(company, jobs) if jobs.present?
     end
-  end
+
 
   def self.clear_lever_data
     Company.where(company_ats_type: 'LEVER').each do |company|
@@ -111,3 +111,4 @@ end
   #     puts "Lever jobs added to database for #{company.company_name}"
   #   end
 end
+
