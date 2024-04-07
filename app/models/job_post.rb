@@ -2,11 +2,12 @@ require 'net/http'
 require 'json'
 
 class JobPost < ApplicationRecord
-  belongs_to :companies, foreign_key: "companies_id" 
+  belongs_to :companies, foreign_key: "companies_id", class_name: 'Company'
 
   def self.fetch_lever_jobs(company)
     # Company.where(company_ats_type: 'LEVER').each do |company|
       jobs = get_lever_jobs(company)
+      # puts `company name: #{company} jobs: #{jobs} `
       save_lever_jobs(company, jobs) if jobs.present?
     end
 
@@ -36,9 +37,11 @@ class JobPost < ApplicationRecord
   end
 
   def self.save_lever_jobs(company, jobs)
+    puts `company name: #{company} `
     jobs.each do |job|
       date = Time.at(job['createdAt'] / 1000).strftime('%Y-%m-%d')
       job_post = JobPost.new(
+        companies_id: company.id, 
         job_title: job['text'],
         job_country: job['country'],
         job_setting: job['workplaceType'],
@@ -54,7 +57,6 @@ class JobPost < ApplicationRecord
         job_internal_id_string: job['id'],
         job_applyUrl: job['applyUrl'],
         job_updated: date,
-        companies_id: company.id 
       )
 
 # Map lists to job attributes

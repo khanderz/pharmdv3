@@ -1,9 +1,12 @@
-# jobs = fetchJobs()
 
 companies = Company.all
+puts `companies: #{companies} `
+
 
 companies.each do |company|
   if company.company_ats_type == 'LEVER'
+    puts `company name: #{company} `
+
     jobs = JobPost.fetch_lever_jobs(company)
   elsif company.company_ats_type == 'GREENHOUSE'
     jobs = fetch_greenhouse_jobs(company)
