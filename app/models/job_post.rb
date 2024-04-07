@@ -4,10 +4,10 @@ require 'json'
 class JobPost < ApplicationRecord
   belongs_to :companies, foreign_key: "companies_id", class_name: 'Company'
 
+
+  # lever jobs -----------------------------------------------------------
   def self.fetch_lever_jobs(company)
-    # Company.where(company_ats_type: 'LEVER').each do |company|
       jobs = get_lever_jobs(company)
-      # puts `company name: #{company} jobs: #{jobs} `
       save_lever_jobs(company, jobs) if jobs.present?
     end
 
@@ -37,7 +37,6 @@ class JobPost < ApplicationRecord
   end
 
   def self.save_lever_jobs(company, jobs)
-    puts `company name: #{company} `
     jobs.each do |job|
       date = Time.at(job['createdAt'] / 1000).strftime('%Y-%m-%d')
       job_post = JobPost.new(
@@ -59,16 +58,16 @@ class JobPost < ApplicationRecord
         job_updated: date,
       )
 
-# Map lists to job attributes
-job['lists'].each do |item|
-  case item['text']
-  when /responsibilities/i
-    job_post.job_responsibilities ||= ''
-    job_post.job_responsibilities += item['content']
-  when 'Qualifications:'
-    job_post.job_qualifications = item['content']
-  end
-end
+        # Map lists to job attributes
+        job['lists'].each do |item|
+          case item['text']
+          when /responsibilities/i
+            job_post.job_responsibilities ||= ''
+            job_post.job_responsibilities += item['content']
+          when 'Qualifications:'
+            job_post.job_qualifications = item['content']
+          end
+        end
 
 
       if job_post.valid?
@@ -81,36 +80,122 @@ end
     puts "Lever jobs added to database for #{company.company_name}"
   end
 
-  # def seed_lever_jobs
-  #   Company.where(company_ats_type: 'LEVER').each do |company|
-  #     get_lever_jobs.each do |job|
-  #       date = Time.at(job['createdAt'] / 1000).strftime('%Y-%m-%d')
-  #       job_post = JobPost.new(
-  #         job_title: job['text'],
-  #         job_url: job['hostedUrl'],
-  #         job_location: job['categories']['location'],
-  #         job_dept: job['categories']['department'],
-  #         job_updated: date,
-  #         job_internal_id_string: job['id'],
-  #         company: company
-  #       )
+
+
+  # greenhouse jobs -----------------------------------------------------------
+  def self.fetch_greenhouse_jobs(company)
+    departments = get_greenhouse_departments(company)
+    puts "departments: #{departments}"
+    job_urls = save_greenhouse_job_urls(company, departments)
+    jobs = get_greenhouse_jobs(company, job_urls)
+    save_greenhouse_jobs(company, jobs) if jobs.present?
+  end
+
+  def self.clear_greenhouse_data
+    Company.where(company_ats_type: 'GREENHOUSE').each do |company|
+      JobPost.where(company: company).delete_all
+    end
+    puts "Greenhouse jobs deleted from database"
+  end
+
+  private
+
+  def self.get_greenhouse_departments(company)
+    ats_id = company.ats_id
+    url = "https://boards-api.greenhouse.io/v1/boards/#{ats_id}/departments"
+    #  https://boards-api.greenhouse.io/v1/boards/ambiencehealthcare/departments
+    # https://boards-api.greenhouse.io/v1/boards/evolutioniq/departments
+    uri = URI(url)
+    response = Net::HTTP.get(uri)
+    departments = JSON.parse(response) # Parse the response string into a JSON object
+puts "departments: #{departments}"
+    if departments.is_a?(Hash)
+      return departments
+    else
+      return "Error: #{departments['message']}, cannot get Greenhouse departments"
+    end
+  end
+
+  def self.save_greenhouse_job_urls(company, departments)
+    departments.each do |depts|
+      for jobs in depts['jobs']
+        for job in jobs      
+          job_post = JobPost.new(
+            company: company,
+            job_title: job['title'],
+            job_location: job['location']['name'],
+            job_url: job['absolute_url'],
+            job_dept: depts['name'],
+            job_internal_id: job['id'],
+            job_updated: job['updated_at'],
+          )
+        end
+      end
+
+      return job_post.job_internal_id
+    end
+
+  end
+
+  def self.get_greenhouse_jobs(jcompany, job_urls)
+    ats_id = company.ats_id
+    job_internal_id = job['id']
+    url = "https://boards-api.greenhouse.io/v1/boards/#{ats_id}/jobs/#{job_internal_id}"
+    # https://boards-api.greenhouse.io/v1/boards/evolutioniq/jobs/5085207004
+    # https://boards-api.greenhouse.io/v1/boards/ambiencehealthcare/jobs/4228751005
+    uri = URI(url)
+    response = Net::HTTP.get(uri)
+    job = JSON.parse(response) # Parse the response string into a JSON object
+
+    if jobs.is_a?(Array) # Check if the response is an array (indicating successful request)
+      return jobs
+    else
+      return "Error: #{jobs['message']}, cannot get Greenhouse jobs"
+    end
+  end
+
+  def self.save_greenhouse_jobs(company, job)
+    jobs.each do |job|
+      existing_job_post = JobPost.find_by(job_internal_id: job['id'])
   
-  #       if job_post.valid?
-  #         job_post.save
-  #         puts "#{company.company_name} job post added"
-  #       else
-  #         puts "#{company.company_name} job post not saved - validation failed: #{job_post.errors.full_messages.join(', ')}"
-  #       end
-  #     end
+      if existing_job_post
+        existing_job_post.update(
+          job_description: job['content'],
+          # job_salary_min: job['metadata']['salary_min'],
+          # job_salary_max: job['metadata']['salary_max'],
+          # job_salary_range: job['metadata']['salary_range']
+        )
   
-  #     # Update company description based on additionalPlain key in API response
-  #     response = get_lever_jobs
-  #     if response.is_a?(Array)
-  #       company_description = response.first['additionalPlain']
-  #       company.update(company_description: company_description) if company_description.present?
-  #     end
+        if existing_job_post.valid?
+          existing_job_post.save
+          puts "#{company.company_name} job post updated"
+        else
+          puts "#{company.company_name} job post not updated - validation failed: #{existing_job_post.errors.full_messages.join(', ')}"
+        end
+      else
+        puts "Job post not found for #{company.company_name}"
+
   
-  #     puts "Lever jobs added to database for #{company.company_name}"
-  #   end
+        if job_post.valid?
+          job_post.save
+          puts "#{company.company_name} job post added"
+        else
+          puts "#{company.company_name} job post not saved - validation failed: #{job_post.errors.full_messages.join(', ')}"
+        end
+      end
+    end
+    puts "Greenhouse jobs added to database for #{company.company_name}"
+  end
+
+  # eightfold jobs -----------------------------------------------------------
+  # def self.fetch_eightfold_jobs(company)
+  #   jobs = get_eightfold_jobs(company)
+  #   save_eightfold_jobs(company, jobs) if jobs.present?
+  # end
+
+  # def self.clear_eightfold_data
+  #   Company.where(company_ats_type: 'EIGHTFOLD').each do |company|
+
+
 end
 
