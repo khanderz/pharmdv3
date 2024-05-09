@@ -10,7 +10,7 @@ class CreateJobPosts < ActiveRecord::Migration[7.1]
       t.datetime :job_posted
       t.datetime :job_updated
       t.boolean :job_active
-      t.integer :job_internal_id
+      t.bigint :job_internal_id
       t.string :job_internal_id_string
       t.integer :job_salary_min
       t.integer :job_salary_max
