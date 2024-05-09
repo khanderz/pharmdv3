@@ -85,9 +85,9 @@ class JobPost < ApplicationRecord
   # greenhouse jobs -----------------------------------------------------------
  def self.fetch_greenhouse_jobs(company)
     departments = get_greenhouse_departments(company)
-department_jobs = departments["departments"].map { |department| [department["name"], department["jobs"]] }.flatten(1)
+department_jobs = departments["departments"].map { |department| [department["name"], department["jobs"]] }
 
-    save_greenhouse_jobs(company, department_jobs)
+save_greenhouse_jobs(company, department_jobs)
   end
 
   def self.clear_greenhouse_data
@@ -116,15 +116,16 @@ department_jobs = departments["departments"].map { |department| [department["nam
   end
 
 def self.save_greenhouse_jobs(company, department_jobs)
-  department_jobs.each do |department|
-    department_name = department["name"]
-
-    department["jobs"].each do |department_name, job|
-      job_details = { job["title"] => job }
-
-      job_posted = job.key?("created_at") ? job["created_at"] : nil
-      job_internal_id_string = job.key?("internal_job_id") ? job["internal_job_id"].to_s : nil
-
+  department_jobs.each do |department_name, jobs|
+    if jobs.nil?
+      puts "No jobs found for department: #{department_name}"
+      next
+    end
+puts "jobs: #{jobs}"
+    jobs.each do |job|
+      job_posted = job.is_a?(Hash) && job.key?("created_at") ? job["created_at"] : nil
+      job_internal_id_string =  job.is_a?(Hash) && job.key?("internal_job_id") ? job["internal_job_id"].to_s : nil
+puts "job: #{job}"
       job_post = JobPost.new(
         companies_id: company.id, 
         job_title: job["title"],
@@ -162,6 +163,8 @@ def self.save_greenhouse_jobs(company, department_jobs)
   end
   puts "Greenhouse jobs added to database for #{company.company_name}"
 end
+
+
 
 
 
