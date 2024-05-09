@@ -86,7 +86,8 @@ class JobPost < ApplicationRecord
  def self.fetch_greenhouse_jobs(company)
     departments = get_greenhouse_departments(company)
     job_urls = save_greenhouse_job_urls(company, departments)
-    jobs = get_greenhouse_jobs(company, job_urls)
+    job_posts = JobPost.where(companies_id: company.id)
+    jobs = get_greenhouse_jobs(company, job_posts)
     save_greenhouse_jobs(company, jobs) if jobs.present?
   end
 
@@ -118,9 +119,8 @@ class JobPost < ApplicationRecord
   def self.save_greenhouse_job_urls(company, departments)
     departments.each do |depts, jobs|
      
-        jobs["jobs".to_i].each do |job_key, job_value|
+      jobs["jobs".to_i].each do |job_key, job_value|
       job_details = { job_key => job_value }
-      puts "job_details: #{job_details}"
       
       job_post = JobPost.new(
         companies_id: company.id, 
@@ -142,23 +142,25 @@ class JobPost < ApplicationRecord
     end
   end
 
-  def self.get_greenhouse_jobs(company, job_urls)
-    ats_id = company.ats_id
-    job_internal_id = job['id']
-    puts "job_internal_id: #{job_internal_id},  ats_id: #{ats_id}"
+def self.get_greenhouse_jobs(company, job_posts)
+  ats_id = company.ats_id
+  job_posts.each do |job_post|
+    job_internal_id = job_post.job_internal_id
+    puts "job_internal_id: #{job_internal_id}, ats_id: #{ats_id}"
     url = "https://boards-api.greenhouse.io/v1/boards/#{ats_id}/jobs/#{job_internal_id}"
-    # https://boards-api.greenhouse.io/v1/boards/evolutioniq/jobs/5085207004
-    # https://boards-api.greenhouse.io/v1/boards/ambiencehealthcare/jobs/4228751005
     uri = URI(url)
     response = Net::HTTP.get(uri)
     job = JSON.parse(response) # Parse the response string into a JSON object
 
-    if jobs.is_a?(Array) # Check if the response is an array (indicating successful request)
-      return jobs
+    if job.is_a?(Hash) # Check if the response is a hash (indicating successful request)
+      # Process the job details as needed
+      puts "Got job details for job_internal_id: #{job_internal_id}"
     else
-      return "Error: #{jobs['message']}, cannot get Greenhouse jobs"
+      puts "Error: #{job['message']}, cannot get Greenhouse job for job_internal_id: #{job_internal_id}"
     end
   end
+end
+
 
   def self.save_greenhouse_jobs(company, job)
     jobs.each do |job|
