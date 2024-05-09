@@ -7,10 +7,11 @@ one:
   job_url: MyString
   job_location: MyString
   job_dept: MyString
-  job_posted: 2024-05-09 13:32:42
-  job_updated: 2024-05-09 13:32:42
+  job_posted: 2024-05-09 14:17:54
+  job_updated: 2024-05-09 14:17:54
   job_active: false
   job_internal_id: 
+  job_url_id: 
   job_internal_id_string: MyString
   job_salary_min: 1
   job_salary_max: 1
@@ -32,10 +33,11 @@ two:
   job_url: MyString
   job_location: MyString
   job_dept: MyString
-  job_posted: 2024-05-09 13:32:42
-  job_updated: 2024-05-09 13:32:42
+  job_posted: 2024-05-09 14:17:54
+  job_updated: 2024-05-09 14:17:54
   job_active: false
   job_internal_id: 
+  job_url_id: 
   job_internal_id_string: MyString
   job_salary_min: 1
   job_salary_max: 1
