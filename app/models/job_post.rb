@@ -85,10 +85,9 @@ class JobPost < ApplicationRecord
   # greenhouse jobs -----------------------------------------------------------
  def self.fetch_greenhouse_jobs(company)
     departments = get_greenhouse_departments(company)
-    job_urls = save_greenhouse_job_urls(company, departments)
-    job_posts = JobPost.where(companies_id: company.id)
-    jobs = get_greenhouse_jobs(company, job_posts)
-    save_greenhouse_jobs(company, jobs) if jobs.present?
+department_jobs = departments["departments"].map { |department| [department["name"], department["jobs"]] }.flatten(1)
+
+    save_greenhouse_jobs(company, department_jobs)
   end
 
   def self.clear_greenhouse_data
@@ -116,84 +115,55 @@ class JobPost < ApplicationRecord
     end
   end
 
-  def self.save_greenhouse_job_urls(company, departments)
-    departments.each do |depts, jobs|
-     
-      jobs["jobs".to_i].each do |job_key, job_value|
-      job_details = { job_key => job_value }
-      
+def self.save_greenhouse_jobs(company, department_jobs)
+  department_jobs.each do |department|
+    department_name = department["name"]
+
+    department["jobs"].each do |department_name, job|
+      job_details = { job["title"] => job }
+
+      job_posted = job.key?("created_at") ? job["created_at"] : nil
+      job_internal_id_string = job.key?("internal_job_id") ? job["internal_job_id"].to_s : nil
+
       job_post = JobPost.new(
         companies_id: company.id, 
-        job_title: job_key == 'title' ? job_value : nil,
-        job_location: job_key == 'location' ? job_value['name'] : nil,
-        job_url: job_key == 'absolute_url' ? job_value : nil,
-        job_dept: depts['name'],
-        job_internal_id: job_key == 'id' ? job_value : nil,
-        job_updated: job_key == 'updated_at' ? job_value : nil
+        job_title: job["title"],
+        job_description: job["content"],
+        job_url: job["absolute_url"],
+        job_location: job["location"]["name"],
+        job_dept: department_name,
+        job_posted: job_posted,
+        job_updated: job["updated_at"],
+        job_active: !!job,
+        job_internal_id: job['internal_job_id'],
+        job_url_id: job["id"],
+        job_internal_id_string: job_internal_id_string,
+        # job_salary_min: job["metadata"]["salary_min"],
+        # job_salary_max: job["metadata"]["salary_max"],
+        # job_salary_range: job["metadata"]["salary_range"],
+        # job_country: job["metadata"]["country"],
+        # job_setting: job["metadata"]["workplace_type"],
+        # job_additional: job["metadata"]["additional"],
+        # job_commitment: job["metadata"]["commitment"],
+        # job_team: job["metadata"]["team"],
+        # job_allLocations: job["metadata"]["all_locations"],
+        # job_responsibilities: job["metadata"]["responsibilities"],
+        # job_qualifications: job["metadata"]["qualifications"],
+        # job_applyUrl: job["metadata"]["apply_url"],
       )
-  
-        if job_post.valid?
-          job_post.save
-          puts "#{company.company_name} job post added"
-        else
-          puts "#{company.company_name} job post not saved - validation failed: #{job_post.errors.full_messages.join(', ')}"
-        end
+
+      if job_post.valid?
+        job_post.save
+        puts "#{company.company_name} job post added"
+      else
+        puts "#{company.company_name} job post not saved - validation failed: #{job_post.errors.full_messages.join(', ')}"
       end
     end
   end
-
-def self.get_greenhouse_jobs(company, job_posts)
-  ats_id = company.ats_id
-  job_posts.each do |job_post|
-    job_internal_id = job_post.job_internal_id
-    puts "job_internal_id: #{job_internal_id}, ats_id: #{ats_id}"
-    url = "https://boards-api.greenhouse.io/v1/boards/#{ats_id}/jobs/#{job_internal_id}"
-    uri = URI(url)
-    response = Net::HTTP.get(uri)
-    job = JSON.parse(response) # Parse the response string into a JSON object
-
-    if job.is_a?(Hash) # Check if the response is a hash (indicating successful request)
-      # Process the job details as needed
-      puts "Got job details for job_internal_id: #{job_internal_id}"
-    else
-      puts "Error: #{job['message']}, cannot get Greenhouse job for job_internal_id: #{job_internal_id}"
-    end
-  end
+  puts "Greenhouse jobs added to database for #{company.company_name}"
 end
 
 
-  def self.save_greenhouse_jobs(company, job)
-    jobs.each do |job|
-      existing_job_post = JobPost.find_by(job_internal_id: job['id'])
-  
-      if existing_job_post
-        existing_job_post.update(
-          job_description: job['content'],
-          # job_salary_min: job['metadata']['salary_min'],
-          # job_salary_max: job['metadata']['salary_max'],
-          # job_salary_range: job['metadata']['salary_range']
-        )
-  
-        if existing_job_post.valid?
-          existing_job_post.save
-          puts "#{company.company_name} job post updated"
-        else
-          puts "#{company.company_name} job post not updated - validation failed: #{existing_job_post.errors.full_messages.join(', ')}"
-        end
-      else
-        puts "Job post not found for #{company.company_name}"
-
-  
-        if job_post.valid?
-          job_post.save
-          puts "#{company.company_name} job post added"
-        else
-          puts "#{company.company_name} job post not saved - validation failed: #{job_post.errors.full_messages.join(', ')}"
-        end
-      end
-    end
-    puts "Greenhouse jobs added to database for #{company.company_name}"
-  end
 
   # eightfold jobs -----------------------------------------------------------
   # def self.fetch_eightfold_jobs(company)
