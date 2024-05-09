@@ -83,12 +83,16 @@ class JobPost < ApplicationRecord
 
 
   # greenhouse jobs -----------------------------------------------------------
- def self.fetch_greenhouse_jobs(company)
-    departments = get_greenhouse_departments(company)
-department_jobs = departments["departments"].map { |department| [department["name"], department["jobs"]] }
+def self.fetch_greenhouse_jobs(company)
+  departments = get_greenhouse_departments(company)
 
-save_greenhouse_jobs(company, department_jobs)
+  if departments && departments["departments"]
+    department_jobs = departments["departments"].map { |department| [department["name"], department["jobs"]] }
+    save_greenhouse_jobs(company, department_jobs)
+  else
+    puts "No departments found for #{company.company_name}"
   end
+end
 
   def self.clear_greenhouse_data
     Company.where(company_ats_type: 'GREENHOUSE').each do |company|
@@ -121,11 +125,11 @@ def self.save_greenhouse_jobs(company, department_jobs)
       puts "No jobs found for department: #{department_name}"
       next
     end
-puts "jobs: #{jobs}"
+
     jobs.each do |job|
       job_posted = job.is_a?(Hash) && job.key?("created_at") ? job["created_at"] : nil
       job_internal_id_string =  job.is_a?(Hash) && job.key?("internal_job_id") ? job["internal_job_id"].to_s : nil
-puts "job: #{job}"
+
       job_post = JobPost.new(
         companies_id: company.id, 
         job_title: job["title"],
