@@ -83,7 +83,7 @@ class JobPost < ApplicationRecord
 
 
   # greenhouse jobs -----------------------------------------------------------
-  def self.fetch_greenhouse_jobs(company)
+ def self.fetch_greenhouse_jobs(company)
     departments = get_greenhouse_departments(company)
     job_urls = save_greenhouse_job_urls(company, departments)
     jobs = get_greenhouse_jobs(company, job_urls)
@@ -142,7 +142,7 @@ class JobPost < ApplicationRecord
     end
   end
 
-  def self.get_greenhouse_jobs(jcompany, job_urls)
+  def self.get_greenhouse_jobs(company, job_urls)
     ats_id = company.ats_id
     job_internal_id = job['id']
     puts "job_internal_id: #{job_internal_id},  ats_id: #{ats_id}"
