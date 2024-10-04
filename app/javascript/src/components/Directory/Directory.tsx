@@ -5,16 +5,18 @@ import { TABNAMES } from './DirectoryTable.types'
 import { DirectoryTable } from './DirectoryTable'
 import { LicenseInfo } from '@mui/x-license-pro'
 import { Company } from './Directory.types'
+import { useApiKey } from  '../../hooks/get_api_var'
 
 export const Directory = () => {
-  const [key, setKey] = React.useState('')
-  const REACT_MUIX_API_KEY = process.env.REACT_MUIX_API_KEY
-
-  useMemo(() => {
-    setKey(REACT_MUIX_API_KEY ?? '')
-  }, [REACT_MUIX_API_KEY])
-  LicenseInfo.setLicenseKey(key)
-
+  const { key,  } = useApiKey();
+ 
+ 
+  useEffect(() => {
+    if (key) {
+      LicenseInfo.setLicenseKey(key);
+    }
+  }, [key]);
+// console.log(LicenseInfo.getLicenseKey())
   const [state, setState] = useState<JSX.Element | null>(null)
 
   const [items, setItems] = useState<Company[]>([])
