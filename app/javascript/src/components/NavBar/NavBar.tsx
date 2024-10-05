@@ -13,7 +13,7 @@ import {
   Avatar
 } from '@mui/material'
 
-const pages = ['Directory', 'Pathfinder', 'Admin']
+const pages = ['Search', 'Directory', 'Pathfinder', 'Admin']
 const settings = ['Profile', 'Account', 'Dashboard', 'Logout']
 
 function NavBar() {

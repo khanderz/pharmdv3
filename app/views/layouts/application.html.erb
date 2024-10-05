@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>PharmDs in IT</title>
+    <%= csrf_meta_tags %>
+    <%= javascript_pack_tag 'application' %> <!-- Make sure this is your main JS file -->
+  </head>
+
+  <body style="margin:0;padding:0" data-controller="<%= controller_name %>" data-action="<%= action_name %>">
+    <%= react_component("NavBar", prerender: false) %>
+    <%= yield %>
+  </body>
+</html>

@@ -1,4 +1,5 @@
 Rails.application.routes.draw do
+  get 'search', to: 'search#searchPage'
   get 'directory', to: 'directory#directory'
   get 'mui', to: 'companies#mui'
   

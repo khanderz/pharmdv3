@@ -16,7 +16,7 @@ export const Directory = () => {
       LicenseInfo.setLicenseKey(key);
     }
   }, [key]);
-// console.log(LicenseInfo.getLicenseKey())
+
   const [state, setState] = useState<JSX.Element | null>(null)
 
   const [items, setItems] = useState<Company[]>([])
