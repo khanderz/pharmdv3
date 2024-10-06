@@ -56,6 +56,24 @@ export const Directory = () => {
   //   return () => clearInterval(interval)
   // }, [items])
 
+
+
+  const [companies, setCompanies] = useState([]);
+
+  useEffect(() => {
+    const fetchCompanies = async () => {
+      try {
+        const response = await fetch('/companies.json');
+        const data = await response.json();
+        setCompanies(data);
+      } catch (error) {
+        console.error("Error fetching companies:", error);
+      }
+    };
+
+    fetchCompanies();
+  }, []);
+
   const loadingState = <Typography> Loading... </Typography>
 
   return (
