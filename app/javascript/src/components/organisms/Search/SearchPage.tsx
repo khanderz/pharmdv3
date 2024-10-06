@@ -1,27 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { Box, Container, Grid, TextField, Card, CardContent, Typography, Button, Pagination } from '@mui/material';
-import { Company } from '../../types/company.types';
-import { JobPost } from '../../types/job_post.types';
-
+import { JobPost } from '../../../types/job_post.types';
 
 export const SearchPage = () => {
-  const [companies, setCompanies] = useState<Company[]>([]);
   const [jobPosts, setJobPosts] = useState<JobPost[]>([]);
-
-  // Fetch companies data
-  useEffect(() => {
-    const fetchCompanies = async () => {
-      try {
-        const response = await fetch('/companies.json');
-        const data = await response.json();
-        setCompanies(data);
-      } catch (error) {
-        console.error("Error fetching companies:", error);
-      }
-    };
-
-    fetchCompanies();
-  }, []);
 
   // Fetch job posts data
   useEffect(() => {
@@ -38,7 +20,7 @@ export const SearchPage = () => {
     fetchJobPosts();
   }, []);
 
-  console.log({ companies, jobPosts });
+  console.log(jobPosts);
 
   return (
     <Container maxWidth="lg">
@@ -76,13 +58,13 @@ export const SearchPage = () => {
         {/* Job Listings */}
         <Grid item xs={12} md={9}>
           <Grid container spacing={3}>
-            {jobPosts.map((jobPost, index) => (
-              <Grid item xs={12} key={jobPost.id || index}>
+            {jobPosts.map((jobPost) => (
+              <Grid item xs={12} key={jobPost.id}>
                 <Card variant="outlined" sx={{ p: 2 }}>
                   <CardContent>
                     <Typography variant="h6">{jobPost.job_title}</Typography>
                     <Typography variant="body2" color="text.secondary">
-                      {companies.find(company => company.id === jobPost.companies_id)?.company_name || "Unknown Company"}
+                      {jobPost.company?.company_name || "Unknown Company"}
                     </Typography>
                     <Typography variant="body2" sx={{ mt: 1 }}>
                       Location: {jobPost.job_location || "N/A"}

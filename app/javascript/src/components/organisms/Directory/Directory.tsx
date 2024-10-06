@@ -5,7 +5,7 @@ import { TABNAMES } from './DirectoryTable.types'
 import { DirectoryTable } from './DirectoryTable'
 import { LicenseInfo } from '@mui/x-license-pro'
 import { Company } from './Directory.types'
-import { useApiKey } from  '../../hooks/get_api_var'
+import { useApiKey } from  '../../../hooks/get_api_var'
 
 export const Directory = () => {
   const { key,  } = useApiKey();

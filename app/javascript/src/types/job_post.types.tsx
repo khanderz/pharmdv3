@@ -35,6 +35,7 @@ import { Company } from "./company.types";
 export interface JobPost {
     id: number;
     companies_id: Company['id'];
+    company: Company;
     job_title: string;
     job_description: string;
     job_url: string;

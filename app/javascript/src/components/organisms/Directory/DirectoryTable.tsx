@@ -17,8 +17,8 @@ import {
   Typography
 } from '@mui/material'
 import { TableProps } from './DirectoryTable.types'
-import { CompanyRowProps, getTableData } from '../../hooks/get_table_data'
-import { dataHeaders } from '../../hooks/get_table_headers'
+import { CompanyRowProps, getTableData } from '../../../hooks/get_table_data'
+import { dataHeaders } from '../../../hooks/get_table_headers'
 // import {
 //   Jobs,
 //   TABLEHEADERS,

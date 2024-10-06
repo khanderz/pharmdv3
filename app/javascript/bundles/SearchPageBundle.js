@@ -1,3 +1,3 @@
-import {SearchPage} from '../src/components/Search/SearchPage';
+import {SearchPage} from '../src/components/organisms/Search/SearchPage';
 
 export default SearchPage;
