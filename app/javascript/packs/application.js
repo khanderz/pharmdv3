@@ -1,6 +1,8 @@
 // application.js
 import ReactOnRails from 'react-on-rails';
 import NavBar from '../bundles/NavBar/NavBarServer'; // Client-side version
+import { createRoot } from 'react-dom/client';
+
 
 // Register global components like the NavBar
 ReactOnRails.register({ NavBar });
@@ -14,11 +16,19 @@ document.addEventListener('DOMContentLoaded', () => {
     // Dynamically import SearchPage bundle
     import('../bundles/SearchPageBundle')
       .then((SearchPageModule) => {
-
         const SearchPage = SearchPageModule.default;
+
+        // Register the component explicitly
         ReactOnRails.register({ SearchPage });
 
-        ReactOnRails.render("SearchPage", {}, "search-page-container");
+        const container = document.getElementById('search-page-container');
+
+        if (container) {
+          const root = createRoot(container);
+          root.render(<SearchPage />);
+        } else {
+          console.error('SearchPage container not found!');
+        }
       })
       .catch((error) => {
         console.error('Error loading SearchPageBundle:', error);
