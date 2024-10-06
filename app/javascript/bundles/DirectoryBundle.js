@@ -1,3 +1,3 @@
-import { Directory } from '../src/components/organisms/Directory/Directory'
+import { Directory } from '../src/components/pages/Directory/Directory'
 
 export default Directory
