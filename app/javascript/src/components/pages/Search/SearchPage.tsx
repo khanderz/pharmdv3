@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { Box, Container, Grid, TextField, Card, CardContent, Typography, Button, Pagination } from '@mui/material';
+import { Box, Container, Grid, Pagination } from '@mui/material';
 import { JobPost } from '../../../types/job_post.types';
 import { FilterPanel } from '../../molecules/FilterPanel/FilterPanel';
 import { SearchPanel } from '../../molecules/SearchPanel/SearchPanel';
+import { JobCard } from '../../organisms/JobCard/JobCard';
 
 export const SearchPage = () => {
   const [jobPosts, setJobPosts] = useState<JobPost[]>([]);
@@ -26,33 +27,24 @@ export const SearchPage = () => {
 
   return (
     <Container maxWidth="lg">
-<SearchPanel />
+      <SearchPanel />
 
       <Grid container spacing={4}>
-    <FilterPanel />
+        <Grid item xs={12} md={3}>
+          <FilterPanel />
+        </Grid>
 
-        {/* Job Listings */}
         <Grid item xs={12} md={9}>
           <Grid container spacing={3}>
             {jobPosts.map((jobPost) => (
               <Grid item xs={12} key={jobPost.id}>
-                <Card variant="outlined" sx={{ p: 2 }}>
-                  <CardContent>
-                    <Typography variant="h6">{jobPost.job_title}</Typography>
-                    <Typography variant="body2" color="text.secondary">
-                      {jobPost.company?.company_name || "Unknown Company"}
-                    </Typography>
-                    <Typography variant="body2" sx={{ mt: 1 }}>
-                      Location: {jobPost.job_location || "N/A"}
-                    </Typography>
-                    <Typography variant="body2" sx={{ mt: 1 }}>
-                      Job Type: {jobPost.job_commitment || "N/A"} / {jobPost.job_setting || "N/A"}
-                    </Typography>
-                    <Button variant="contained" color="primary" sx={{ mt: 2 }} href={jobPost.job_applyUrl}>
-                      Apply Now
-                    </Button>
-                  </CardContent>
-                </Card>
+                <JobCard
+                  title={jobPost.job_title}
+                  company_name={jobPost.company.company_name}
+                  job_location={jobPost.job_location}
+                  job_commitment={jobPost.job_commitment}
+                  job_applyUrl={jobPost.job_applyUrl}
+                />
               </Grid>
             ))}
           </Grid>
