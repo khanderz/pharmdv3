@@ -4,6 +4,8 @@ Rails.application.routes.draw do
   get 'mui', to: 'companies#mui'
   
   resources :companies
+  resources :job_posts, defaults: { format: :json }
+
   root to: 'home#home'
 
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html

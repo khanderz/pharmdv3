@@ -3,12 +3,14 @@ class CompaniesController < ApplicationController
 
   # GET /companies or /companies.json
   def index
-    @companies = Company.all
-    # render json: @companies
+    @companies = Company.includes(:job_posts).all
+    render json: @companies.to_json(include: :job_posts)  
   end
   
   # GET /companies/1 or /companies/1.json
   def show
+    @company = Company.includes(:job_posts).find(params[:id])
+    render json: @company.to_json(include: :job_posts) # Include job_posts in the JSON response
   end
 
   # GET /companies/new

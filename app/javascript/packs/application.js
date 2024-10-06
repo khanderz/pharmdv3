@@ -9,12 +9,12 @@ ReactOnRails.register({ NavBar });
 document.addEventListener('DOMContentLoaded', () => {
   const controllerName = document.body.getAttribute('data-controller');
   const actionName = document.body.getAttribute('data-action');
-console.log({controllerName, actionName});
+
   if (controllerName === 'search' && actionName === 'searchPage') {
     // Dynamically import SearchPage bundle
     import('../bundles/SearchPageBundle')
       .then((SearchPageModule) => {
-        console.log('SearchPageBundle loaded');
+
         const SearchPage = SearchPageModule.default;
         ReactOnRails.register({ SearchPage });
 

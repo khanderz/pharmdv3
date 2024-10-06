@@ -1,2 +1,5 @@
+# app/models/company.rb
 class Company < ApplicationRecord
-end
+    has_many :job_posts, foreign_key: :companies_id, dependent: :destroy
+  end
+  

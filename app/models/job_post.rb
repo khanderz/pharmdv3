@@ -2,7 +2,7 @@ require 'net/http'
 require 'json'
 
 class JobPost < ApplicationRecord
-  belongs_to :companies, foreign_key: "companies_id", class_name: 'Company'
+  belongs_to :company, foreign_key: :companies_id
 
 
   # lever jobs -----------------------------------------------------------
