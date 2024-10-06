@@ -7,6 +7,8 @@ import { JobCard } from '../../organisms/JobCard/JobCard';
 
 export const SearchPage = () => {
   const [jobPosts, setJobPosts] = useState<JobPost[]>([]);
+  const [filteredJobPosts, setFilteredJobPosts] = useState<JobPost[]>([]);
+  const [selectedCompany, setSelectedCompany] = useState<Company['company_name'] | null>(null);
 
   // Fetch job posts data
   useEffect(() => {
@@ -15,6 +17,7 @@ export const SearchPage = () => {
         const response = await fetch('/job_posts.json');
         const data = await response.json();
         setJobPosts(data);
+        setFilteredJobPosts(data); // Initially show all job posts
       } catch (error) {
         console.error('Error fetching job posts:', error);
       }
@@ -23,7 +26,21 @@ export const SearchPage = () => {
     fetchJobPosts();
   }, []);
 
-  console.log(jobPosts);
+  // Extract unique companies with job posts
+  const uniqueCompanies: Company['company_name'][] = Array.from(
+    new Set(jobPosts.map((jobPost) => jobPost.company.company_name))
+  );
+
+  // Handle filtering based on the selected company
+  const handleCompanyFilter = (companyName: Company['company_name'] | null) => {
+    setSelectedCompany(companyName);
+    if (companyName) {
+      const filtered = jobPosts.filter((jobPost) => jobPost.company.company_name === companyName);
+      setFilteredJobPosts(filtered);
+    } else {
+      setFilteredJobPosts(jobPosts); // Show all posts if no company is selected
+    }
+  };
 
   return (
     <Container maxWidth="lg">
@@ -31,12 +48,16 @@ export const SearchPage = () => {
 
       <Grid container spacing={4}>
         <Grid item xs={12} md={3}>
-          <FilterPanel />
+          <FilterPanel
+            companies={uniqueCompanies}
+            selectedCompany={selectedCompany}
+            onCompanyFilter={handleCompanyFilter}
+          />
         </Grid>
 
         <Grid item xs={12} md={9}>
           <Grid container spacing={3}>
-            {jobPosts.map((jobPost) => (
+            {filteredJobPosts.map((jobPost) => (
               <Grid item xs={12} key={jobPost.id}>
                 <JobCard
                   title={jobPost.job_title}
