@@ -3,27 +3,17 @@ class CompaniesController < ApplicationController
 
   # GET /companies or /companies.json
   def index
-    @companies = Company.includes(:job_posts).all
-
-    # Map the enums to human-readable values for each company in the response
-    companies_with_enums = @companies.map do |company|
-      company.as_json(include: :job_posts).merge(
-        company_type: Company::COMPANY_TYPES[company.company_type],
-        pharmacy_type: company.pharmacy_type.present? ? Company::PHARMACY_TYPES[company.pharmacy_type] : nil,
-        digital_health_type: company.digital_health_type.present? ? Company::DIGITAL_HEALTH_TYPES[company.digital_health_type] : nil
-      )
-    end
-
-    render json: companies_with_enums
+    @companies = Company.includes(:job_posts, :company_type).all
+    render json: @companies.to_json(include: [:job_posts, :company_type])
   end
   
   # GET /companies/1 or /companies/1.json
   def show
-    @company = Company.includes(:job_posts).find(params[:id])
-    
-    # Add human-readable values to the company JSON response
+    @company = Company.includes(:job_posts, :company_type).find(params[:id])
+
+    # Add human-readable values for the enum fields
     company_with_enums = @company.as_json(include: :job_posts).merge(
-      company_type: Company::COMPANY_TYPES[@company.company_type],
+      company_type: @company.company_type.name, # Assuming company_type has a `name` attribute
       pharmacy_type: @company.pharmacy_type.present? ? Company::PHARMACY_TYPES[@company.pharmacy_type] : nil,
       digital_health_type: @company.digital_health_type.present? ? Company::DIGITAL_HEALTH_TYPES[@company.digital_health_type] : nil
     )
