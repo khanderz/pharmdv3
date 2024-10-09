@@ -1,6 +1,7 @@
 import React from "react";
 import { Box, Typography, Select, MenuItem, Button, FormControl, InputLabel } from "@mui/material";
 import { Company } from "../../../types/company.types";
+import { CompanyFilter } from "../../molecules/Filters/CompanyFilter/CompanyFilter";
 
 interface FilterPanelProps {
   companies: Company['company_name'][];
@@ -14,25 +15,11 @@ export const FilterPanel = ({ companies, selectedCompany, onCompanyFilter }: Fil
       <Typography variant="h6">Filters</Typography>
 
       {/* Company Filter */}
-      <Box sx={{ mt: 2 }}>
-        <Typography variant="body1" sx={{ mb: 1 }}>Company</Typography>
-        <FormControl fullWidth>
-          <Select
-            value={selectedCompany || ""}
-            onChange={(e) => onCompanyFilter(e.target.value || null)}
-            displayEmpty
-          >
-            <MenuItem value="">
-              <em>All Companies</em>
-            </MenuItem>
-            {companies.map((company, index) => (
-              <MenuItem key={index} value={company}>
-                {company}
-              </MenuItem>
-            ))}
-          </Select>
-        </FormControl>
-      </Box>
+      <CompanyFilter
+        companies={companies}
+        selectedCompany={selectedCompany}
+        onCompanyFilter={onCompanyFilter}
+      />
 
       <Box sx={{ mt: 2 }}>
         <Typography variant="body1">Location</Typography>

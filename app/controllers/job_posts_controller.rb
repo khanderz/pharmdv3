@@ -4,12 +4,12 @@ class JobPostsController < ApplicationController
   # GET /job_posts or /job_posts.json
   def index
     @job_posts = JobPost.all
-    render json: @job_posts.as_json(include: { company: { only: [:id, :company_name] } })
+    render json: @job_posts.as_json(include: :company)  # Include the entire company object
   end
 
   # GET /job_posts/1 or /job_posts/1.json
   def show
-    render json: @job_post
+    render json: @job_post.as_json(include: :company)  # Include the entire company object
   end
 
   # GET /job_posts/new

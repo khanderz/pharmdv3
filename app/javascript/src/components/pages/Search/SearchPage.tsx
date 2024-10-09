@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Box, Container, Grid, Pagination } from '@mui/material';
 import { JobPost } from '../../../types/job_post.types';
-import { FilterPanel } from '../../molecules/FilterPanel/FilterPanel';
+import { FilterPanel } from '../../organisms/FilterPanel/FilterPanel';
 import { SearchPanel } from '../../molecules/SearchPanel/SearchPanel';
 import { JobCard } from '../../organisms/JobCard/JobCard';
 
@@ -42,6 +42,7 @@ export const SearchPage = () => {
     }
   };
 
+  console.log({ jobPosts, uniqueCompanies })
   return (
     <Container maxWidth="lg">
       <SearchPanel />
