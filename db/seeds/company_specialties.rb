@@ -1,5 +1,5 @@
 #  pharma
-CompanySpecialty.create([
+pharma_specialties = CompanySpecialty.create([
   { key: 'CHRONIC_DISEASE_MGMT', value: 'Chronic Disease Management' },
   { key: 'CLINICAL_TRIALS', value: 'Clinical Trials' },
   { key: 'DIGITAL_THERAPEUTICS', value: 'Digital Therapeutics' },
@@ -15,9 +15,12 @@ CompanySpecialty.create([
   { key: 'VITAMINS_SUPPLEMENTS', value: 'Vitamins & Supplements' }
 ])
 
+pharma_specialties.each do |specialty|
+  puts "Seeded Pharma Specialty: #{specialty.key} - #{specialty.value}"
+end
 
 #  digital health
-CompanySpecialty.create([
+digital_health_specialties = CompanySpecialty.create([
   { key: 'APP_DEPLOYMENT', value: 'App Deployment' },
   { key: 'BILLING_AND_PAYMENTS', value: 'Billing & Payments' },
   { key: 'RESEARCH', value: 'Biotechnology & Research' },
@@ -39,8 +42,15 @@ CompanySpecialty.create([
   { key: 'REVENUE_CYCLE_MGMT', value: 'Revenue Cycle Management' }
 ])
 
+digital_health_specialties.each do |specialty|
+  puts "Seeded Digital Health Specialty: #{specialty.key} - #{specialty.value}"
+end
 
 #  other
-CompanySpecialty.create([
+other_specialties = CompanySpecialty.create([
     { key: 'OTHER', value: 'Other' }
 ])
+
+other_specialties.each do |specialty|
+  puts "Seeded Other Specialty: #{specialty.key} - #{specialty.value}"
+end
