@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_10_12_212235) do
+ActiveRecord::Schema[7.1].define(version: 2024_10_12_221723) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -18,6 +18,7 @@ ActiveRecord::Schema[7.1].define(version: 2024_10_12_212235) do
     t.string "company_name"
     t.boolean "operating_status"
     t.bigint "company_specialty_id", null: false
+    t.bigint "company_type_id", null: false
     t.string "company_ats_type"
     t.string "company_size"
     t.string "last_funding_type"
@@ -34,6 +35,7 @@ ActiveRecord::Schema[7.1].define(version: 2024_10_12_212235) do
     t.datetime "updated_at", null: false
     t.index ["company_name"], name: "index_companies_on_company_name", unique: true
     t.index ["company_specialty_id"], name: "index_companies_on_company_specialty_id"
+    t.index ["company_type_id"], name: "index_companies_on_company_type_id"
     t.index ["linkedin_url"], name: "index_companies_on_linkedin_url", unique: true
   end
 
@@ -103,6 +105,7 @@ ActiveRecord::Schema[7.1].define(version: 2024_10_12_212235) do
   end
 
   add_foreign_key "companies", "company_specialties"
+  add_foreign_key "companies", "company_types"
   add_foreign_key "company_specializations", "companies"
   add_foreign_key "company_specializations", "company_specialties"
   add_foreign_key "company_specialties", "company_types"
