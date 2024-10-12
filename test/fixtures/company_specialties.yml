@@ -1,9 +1,11 @@
 # Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
 
 one:
-  name: MyString
+  key: MyString
+  value: MyString
   company_type: one
 
 two:
-  name: MyString
+  key: MyString
+  value: MyString
   company_type: two
