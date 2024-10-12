@@ -29,5 +29,6 @@ class CreateJobPosts < ActiveRecord::Migration[7.1]
       t.timestamps
     end
     add_index :job_posts, :job_url, unique: true
+    add_index :job_posts, :job_active
   end
 end

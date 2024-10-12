@@ -10,15 +10,14 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_10_09_194206) do
+ActiveRecord::Schema[7.1].define(version: 2024_10_12_190247) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
   create_table "companies", force: :cascade do |t|
     t.string "company_name"
     t.boolean "operating_status"
-    t.string "company_type"
-    t.string "company_type_value"
+    t.bigint "company_specialty_id", null: false
     t.string "company_ats_type"
     t.string "company_size"
     t.string "last_funding_type"
@@ -33,17 +32,33 @@ ActiveRecord::Schema[7.1].define(version: 2024_10_09_194206) do
     t.text "company_description"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.integer "company_type_id"
     t.index ["company_name"], name: "index_companies_on_company_name", unique: true
+    t.index ["company_specialty_id"], name: "index_companies_on_company_specialty_id"
     t.index ["linkedin_url"], name: "index_companies_on_linkedin_url", unique: true
   end
 
-  create_table "company_types", force: :cascade do |t|
-    t.string "key", null: false
-    t.string "value", null: false
+  create_table "company_specializations", force: :cascade do |t|
+    t.bigint "company_id", null: false
+    t.bigint "company_specialty_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["key"], name: "index_company_types_on_key", unique: true
+    t.index ["company_id"], name: "index_company_specializations_on_company_id"
+    t.index ["company_specialty_id"], name: "index_company_specializations_on_company_specialty_id"
+  end
+
+  create_table "company_specialties", force: :cascade do |t|
+    t.string "name"
+    t.bigint "company_type_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["company_type_id"], name: "index_company_specialties_on_company_type_id"
+  end
+
+  create_table "company_types", force: :cascade do |t|
+    t.string "key"
+    t.string "value"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
   end
 
   create_table "job_posts", force: :cascade do |t|
@@ -74,6 +89,7 @@ ActiveRecord::Schema[7.1].define(version: 2024_10_09_194206) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["companies_id"], name: "index_job_posts_on_companies_id"
+    t.index ["job_active"], name: "index_job_posts_on_job_active"
     t.index ["job_url"], name: "index_job_posts_on_job_url", unique: true
   end
 
@@ -85,5 +101,9 @@ ActiveRecord::Schema[7.1].define(version: 2024_10_09_194206) do
     t.index ["role_name"], name: "index_job_roles_on_role_name", unique: true
   end
 
+  add_foreign_key "companies", "company_specialties"
+  add_foreign_key "company_specializations", "companies"
+  add_foreign_key "company_specializations", "company_specialties"
+  add_foreign_key "company_specialties", "company_types"
   add_foreign_key "job_posts", "companies", column: "companies_id"
 end

@@ -3,8 +3,13 @@ class CompaniesController < ApplicationController
 
   # GET /companies or /companies.json
   def index
-    @companies = Company.includes(:job_posts, :company_type).all
-    render json: @companies.to_json(include: [:job_posts, :company_type])
+    # Check if `company_type` is passed in the query params
+    if params[:company_type]
+      @companies = Company.where(company_type: params[:company_type]).includes(:job_posts, :company_type)
+    else
+      @companies = Company.includes(:job_posts, :company_type).all
+    end
+    render json: @companies.as_json(include: [:job_posts, :company_type])
   end
   
   # GET /companies/1 or /companies/1.json

@@ -3,8 +3,7 @@
 one:
   company_name: MyString
   operating_status: false
-  company_type: MyString
-  company_type_value: MyString
+  company_specialty: one
   company_ats_type: MyString
   company_size: MyString
   last_funding_type: MyString
@@ -21,8 +20,7 @@ one:
 two:
   company_name: MyString
   operating_status: false
-  company_type: MyString
-  company_type_value: MyString
+  company_specialty: two
   company_ats_type: MyString
   company_size: MyString
   last_funding_type: MyString
