@@ -168,3 +168,4 @@ end
   #   Company.where(company_ats_type: 'EIGHTFOLD').each do |company|
 
 end
+

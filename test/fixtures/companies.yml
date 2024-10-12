@@ -3,8 +3,6 @@
 one:
   company_name: MyString
   operating_status: false
-  company_specialty: one
-  company_type: one
   company_ats_type: MyString
   company_size: MyString
   last_funding_type: MyString
@@ -17,12 +15,11 @@ one:
   acquired_by: MyString
   ats_id: MyString
   company_description: MyText
+  company_type: one
 
 two:
   company_name: MyString
   operating_status: false
-  company_specialty: two
-  company_type: two
   company_ats_type: MyString
   company_size: MyString
   last_funding_type: MyString
@@ -35,3 +32,4 @@ two:
   acquired_by: MyString
   ats_id: MyString
   company_description: MyText
+  company_type: two
