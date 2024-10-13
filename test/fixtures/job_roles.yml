@@ -3,7 +3,9 @@
 one:
   role_name: MyString
   role_department: MyString
+  aliases: MyString
 
 two:
   role_name: MyString
   role_department: MyString
+  aliases: MyString

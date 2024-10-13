@@ -1,9 +1,6 @@
-company_types = CompanyType.create([
-  { key: 'PHARMA', value: 'Pharmacy' },
-  { key: 'DIGITAL_HEALTH', value: 'Digital Health' },
-  { key: 'OTHER', value: 'Other' }
-])
+# db/seeds/company_types.rb
+CompanyType.find_or_create_by(key: 'PHARMA', value: 'Pharmacy')
+CompanyType.find_or_create_by(key: 'DIGITAL_HEALTH', value: 'Digital Health')
+CompanyType.find_or_create_by(key: 'OTHER', value: 'Other')
 
-company_types.each do |company_type|
-  puts "Seeded CompanyType: #{company_type.key} - #{company_type.value}"
-end
+puts "Seeded Company Types"

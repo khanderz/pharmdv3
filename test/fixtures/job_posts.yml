@@ -7,8 +7,8 @@ one:
   job_url: MyString
   job_location: MyString
   job_dept: MyString
-  job_posted: 2024-10-12 17:34:01
-  job_updated: 2024-10-12 17:34:01
+  job_posted: 2024-10-12 18:18:40
+  job_updated: 2024-10-12 18:18:40
   job_active: false
   job_internal_id: 
   job_url_id: 
@@ -33,8 +33,8 @@ two:
   job_url: MyString
   job_location: MyString
   job_dept: MyString
-  job_posted: 2024-10-12 17:34:01
-  job_updated: 2024-10-12 17:34:01
+  job_posted: 2024-10-12 18:18:40
+  job_updated: 2024-10-12 18:18:40
   job_active: false
   job_internal_id: 
   job_url_id: 

@@ -1,21 +1,23 @@
+
 require 'net/http'
 require 'json'
 class JobPost < ApplicationRecord
   belongs_to :company, foreign_key: :companies_id
 belongs_to :job_role 
-
-# Method to find or create job role 
-def self.find_or_create_job_role(job_title) job_role = JobRole.find_by('role_name = ? OR ? = ANY (aliases)', job_title, job_title) unless job_role job_role = JobRole.create!(role_name: job_title) end job_role end
-
-
-
+  # Method to find or create job role
+  def self.find_or_create_job_role(job_title)
+    job_role = JobRole.find_by('role_name = ? OR ? = ANY (aliases)', job_title, job_title)
+    unless job_role
+      job_role = JobRole.create!(role_name: job_title)
+    end
+    job_role
+  end
 
   # lever jobs -----------------------------------------------------------
   def self.fetch_lever_jobs(company)
       jobs = get_lever_jobs(company)
       save_lever_jobs(company, jobs) if jobs.present?
     end
-
   def self.clear_lever_data
     Company.where(company_ats_type: 'LEVER').each do |company|
       JobPost.where(company: company).delete_all
@@ -67,7 +69,6 @@ job_role = find_or_create_job_role(job['text'])
             job_post.job_qualifications = item['content']
           end
         end
-
       if job_post.valid?
         job_post.save
         puts "#{company.company_name} job post added"
@@ -77,7 +78,6 @@ job_role = find_or_create_job_role(job['text'])
     end
     puts "Lever jobs added to database for #{company.company_name}"
   end
-
 
   # greenhouse jobs -----------------------------------------------------------
 def self.fetch_greenhouse_jobs(company)
@@ -158,7 +158,6 @@ end
 
 
 
-
   # eightfold jobs -----------------------------------------------------------
   # def self.fetch_eightfold_jobs(company)
   #   jobs = get_eightfold_jobs(company)
@@ -166,6 +165,4 @@ end
   # end
   # def self.clear_eightfold_data
   #   Company.where(company_ats_type: 'EIGHTFOLD').each do |company|
-
 end
-

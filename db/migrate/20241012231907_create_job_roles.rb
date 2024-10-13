@@ -3,6 +3,7 @@ class CreateJobRoles < ActiveRecord::Migration[7.1]
     create_table :job_roles do |t|
       t.string :role_name
       t.string :role_department
+      t.string :aliases
 
       t.timestamps
     end

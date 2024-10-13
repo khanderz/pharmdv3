@@ -3,8 +3,8 @@ pharma_type = CompanyType.find_by(key: 'PHARMA')
 digital_health_type = CompanyType.find_by(key: 'DIGITAL_HEALTH')
 other_type = CompanyType.find_by(key: 'OTHER')
 
-#  Pharma specialties
-pharma_specialties = CompanySpecialty.create([
+# Pharma specialties
+pharma_specialties = [
   { key: 'CHRONIC_DISEASE_MGMT', value: 'Chronic Disease Management', company_type_id: pharma_type.id },
   { key: 'CLINICAL_TRIALS', value: 'Clinical Trials', company_type_id: pharma_type.id },
   { key: 'DIGITAL_THERAPEUTICS', value: 'Digital Therapeutics', company_type_id: pharma_type.id },
@@ -18,14 +18,17 @@ pharma_specialties = CompanySpecialty.create([
   { key: 'PHARMACY_MEDIA', value: 'Pharmacy Media', company_type_id: pharma_type.id },
   { key: 'VIRTUAL_PHARMACY', value: 'Virtual Pharmacy', company_type_id: pharma_type.id },
   { key: 'VITAMINS_SUPPLEMENTS', value: 'Vitamins & Supplements', company_type_id: pharma_type.id }
-])
+]
 
 pharma_specialties.each do |specialty|
-  puts "Seeded Pharma Specialty: #{specialty.key} - #{specialty.value}"
+  CompanySpecialty.find_or_create_by(key: specialty[:key], company_type_id: specialty[:company_type_id]) do |s|
+    s.value = specialty[:value]
+  end
+  puts "Seeded Pharma Specialty: #{specialty[:key]} - #{specialty[:value]}"
 end
 
-#  Digital Health specialties
-digital_health_specialties = CompanySpecialty.create([
+# Digital Health specialties
+digital_health_specialties = [
   { key: 'APP_DEPLOYMENT', value: 'App Deployment', company_type_id: digital_health_type.id },
   { key: 'BILLING_AND_PAYMENTS', value: 'Billing & Payments', company_type_id: digital_health_type.id },
   { key: 'RESEARCH', value: 'Biotechnology & Research', company_type_id: digital_health_type.id },
@@ -45,17 +48,23 @@ digital_health_specialties = CompanySpecialty.create([
   { key: 'VIRTUAL_CARE', value: 'Virtual Care', company_type_id: digital_health_type.id },
   { key: 'WORKFLOW_DIGITIZATION_AND_AUTOMATION', value: 'Workflow Digitization & Automation', company_type_id: digital_health_type.id },
   { key: 'REVENUE_CYCLE_MGMT', value: 'Revenue Cycle Management', company_type_id: digital_health_type.id }
-])
+]
 
 digital_health_specialties.each do |specialty|
-  puts "Seeded Digital Health Specialty: #{specialty.key} - #{specialty.value}"
+  CompanySpecialty.find_or_create_by(key: specialty[:key], company_type_id: specialty[:company_type_id]) do |s|
+    s.value = specialty[:value]
+  end
+  puts "Seeded Digital Health Specialty: #{specialty[:key]} - #{specialty[:value]}"
 end
 
-#  Other specialties
-other_specialties = CompanySpecialty.create([
+# Other specialties
+other_specialties = [
   { key: 'OTHER', value: 'Other', company_type_id: other_type.id }
-])
+]
 
 other_specialties.each do |specialty|
-  puts "Seeded Other Specialty: #{specialty.key} - #{specialty.value}"
+  CompanySpecialty.find_or_create_by(key: specialty[:key], company_type_id: specialty[:company_type_id]) do |s|
+    s.value = specialty[:value]
+  end
+  puts "Seeded Other Specialty: #{specialty[:key]} - #{specialty[:value]}"
 end
