@@ -2,21 +2,13 @@ class JobPost < ApplicationRecord
   belongs_to :company, foreign_key: :companies_id
   belongs_to :job_role
 
-  # Method to find or create job role
-  def self.find_or_create_job_role(job_title, role_department)
-    job_role = JobRole.find_by('role_name = ? OR ? = ANY (aliases)', job_title, job_title)
-  
-    if job_role.nil?
-      job_role = JobRole.create(role_name: job_title, role_department: role_department)
-      puts "Created new Job Role: #{job_title} with department: #{role_department}"
-    elsif job_role.role_department.nil? && role_department.present?
-      job_role.update(role_department: role_department)
-      puts "Updated Job Role: #{job_title} with department: #{role_department}"
+    # Deactivate old jobs that are no longer in the API data
+    def self.deactivate_old_jobs(company, active_job_ids)
+      JobPost.where(company: company).where.not(id: active_job_ids).update_all(job_active: false)
+      puts "Deactivated old job posts for #{company.company_name}"
     end
-  
-    job_role
-  end
 
+    
   # Lever jobs -----------------------------------------------------------
   def self.fetch_lever_jobs(company)
     jobs = get_lever_jobs(company)
@@ -54,7 +46,8 @@ class JobPost < ApplicationRecord
     
     jobs.each do |job|
       date = Time.at(job['createdAt'] / 1000).strftime('%Y-%m-%d')
-      job_role = find_or_create_job_role(job['text'], job['categories']['department'])
+      job_role = JobRole.find_or_create_with_department(job['text'], job['categories']['department'])
+      
       unless job_role.persisted?
         puts "Job Role creation failed for #{job['text']}"
         next
@@ -121,12 +114,6 @@ class JobPost < ApplicationRecord
     active_job_ids
   end
 
-  # Deactivate old jobs that are no longer in the API data
-  def self.deactivate_old_jobs(company, active_job_ids)
-    JobPost.where(company: company).where.not(id: active_job_ids).update_all(job_active: false)
-    puts "Deactivated old job posts for #{company.company_name}"
-  end
-
   # Greenhouse jobs -----------------------------------------------------------
   def self.fetch_greenhouse_jobs(company)
     jobs = get_greenhouse_jobs(company)
@@ -171,7 +158,8 @@ class JobPost < ApplicationRecord
       job_internal_id_string = job.is_a?(Hash) && job.key?("internal_job_id") ? job["internal_job_id"].to_s : nil
       existing_job = JobPost.find_by(job_url: job["absolute_url"])
 
-      job_role = find_or_create_job_role(job["title"], job["departments"][0]["name"])
+      job_role = JobRole.find_or_create_with_department(job["title"], job["departments"][0]["name"])
+      
       unless job_role.persisted?
         puts "Job Role creation failed for #{job['title']}"
         next
