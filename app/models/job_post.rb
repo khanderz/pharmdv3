@@ -3,14 +3,17 @@ class JobPost < ApplicationRecord
   belongs_to :job_role
 
   # Method to find or create job role
-  def self.find_or_create_job_role(job_title)
+  def self.find_or_create_job_role(job_title, role_department)
     job_role = JobRole.find_by('role_name = ? OR ? = ANY (aliases)', job_title, job_title)
-
-    unless job_role
-      job_role = JobRole.create(role_name: job_title)
-      puts "Created new Job Role: #{job_title}"
+  
+    if job_role.nil?
+      job_role = JobRole.create(role_name: job_title, role_department: role_department)
+      puts "Created new Job Role: #{job_title} with department: #{role_department}"
+    elsif job_role.role_department.nil? && role_department.present?
+      job_role.update(role_department: role_department)
+      puts "Updated Job Role: #{job_title} with department: #{role_department}"
     end
-
+  
     job_role
   end
 
@@ -51,7 +54,7 @@ class JobPost < ApplicationRecord
     
     jobs.each do |job|
       date = Time.at(job['createdAt'] / 1000).strftime('%Y-%m-%d')
-      job_role = find_or_create_job_role(job['text'])
+      job_role = find_or_create_job_role(job['text'], job['categories']['department'])
       unless job_role.persisted?
         puts "Job Role creation failed for #{job['text']}"
         next
@@ -168,7 +171,7 @@ class JobPost < ApplicationRecord
       job_internal_id_string = job.is_a?(Hash) && job.key?("internal_job_id") ? job["internal_job_id"].to_s : nil
       existing_job = JobPost.find_by(job_url: job["absolute_url"])
 
-      job_role = find_or_create_job_role(job["title"])
+      job_role = find_or_create_job_role(job["title"], job["departments"][0]["name"])
       unless job_role.persisted?
         puts "Job Role creation failed for #{job['title']}"
         next
