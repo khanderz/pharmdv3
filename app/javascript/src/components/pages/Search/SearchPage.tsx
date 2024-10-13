@@ -11,6 +11,8 @@ export const SearchPage = () => {
   const [filteredJobPosts, setFilteredJobPosts] = useState<JobPost[]>([]);
   const [selectedCompany, setSelectedCompany] = useState<Company['company_name'] | null>(null);
   const [selectedSpecialty, setSelectedSpecialty] = useState<CompanySpecialty['value'] | null>(null);
+  const [selectedDepartment, setSelectedDepartment] = useState<JobPost['job_dept'] | null>(null);
+  const [selectedTeam, setSelectedTeam] = useState<JobPost['job_team'] | null>(null);
 
   // Fetch job posts data
   useEffect(() => {
@@ -38,6 +40,10 @@ export const SearchPage = () => {
     new Set(jobPosts.flatMap((jobPost) => jobPost.company.company_specialties?.map((spec) => spec.value)))
   ).filter(Boolean);
 
+  const uniqueDepartments: JobPost['job_dept'][] = Array.from(new Set(jobPosts.map((jobPost) => jobPost.job_dept))).filter(Boolean);
+  const uniqueTeams: JobPost['job_team'][] = Array.from(new Set(jobPosts.map((jobPost) => jobPost.job_team))).filter(Boolean);
+
+
   // Handle filtering based on the selected company
   const handleCompanyFilter = (companyName: Company['company_name'] | null) => {
     setSelectedCompany(companyName);
@@ -50,8 +56,18 @@ export const SearchPage = () => {
     filterJobPosts(selectedCompany, specialty);
   };
 
-  // Filter job posts based on selected company and specialty
-  const filterJobPosts = (companyName: Company['company_name'] | null, specialty: CompanySpecialty['value'] | null) => {
+  const handleDepartmentFilter = (department: JobPost['job_dept'] | null) => {
+    setSelectedDepartment(department);
+    filterJobPosts(selectedCompany, selectedSpecialty, department, selectedTeam);
+  };
+
+  const handleTeamFilter = (team: JobPost['job_team'] | null) => {
+    setSelectedTeam(team);
+    filterJobPosts(selectedCompany, selectedSpecialty, selectedDepartment, team);
+  };
+
+  // Filter job posts based on selected company, specialty, department, and team
+  const filterJobPosts = (companyName: Company['company_name'] | null, specialty: CompanySpecialty['value'] | null, department: JobPost['job_dept'] | null, team: JobPost['job_team'] | null) => {
     let filtered = jobPosts;
 
     if (companyName) {
@@ -62,6 +78,14 @@ export const SearchPage = () => {
       filtered = filtered.filter((jobPost) =>
         jobPost.company.company_specialties?.some((spec: CompanySpecialty) => spec.value === specialty)
       );
+    }
+
+    if (department) {
+      filtered = filtered.filter((jobPost) => jobPost.job_dept === department);
+    }
+
+    if (team) {
+      filtered = filtered.filter((jobPost) => jobPost.job_team === team);
     }
 
     setFilteredJobPosts(filtered);
@@ -77,9 +101,15 @@ export const SearchPage = () => {
             companies={uniqueCompanies}
             selectedCompany={selectedCompany}
             onCompanyFilter={handleCompanyFilter}
-            specialties={uniqueSpecialties}  // Pass specialties to FilterPanel
-            selectedSpecialty={selectedSpecialty}  // Pass selected specialty
-            onSpecialtyFilter={handleSpecialtyFilter}  // Pass the filter handler
+            specialties={uniqueSpecialties}
+            selectedSpecialty={selectedSpecialty}
+            onSpecialtyFilter={handleSpecialtyFilter}
+            departments={uniqueDepartments}
+            selectedDepartment={selectedDepartment}
+            onDepartmentFilter={handleDepartmentFilter}
+            teams={uniqueTeams}
+            selectedTeam={selectedTeam}
+            onTeamFilter={handleTeamFilter}
           />
         </Grid>
 
@@ -93,8 +123,8 @@ export const SearchPage = () => {
                   job_location={jobPost.job_location}
                   job_commitment={jobPost.job_commitment}
                   job_applyUrl={jobPost.job_applyUrl}
-                  // @ts-ignore
-                  company_specialty={jobPost.company.company_specialties[0]?.value}  // Adjusted
+                  // @ts-ignore - fix later
+                  company_specialty={jobPost.company.company_specialties[0]?.value}
                 />
               </Grid>
             ))}
