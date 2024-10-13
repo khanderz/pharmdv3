@@ -57,7 +57,7 @@ class JobPost < ApplicationRecord
         next
       end
 
-      # Prepare the new job post data
+      # Prepare new job post data
       job_post_data = {
         companies_id: company.id,
         job_title: job['text'],
@@ -75,7 +75,11 @@ class JobPost < ApplicationRecord
         job_internal_id_string: job['id'],
         job_applyUrl: job['applyUrl'],
         job_role: job_role,
-        job_active: true # Set job_active to true for new or updated jobs
+        job_active: true, # Set job_active to true for new or updated jobs
+        job_salary_max: job['salaryRange'] ?  job['salaryRange']['max'] : nil,
+        job_salary_min: job['salaryRange'] ? job['salaryRange']['min'] : nil,
+        # job_salary_currency: job['salaryRange'] ? job['salaryRange']['currency'] : nil,
+        # job_salary_interval: job['salaryRange'] ? job['salaryRange']['interval'] : nil,
       }
 
       job['lists'].each do |item|
@@ -122,14 +126,15 @@ class JobPost < ApplicationRecord
 
   # Greenhouse jobs -----------------------------------------------------------
   def self.fetch_greenhouse_jobs(company)
-    departments = get_greenhouse_departments(company)
-    
-    if departments && departments["departments"]
-      department_jobs = departments["departments"].map { |department| [department["name"], department["jobs"]] }
-      active_job_ids = save_greenhouse_jobs(company, department_jobs)
+    jobs = get_greenhouse_jobs(company)
+
+    if jobs && jobs["jobs"]
+      jobs_mapped = jobs["jobs"].map { |job| job }
+
+      active_job_ids = save_greenhouse_jobs(company,jobs_mapped)
       deactivate_old_jobs(company, active_job_ids)
     else
-      puts "No departments found for #{company.company_name}"
+      puts "No jobs found for #{company.company_name}"
     end
   end
 
@@ -142,74 +147,71 @@ class JobPost < ApplicationRecord
 
   private
 
-  def self.get_greenhouse_departments(company)
+  def self.get_greenhouse_jobs(company)
     ats_id = company.ats_id
-    url = "https://boards-api.greenhouse.io/v1/boards/#{ats_id}/departments"
+    url = "https://boards-api.greenhouse.io/v1/boards/#{ats_id}/jobs?content=true"
     uri = URI(url)
     response = Net::HTTP.get(uri)
-    departments = JSON.parse(response)
+    jobs = JSON.parse(response)
 
-    return departments if departments.is_a?(Hash)
+    return jobs if jobs.is_a?(Hash)
 
-    puts "Error: #{departments['message']}, cannot get Greenhouse departments"
+    puts "Error: #{jobs['message']}, cannot get Greenhouse jobs"
     nil
   end
 
-  def self.save_greenhouse_jobs(company, department_jobs)
+  def self.save_greenhouse_jobs(company, jobs)
     active_job_ids = []
-    
-    department_jobs.each do |department_name, jobs|
-      if jobs.nil?
-        puts "No jobs found for department: #{department_name}"
+
+    jobs.each do |job|
+      job_posted = job.is_a?(Hash) && job.key?("created_at") ? job["created_at"] : nil
+      job_internal_id_string = job.is_a?(Hash) && job.key?("internal_job_id") ? job["internal_job_id"].to_s : nil
+      existing_job = JobPost.find_by(job_url: job["absolute_url"])
+
+      job_role = find_or_create_job_role(job["title"])
+      unless job_role.persisted?
+        puts "Job Role creation failed for #{job['title']}"
         next
       end
 
-      jobs.each do |job|
-        job_posted = job.is_a?(Hash) && job.key?("created_at") ? job["created_at"] : nil
-        job_internal_id_string = job.is_a?(Hash) && job.key?("internal_job_id") ? job["internal_job_id"].to_s : nil
-        existing_job = JobPost.find_by(job_url: job["absolute_url"])
+      # Prepare the new job post data
+      job_post_data = {
+        companies_id: company.id,
+        job_title: job["title"],
+        job_description: job["content"],
+        job_url: job["absolute_url"],
+        job_applyUrl: job["absolute_url"],
+        job_location: job["location"]["name"],
+        job_allLocations: job['offices'].map { |office| office["name"] }.join(', '),
+        job_setting: job['offices'].map { |office| office["name"] }.join(', '),
+        job_dept: job["departments"].map { |dept| dept["name"] }.join(', '),
+        job_team: job["departments"].map { |dept| dept["name"] }.join(', '),
+        job_posted: job_posted,
+        job_updated: Time.parse(job["updated_at"]).strftime('%Y-%m-%d %H:%M:%S'),
+        job_active: true, # Set job_active to true for new or updated jobs
+        job_internal_id: job['internal_job_id'],
+        job_url_id: job["id"],
+        job_internal_id_string: job_internal_id_string,
+        job_role: job_role
+      }
 
-        job_role = find_or_create_job_role(job["title"])
-        unless job_role.persisted?
-          puts "Job Role creation failed for #{job['title']}"
-          next
-        end
-
-        # Prepare the new job post data
-        job_post_data = {
-          companies_id: company.id,
-          job_title: job["title"],
-          job_description: job["content"],
-          job_url: job["absolute_url"],
-          job_location: job["location"]["name"],
-          job_dept: department_name,
-          job_posted: job_posted,
-          job_updated: job["updated_at"],
-          job_active: true, # Set job_active to true for new or updated jobs
-          job_internal_id: job['internal_job_id'],
-          job_url_id: job["id"],
-          job_internal_id_string: job_internal_id_string,
-          job_role: job_role
-        }
-
-        if existing_job
-          # Check if any changes have occurred
-          if existing_job.attributes.except('id', 'created_at', 'updated_at') == job_post_data
-            puts "Job post already exists and is unchanged for URL: #{job['absolute_url']}"
-          else
-            existing_job.update(job_post_data)
-            puts "Updated job post for URL: #{job['absolute_url']}"
-          end
-          active_job_ids << existing_job.id
+      if existing_job
+        # Check if any changes have occurred
+        if existing_job.attributes.except('id', 'created_at', 'updated_at') == job_post_data
+          puts "Job post already exists and is unchanged for URL: #{job['absolute_url']}"
         else
-          # Create new job post
-          new_job_post = JobPost.new(job_post_data)
-          if new_job_post.save
-            puts "#{company.company_name} job post added"
-            active_job_ids << new_job_post.id
-          else
-            puts "#{company.company_name} job post not saved - validation failed: #{new_job_post.errors.full_messages.join(', ')}"
-          end
+          existing_job.update(job_post_data)
+          puts "Updated job post for URL: #{job['absolute_url']}"
+        end
+        active_job_ids << existing_job.id
+      else
+        # Create new job post
+        new_job_post = JobPost.new(job_post_data)
+        if new_job_post.save
+          puts "#{company.company_name} job post added"
+          active_job_ids << new_job_post.id
+        else
+          puts "#{company.company_name} job post not saved - validation failed: #{new_job_post.errors.full_messages.join(', ')}"
         end
       end
     end
