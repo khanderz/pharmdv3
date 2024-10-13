@@ -17,7 +17,11 @@ class JobPost < ApplicationRecord
   # Lever jobs -----------------------------------------------------------
   def self.fetch_lever_jobs(company)
     jobs = get_lever_jobs(company)
-    save_lever_jobs(company, jobs) if jobs.present?
+    
+    if jobs.present?
+      active_job_ids = save_lever_jobs(company, jobs)
+      deactivate_old_jobs(company, active_job_ids)
+    end
   end
 
   def self.clear_lever_data
@@ -43,12 +47,10 @@ class JobPost < ApplicationRecord
   end
 
   def self.save_lever_jobs(company, jobs)
+    active_job_ids = []
+    
     jobs.each do |job|
       date = Time.at(job['createdAt'] / 1000).strftime('%Y-%m-%d')
-
-      # Check for existing job post by job_url
-      existing_job = JobPost.find_by(job_url: job['hostedUrl'])
-
       job_role = find_or_create_job_role(job['text'])
       unless job_role.persisted?
         puts "Job Role creation failed for #{job['text']}"
@@ -72,7 +74,8 @@ class JobPost < ApplicationRecord
         job_posted: date,
         job_internal_id_string: job['id'],
         job_applyUrl: job['applyUrl'],
-        job_role: job_role
+        job_role: job_role,
+        job_active: true # Set job_active to true for new or updated jobs
       }
 
       job['lists'].each do |item|
@@ -85,6 +88,8 @@ class JobPost < ApplicationRecord
         end
       end
 
+      existing_job = JobPost.find_by(job_url: job['hostedUrl'])
+
       if existing_job
         # Check if any changes have occurred
         if existing_job.attributes.except('id', 'created_at', 'updated_at') == job_post_data
@@ -93,25 +98,36 @@ class JobPost < ApplicationRecord
           existing_job.update(job_post_data)
           puts "Updated job post for URL: #{job['hostedUrl']}"
         end
+        active_job_ids << existing_job.id
       else
         # Create new job post
         new_job_post = JobPost.new(job_post_data)
         if new_job_post.save
           puts "#{company.company_name} job post added"
+          active_job_ids << new_job_post.id
         else
           puts "#{company.company_name} job post not saved - validation failed: #{new_job_post.errors.full_messages.join(', ')}"
         end
       end
     end
-    puts "Lever jobs added to database for #{company.company_name}"
+
+    active_job_ids
+  end
+
+  # Deactivate old jobs that are no longer in the API data
+  def self.deactivate_old_jobs(company, active_job_ids)
+    JobPost.where(company: company).where.not(id: active_job_ids).update_all(job_active: false)
+    puts "Deactivated old job posts for #{company.company_name}"
   end
 
   # Greenhouse jobs -----------------------------------------------------------
   def self.fetch_greenhouse_jobs(company)
     departments = get_greenhouse_departments(company)
+    
     if departments && departments["departments"]
       department_jobs = departments["departments"].map { |department| [department["name"], department["jobs"]] }
-      save_greenhouse_jobs(company, department_jobs)
+      active_job_ids = save_greenhouse_jobs(company, department_jobs)
+      deactivate_old_jobs(company, active_job_ids)
     else
       puts "No departments found for #{company.company_name}"
     end
@@ -140,6 +156,8 @@ class JobPost < ApplicationRecord
   end
 
   def self.save_greenhouse_jobs(company, department_jobs)
+    active_job_ids = []
+    
     department_jobs.each do |department_name, jobs|
       if jobs.nil?
         puts "No jobs found for department: #{department_name}"
@@ -149,8 +167,6 @@ class JobPost < ApplicationRecord
       jobs.each do |job|
         job_posted = job.is_a?(Hash) && job.key?("created_at") ? job["created_at"] : nil
         job_internal_id_string = job.is_a?(Hash) && job.key?("internal_job_id") ? job["internal_job_id"].to_s : nil
-
-        # Check for existing job post by job_url
         existing_job = JobPost.find_by(job_url: job["absolute_url"])
 
         job_role = find_or_create_job_role(job["title"])
@@ -169,7 +185,7 @@ class JobPost < ApplicationRecord
           job_dept: department_name,
           job_posted: job_posted,
           job_updated: job["updated_at"],
-          job_active: !!job,
+          job_active: true, # Set job_active to true for new or updated jobs
           job_internal_id: job['internal_job_id'],
           job_url_id: job["id"],
           job_internal_id_string: job_internal_id_string,
@@ -184,17 +200,20 @@ class JobPost < ApplicationRecord
             existing_job.update(job_post_data)
             puts "Updated job post for URL: #{job['absolute_url']}"
           end
+          active_job_ids << existing_job.id
         else
           # Create new job post
           new_job_post = JobPost.new(job_post_data)
           if new_job_post.save
             puts "#{company.company_name} job post added"
+            active_job_ids << new_job_post.id
           else
             puts "#{company.company_name} job post not saved - validation failed: #{new_job_post.errors.full_messages.join(', ')}"
           end
         end
       end
     end
-    puts "Greenhouse jobs added to database for #{company.company_name}"
+
+    active_job_ids
   end
 end
