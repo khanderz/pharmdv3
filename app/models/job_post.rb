@@ -5,8 +5,8 @@ class JobPost < ApplicationRecord
   # Shared methods -----------------------------------------------------------
   # Deactivate old jobs that are no longer in the API data
   def self.deactivate_old_jobs(company, active_job_ids)
-    JobPost.where(company: company).where.not(id: active_job_ids).update_all(job_active: false)
-    puts "Deactivated old job posts for #{company.company_name}"
+    deactivated_count = JobPost.where(company: company).where.not(id: active_job_ids).update_all(job_active: false)
+    puts "Deactivated #{deactivated_count} old job posts for #{company.company_name}"
   end
 
   # Helper to handle creating or updating a job post
