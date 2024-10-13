@@ -5,26 +5,29 @@ class CompaniesController < ApplicationController
   def index
     # Check if `company_type` is passed in the query params
     if params[:company_type]
-      @companies = Company.where(company_type: params[:company_type]).includes(:job_posts, :company_type)
+      @companies = Company.where(company_type: params[:company_type])
+                          .includes(:job_posts, :company_type, :company_specialties)
     else
-      @companies = Company.includes(:job_posts, :company_type).all
+      @companies = Company.includes(:job_posts, :company_type, :company_specialties).all
     end
-    render json: @companies.as_json(include: [:job_posts, :company_type])
+    
+    render json: @companies.as_json(include: [:job_posts, :company_type, { company_specialties: { only: [:key, :value] } }])
   end
   
-  # GET /companies/1 or /companies/1.json
-  def show
-    @company = Company.includes(:job_posts, :company_type).find(params[:id])
+# GET /companies/1 or /companies/1.json
+def show
+  @company = Company.includes(:job_posts, :company_type, :company_specialties).find(params[:id])
 
-    # Add human-readable values for the enum fields
-    company_with_enums = @company.as_json(include: :job_posts).merge(
-      company_type: @company.company_type.name, # Assuming company_type has a `name` attribute
-      pharmacy_type: @company.pharmacy_type.present? ? Company::PHARMACY_TYPES[@company.pharmacy_type] : nil,
-      digital_health_type: @company.digital_health_type.present? ? Company::DIGITAL_HEALTH_TYPES[@company.digital_health_type] : nil
-    )
+  # Add human-readable values for the enum fields
+  company_with_enums = @company.as_json(include: [:job_posts, { company_specialties: { only: [:key, :value] } }]).merge(
+    company_type: @company.company_type.name, # Assuming company_type has a `name` attribute
+    pharmacy_type: @company.pharmacy_type.present? ? Company::PHARMACY_TYPES[@company.pharmacy_type] : nil,
+    digital_health_type: @company.digital_health_type.present? ? Company::DIGITAL_HEALTH_TYPES[@company.digital_health_type] : nil
+  )
 
-    render json: company_with_enums
-  end
+  render json: company_with_enums
+end
+
 
   # GET /companies/new
   def new

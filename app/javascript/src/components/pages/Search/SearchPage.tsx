@@ -42,7 +42,8 @@ export const SearchPage = () => {
     }
   };
 
-  console.log({ jobPosts, uniqueCompanies })
+
+  console.log(jobPosts[0])
   return (
     <Container maxWidth="lg">
       <SearchPanel />
@@ -66,6 +67,8 @@ export const SearchPage = () => {
                   job_location={jobPost.job_location}
                   job_commitment={jobPost.job_commitment}
                   job_applyUrl={jobPost.job_applyUrl}
+                  company_specialty={jobPost.company.company_specialties[0].value}
+
                 />
               </Grid>
             ))}

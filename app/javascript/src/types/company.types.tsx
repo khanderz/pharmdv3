@@ -41,4 +41,5 @@ export interface Company {
     company_description: string;
     created_at: Date;
     updated_at: Date;
+    company_specialties: string;
 }

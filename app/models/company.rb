@@ -6,7 +6,9 @@ class Company < ApplicationRecord
    has_many :company_specialties, through: :company_specializations
   
   belongs_to :company_type
+  
   validate :validate_specialty_against_type
+
   def validate_specialty_against_type
     allowed_specialties = CompanySpecialty.where(company_type_id: company_type.id).pluck(:key)
     company_specialties.each do |specialty|

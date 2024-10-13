@@ -8,48 +8,54 @@ begin
     puts "#{Company.count} existing rows in the companies table"
 
     companies.each do |row|
-      # Find or create the company to avoid duplicates
-      c = Company.find_or_create_by(company_name: row['company_name']) do |company|
-        company.operating_status = row['operating_status']
-        
-        # Set the company_type
-        company_type = CompanyType.find_by(key: row['company_type'])
-        if company_type
-          company.company_type = company_type
-        else
-          puts "Company type not found for key: #{row['company_type']}"
-          next # Skip this company if company_type is not found
-        end
+      company = Company.find_or_initialize_by(company_name: row['company_name'])
 
-        # Find the corresponding company specialties and their types
-        if row['company_specialty']
-          specialties = row['company_specialty'].split(',').map do |specialty_key|
-            specialty = CompanySpecialty.find_by(key: specialty_key.strip)
-            if specialty && specialty.company_type == company_type
-              company.company_specialties << specialty
-            else
-              puts "Specialty #{specialty_key} is not valid for company type #{company_type.key}"
-            end
-          end
-        end
+      # Assign other attributes
+      company.assign_attributes(
+        operating_status: row['operating_status'],
+        company_ats_type: row['company_ats_type'],
+        company_size: row['company_size'],
+        last_funding_type: row['last_funding_type'],
+        linkedin_url: row['linkedin_url'],
+        is_public: row['is_public'],
+        year_founded: row['year_founded'],
+        company_city: row['company_city'],
+        company_state: row['company_state'],
+        company_country: row['company_country'],
+        acquired_by: row['acquired_by'],
+        ats_id: row['ats_id']
+      )
 
-        # Set other company attributes
-        company.company_ats_type = row['company_ats_type']
-        company.company_size = row['company_size']
-        company.last_funding_type = row['last_funding_type']
-        company.linkedin_url = row['linkedin_url']
-        company.is_public = row['is_public']
-        company.year_founded = row['year_founded']
-        company.company_city = row['company_city']
-        company.company_state = row['company_state']
-        company.company_country = row['company_country']
-        company.acquired_by = row['acquired_by']
-        company.ats_id = row['ats_id']
+      # Set the company_type
+      company_type = CompanyType.find_by(key: row['company_type'])
+      if company_type
+        company.company_type = company_type
+      else
+        puts "Company type not found for key: #{row['company_type']}"
+        next
       end
 
-      # Output success message after saving the company
-      if c.persisted?
-        puts "#{c.company_name} saved with specialties: #{c.company_specialties.map(&:key).join(', ')}"
+      # Assign specialties
+      if row['company_specialty'].present?
+        specialties = row['company_specialty'].split(',').map do |specialty_key|
+          puts "Processing Specialty Key: #{specialty_key.strip}"  # Debugging output
+          specialty = CompanySpecialty.find_by(key: specialty_key.strip)
+          if specialty && specialty.company_type == company_type
+            specialty
+          else
+            puts "Specialty #{specialty_key} is not valid for company type #{company_type.key}"
+            nil
+          end
+        end.compact
+        company.company_specialties = specialties
+      end
+
+      # Save the company and print a message if updated
+      if company.changed?
+        company.save
+        puts "Updated #{company.company_name} with changes: #{company.changes.keys.join(', ')}"
+      else
+        puts "#{company.company_name} has no changes"
       end
     end
 
