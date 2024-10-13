@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_10_13_174745) do
+ActiveRecord::Schema[7.1].define(version: 2024_10_13_181747) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -89,8 +89,10 @@ ActiveRecord::Schema[7.1].define(version: 2024_10_13_174745) do
     t.text "job_applyUrl"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.bigint "job_role_id", null: false
     t.index ["companies_id"], name: "index_job_posts_on_companies_id"
     t.index ["job_active"], name: "index_job_posts_on_job_active"
+    t.index ["job_role_id"], name: "index_job_posts_on_job_role_id"
     t.index ["job_url"], name: "index_job_posts_on_job_url", unique: true
   end
 
@@ -108,4 +110,5 @@ ActiveRecord::Schema[7.1].define(version: 2024_10_13_174745) do
   add_foreign_key "company_specializations", "company_specialties"
   add_foreign_key "company_specialties", "company_types"
   add_foreign_key "job_posts", "companies", column: "companies_id"
+  add_foreign_key "job_posts", "job_roles"
 end
