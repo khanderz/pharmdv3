@@ -1,13 +1,13 @@
 # Seeding common job commitments
 job_commitments = [
-  { commitment_name: 'Full-time' },
-  { commitment_name: 'Part-time' },
   { commitment_name: 'Contractor' },
   { commitment_name: 'Freelance' },
+  { commitment_name: 'Full-time' },
   { commitment_name: 'Internship' },
+  { commitment_name: 'Part-time' },
+  { commitment_name: 'Per Diem' },
   { commitment_name: 'Temporary' },
-  { commitment_name: 'Volunteer' },
-  { commitment_name: 'Per Diem' }
+  { commitment_name: 'Volunteer' }
 ]
 
 job_commitments.each do |commitment|

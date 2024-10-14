@@ -1,12 +1,12 @@
 # Seeding common job salary intervals
 job_salary_intervals = [
-  { interval: 'Hourly' },
-  { interval: 'Daily' },
-  { interval: 'Weekly' },
+  { interval: 'Annually' },
   { interval: 'Bi-weekly' },
+  { interval: 'Daily' },
+  { interval: 'Hourly' },
   { interval: 'Monthly' },
   { interval: 'Quarterly' },
-  { interval: 'Annually' },
+  { interval: 'Weekly' }
 ]
 
 job_salary_intervals.each do |interval|
