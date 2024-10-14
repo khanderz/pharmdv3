@@ -3,15 +3,15 @@
 one:
   company_name: MyString
   operating_status: false
-  company_ats_type: MyString
-  company_size: MyString
-  last_funding_type: MyString
+  company_ats_type: one
+  company_size: one
+  funding_type: one
   linkedin_url: MyString
   is_public: false
   year_founded: 1
-  company_city: MyString
-  company_state: MyString
-  company_country: MyString
+  company_city: one
+  company_state: one
+  company_country: one
   acquired_by: MyString
   ats_id: MyString
   company_description: MyText
@@ -20,15 +20,15 @@ one:
 two:
   company_name: MyString
   operating_status: false
-  company_ats_type: MyString
-  company_size: MyString
-  last_funding_type: MyString
+  company_ats_type: two
+  company_size: two
+  funding_type: two
   linkedin_url: MyString
   is_public: false
   year_founded: 1
-  company_city: MyString
-  company_state: MyString
-  company_country: MyString
+  company_city: two
+  company_state: two
+  company_country: two
   acquired_by: MyString
   ats_id: MyString
   company_description: MyText

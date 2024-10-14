@@ -2,10 +2,10 @@
 
 one:
   role_name: MyString
-  role_department: MyString
+  role_department: one
   aliases: MyString
 
 two:
   role_name: MyString
-  role_department: MyString
+  role_department: two
   aliases: MyString

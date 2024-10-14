@@ -1,0 +1,2 @@
+class JobSalaryCurrency < ApplicationRecord
+end

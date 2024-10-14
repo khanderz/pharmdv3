@@ -1,0 +1,2 @@
+class JobCommitment < ApplicationRecord
+end

@@ -1,0 +1,2 @@
+class JobCountry < ApplicationRecord
+end

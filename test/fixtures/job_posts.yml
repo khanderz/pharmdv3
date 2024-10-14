@@ -1,53 +1,55 @@
 # Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
 
 one:
-  companies: one
+  job_commitment: one
+  job_setting: one
+  job_country: one
+  job_location: one
+  job_department: one
+  job_team: one
+  company: one
+  job_role: one
+  job_salary_currency: one
+  job_salary_interval: one
   job_title: MyString
   job_description: MyText
   job_url: MyString
-  job_location: MyString
-  job_dept: MyString
-  job_posted: 2024-10-12 18:18:40
-  job_updated: 2024-10-12 18:18:40
+  job_posted: 2024-10-14 11:02:37
+  job_updated: 2024-10-14 11:02:37
   job_active: false
   job_internal_id: 
   job_url_id: 
   job_internal_id_string: MyString
   job_salary_min: 1
   job_salary_max: 1
-  job_salary_range: MyString
-  job_country: MyString
-  job_setting: MyString
   job_additional: MyText
-  job_commitment: MyString
-  job_team: MyString
-  job_allLocations: MyString
   job_responsibilities: MyText
   job_qualifications: MyText
   job_applyUrl: MyText
 
 two:
-  companies: two
+  job_commitment: two
+  job_setting: two
+  job_country: two
+  job_location: two
+  job_department: two
+  job_team: two
+  company: two
+  job_role: two
+  job_salary_currency: two
+  job_salary_interval: two
   job_title: MyString
   job_description: MyText
   job_url: MyString
-  job_location: MyString
-  job_dept: MyString
-  job_posted: 2024-10-12 18:18:40
-  job_updated: 2024-10-12 18:18:40
+  job_posted: 2024-10-14 11:02:37
+  job_updated: 2024-10-14 11:02:37
   job_active: false
   job_internal_id: 
   job_url_id: 
   job_internal_id_string: MyString
   job_salary_min: 1
   job_salary_max: 1
-  job_salary_range: MyString
-  job_country: MyString
-  job_setting: MyString
   job_additional: MyText
-  job_commitment: MyString
-  job_team: MyString
-  job_allLocations: MyString
   job_responsibilities: MyText
   job_qualifications: MyText
   job_applyUrl: MyText

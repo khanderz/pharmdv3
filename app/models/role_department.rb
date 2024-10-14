@@ -1,0 +1,2 @@
+class RoleDepartment < ApplicationRecord
+end

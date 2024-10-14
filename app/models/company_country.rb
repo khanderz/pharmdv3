@@ -1,0 +1,2 @@
+class CompanyCountry < ApplicationRecord
+end

@@ -1,0 +1,2 @@
+class JobSalaryInterval < ApplicationRecord
+end
