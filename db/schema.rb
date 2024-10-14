@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_10_14_165434) do
+ActiveRecord::Schema[7.1].define(version: 2024_10_14_172110) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -120,18 +120,10 @@ ActiveRecord::Schema[7.1].define(version: 2024_10_14_165434) do
     t.index ["commitment_name"], name: "index_job_commitments_on_commitment_name", unique: true
   end
 
-  create_table "job_locations", force: :cascade do |t|
-    t.string "location"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.index ["location"], name: "index_job_locations_on_location", unique: true
-  end
-
   create_table "job_posts", force: :cascade do |t|
     t.bigint "job_commitment_id", null: false
     t.bigint "job_setting_id", null: false
     t.bigint "country_id", null: false
-    t.bigint "job_location_id", null: false
     t.bigint "department_id", null: false
     t.bigint "team_id", null: false
     t.bigint "company_id", null: false
@@ -153,6 +145,7 @@ ActiveRecord::Schema[7.1].define(version: 2024_10_14_165434) do
     t.text "job_responsibilities"
     t.text "job_qualifications"
     t.text "job_applyUrl"
+    t.json "job_locations"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["company_id"], name: "index_job_posts_on_company_id"
@@ -160,7 +153,6 @@ ActiveRecord::Schema[7.1].define(version: 2024_10_14_165434) do
     t.index ["department_id"], name: "index_job_posts_on_department_id"
     t.index ["job_active"], name: "index_job_posts_on_job_active"
     t.index ["job_commitment_id"], name: "index_job_posts_on_job_commitment_id"
-    t.index ["job_location_id"], name: "index_job_posts_on_job_location_id"
     t.index ["job_posted"], name: "index_job_posts_on_job_posted"
     t.index ["job_role_id"], name: "index_job_posts_on_job_role_id"
     t.index ["job_salary_currency_id"], name: "index_job_posts_on_job_salary_currency_id"
@@ -198,6 +190,7 @@ ActiveRecord::Schema[7.1].define(version: 2024_10_14_165434) do
 
   create_table "job_settings", force: :cascade do |t|
     t.string "setting_name"
+    t.string "aliases", default: [], array: true
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["setting_name"], name: "index_job_settings_on_setting_name", unique: true
@@ -233,7 +226,6 @@ ActiveRecord::Schema[7.1].define(version: 2024_10_14_165434) do
   add_foreign_key "job_posts", "countries"
   add_foreign_key "job_posts", "departments"
   add_foreign_key "job_posts", "job_commitments"
-  add_foreign_key "job_posts", "job_locations"
   add_foreign_key "job_posts", "job_roles"
   add_foreign_key "job_posts", "job_salary_currencies"
   add_foreign_key "job_posts", "job_salary_intervals"

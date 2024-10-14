@@ -4,7 +4,6 @@ one:
   job_commitment: one
   job_setting: one
   country: one
-  job_location: one
   department: one
   team: one
   company: one
@@ -14,8 +13,8 @@ one:
   job_title: MyString
   job_description: MyText
   job_url: MyString
-  job_posted: 2024-10-14 11:54:33
-  job_updated: 2024-10-14 11:54:33
+  job_posted: 2024-10-14 12:21:10
+  job_updated: 2024-10-14 12:21:10
   job_active: false
   job_internal_id: 
   job_url_id: 
@@ -26,12 +25,12 @@ one:
   job_responsibilities: MyText
   job_qualifications: MyText
   job_applyUrl: MyText
+  job_locations: 
 
 two:
   job_commitment: two
   job_setting: two
   country: two
-  job_location: two
   department: two
   team: two
   company: two
@@ -41,8 +40,8 @@ two:
   job_title: MyString
   job_description: MyText
   job_url: MyString
-  job_posted: 2024-10-14 11:54:33
-  job_updated: 2024-10-14 11:54:33
+  job_posted: 2024-10-14 12:21:10
+  job_updated: 2024-10-14 12:21:10
   job_active: false
   job_internal_id: 
   job_url_id: 
@@ -53,3 +52,4 @@ two:
   job_responsibilities: MyText
   job_qualifications: MyText
   job_applyUrl: MyText
+  job_locations: 

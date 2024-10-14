@@ -4,7 +4,6 @@ class CreateJobPosts < ActiveRecord::Migration[7.1]
       t.references :job_commitment, null: false, foreign_key: true
       t.references :job_setting, null: false, foreign_key: true
       t.references :country, null: false, foreign_key: true
-      t.references :job_location, null: false, foreign_key: true
       t.references :department, null: false, foreign_key: true
       t.references :team, null: false, foreign_key: true
       t.references :company, null: false, foreign_key: true
@@ -26,6 +25,7 @@ class CreateJobPosts < ActiveRecord::Migration[7.1]
       t.text :job_responsibilities
       t.text :job_qualifications
       t.text :job_applyUrl
+      t.json :job_locations
 
       t.timestamps
     end

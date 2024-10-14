@@ -2,7 +2,6 @@ class JobPost < ApplicationRecord
   belongs_to :job_commitment
   belongs_to :job_setting
   belongs_to :country
-  belongs_to :job_location
   belongs_to :department
   belongs_to :team
   belongs_to :company
