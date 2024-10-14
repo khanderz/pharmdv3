@@ -1,2 +1,6 @@
 class City < ApplicationRecord
+    has_many :companies
+    has_many :job_posts
+  
+    validates :city_name, presence: true, uniqueness: true
 end
