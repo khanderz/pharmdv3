@@ -1,15 +1,15 @@
 company_name,operating_status,healthcare_domain,company_specialty,company_ats_type,company_size,last_funding_type,linkedin_url,is_public,year_founded,company_city,company_country,acquired_by,ats_id
-includedhealth,TRUE,PHARMA,VIRTUAL_PHARMACY,LEVER,501-1000,,https://www.linkedin.com/company/includedhealth/,,,,,,includedhealth
-TEST 2,FALSE,DIGITAL_HEALTH,DIGITAL_THERAPEUTICS,LEVER,501-1000,,www.test2.com,,,,,,
-TEST 3,FALSE,DIGITAL_HEALTH,CLINICAL_INTELLIGENCE,LEVER,501-1000,,www.test3.com,,,,,,
-Evolution IQ,TRUE,DIGITAL_HEALTH,BILLING_AND_PAYMENTS,GREENHOUSE,501-1000,,https://www.linkedin.com/company/evolution-iq/,,,,United States,,evolutioniq
-Alto Pharmacy,TRUE,PHARMA,VIRTUAL_PHARMACY,GREENHOUSE,501-1000,SEED,https://www.linkedin.com/company/altopharmacy/,,2015,San Francisco,United States,,alto
-Capsule,TRUE,PHARMA,VIRTUAL_PHARMACY,GREENHOUSE,501-1000,SEED,https://www.linkedin.com/company/capsule-co/,,,New York City,United States,,capsulecares
-Divvydose,FALSE,PHARMA,VITAMINS_SUPPLEMENTS,EIGHTFOLD,501-1000,,https://www.linkedin.com/company/divvydose/,,,,United States,Optum,
-10X Genomics,TRUE,DIGITAL_HEALTH,GENETICS,GREENHOUSE,501-1000,,https://www.linkedin.com/company/10xgenomics,true,2012,Pleasanton,United States,,
-1upHealth,TRUE,DIGITAL_HEALTH,MENTAL_HEALTH,GREENHOUSE,501-1000,,,https://www.linkedin.com/company/1uphealth,false,2017,Boston,United States,,
-23andMe,TRUE,DIGITAL_HEALTH,GENETICS,GREENHOUSE,501-1000,,https://www.linkedin.com/company/23andme,true,2006,Sunnyvale,United States,,
-54gene,TRUE,DIGITAL_HEALTH,GENETICS,GREENHOUSE,501-1000,,https://www.linkedin.com/company/54gene,false,2019,Washington,United States,,
-89bio,TRUE,DIGITAL_HEALTH,MENTAL_HEALTH,GREENHOUSE,501-1000,,,https://www.linkedin.com/company/89bio,false,2018,San Francisco,United States,,
-98point6,TRUE,DIGITAL_HEALTH,MENTAL_HEALTH,GREENHOUSE,501-1000,,https://www.linkedin.com/company/98point6-inc.,false,2015,Seattle,United States,,98point6
-A Place for Mom,TRUE,DIGITAL_HEALTH,MENTAL_HEALTH,LEVER,501-1000,,PRIVATE_EQUITY,https://www.linkedin.com/company/a-place-for-mom,false,2000,New York,United States,,
+includedhealth,TRUE,PHARMA,VIRTUAL_PHARMACY,LEVER,501-1000,,https://www.linkedin.com/company/includedhealth/,,,,US,,includedhealth
+TEST 2,FALSE,DIGITAL_HEALTH,DIGITAL_THERAPEUTICS,LEVER,501-1000,,www.test2.com,,,,US,,
+TEST 3,FALSE,DIGITAL_HEALTH,CLINICAL_INTELLIGENCE,LEVER,501-1000,,www.test3.com,,,,US,,
+Evolution IQ,TRUE,DIGITAL_HEALTH,BILLING_AND_PAYMENTS,GREENHOUSE,501-1000,,https://www.linkedin.com/company/evolution-iq/,,,,US,,evolutioniq
+Alto Pharmacy,TRUE,PHARMA,VIRTUAL_PHARMACY,GREENHOUSE,501-1000,SEED,https://www.linkedin.com/company/altopharmacy/,,2015,San Francisco,US,,alto
+Capsule,TRUE,PHARMA,VIRTUAL_PHARMACY,GREENHOUSE,501-1000,SEED,https://www.linkedin.com/company/capsule-co/,,,New York City,US,,capsulecares
+Divvydose,FALSE,PHARMA,VITAMINS_SUPPLEMENTS,EIGHTFOLD,501-1000,,https://www.linkedin.com/company/divvydose/,,,,US,Optum,
+10X Genomics,TRUE,DIGITAL_HEALTH,GENETICS,GREENHOUSE,501-1000,,https://www.linkedin.com/company/10xgenomics,true,2012,Pleasanton,US,,
+1upHealth,TRUE,DIGITAL_HEALTH,MENTAL_HEALTH,GREENHOUSE,501-1000,,,https://www.linkedin.com/company/1uphealth,false,2017,Boston,US,,
+23andMe,TRUE,DIGITAL_HEALTH,GENETICS,GREENHOUSE,501-1000,,https://www.linkedin.com/company/23andme,true,2006,Sunnyvale,US,,
+54gene,TRUE,DIGITAL_HEALTH,GENETICS,GREENHOUSE,501-1000,,https://www.linkedin.com/company/54gene,false,2019,Washington,US,,
+89bio,TRUE,DIGITAL_HEALTH,MENTAL_HEALTH,GREENHOUSE,501-1000,,,https://www.linkedin.com/company/89bio,false,2018,San Francisco,US,,
+98point6,TRUE,DIGITAL_HEALTH,MENTAL_HEALTH,GREENHOUSE,501-1000,,https://www.linkedin.com/company/98point6-inc.,false,2015,Seattle,US,,98point6
+A Place for Mom,TRUE,DIGITAL_HEALTH,MENTAL_HEALTH,LEVER,501-1000,,PRIVATE_EQUITY,https://www.linkedin.com/company/a-place-for-mom,false,2000,New York,US,,

@@ -31,12 +31,25 @@ funding_types = [
   { funding_type_name: 'OTHER' }
 ]
 
+seeded_count = 0
+existing_count = 0
+total_funding_types = FundingType.count
+
 funding_types.each do |funding_type|
   begin
-    FundingType.find_or_create_by!(funding_type_name: funding_type[:funding_type_name])
+    funding_type_record = FundingType.find_or_initialize_by(funding_type_name: funding_type[:funding_type_name])
+    
+    if funding_type_record.persisted?
+      existing_count += 1
+    else
+      funding_type_record.save!
+      seeded_count += 1
+    end
   rescue StandardError => e
     puts "Error seeding funding type: #{funding_type[:funding_type_name]} - #{e.message}"
   end
 end
 
-puts "**********Seeded common funding types"
+total_funding_types_after = FundingType.count
+
+puts "*********Seeded #{seeded_count} new funding types. #{existing_count} funding types already existed. Total funding types in the table: #{total_funding_types_after}."

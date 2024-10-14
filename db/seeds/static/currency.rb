@@ -17,12 +17,25 @@ job_salary_currencies = [
   { currency_code: 'ZAR' }, # South African Rand
 ]
 
+seeded_count = 0
+existing_count = 0
+total_currencies = JobSalaryCurrency.count
+
 job_salary_currencies.each do |currency|
   begin
-    JobSalaryCurrency.find_or_create_by!(currency_code: currency[:currency_code])
+    currency_record = JobSalaryCurrency.find_or_initialize_by(currency_code: currency[:currency_code])
+    
+    if currency_record.persisted?
+      existing_count += 1
+    else
+      currency_record.save!
+      seeded_count += 1
+    end
   rescue StandardError => e
     puts "Error seeding job salary currency: #{currency[:currency_code]} - #{e.message}"
   end
 end
 
-puts "*********Seeded common job salary currencies"
+total_currencies_after = JobSalaryCurrency.count
+
+puts "*********Seeded #{seeded_count} new job salary currencies. #{existing_count} currencies already existed. Total currencies in the table: #{total_currencies_after}."

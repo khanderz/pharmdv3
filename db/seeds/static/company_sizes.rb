@@ -10,12 +10,19 @@ company_sizes = [
   { size_range: '10001+' }
 ]
 
+seeded_count = 0
+existing_count = CompanySize.count
+
 company_sizes.each do |size|
-  begin
-    CompanySize.find_or_create_by!(size_range: size[:size_range])
-  rescue StandardError => e
-    puts "Error seeding company size: #{size[:size_range]} - #{e.message}"
+  company_size_record = CompanySize.find_or_initialize_by(size_range: size[:size_range])
+
+  # Only seed new company sizes
+  unless company_size_record.persisted?
+    company_size_record.save!
+    seeded_count += 1
   end
 end
 
-puts "*******Seeded common company sizes"
+total_company_sizes = CompanySize.count
+
+puts "*********** Seeded #{seeded_count} company sizes. Total company sizes in the table: #{total_company_sizes}."

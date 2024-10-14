@@ -11,12 +11,26 @@ teams = [
   { team_name: 'Software Engineering', aliases: ['Development Team', 'Engineering Team'] }
 ]
 
+seeded_count = 0
+existing_count = 0
+total_teams = Team.count
+
 teams.each do |team|
   begin
-    Team.find_or_create_by!(team_name: team[:team_name], aliases: team[:aliases])
+    team_record = Team.find_or_initialize_by(team_name: team[:team_name])
+
+    if team_record.persisted?
+      existing_count += 1
+    else
+      team_record.aliases = team[:aliases]
+      team_record.save!
+      seeded_count += 1
+    end
   rescue StandardError => e
     puts "Error seeding team: #{team[:team_name]} - #{e.message}"
   end
 end
 
-puts "*************Seeded common teams in job posts"
+total_teams_after = Team.count
+
+puts "*******Seeded #{seeded_count} new teams. #{existing_count} teams already existed. Total teams in the table: #{total_teams_after}."

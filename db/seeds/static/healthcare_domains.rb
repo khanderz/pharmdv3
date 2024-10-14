@@ -27,12 +27,26 @@ healthcare_domains = [
   { key: 'SURGERY', value: 'Surgery' }
 ]
 
+seeded_count = 0
+existing_count = 0
+total_domains = HealthcareDomain.count
+
 healthcare_domains.each do |domain|
   begin
-    HealthcareDomain.find_or_create_by!(key: domain[:key], value: domain[:value])
+    domain_record = HealthcareDomain.find_or_initialize_by(key: domain[:key])
+    
+    if domain_record.persisted?
+      existing_count += 1
+    else
+      domain_record.value = domain[:value]
+      domain_record.save!
+      seeded_count += 1
+    end
   rescue StandardError => e
     puts "Error seeding healthcare domain: #{domain[:key]} - #{e.message}"
   end
 end
 
-puts "*******Seeded common healthcare domains"
+total_domains_after = HealthcareDomain.count
+
+puts "*******Seeded #{seeded_count} new healthcare domains. #{existing_count} domains already existed. Total domains in the table: #{total_domains_after}."

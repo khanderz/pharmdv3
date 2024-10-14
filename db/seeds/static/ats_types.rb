@@ -19,15 +19,20 @@ ats_types = [
   { ats_type_code: 'YCOMBINATOR', ats_type_name: 'YCombinator' }
 ]
 
+seeded_count = 0
+existing_count = AtsType.count
+
 ats_types.each do |ats_type|
-  begin
-    AtsType.find_or_create_by!(ats_type_code: ats_type[:ats_type_code]) do |type|
-      type.ats_type_name = ats_type[:ats_type_name]
-    end
-  rescue StandardError => e
-    # Error handling: Log a message if something goes wrong
-    puts "Error seeding ATS type: #{ats_type[:ats_type_name]} - #{e.message}"
+  ats_type_record = AtsType.find_or_initialize_by(ats_type_code: ats_type[:ats_type_code])
+
+  # Only seed new ATS types
+  unless ats_type_record.persisted?
+    ats_type_record.ats_type_name = ats_type[:ats_type_name]
+    ats_type_record.save!
+    seeded_count += 1
   end
 end
 
-puts "****************Seeded ATS types****************"
+total_ats_types = AtsType.count
+
+puts "*********** Seeded #{seeded_count} ATS types. Total ATS types in the table: #{total_ats_types}."

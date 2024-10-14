@@ -6,14 +6,26 @@ job_settings = [
   { setting_name: 'Remote', aliases: ['Work from Home', 'Telecommute', 'WFH'] }
 ]
 
+seeded_count = 0
+existing_count = 0
+total_settings = JobSetting.count
+
 job_settings.each do |setting|
   begin
-    JobSetting.find_or_create_by!(setting_name: setting[:setting_name]) do |job_setting|
+    job_setting = JobSetting.find_or_initialize_by(setting_name: setting[:setting_name])
+    
+    if job_setting.persisted?
+      existing_count += 1
+    else
       job_setting.aliases = setting[:aliases]
+      job_setting.save!
+      seeded_count += 1
     end
   rescue StandardError => e
     puts "Error seeding job setting: #{setting[:setting_name]} - #{e.message}"
   end
 end
 
-puts "********Seeded popular job settings."
+total_settings_after = JobSetting.count
+
+puts "*******Seeded #{seeded_count} new job settings. #{existing_count} settings already existed. Total job settings in the table: #{total_settings_after}."
