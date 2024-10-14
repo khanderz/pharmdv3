@@ -2,6 +2,8 @@
 
 one:
   city_name: MyString
+  aliases: MyString
 
 two:
   city_name: MyString
+  aliases: MyString

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_10_14_163302) do
+ActiveRecord::Schema[7.1].define(version: 2024_10_14_165434) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -24,6 +24,7 @@ ActiveRecord::Schema[7.1].define(version: 2024_10_14_163302) do
 
   create_table "cities", force: :cascade do |t|
     t.string "city_name"
+    t.string "aliases", default: [], array: true
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["city_name"], name: "index_cities_on_city_name", unique: true
@@ -57,25 +58,20 @@ ActiveRecord::Schema[7.1].define(version: 2024_10_14_163302) do
     t.index ["state_id"], name: "index_companies_on_state_id"
   end
 
-  create_table "company_cities", force: :cascade do |t|
-    t.string "city_name"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.index ["city_name"], name: "index_company_cities_on_city_name", unique: true
-  end
-
-  create_table "company_countries", force: :cascade do |t|
-    t.string "country_name"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.index ["country_name"], name: "index_company_countries_on_country_name", unique: true
-  end
-
   create_table "company_sizes", force: :cascade do |t|
     t.string "size_range"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["size_range"], name: "index_company_sizes_on_size_range", unique: true
+  end
+
+  create_table "company_specializations", force: :cascade do |t|
+    t.bigint "company_id", null: false
+    t.bigint "company_specialty_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["company_id"], name: "index_company_specializations_on_company_id"
+    t.index ["company_specialty_id"], name: "index_company_specializations_on_company_specialty_id"
   end
 
   create_table "company_specialties", force: :cascade do |t|
@@ -85,13 +81,6 @@ ActiveRecord::Schema[7.1].define(version: 2024_10_14_163302) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["healthcare_domain_id"], name: "index_company_specialties_on_healthcare_domain_id"
-  end
-
-  create_table "company_states", force: :cascade do |t|
-    t.string "state_name"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.index ["state_name"], name: "index_company_states_on_state_name", unique: true
   end
 
   create_table "countries", force: :cascade do |t|
@@ -104,6 +93,7 @@ ActiveRecord::Schema[7.1].define(version: 2024_10_14_163302) do
 
   create_table "departments", force: :cascade do |t|
     t.string "dept_name"
+    t.string "aliases", default: [], array: true
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["dept_name"], name: "index_departments_on_dept_name", unique: true
@@ -223,6 +213,7 @@ ActiveRecord::Schema[7.1].define(version: 2024_10_14_163302) do
 
   create_table "teams", force: :cascade do |t|
     t.string "team_name"
+    t.string "aliases", default: [], array: true
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["team_name"], name: "index_teams_on_team_name", unique: true
@@ -235,6 +226,8 @@ ActiveRecord::Schema[7.1].define(version: 2024_10_14_163302) do
   add_foreign_key "companies", "funding_types"
   add_foreign_key "companies", "healthcare_domains"
   add_foreign_key "companies", "states"
+  add_foreign_key "company_specializations", "companies"
+  add_foreign_key "company_specializations", "company_specialties"
   add_foreign_key "company_specialties", "healthcare_domains"
   add_foreign_key "job_posts", "companies"
   add_foreign_key "job_posts", "countries"

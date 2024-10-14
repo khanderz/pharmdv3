@@ -2,6 +2,8 @@
 
 one:
   team_name: MyString
+  aliases: MyString
 
 two:
   team_name: MyString
+  aliases: MyString
