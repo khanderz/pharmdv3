@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_10_14_172110) do
+ActiveRecord::Schema[7.1].define(version: 2024_10_14_201329) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -24,7 +24,7 @@ ActiveRecord::Schema[7.1].define(version: 2024_10_14_172110) do
 
   create_table "cities", force: :cascade do |t|
     t.string "city_name"
-    t.string "aliases", default: [], array: true
+    t.string "aliases"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["city_name"], name: "index_cities_on_city_name", unique: true
@@ -34,13 +34,13 @@ ActiveRecord::Schema[7.1].define(version: 2024_10_14_172110) do
     t.string "company_name"
     t.boolean "operating_status"
     t.bigint "ats_type_id", null: false
-    t.bigint "company_size_id", null: false
-    t.bigint "funding_type_id", null: false
+    t.bigint "company_size_id"
+    t.bigint "funding_type_id"
     t.string "linkedin_url"
     t.boolean "is_public"
     t.integer "year_founded"
-    t.bigint "city_id", null: false
-    t.bigint "state_id", null: false
+    t.bigint "city_id"
+    t.bigint "state_id"
     t.bigint "country_id", null: false
     t.string "acquired_by"
     t.text "company_description"
@@ -121,20 +121,20 @@ ActiveRecord::Schema[7.1].define(version: 2024_10_14_172110) do
   end
 
   create_table "job_posts", force: :cascade do |t|
-    t.bigint "job_commitment_id", null: false
+    t.bigint "job_commitment_id"
     t.bigint "job_setting_id", null: false
-    t.bigint "country_id", null: false
+    t.bigint "country_id"
     t.bigint "department_id", null: false
     t.bigint "team_id", null: false
     t.bigint "company_id", null: false
     t.bigint "job_role_id", null: false
-    t.bigint "job_salary_currency_id", null: false
-    t.bigint "job_salary_interval_id", null: false
+    t.bigint "job_salary_currency_id"
+    t.bigint "job_salary_interval_id"
     t.string "job_title"
     t.text "job_description"
     t.string "job_url"
-    t.datetime "job_posted"
-    t.datetime "job_updated"
+    t.datetime "job_posted", precision: nil
+    t.datetime "job_updated", precision: nil
     t.boolean "job_active"
     t.bigint "job_internal_id"
     t.bigint "job_url_id"

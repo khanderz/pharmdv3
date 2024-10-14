@@ -17,15 +17,14 @@ begin
         is_public: row['is_public'] == 'TRUE',
         year_founded: row['year_founded'],
         acquired_by: row['acquired_by'],
-        ats_id: row['ats_id']
       )
 
       # Set the AtsType
       ats_type = AtsType.find_by(ats_type_code: row['company_ats_type'])
       if ats_type
-        company.ats_type = ats_type
+        company.ats_type_id = ats_type
       else
-        puts "ATS type not found for code: #{row['company_ats_type']}"
+        puts "ATS type not found for company: #{row['company_name']} or type code: #{row['company_ats_type']}"
         next
       end
 
@@ -34,7 +33,7 @@ begin
       if company_size
         company.company_size = company_size
       else
-        puts "Company size not found for range: #{row['company_size']}"
+        puts "Company size not found for company: #{row['company_name']} or size range: #{row['company_size']}"
         next
       end
 
@@ -43,7 +42,7 @@ begin
       if funding_type
         company.funding_type = funding_type
       else
-        puts "Funding type not found for name: #{row['last_funding_type']}"
+        puts "Funding type not found for company: #{row['company_name']}   or name: #{row['last_funding_type']}"
         next
       end
 
@@ -52,7 +51,7 @@ begin
       if country
         company.country = country
       else
-        puts "Country not found for code: #{row['company_country']}"
+        puts "Country not found for company: #{row['company_name']} or code: #{row['company_country']}"
         next
       end
 
@@ -60,7 +59,7 @@ begin
       if state
         company.state = state
       else
-        puts "State not found for name: #{row['company_state']}"
+        puts "State not found for company: #{row['company_name']} or name: #{row['company_state']}"
         next
       end
 
@@ -68,16 +67,16 @@ begin
       if city
         company.city = city
       else
-        puts "City not found for name: #{row['company_city']}"
+        puts "City not found for company: #{row['company_name']} or name: #{row['company_city']}"
         next
       end
 
       # Set the company_type (healthcare domain)
-      healthcare_domain = HealthcareDomain.find_by(key: row['company_type'])
+      healthcare_domain = HealthcareDomain.find_by(key: row['healthcare_domain'])
       if healthcare_domain
         company.company_type = healthcare_domain
       else
-        puts "Healthcare domain not found for key: #{row['company_type']}"
+        puts "Healthcare domain not found for company: #{row['company_name']} or key: #{row['healthcare_domain']}"
         next
       end
 
