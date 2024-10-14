@@ -1,4 +1,4 @@
-require 'csv'
+require 'csv' unless defined?(::CSV)
 
 begin
   ActiveRecord::Base.transaction do
