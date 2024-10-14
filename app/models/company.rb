@@ -6,7 +6,7 @@ class Company < ApplicationRecord
   belongs_to :city, optional: true
   belongs_to :state, optional: true
   belongs_to :country
-  belongs_to :healthcare_domain, foreign_key: 'healthcare_domain_id', class_name: 'CompanySpecialty'
+  belongs_to :healthcare_domain, foreign_key: 'healthcare_domain_id', class_name: 'HealthcareDomain'
   has_many :job_posts, foreign_key: :company_id, dependent: :destroy
   has_many :company_specializations 
   has_many :company_specialties, through: :company_specializations

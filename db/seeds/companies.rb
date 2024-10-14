@@ -12,9 +12,9 @@ begin
 
       # Assign other attributes
       company.assign_attributes(
-        operating_status: row['operating_status'] == 'TRUE',
+        operating_status: row['operating_status'],
         linkedin_url: row['linkedin_url'],
-        is_public: row['is_public'] == 'TRUE',
+        is_public: row['is_public'],
         year_founded: row['year_founded'],
         acquired_by: row['acquired_by']
       )
@@ -29,55 +29,46 @@ begin
       end
 
       # Optional attributes: Set only if present in the CSV row
-
-      # Set the CompanySize if present
       if row['company_size'].present?
         company_size = CompanySize.find_by(size_range: row['company_size'])
-        if company_size
-          company.company_size = company_size
-        else
-          puts "Company size not found for company: #{row['company_name']} or size range: #{row['company_size']}"
-        end
+        company.company_size = company_size if company_size
       end
 
-      # Set the FundingType if present
       if row['last_funding_type'].present?
         funding_type = FundingType.find_by(funding_type_name: row['last_funding_type'])
-        if funding_type
-          company.funding_type = funding_type
-        else
-          puts "Funding type not found for company: #{row['company_name']} or name: #{row['last_funding_type']}"
-        end
+        company.funding_type = funding_type if funding_type
       end
 
-      # Set the Country, State, and City if present
-      country = Country.find_by(country_code: row['company_country'])
+      # Set the Country, matching on either country_code or country_name
+      country = Country.find_by(country_code: row['company_country']) || Country.find_by(country_name: row['company_country'])
       if country
         company.country = country
       else
-        puts "Country not found for company: #{row['company_name']} or code: #{row['company_country']}"
+        puts "Country not found for company: #{row['company_name']} or country code/name: #{row['company_country']}"
         next
       end
 
+      # Set the State, matching on either state_name or state_code
       if row['company_state'].present?
-        state = State.find_by(state_name: row['company_state'])
+        state = State.find_by(state_name: row['company_state']) || State.find_by(state_code: row['company_state'])
         if state
           company.state = state
         else
-          puts "State not found for company: #{row['company_name']} or name: #{row['company_state']}"
+          puts "State not found for company: #{row['company_name']} or name/code: #{row['company_state']}"
         end
       end
 
+      # Set the City, matching on city_name or aliases
       if row['company_city'].present?
-        city = City.find_by(city_name: row['company_city'])
+        city = City.find_by(city_name: row['company_city']) || City.find_by("'#{row['company_city']}' = ANY (aliases)")
         if city
           company.city = city
         else
-          puts "City not found for company: #{row['company_name']} or name: #{row['company_city']}"
+          puts "City not found for company: #{row['company_name']} or name/alias: #{row['company_city']}"
         end
       end
 
-      # Set the healthcare domain (company_type)
+      # Set the healthcare domain
       healthcare_domain = HealthcareDomain.find_by(key: row['healthcare_domain'])
       if healthcare_domain
         company.healthcare_domain = healthcare_domain
@@ -90,20 +81,16 @@ begin
       if row['company_specialty'].present?
         specialties = row['company_specialty'].split(',').map do |specialty_key|
           specialty = CompanySpecialty.find_by(key: specialty_key.strip, healthcare_domain_id: healthcare_domain.id)
-          if specialty
-            specialty
-          else
-            puts "Specialty #{specialty_key.strip} not valid for healthcare domain #{healthcare_domain.key}"
-            nil
-          end
+          specialty
         end.compact
         company.company_specialties = specialties
       end
 
       # Save the company and print a message if updated
       if company.changed?
-        company.save
-        puts "Updated #{company.company_name} with changes: #{company.changes.keys.join(', ')}"
+        company.save!
+        changes = company.changes.keys.join(', ')
+        puts changes.present? ? "Updated #{company.company_name} with changes: #{changes}" : "#{company.company_name} has changes, but none worth noting."
       else
         puts "#{company.company_name} has no changes"
       end
