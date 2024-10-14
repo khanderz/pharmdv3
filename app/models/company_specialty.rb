@@ -6,4 +6,3 @@ class CompanySpecialty < ApplicationRecord
   validates :key, :value, presence: true
   validates :key, uniqueness: { scope: :healthcare_domain_id }
 end
-

@@ -18,8 +18,6 @@ class CreateCompanies < ActiveRecord::Migration[7.1]
 
       t.timestamps
     end
-
-    # Add unique indexes after defining the table
     add_index :companies, :company_name, unique: true
     add_index :companies, :linkedin_url, unique: true
   end

@@ -1,16 +1,14 @@
 class JobRole < ApplicationRecord
   belongs_to :department
   belongs_to :team
-end
-class JobRole < ApplicationRecord
-  belongs_to :department
-  belongs_to :team
   has_many :job_posts
+  
   # Storing additional role details in JSON format
   store :additional_attributes, accessors: [:job_function, :clearance_level], coder: JSON
   # Aliases for roles with similar names
   serialize :aliases, JSON
   validates :role_name, presence: true, uniqueness: true
+     
   # Class method to find or create a job role and update department and team if necessary
   def self.find_or_create_with_department_and_team(job_title, department_name, team_name)
     # Find the department by name or its aliases

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_10_14_210201) do
+ActiveRecord::Schema[7.1].define(version: 2024_10_14_211636) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -24,7 +24,7 @@ ActiveRecord::Schema[7.1].define(version: 2024_10_14_210201) do
 
   create_table "cities", force: :cascade do |t|
     t.string "city_name"
-    t.string "aliases"
+    t.string "aliases", default: [], array: true
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["city_name"], name: "index_cities_on_city_name", unique: true
@@ -133,8 +133,8 @@ ActiveRecord::Schema[7.1].define(version: 2024_10_14_210201) do
     t.string "job_title"
     t.text "job_description"
     t.string "job_url"
-    t.datetime "job_posted", precision: nil
-    t.datetime "job_updated", precision: nil
+    t.datetime "job_posted"
+    t.datetime "job_updated"
     t.boolean "job_active"
     t.bigint "job_internal_id"
     t.bigint "job_url_id"
