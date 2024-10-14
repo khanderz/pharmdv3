@@ -2,10 +2,10 @@
 companies = Company.all
 
 companies.each do |company|
-  if company.company_ats_type == 'LEVER'
+  if company.ats_type == 'LEVER'
     jobs = JobPost.fetch_lever_jobs(company)
     
-  elsif company.company_ats_type == 'GREENHOUSE'
+  elsif company.ats_type == 'GREENHOUSE'
     jobs = JobPost.fetch_greenhouse_jobs(company)
   end
 

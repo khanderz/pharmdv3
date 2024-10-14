@@ -12,38 +12,83 @@ begin
 
       # Assign other attributes
       company.assign_attributes(
-        operating_status: row['operating_status'],
-        company_ats_type: row['company_ats_type'],
-        company_size: row['company_size'],
-        last_funding_type: row['last_funding_type'],
+        operating_status: row['operating_status'] == 'TRUE',
         linkedin_url: row['linkedin_url'],
-        is_public: row['is_public'],
+        is_public: row['is_public'] == 'TRUE',
         year_founded: row['year_founded'],
-        company_city: row['company_city'],
-        company_state: row['company_state'],
-        company_country: row['company_country'],
         acquired_by: row['acquired_by'],
         ats_id: row['ats_id']
       )
 
-      # Set the company_type
-      company_type = CompanyType.find_by(key: row['company_type'])
-      if company_type
-        company.company_type = company_type
+      # Set the AtsType
+      ats_type = AtsType.find_by(ats_type_code: row['company_ats_type'])
+      if ats_type
+        company.ats_type = ats_type
       else
-        puts "Company type not found for key: #{row['company_type']}"
+        puts "ATS type not found for code: #{row['company_ats_type']}"
+        next
+      end
+
+      # Set the CompanySize
+      company_size = CompanySize.find_by(size_range: row['company_size'])
+      if company_size
+        company.company_size = company_size
+      else
+        puts "Company size not found for range: #{row['company_size']}"
+        next
+      end
+
+      # Set the FundingType
+      funding_type = FundingType.find_by(funding_type_name: row['last_funding_type'])
+      if funding_type
+        company.funding_type = funding_type
+      else
+        puts "Funding type not found for name: #{row['last_funding_type']}"
+        next
+      end
+
+      # Set the Country, State, and City
+      country = Country.find_by(country_code: row['company_country'])
+      if country
+        company.country = country
+      else
+        puts "Country not found for code: #{row['company_country']}"
+        next
+      end
+
+      state = State.find_by(state_name: row['company_state'])
+      if state
+        company.state = state
+      else
+        puts "State not found for name: #{row['company_state']}"
+        next
+      end
+
+      city = City.find_by(city_name: row['company_city'])
+      if city
+        company.city = city
+      else
+        puts "City not found for name: #{row['company_city']}"
+        next
+      end
+
+      # Set the company_type (healthcare domain)
+      healthcare_domain = HealthcareDomain.find_by(key: row['company_type'])
+      if healthcare_domain
+        company.company_type = healthcare_domain
+      else
+        puts "Healthcare domain not found for key: #{row['company_type']}"
         next
       end
 
       # Assign specialties
       if row['company_specialty'].present?
         specialties = row['company_specialty'].split(',').map do |specialty_key|
-          puts "Processing Specialty Key: #{specialty_key.strip}"  # Debugging output
-          specialty = CompanySpecialty.find_by(key: specialty_key.strip)
-          if specialty && specialty.company_type == company_type
+          specialty = CompanySpecialty.find_by(key: specialty_key.strip, healthcare_domain_id: healthcare_domain.id)
+          if specialty
             specialty
           else
-            puts "Specialty #{specialty_key} is not valid for company type #{company_type.key}"
+            puts "Specialty #{specialty_key.strip} not valid for healthcare domain #{healthcare_domain.key}"
             nil
           end
         end.compact

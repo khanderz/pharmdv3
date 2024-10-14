@@ -1,11 +1,10 @@
-# Load company_types and company_specialties first
-load File.join(Rails.root, "db", "seeds", "company_types.rb")
-load File.join(Rails.root, "db", "seeds", "company_specialties.rb")
-
-# Then load other seed files
-Dir[File.join(Rails.root, "db", "seeds", "*.rb")].sort.each do |seed|
-  next if seed.include?("company_types.rb") || seed.include?("company_specialties.rb") # Skip already loaded seeds
-
-  puts "seeding - #{seed}. loading seeds"
-  load seed
+# Load all static seed data first
+Dir[File.join(Rails.root, "db", "seeds", "static", "*.rb")].sort.each do |static_seed|
+  puts "Seeding static data - #{static_seed}"
+  load static_seed
 end
+
+# Load companies and job_posts seed data
+load File.join(Rails.root, "db", "seeds", "companies.rb")
+load File.join(Rails.root, "db", "seeds", "job_posts.rb")
+
