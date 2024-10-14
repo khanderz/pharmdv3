@@ -1,2 +1,0 @@
-class CompanyAtsType < ApplicationRecord
-end

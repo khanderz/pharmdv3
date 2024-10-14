@@ -3,9 +3,9 @@
 one:
   key: MyString
   value: MyString
-  company_type: one
+  healthcare_domain: one
 
 two:
   key: MyString
   value: MyString
-  company_type: two
+  healthcare_domain: two

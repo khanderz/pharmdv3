@@ -1,9 +1,9 @@
 class Company < ApplicationRecord
-  belongs_to :company_ats_type
+  belongs_to :ats_type
   belongs_to :company_size
   belongs_to :funding_type
-  belongs_to :company_city
-  belongs_to :company_state
-  belongs_to :company_country
-  belongs_to :company_type
+  belongs_to :city
+  belongs_to :state
+  belongs_to :country
+  belongs_to :healthcare_domain
 end

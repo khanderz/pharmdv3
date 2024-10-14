@@ -1,0 +1,2 @@
+class HealthcareDomain < ApplicationRecord
+end

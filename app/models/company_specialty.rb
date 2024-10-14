@@ -1,3 +1,3 @@
 class CompanySpecialty < ApplicationRecord
-  belongs_to :company_type
+  belongs_to :healthcare_domain
 end

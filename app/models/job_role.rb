@@ -1,3 +1,4 @@
 class JobRole < ApplicationRecord
-  belongs_to :role_department
+  belongs_to :department
+  belongs_to :team
 end

@@ -3,10 +3,10 @@
 one:
   job_commitment: one
   job_setting: one
-  job_country: one
+  country: one
   job_location: one
-  job_department: one
-  job_team: one
+  department: one
+  team: one
   company: one
   job_role: one
   job_salary_currency: one
@@ -14,8 +14,8 @@ one:
   job_title: MyString
   job_description: MyText
   job_url: MyString
-  job_posted: 2024-10-14 11:02:37
-  job_updated: 2024-10-14 11:02:37
+  job_posted: 2024-10-14 11:33:02
+  job_updated: 2024-10-14 11:33:02
   job_active: false
   job_internal_id: 
   job_url_id: 
@@ -30,10 +30,10 @@ one:
 two:
   job_commitment: two
   job_setting: two
-  job_country: two
+  country: two
   job_location: two
-  job_department: two
-  job_team: two
+  department: two
+  team: two
   company: two
   job_role: two
   job_salary_currency: two
@@ -41,8 +41,8 @@ two:
   job_title: MyString
   job_description: MyText
   job_url: MyString
-  job_posted: 2024-10-14 11:02:37
-  job_updated: 2024-10-14 11:02:37
+  job_posted: 2024-10-14 11:33:02
+  job_updated: 2024-10-14 11:33:02
   job_active: false
   job_internal_id: 
   job_url_id: 

@@ -1,2 +1,0 @@
-class CompanyCountry < ApplicationRecord
-end
