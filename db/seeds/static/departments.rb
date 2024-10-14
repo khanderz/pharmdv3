@@ -11,7 +11,8 @@ departments = [
   { dept_name: 'Marketing', aliases: ['Digital Marketing', 'Content Marketing', 'Branding'] },
   { dept_name: 'Operations', aliases: ['Business Operations', 'Logistics', 'Supply Chain'] },
   { dept_name: 'Product Management', aliases: ['Product Development', 'Product'] },
-  { dept_name: 'Sales', aliases: ['Business Development', 'Account Management'] }
+  { dept_name: 'Sales', aliases: ['Business Development', 'Account Management'] },
+  { dept_name: 'Clinical Team', aliases: ['Medical Team', 'Care Team', 'Healthcare Team'] } # Added Clinical Team
 ]
 
 seeded_count = 0
