@@ -1,15 +1,15 @@
 class JobPost < ApplicationRecord
   has_paper_trail  # PaperTrail for tracking changes
 
-  belongs_to :job_commitment
+  belongs_to :job_commitment, optional: true
   belongs_to :job_setting
-  belongs_to :country
+  belongs_to :country, optional: true
   belongs_to :department
   belongs_to :team
   belongs_to :company
   belongs_to :job_role
-  belongs_to :job_salary_currency
-  belongs_to :job_salary_interval
+  belongs_to :job_salary_currency, optional: true
+  belongs_to :job_salary_interval, optional: true
 
   validates :job_title, presence: true
   validates :job_url, uniqueness: true
