@@ -1,18 +1,137 @@
 class Company < ApplicationRecord
   has_paper_trail ignore: [:updated_at]
+
   belongs_to :ats_type
   belongs_to :company_size, optional: true
   belongs_to :funding_type, optional: true
   belongs_to :city, optional: true
   belongs_to :state, optional: true
   belongs_to :country
-has_many :adjudications, as: :adjudicatable, dependent: :destroy 
+  belongs_to :healthcare_domain, foreign_key: 'healthcare_domain_id', class_name: 'HealthcareDomain'
 
-belongs_to :healthcare_domain, foreign_key: 'healthcare_domain_id', class_name: 'HealthcareDomain'
-
+  has_many :adjudications, as: :adjudicatable, dependent: :destroy 
   has_many :job_posts, foreign_key: :company_id, dependent: :destroy
   has_many :company_specializations 
   has_many :company_specialties, through: :company_specializations
+
   validates :company_name, presence: true, uniqueness: true
   validates :linkedin_url, uniqueness: true, allow_blank: true
+
+
+  def self.seed_existing_companies(company, row, ats_type, country)
+    changes_made = false
+
+    if company.operating_status != row['operating_status']
+      company.operating_status = row['operating_status']
+      changes_made = true
+    end
+
+    if company.linkedin_url != row['linkedin_url'] 
+      company.linkedin_url = row['linkedin_url']
+      changes_made = true
+      end
+
+    if company.is_public != row['is_public']
+      company.is_public = row['is_public']
+      changes_made = true
+    end
+
+    if company.year_founded != row['year_founded']
+      company.year_founded = row['year_founded']
+      changes_made = true
+    end
+
+    if company.acquired_by != row['acquired_by']
+      company.acquired_by = row['acquired_by']
+      changes_made = true
+    end
+
+    if ats_type[:ats_type_code] != row['company_ats_type']
+      company.ats_type = ats_type
+      changes_made = true
+    end
+
+    if country && (country[:country_code] != row['company_country'] && country[:country_name] != row['company_country'] && !country.aliases.include?(row['company_country']))
+      company.country = country
+      changes_made = true
+      # need to add logic to handle not found country
+    end
+
+    if row['company_state'].present?
+      state = State.find_by(state_name: row['company_state']) || State.find_by(state_code: row['company_state'])
+
+      if state != company.state&.state_name
+        company.state = state
+        changes_made = true
+      end
+    end
+
+    if row['company_city'].present?
+      city = City.find_by(city_name: row['company_city']) || City.where('? = ANY (aliases)', row['company_city']).first
+    
+      if city && city != company.city&.city_name
+        company.city = city
+        changes_made = true
+      
+      elsif city.nil?
+        new_city = City.create!(
+          city_name: row['company_city'],
+          error_details: "City '#{row['company_city']}' not found for Company #{row['company_name']}",
+          resolved: false
+        )
+    
+        Adjudication.create!(
+          adjudicatable_type: 'Company',
+          adjudicatable_id: new_city.id,
+          adjudicatable: new_city,
+          error_details: "City '#{row['company_city']}' not found for Company #{row['company_name']}",
+          resolved: false
+        )
+    
+        puts "City '#{row['company_city']}' not found for company #{row['company_name']}. Logged to adjudications."
+
+    end
+    
+    # Optional attributes
+    if row['company_size'].present?
+      company_size = CompanySize.find_by(size_range: row['company_size'])
+      if company_size && company.company_size&.size_range != company_size.size_range
+        company.company_size = company_size
+        changes_made = true
+      end
+    end
+
+    if row['last_funding_type'].present?
+      funding_type = FundingType.find_by(funding_type_name: row['last_funding_type'])
+      
+      if funding_type && company.funding_type&.funding_type_name != funding_type.funding_type_name
+        company.funding_type = funding_type
+        changes_made = true
+      end
+    end
+
+
+    healthcare_domain = HealthcareDomain.find_by(key: row['healthcare_domain'])
+    if healthcare_domain && healthcare_domain != company.healthcare_domain
+      company.healthcare_domain = healthcare_domain
+      changes_made = true
+    end
+    end
+
+      specialties = row['company_specialty'].split(',').map do |specialty_key|
+        specialty = CompanySpecialty.find_by(key: specialty_key.strip, healthcare_domain_id: healthcare_domain.id)
+        if specialty.nil?
+          puts "Specialty not found for company: #{row['company_name']} or key: #{specialty_key.strip}"
+          nil
+        else
+          specialty
+        end
+      end.compact
+
+      if company.company_specialties.sort != specialties.sort
+        company.company_specialties = specialties
+        changes_made = true
+      end
+      changes_made
+    end
 end

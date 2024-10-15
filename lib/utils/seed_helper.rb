@@ -1,0 +1,3 @@
+module SeedHelper
+
+end    
