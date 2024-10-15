@@ -45,7 +45,7 @@ class JobPost < ApplicationRecord
       else
         # Log errors to Adjudications table for manual review
         Adjudication.create!(
-          adjudicatable: new_job_post,
+          adjudicatable_type: new_job_post,
           error_details: new_job_post.errors.full_messages.join(', '),
           resolved: false
         )
@@ -186,7 +186,7 @@ class JobPost < ApplicationRecord
     if ats == 'lever'
       {
         job_title: job['text'],
-        job_country_id: find_country_id_by_code(job['country']), 
+        job_country_id: handle_country_record(job['country'], job['country'], company.id, job['hostedUrl']), 
         job_setting_id: find_setting_id_by_name(job['workplaceType']), 
         job_description: job['descriptionBodyPlain'],
         job_url: job['hostedUrl'],
@@ -198,14 +198,13 @@ class JobPost < ApplicationRecord
         job_applyUrl: job['applyUrl'],
         job_salary_max: job['salaryRange'] ? job['salaryRange']['max'] : nil,
         job_salary_min: job['salaryRange'] ? job['salaryRange']['min'] : nil,
-        job_salary_currency_id: find_currency_id_by_code(job['salaryRange']&.dig('currency')), 
+        job_salary_currency_id: handle_currency_record(job['salaryRange']&.dig('currency'), company.id, job['hostedUrl']), 
         job_salary_interval_id: find_interval_id_by_name(job['salaryRange']&.dig('interval')) 
       }
     elsif ats == 'greenhouse'
       {
         job_title: job["title"],
-        # job_location: job["location"]["name"],
-        # job_country_id: find_country_id_by_code(job['country']), 
+        # job_country_id: handle_country_record(job['country'], job['country'], company.id, job['absolute_url']), 
         # job_setting_id: find_setting_id_by_name(job['offices'].first['name']), 
         job_description: job["content"],
         job_url: job["absolute_url"],
@@ -218,8 +217,8 @@ class JobPost < ApplicationRecord
         job_internal_id_string: job.is_a?(Hash) && job.key?("internal_job_id") ? job["internal_job_id"].to_s : nil,
         job_salary_max: job['salaryRange'] ? job['salaryRange']['max'] : nil,
         job_salary_min: job['salaryRange'] ? job['salaryRange']['min'] : nil,
-        job_salary_currency_id: find_currency_id_by_code(job['salaryRange']&.dig('currency')), # New mapping for salary currency
-        job_salary_interval_id: find_interval_id_by_name(job['salaryRange']&.dig('interval')) # New mapping for salary interval
+        job_salary_currency_id: handle_currency_record(job['salaryRange']&.dig('currency'), company.id, job['absolute_url'] ), 
+        job_salary_interval_id: find_interval_id_by_name(job['salaryRange']&.dig('interval'))  
       }
     end
   end 
@@ -233,9 +232,9 @@ def self.build_job_post_data(company, data, job_role)
   })
 end
 
-# Helper methods to find related ids by name or code
-def self.find_country_id_by_code(country_code)
-  Country.find_by(country_code: country_code)&.id
+# Helper methods
+def self.handle_country_record(country_code, country_name, company_id, job_url)
+  Country.find_or_adjudicate_country(country_code, country_name, company_id, job_url)
 end
 
 def self.find_setting_id_by_name(setting_name)
@@ -246,8 +245,8 @@ def self.find_commitment_id_by_name(commitment_name)
   JobCommitment.find_by(commitment_name: commitment_name)&.id
 end
 
-def self.find_currency_id_by_code(currency_code)
-  JobSalaryCurrency.find_by(currency_code: currency_code)&.id
+def self.handle_currency_record(currency_code, company_id, job_url)
+  JobSalaryCurrency.find_or_adjudicate_currency(currency_code, company_id, job_url)&.id
 end
 
 def self.find_interval_id_by_name(interval_name)
