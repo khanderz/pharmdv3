@@ -11,9 +11,17 @@ class Country < ApplicationRecord
                     Country.where('? = ANY(aliases)', country[:country_name]).first
 
       unless country
+
+        new_country = Country.create!(
+            country_code: country_code,
+            country_name: country_name,
+            error_details: "Country with code '#{country_code}' or name '#{country_name}' not found for Company ID #{company_id}, Job URL #{job_url}",
+            resolved: false
+          )
+
         Adjudication.create!(
           adjudicatable_type: 'JobPost',
-          adjudicatable_id: country.id,  
+          adjudicatable_id: new_country.id,  
           error_details: "Country with code '#{country_code}' or name '#{country_name}' not found for Company ID #{company_id}, Job URL #{job_url}",
           resolved: false
         )

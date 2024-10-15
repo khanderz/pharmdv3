@@ -8,9 +8,15 @@ class JobSalaryCurrency < ApplicationRecord
         currency = JobSalaryCurrency.find_by(currency_code: currency_code)
 
         unless currency
+            new_currency = JobSalaryCurrency.create!(
+                currency_code: currency_code,
+                error_details: "Currency #{currency[:currency_code]} not found and needs adjudication.",
+                resolved: false
+              )
+
             Adjudication.create!(
                 adjudicatable_type: 'JobPost',
-                adjudicatable_id: currency.id,  
+                adjudicatable_id: new_currency.id,  
                 error_details: "Currency with code '#{currency_code}' not found for Company ID #{company_id}, Job URL #{job_url}",
                 resolved: false
             )

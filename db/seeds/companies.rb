@@ -28,29 +28,34 @@ begin
         next
       end
 
-      # Optional attributes: Set only if present in the CSV row
-      if row['company_size'].present?
-        company_size = CompanySize.find_by(size_range: row['company_size'])
-        company.company_size = company_size if company_size
-      end
-
-      if row['last_funding_type'].present?
-        funding_type = FundingType.find_by(funding_type_name: row['last_funding_type'])
-        company.funding_type = funding_type if funding_type
-      end
-
       # Set the Country, matching on either country_code or country_name
       country = Country.find_by(country_code: row['company_country']) || Country.find_by(country_name: row['company_country'])
+
       if country
         company.country = country
       else
-        puts "Country not found for company: #{row['company_name']} or country code/name: #{row['company_country']}"
+        new_country = Country.create!(
+          country_code: row['company_country'],
+          country_name: row['company_country'],
+          error_details: "Country '#{row['company_country']}' not found for Company #{row['company_name']}",
+          resolved: false
+        )
+
+      Adjudication.create!(
+        adjudicatable_type: 'Company',
+        adjudicatable_id: new_country.id,  
+        error_details: "Country '#{row['company_country']}' not found for Company #{row['company_name']}",
+        resolved: false
+      )
+
+        puts "---------Country not found for company: #{row['company_name']} or country code/name: #{row['company_country']}. Logged to adjudications."
         next
       end
 
       # Set the State, matching on either state_name or state_code
       if row['company_state'].present?
         state = State.find_by(state_name: row['company_state']) || State.find_by(state_code: row['company_state'])
+        
         if state
           company.state = state
         else
@@ -61,11 +66,36 @@ begin
       # Set the City, matching on city_name or aliases
       if row['company_city'].present?
         city = City.find_by(city_name: row['company_city']) || City.find_by("'#{row['company_city']}' = ANY (aliases)")
+
         if city
           company.city = city
         else
-          puts "City not found for company: #{row['company_name']} or name/alias: #{row['company_city']}"
+          new_city = City.create!(
+            city_name: row['company_city'],
+            error_details: "City '#{row['company_city']}' not found for Company #{row['company_name']}",
+            resolved: false
+          )
+  
+        Adjudication.create!(
+          adjudicatable_type: 'Company',
+          adjudicatable_id: new_city.id,  
+          error_details: "City '#{row['company_city']}' not found for Company #{row['company_name']}",
+          resolved: false
+        )
+
+          puts "----------City not found for company: #{row['company_name']} or name/alias: #{row['company_city']}. Logged to adjudications."
         end
+      end
+
+      # Optional attributes: Set only if present in the CSV row
+      if row['company_size'].present?
+        company_size = CompanySize.find_by(size_range: row['company_size'])
+        company.company_size = company_size if company_size
+      end
+
+      if row['last_funding_type'].present?
+        funding_type = FundingType.find_by(funding_type_name: row['last_funding_type'])
+        company.funding_type = funding_type if funding_type
       end
 
       # Set the healthcare domain
