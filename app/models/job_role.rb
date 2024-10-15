@@ -1,46 +1,61 @@
-class JobRole < ApplicationRecord
-  belongs_to :department
-  belongs_to :team
-  has_many :job_posts
-has_many :adjudications, as: :adjudicatable, dependent: :destroy 
-  
-  # Storing additional role details in JSON format
-  store :additional_attributes, accessors: [:job_function, :clearance_level], coder: JSON
-  # Aliases for roles with similar names
-  serialize :aliases, JSON
-  validates :role_name, presence: true, uniqueness: true
-     
-  # Class method to find or create a job role and update department and team if necessary
-  def self.find_or_create_with_department_and_team(job_title, department_name, team_name)
-    # Find the department by name or its aliases
-    department = Department.find_by('dept_name = ? OR ? = ANY (aliases)', department_name, department_name)
+# Seeding common job roles with aliases and assigning department_id and team_id
+job_roles = [
+  { role_name: 'Account Manager', aliases: ['Sales Representative', 'Account Exec', 'Client Manager'], department_name: 'Sales', team_name: 'Sales' },
+  { role_name: 'Behavioral Health Therapist', aliases: ['Mental Health Counselor', 'Licensed Therapist', 'Remote Therapist'], department_name: 'Clinical Team', team_name: 'Care Operations' },
+  { role_name: 'Clinical Pharmacist', aliases: ['Remote Pharmacist', 'Telepharmacy Specialist', 'Pharmacist Consultant'], department_name: 'Clinical Team', team_name: 'Care Operations' },
+  { role_name: 'Customer Support Specialist', aliases: ['Customer Service', 'Support Agent', 'Helpdesk'], department_name: 'Customer Support', team_name: 'Client Services' },
+  { role_name: 'Data Analyst', aliases: ['Business Intelligence Analyst', 'BI Specialist', 'Data Specialist'], department_name: 'Data Science', team_name: 'Product' },
+  { role_name: 'Data Scientist', aliases: ['Machine Learning Engineer', 'AI Specialist', 'Data Researcher'], department_name: 'Data Science', team_name: 'Software Engineering' },
+  { role_name: 'Dental Hygienist', aliases: ['Remote Dental Specialist', 'Tele-Dentist', 'Oral Health Expert'], department_name: 'Clinical Team', team_name: 'Care Operations' },
+  { role_name: 'Digital Marketing Specialist', aliases: ['SEO Specialist', 'Digital Marketer', 'Marketing Analyst'], department_name: 'Marketing', team_name: 'Marketing' },
+  { role_name: 'Healthcare Administrator', aliases: ['Medical Administrator', 'Health Services Manager', 'Remote Healthcare Manager'], department_name: 'Operations', team_name: 'Care Operations' },
+  { role_name: 'Marketing Specialist', aliases: ['Marketer', 'Digital Marketer', 'Brand Manager'], department_name: 'Marketing', team_name: 'Marketing' },
+  { role_name: 'Nurse Practitioner', aliases: ['Telehealth NP', 'Remote Nurse', 'Virtual Care NP'], department_name: 'Clinical Team', team_name: 'Care Operations' },
+  { role_name: 'Occupational Therapist', aliases: ['Remote OT', 'Teletherapy Specialist', 'Virtual OT'], department_name: 'Clinical Team', team_name: 'Care Operations' },
+  { role_name: 'Physical Therapist', aliases: ['Remote PT', 'Telehealth PT', 'Virtual Physical Therapist'], department_name: 'Clinical Team', team_name: 'Care Operations' },
+  { role_name: 'Product Manager', aliases: ['PM', 'Product Lead', 'Product Owner'], department_name: 'Product Management', team_name: 'Product' },
+  { role_name: 'Project Manager', aliases: ['PM', 'Project Lead', 'Operations Manager'], department_name: 'Operations', team_name: 'Product' },
+  { role_name: 'Sales Representative', aliases: ['Sales Rep', 'Account Manager', 'Sales Exec'], department_name: 'Sales', team_name: 'Sales' },
+  { role_name: 'Software Engineer', aliases: ['Developer', 'Programmer', 'Engineer'], department_name: 'Engineering', team_name: 'Software Engineering' },
+  { role_name: 'Technical Support Specialist', aliases: ['Tech Support', 'Support Engineer', 'Helpdesk'], department_name: 'IT', team_name: 'Client Services' },
+  { role_name: 'UI/UX Designer', aliases: ['User Experience Designer', 'Interface Designer', 'Product Designer'], department_name: 'Design', team_name: 'Product' },
+  { role_name: 'Virtual Care Physician', aliases: ['Telemedicine Physician', 'Remote Doctor', 'Online Doctor'], department_name: 'Clinical Team', team_name: 'Care Operations' }
+]
+
+seeded_count = 0
+existing_count = 0
+total_roles = JobRole.count
+
+job_roles.each do |role|
+  begin
+    department = Department.find_by(dept_name: role[:department_name])
+    team = Team.find_by(team_name: role[:team_name])
     
-    if department.nil?
-      puts "Department not found: #{department_name}"
-      return
+    if department && team
+      role_record = JobRole.find_or_initialize_by(role_name: role[:role_name], department_id: department.id, team_id: team.id)
+
+      if role_record.persisted?
+        existing_count += 1
+      else
+        role_record.aliases = role[:aliases]
+        role_record.save!
+        seeded_count += 1
+      end
+    else
+      # Create adjudication if department or team is missing
+      Adjudication.create!(
+        table_name: 'job_roles',
+        error_details: "Job Role: #{role[:role_name]} - Missing Department: #{role[:department_name]} or Team: #{role[:team_name]}",
+        reference_id: nil,
+        resolved: false
+      )
+      puts "Error seeding job role: #{role[:role_name]} - Department (#{role[:department_name]}) or Team (#{role[:team_name]}) not found, sent to adjudications."
     end
-    # Find the team by name or its aliases
-    team = Team.find_by('team_name = ? OR ? = ANY (aliases)', team_name, team_name)
-    
-    if team.nil?
-      team = Team.create(team_name: team_name)
-      puts "Created new Team: #{team_name}"
-    end
-    
-    # Find or create the job role
-    job_role = JobRole.find_by('role_name = ? OR ? = ANY (aliases)', job_title, job_title)
-    
-    if job_role.nil?
-      # Create the new job role with department and team
-      job_role = JobRole.create(role_name: job_title, department: department, team: team)
-      puts "Created new Job Role: #{job_title} with department: #{department_name} and team: #{team_name}"
-    elsif job_role.department.nil? && department.present?
-      job_role.update(department: department)
-      puts "Updated Job Role: #{job_title} with department: #{department_name}"
-    elsif job_role.team.nil? && team.present?
-      job_role.update(team: team)
-      puts "Updated Job Role: #{job_title} with team: #{team_name}"
-    end
-    job_role
+  rescue StandardError => e
+    puts "Error seeding job role: #{role[:role_name]} - #{e.message}"
   end
 end
+
+total_roles_after = JobRole.count
+
+puts "*******Seeded #{seeded_count} new job roles. #{existing_count} roles already existed. Total job roles in the table: #{total_roles_after}."

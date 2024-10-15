@@ -1,6 +1,7 @@
 class JobPost < ApplicationRecord
-  has_paper_trail  # PaperTrail for tracking changes
-has_many :adjudications, as: :adjudicatable, dependent: :destroy 
+  has_paper_trail  
+  has_many :adjudications, as: :adjudicatable, dependent: :destroy 
+
   belongs_to :job_commitment, optional: true
   belongs_to :job_setting
   belongs_to :country, optional: true
@@ -10,9 +11,11 @@ has_many :adjudications, as: :adjudicatable, dependent: :destroy
   belongs_to :job_role
   belongs_to :job_salary_currency, optional: true
   belongs_to :job_salary_interval, optional: true
+
   validates :job_title, presence: true
   validates :job_url, uniqueness: true
   validates :job_salary_min, :job_salary_max, numericality: { greater_than_or_equal_to: 0 }, allow_nil: true
+
   # Shared methods -----------------------------------------------------------
   
   # Deactivate old jobs that are no longer in the API data
@@ -20,11 +23,12 @@ has_many :adjudications, as: :adjudicatable, dependent: :destroy
     deactivated_count = JobPost.where(company: company).where.not(id: active_job_ids).update_all(job_active: false)
     puts "Deactivated #{deactivated_count} old job posts for #{company.company_name}"
   end
+
   # Helper to handle creating or updating a job post
   def self.process_existing_or_new_job(company, job_url, job_post_data)
     existing_job = JobPost.find_by(job_url: job_url)
+
     if existing_job
-      # Check if any changes have occurred
       if existing_job.attributes.except('id', 'created_at', 'updated_at') == job_post_data
         puts "Job post already exists and is unchanged for URL: #{job_url}"
       else
@@ -39,11 +43,18 @@ has_many :adjudications, as: :adjudicatable, dependent: :destroy
         puts "#{company.company_name} job post added"
         return new_job_post.id
       else
-        puts "#{company.company_name} job post not saved - validation failed: #{new_job_post.errors.full_messages.join(', ')}"
+        # Log errors to Adjudications table for manual review
+        Adjudication.create!(
+          adjudicatable: new_job_post,
+          error_details: new_job_post.errors.full_messages.join(', '),
+          resolved: false
+        )
+        puts "Error saving job post for #{company.company_name} - #{new_job_post.errors.full_messages.join(', ')}"
         return nil
       end
     end
   end
+
   # Lever jobs -----------------------------------------------------------
   def self.fetch_lever_jobs(company)
     jobs = get_lever_jobs(company)
@@ -52,33 +63,41 @@ has_many :adjudications, as: :adjudicatable, dependent: :destroy
       deactivate_old_jobs(company, active_job_ids)
     end
   end
+
   def self.clear_lever_data
     Company.where(ats_type: AtsType.find_by(ats_type_code: 'lever')).each do |company|
       JobPost.where(company: company).delete_all
     end
     puts "Lever jobs deleted from the database"
   end
+
   private
+
   def self.get_lever_jobs(company)
     company_name = company.company_name.gsub(' ', '').downcase
     url = "https://api.lever.co/v0/postings/#{company_name}"
     uri = URI(url)
     response = Net::HTTP.get(uri)
     jobs = JSON.parse(response)
+
     return jobs if jobs.is_a?(Array)
+
     puts "Error: #{jobs['message']}, cannot get Lever jobs"
     nil
   end
+
   def self.save_lever_jobs(company, jobs)
     active_job_ids = []
     job_count = 0  
     build_count = 0
+
     jobs.each do |job|
       job_role = JobRole.find_or_create_with_department_and_team(job['text'], job['categories']['department'], job['categories']['team'])
       unless job_role.persisted?
         puts "Job Role creation failed for #{job['text']}"
         next
       end
+
       # Map data values to job post fields
       mapped_data = map_ats_data_return('lever', job)
       job_count += 1
@@ -90,13 +109,16 @@ has_many :adjudications, as: :adjudicatable, dependent: :destroy
       # Use the helper method to handle checking/updating existing jobs
       active_job_ids << process_existing_or_new_job(company, job['hostedUrl'], job_post_data)
     end
+
     puts "Mapped #{job_count} jobs from Lever"
     puts "Built #{build_count} job posts"
     active_job_ids
   end
+
   # Greenhouse jobs -----------------------------------------------------------
   def self.fetch_greenhouse_jobs(company)
     jobs = get_greenhouse_jobs(company)
+
     if jobs && jobs["jobs"]
       jobs_mapped = jobs["jobs"].map { |job| job }
       active_job_ids = save_greenhouse_jobs(company, jobs_mapped)
@@ -105,20 +127,25 @@ has_many :adjudications, as: :adjudicatable, dependent: :destroy
       puts "No jobs found for #{company.company_name}"
     end
   end
+
   def self.clear_greenhouse_data
     Company.where(ats_type: AtsType.find_by(ats_type_code: 'greenhouse')).each do |company|
       JobPost.where(company: company).delete_all
     end
     puts "Greenhouse jobs deleted from the database"
   end
+
   private
+
   def self.get_greenhouse_jobs(company)
     ats_id = company.ats_id
     url = "https://boards-api.greenhouse.io/v1/boards/#{ats_id}/jobs?content=true"
     uri = URI(url)
     response = Net::HTTP.get(uri)
     jobs = JSON.parse(response)
+
     return jobs if jobs.is_a?(Hash)
+
     puts "Error: #{jobs['message']}, cannot get Greenhouse jobs"
     nil
   end
@@ -127,6 +154,7 @@ has_many :adjudications, as: :adjudicatable, dependent: :destroy
     active_job_ids = []
     job_count = 0  
     build_count = 0
+
     jobs.each do |job|
       job_role = JobRole.find_or_create_with_department_and_team(job["title"], job["departments"][0]["name"], job['departments'][0]["name"])
       unless job_role.persisted?
@@ -145,12 +173,16 @@ has_many :adjudications, as: :adjudicatable, dependent: :destroy
       # Use the helper method to handle checking/updating existing jobs
       active_job_ids << process_existing_or_new_job(company, job["absolute_url"], job_post_data)
     end
+
     puts "Mapped #{job_count} jobs from Greenhouse"
     puts "Built #{build_count} job posts"
     active_job_ids
   end
+
   # Map data values to job post fields
   def self.map_ats_data_return(ats, job)
+    puts "json: #{job['categories']['allLocations']} "
+
     if ats == 'lever'
       {
         job_title: job['text'],
@@ -191,6 +223,7 @@ has_many :adjudications, as: :adjudicatable, dependent: :destroy
       }
     end
   end 
+
 # Helper to build job post data
 def self.build_job_post_data(company, data, job_role)
   data.merge({
@@ -199,19 +232,24 @@ def self.build_job_post_data(company, data, job_role)
     job_role: job_role
   })
 end
+
 # Helper methods to find related ids by name or code
 def self.find_country_id_by_code(country_code)
   Country.find_by(country_code: country_code)&.id
 end
+
 def self.find_setting_id_by_name(setting_name)
   JobSetting.find_by(setting_name: setting_name)&.id
 end
+
 def self.find_commitment_id_by_name(commitment_name)
   JobCommitment.find_by(commitment_name: commitment_name)&.id
 end
+
 def self.find_currency_id_by_code(currency_code)
   JobSalaryCurrency.find_by(currency_code: currency_code)&.id
 end
+
 def self.find_interval_id_by_name(interval_name)
   JobSalaryInterval.find_by(interval: interval_name)&.id
 end

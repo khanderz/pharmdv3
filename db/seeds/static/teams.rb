@@ -17,14 +17,28 @@ total_teams = Team.count
 
 teams.each do |team|
   begin
-    team_record = Team.find_or_initialize_by(team_name: team[:team_name])
+    # Look up team by name or alias
+    team_record = Team.find_by("team_name = ? OR ? = ANY(aliases)", team[:team_name], team[:team_name])
 
-    if team_record.persisted?
-      existing_count += 1
+    if team_record.nil?
+      # Create a new team if not found
+      team_record = Team.new(team_name: team[:team_name], aliases: team[:aliases])
+      
+      if team_record.save
+        seeded_count += 1
+        puts "Seeded new team: #{team[:team_name]}"
+      else
+        # Send to adjudication if team cannot be saved
+        Adjudication.create!(
+          table_name: 'teams',
+          error_details: "Failed to seed team: #{team[:team_name]}",
+          reference_id: nil,
+          resolved: false
+        )
+        puts "Error seeding team: #{team[:team_name]} - sent to adjudications"
+      end
     else
-      team_record.aliases = team[:aliases]
-      team_record.save!
-      seeded_count += 1
+      existing_count += 1
     end
   rescue StandardError => e
     puts "Error seeding team: #{team[:team_name]} - #{e.message}"

@@ -56,13 +56,30 @@ seeded_count = 0
 existing_count = City.count
 
 cities.each do |city|
-  city_record = City.find_or_initialize_by(city_name: city[:city_name])
-  
-  # Only seed new cities
-  unless city_record.persisted?
-    city_record.aliases = city[:aliases] if city[:aliases]
-    city_record.save!
+  # Search for matching city by name or aliases
+  city_record = City.find_by(city_name: city[:city_name]) ||
+                City.where('? = ANY(aliases)', city[:city_name]).first
+
+  # If no match is found, adjudicate the error
+  unless city_record
+    new_city = City.create!(
+      city_name: city[:city_name],
+      aliases: city[:aliases] || [],
+      error_details: "City not found in the existing records",
+      reference_id: nil,  # Set the reference_id if applicable
+      resolved: false
+    )
+    
+    # Log the issue in the adjudications table
+    Adjudication.create!(
+      table_name: 'cities',
+      error_details: "City #{city[:city_name]} with aliases #{city[:aliases] || []} not found and needs to be adjudicated.",
+      reference_id: new_city.id,
+      resolved: false
+    )
+
     seeded_count += 1
+    puts "City #{city[:city_name]} adjudicated."
   end
 end
 

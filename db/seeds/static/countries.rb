@@ -10,7 +10,7 @@ countries = [
   { country_code: 'EG', country_name: 'Egypt' },
   { country_code: 'ES', country_name: 'Spain' },
   { country_code: 'FR', country_name: 'France' },
-  { country_code: 'GB', country_name: 'United Kingdom' },
+  { country_code: 'GB', country_name: 'United Kingdom', aliases: ['UK', 'Great Britain'] },
   { country_code: 'HK', country_name: 'Hong Kong' },
   { country_code: 'ID', country_name: 'Indonesia' },
   { country_code: 'IE', country_name: 'Ireland' },
@@ -31,30 +31,47 @@ countries = [
   { country_code: 'TH', country_name: 'Thailand' },
   { country_code: 'TR', country_name: 'Turkey' },
   { country_code: 'AE', country_name: 'United Arab Emirates' },
-  { country_code: 'US', country_name: 'United States' },
+  { country_code: 'US', country_name: 'United States', aliases: ['USA', 'United States of America'] },
   { country_code: 'VN', country_name: 'Vietnam' },
   { country_code: 'ZA', country_name: 'South Africa' }
 ]
 
 seeded_count = 0
 existing_count = 0
-total_countries = Country.count
 
 countries.each do |country|
-  begin
-    country_record = Country.find_or_initialize_by(country_code: country[:country_code], country_name: country[:country_name])
-    
-    if country_record.persisted?
-      existing_count += 1
-    else
-      country_record.save!
-      seeded_count += 1
-    end
-  rescue StandardError => e
-    puts "Error seeding country: #{country[:country_name]} - #{e.message}"
+  # Search for matching country by name, code, or aliases
+  country_record = Country.find_by(country_code: country[:country_code]) ||
+                   Country.find_by(country_name: country[:country_name]) ||
+                   Country.where('? = ANY(aliases)', country[:country_name]).first
+
+  # If no match is found, adjudicate the error
+  unless country_record
+    new_country = Country.create!(
+      country_code: country[:country_code],
+      country_name: country[:country_name],
+      aliases: country[:aliases] || [],
+      error_details: "Country not found in the existing records",
+      reference_id: nil,  # Set reference_id if applicable
+      resolved: false
+    )
+
+    # Log the issue in the adjudications table
+    Adjudication.create!(
+      table_name: 'countries',
+      error_details: "Country #{country[:country_name]} with aliases #{country[:aliases] || []} not found and needs adjudication.",
+      reference_id: new_country.id,
+      resolved: false
+    )
+
+    seeded_count += 1
+    puts "Country #{country[:country_name]} adjudicated."
+  else
+    existing_count += 1
+    puts "Country #{country[:country_name]} already exists."
   end
 end
 
-total_countries_after = Country.count
+total_countries = Country.count
 
-puts "***********Seeded #{seeded_count} new countries. #{existing_count} countries already existed. Total countries in the table: #{total_countries_after}."
+puts "*********** Seeded #{seeded_count} new countries. #{existing_count} countries already existed. Total countries in the table: #{total_countries}."
