@@ -38,40 +38,23 @@ countries = [
 
 seeded_count = 0
 existing_count = 0
+total_countries = Country.count
 
 countries.each do |country|
-  # Search for matching country by name, code, or aliases
-  country_record = Country.find_by(country_code: country[:country_code]) ||
-                   Country.find_by(country_name: country[:country_name]) ||
-                   Country.where('? = ANY(aliases)', country[:country_name]).first
-
-  # If no match is found, adjudicate the error
-  unless country_record
-    new_country = Country.create!(
-      country_code: country[:country_code],
-      country_name: country[:country_name],
-      aliases: country[:aliases] || [],
-      error_details: "Country not found in the existing records",
-      reference_id: nil,  # Set reference_id if applicable
-      resolved: false
-    )
-
-    # Log the issue in the adjudications table
-    Adjudication.create!(
-      table_name: 'countries',
-      error_details: "Country #{country[:country_name]} with aliases #{country[:aliases] || []} not found and needs adjudication.",
-      reference_id: new_country.id,
-      resolved: false
-    )
-
-    seeded_count += 1
-    puts "Country #{country[:country_name]} adjudicated."
-  else
-    existing_count += 1
-    puts "Country #{country[:country_name]} already exists."
+  begin
+    country_record = Country.find_or_initialize_by(country_code: country[:country_code], country_name: country[:country_name])
+    
+    if country_record.persisted?
+      existing_count += 1
+    else
+      country_record.save!
+      seeded_count += 1
+    end
+  rescue StandardError => e
+    puts "Error seeding country: #{country[:country_name]} - #{e.message}"
   end
 end
 
-total_countries = Country.count
+total_countries_after = Country.count
 
-puts "*********** Seeded #{seeded_count} new countries. #{existing_count} countries already existed. Total countries in the table: #{total_countries}."
+puts "***********Seeded #{seeded_count} new countries. #{existing_count} countries already existed. Total countries in the table: #{total_countries_after}."
