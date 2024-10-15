@@ -2,6 +2,7 @@ class JobRole < ApplicationRecord
   belongs_to :department
   belongs_to :team
   has_many :job_posts
+has_many :adjudications, as: :adjudicatable, dependent: :destroy 
   
   # Storing additional role details in JSON format
   store :additional_attributes, accessors: [:job_function, :clearance_level], coder: JSON

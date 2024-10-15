@@ -5,9 +5,15 @@ one:
   department: one
   team: one
   aliases: MyString
+  error_details: MyText
+  reference_id: 
+  resolved: false
 
 two:
   role_name: MyString
   department: two
   team: two
   aliases: MyString
+  error_details: MyText
+  reference_id: 
+  resolved: false

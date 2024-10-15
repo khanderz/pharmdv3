@@ -1,15 +1,13 @@
 # Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
 
 one:
-  dept_name: MyString
-  aliases: MyString
+  adjudicatable: one
+  adjudicatable_type: Adjudicatable
   error_details: MyText
-  reference_id: 
   resolved: false
 
 two:
-  dept_name: MyString
-  aliases: MyString
+  adjudicatable: two
+  adjudicatable_type: Adjudicatable
   error_details: MyText
-  reference_id: 
   resolved: false

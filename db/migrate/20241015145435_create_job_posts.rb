@@ -13,9 +13,9 @@ class CreateJobPosts < ActiveRecord::Migration[7.1]
       t.string :job_title
       t.text :job_description
       t.string :job_url
-      t.datetime :job_posted 
+      t.datetime :job_posted
       t.datetime :job_updated
-      t.boolean :job_active 
+      t.boolean :job_active
       t.bigint :job_internal_id
       t.bigint :job_url_id
       t.string :job_internal_id_string
@@ -26,7 +26,9 @@ class CreateJobPosts < ActiveRecord::Migration[7.1]
       t.text :job_qualifications
       t.text :job_applyUrl
       t.json :job_locations
-
+      t.text :error_details
+      t.bigint :reference_id
+      t.boolean :resolved
       t.timestamps
     end
     add_index :job_posts, :job_url, unique: true

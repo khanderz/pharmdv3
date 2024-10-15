@@ -1,4 +1,3 @@
-
 class Company < ApplicationRecord
   has_paper_trail ignore: [:updated_at]
   belongs_to :ats_type
@@ -7,6 +6,7 @@ class Company < ApplicationRecord
   belongs_to :city, optional: true
   belongs_to :state, optional: true
   belongs_to :country
+has_many :adjudications, as: :adjudicatable, dependent: :destroy 
 
 belongs_to :healthcare_domain, foreign_key: 'healthcare_domain_id', class_name: 'HealthcareDomain'
 

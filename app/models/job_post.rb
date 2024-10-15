@@ -1,5 +1,6 @@
 class JobPost < ApplicationRecord
   has_paper_trail  # PaperTrail for tracking changes
+has_many :adjudications, as: :adjudicatable, dependent: :destroy 
   belongs_to :job_commitment, optional: true
   belongs_to :job_setting
   belongs_to :country, optional: true

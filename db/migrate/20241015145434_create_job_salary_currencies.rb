@@ -2,6 +2,9 @@ class CreateJobSalaryCurrencies < ActiveRecord::Migration[7.1]
   def change
     create_table :job_salary_currencies do |t|
       t.string :currency_code
+      t.text :error_details
+      t.bigint :reference_id
+      t.boolean :resolved
 
       t.timestamps
     end

@@ -10,9 +10,19 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_10_14_211636) do
+ActiveRecord::Schema[7.1].define(version: 2024_10_15_145442) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
+
+  create_table "adjudications", force: :cascade do |t|
+    t.string "adjudicatable_type"
+    t.bigint "adjudicatable_id"
+    t.text "error_details"
+    t.boolean "resolved", default: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["adjudicatable_type", "adjudicatable_id"], name: "index_adjudications_on_adjudicatable"
+  end
 
   create_table "ats_types", force: :cascade do |t|
     t.string "ats_type_code"
@@ -25,6 +35,9 @@ ActiveRecord::Schema[7.1].define(version: 2024_10_14_211636) do
   create_table "cities", force: :cascade do |t|
     t.string "city_name"
     t.string "aliases", default: [], array: true
+    t.text "error_details"
+    t.bigint "reference_id"
+    t.boolean "resolved"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["city_name"], name: "index_cities_on_city_name", unique: true
@@ -86,6 +99,10 @@ ActiveRecord::Schema[7.1].define(version: 2024_10_14_211636) do
   create_table "countries", force: :cascade do |t|
     t.string "country_code"
     t.string "country_name"
+    t.string "aliases", default: [], array: true
+    t.text "error_details"
+    t.bigint "reference_id"
+    t.boolean "resolved"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["country_code"], name: "index_countries_on_country_code", unique: true
@@ -94,6 +111,9 @@ ActiveRecord::Schema[7.1].define(version: 2024_10_14_211636) do
   create_table "departments", force: :cascade do |t|
     t.string "dept_name"
     t.string "aliases", default: [], array: true
+    t.text "error_details"
+    t.bigint "reference_id"
+    t.boolean "resolved"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["dept_name"], name: "index_departments_on_dept_name", unique: true
@@ -146,6 +166,9 @@ ActiveRecord::Schema[7.1].define(version: 2024_10_14_211636) do
     t.text "job_qualifications"
     t.text "job_applyUrl"
     t.json "job_locations"
+    t.text "error_details"
+    t.bigint "reference_id"
+    t.boolean "resolved"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["company_id"], name: "index_job_posts_on_company_id"
@@ -167,6 +190,9 @@ ActiveRecord::Schema[7.1].define(version: 2024_10_14_211636) do
     t.bigint "department_id", null: false
     t.bigint "team_id", null: false
     t.string "aliases", default: [], array: true
+    t.text "error_details"
+    t.bigint "reference_id"
+    t.boolean "resolved"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["department_id"], name: "index_job_roles_on_department_id"
@@ -176,6 +202,9 @@ ActiveRecord::Schema[7.1].define(version: 2024_10_14_211636) do
 
   create_table "job_salary_currencies", force: :cascade do |t|
     t.string "currency_code"
+    t.text "error_details"
+    t.bigint "reference_id"
+    t.boolean "resolved"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["currency_code"], name: "index_job_salary_currencies_on_currency_code", unique: true
@@ -207,6 +236,9 @@ ActiveRecord::Schema[7.1].define(version: 2024_10_14_211636) do
   create_table "teams", force: :cascade do |t|
     t.string "team_name"
     t.string "aliases", default: [], array: true
+    t.text "error_details"
+    t.bigint "reference_id"
+    t.boolean "resolved"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["team_name"], name: "index_teams_on_team_name", unique: true
