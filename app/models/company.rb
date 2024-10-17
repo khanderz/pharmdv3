@@ -20,8 +20,8 @@ class Company < ApplicationRecord
   def self.seed_existing_companies(company, row, ats_type, country)
     changes_made = false
 
-    if company.operating_status != row['operating_status']
-      company.operating_status = row['operating_status']
+    if company.operating_status != ActiveModel::Type::Boolean.new.cast(row['operating_status'])
+      company.operating_status = ActiveModel::Type::Boolean.new.cast(row['operating_status'])
       changes_made = true
     end
 
@@ -30,16 +30,16 @@ class Company < ApplicationRecord
       changes_made = true
     end
 
-    if company.is_public != row['is_public']
-      company.is_public = row['is_public']
+    if company.is_public != ActiveModel::Type::Boolean.new.cast(row['is_public'])
+      company.is_public = ActiveModel::Type::Boolean.new.cast(row['is_public'])
       changes_made = true
     end
 
-    if company.year_founded != row['year_founded']
-      company.year_founded = row['year_founded']
+    if company.year_founded != row['year_founded'].to_i
+      company.year_founded = row['year_founded'].to_i
       changes_made = true
     end
-
+    
     if company.acquired_by != row['acquired_by']
       company.acquired_by = row['acquired_by']
       changes_made = true
