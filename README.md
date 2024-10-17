@@ -42,5 +42,6 @@ Angellist (now Wellfound) for pharmacists and other healthcare professionals loo
 
 ## <a name="links"></a>Links:
 
+- https://www.linkedin.com/company/pharmds-in-it
 - https://www.linkedin.com/in/khanh-mai-33190/
 - https://www.linkedin.com/company/coderx/
