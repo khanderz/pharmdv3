@@ -45,6 +45,11 @@ class Company < ApplicationRecord
       changes_made = true
     end
 
+    if company.company_description != row['company_description']
+      company.company_description = row['company_description']
+      changes_made = true
+    end
+
     if ats_type && ats_type[:ats_type_code] != row['company_ats_type']
       company.ats_type = ats_type
       changes_made = true
@@ -55,7 +60,6 @@ class Company < ApplicationRecord
       changes_made = true
     end
 
-    # Process state
     if row['company_state'].present?
       state = State.find_by(state_name: row['company_state']) || State.find_by(state_code: row['company_state'])
       if state && state != company.state
@@ -64,7 +68,6 @@ class Company < ApplicationRecord
       end
     end
 
-    # Process city
     if row['company_city'].present?
       city = City.find_by(city_name: row['company_city']) || City.where('? = ANY (aliases)', row['company_city']).first
       if city && city != company.city
@@ -114,16 +117,10 @@ class Company < ApplicationRecord
 
     if healthcare_domain
       specialties = row['company_specialty'].split(',').map do |specialty_key|
-        specialty = CompanySpecialty.find_by(key: specialty_key.strip, healthcare_domain_id: healthcare_domain.id)
-        if specialty.nil?
-          puts "Specialty not found for company: #{row['company_name']} or key: #{specialty_key.strip}"
-          nil
-        else
-          specialty
-        end
+        CompanySpecialty.find_by(key: specialty_key.strip, healthcare_domain_id: healthcare_domain.id)
       end.compact
-
-      if company.company_specialties.sort != specialties.sort
+  
+      if specialties.present? && company.company_specialties.pluck(:id).sort != specialties.pluck(:id).sort
         company.company_specialties = specialties
         changes_made = true
       end

@@ -36,7 +36,8 @@ begin
           linkedin_url: row['linkedin_url'],
           is_public: row['is_public'],
           year_founded: row['year_founded'],
-          acquired_by: row['acquired_by']
+          acquired_by: row['acquired_by'],
+          company_description: row['company_description']
         )
 
         if ats_type
