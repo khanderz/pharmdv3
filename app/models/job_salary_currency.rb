@@ -27,3 +27,5 @@ class JobSalaryCurrency < ApplicationRecord
 
     currency
 end
+
+end

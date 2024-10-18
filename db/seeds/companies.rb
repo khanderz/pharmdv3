@@ -14,10 +14,8 @@ begin
                 Country.find_by(country_name: row['company_country']) ||
                 Country.where('? = ANY(aliases)', row['company_country']).first  
 
-      puts "Processing company: #{row['company_name']}"
-
       if company
-       puts "-----UPDATING"
+       puts "-----UPDATING #{row['company_name']}"
         changes_made = Company.seed_existing_companies(company, row, ats_type, country)
 
         if changes_made
@@ -28,7 +26,7 @@ begin
         end
       else
 
-        puts "-----CREATING"
+        puts "-----CREATING #{row['company_name']}"
         # Create a new company
         new_company = Company.new(
           company_name: row['company_name'],

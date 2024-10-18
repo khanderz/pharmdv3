@@ -1,6 +1,4 @@
-# Seeding popular cities for business districts and startups, including those from booming countries
 cities = [
-  # Existing U.S. cities
   { city_name: 'Atlanta' },
   { city_name: 'Austin', aliases: ['Downtown', 'East Austin', 'South Congress', 'Zilker', 'Hyde Park'] },
   { city_name: 'Boston', aliases: ['Back Bay', 'South End', 'Fenway', 'Beacon Hill', 'Seaport'] },
@@ -26,7 +24,6 @@ cities = [
   { city_name: 'Seattle', aliases: ['Capitol Hill', 'Belltown', 'Ballard', 'Fremont', 'Queen Anne', 'South Lake Union'] },
   { city_name: 'Washington', aliases: ['Georgetown', 'Dupont Circle', 'Capitol Hill', 'Foggy Bottom', 'Adams Morgan', 'Columbia Heights'] },
 
-  # Popular cities from booming economies (alphabetized by city_name)
   { city_name: 'Amsterdam' },  # Netherlands
   { city_name: 'Beijing' },  # China
   { city_name: 'Bengaluru' },  # India

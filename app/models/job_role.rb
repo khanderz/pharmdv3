@@ -5,11 +5,11 @@ class JobRole < ApplicationRecord
   has_many :job_posts
   has_many :adjudications, as: :adjudicatable, dependent: :destroy 
   
-  # Storing additional role details in JSON format
-  store :additional_attributes, accessors: [:job_function, :clearance_level], coder: JSON
+  # # Storing additional role details in JSON format
+  # store :additional_attributes, accessors: [:job_function, :clearance_level], coder: JSON
 
-  # Aliases for roles with similar names
-  serialize :aliases, JSON
+  # # Aliases for roles with similar names
+  # serialize :aliases, JSON
   validates :role_name, presence: true, uniqueness: true
      
   # Class method to find or create a job role and update department and team if necessary
@@ -19,7 +19,7 @@ class JobRole < ApplicationRecord
     
     if department.nil?
       new_department = Department.create!(
-        dept_name: department_name
+        dept_name: department_name,
         error_details: "Department #{department_name} for job role #{job_title} not found in existing records",
        resolved: false
       )

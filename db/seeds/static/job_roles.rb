@@ -1,4 +1,3 @@
-# Seeding common job roles with aliases and assigning department_id and team_id
 job_roles = [
   { role_name: 'Account Manager', aliases: ['Sales Representative', 'Account Exec', 'Client Manager'], department_name: 'Sales', team_name: 'Sales' },
   { role_name: 'Behavioral Health Therapist', aliases: ['Mental Health Counselor', 'Licensed Therapist', 'Remote Therapist'], department_name: 'Clinical Team', team_name: 'Care Operations' },
@@ -34,10 +33,10 @@ job_roles.each do |role|
     if department && team
       role_record = JobRole.find_or_initialize_by(role_name: role[:role_name], department_id: department.id, team_id: team.id)
 
-      if role_record.persisted?
+      unless role_record.persisted?
         existing_count += 1
       else
-        role_record.aliases = role[:aliases]
+        role_record.aliases = role[:aliases] if role[:aliases]
         role_record.save!
         seeded_count += 1
       end
