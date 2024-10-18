@@ -10,7 +10,7 @@ class JobSalaryCurrency < ApplicationRecord
         unless currency
             new_currency = JobSalaryCurrency.create!(
                 currency_code: currency_code,
-                error_details: "Currency #{currency[:currency_code]} not found and needs adjudication.",
+                error_details: "Currency #{currency_code} not found and needs adjudication.",
                 resolved: false
               )
 

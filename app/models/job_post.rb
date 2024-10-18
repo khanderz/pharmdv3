@@ -17,7 +17,6 @@ class JobPost < ApplicationRecord
   validates :job_salary_min, :job_salary_max, numericality: { greater_than_or_equal_to: 0 }, allow_nil: true
 
   # Shared methods -----------------------------------------------------------
-  
   # Deactivate old jobs that are no longer in the API data
   def self.deactivate_old_jobs(company, active_job_ids)
     deactivated_count = JobPost.where(company: company).where.not(id: active_job_ids).update_all(job_active: false)
@@ -55,36 +54,75 @@ class JobPost < ApplicationRecord
     end
   end
 
-  # Lever jobs -----------------------------------------------------------
-  def self.fetch_lever_jobs(company)
-    jobs = get_lever_jobs(company)
-    if jobs.present?
-      active_job_ids = save_lever_jobs(company, jobs)
-      deactivate_old_jobs(company, active_job_ids)
-    end
-  end
-
-  def self.clear_lever_data
-    Company.where(ats_type: AtsType.find_by(ats_type_code: 'lever')).each do |company|
-      JobPost.where(company: company).delete_all
-    end
-    puts "Lever jobs deleted from the database"
-  end
-
   private
 
+#  fetch jobs from ATS APIs
+  def self.fetch_jobs(company)
+    if company.ats_type.ats_type_code == 'lever'
+      lever_jobs = get_lever_jobs(company)
+      if lever_jobs.present?
+        active_job_ids = save_lever_jobs(company, lever_jobs)
+        deactivate_old_jobs(company, active_job_ids)
+      end
+    elsif company.ats_type.ats_type_code == 'greenhouse'
+      gh_jobs = get_greenhouse_jobs(company)
+
+      if gh_jobs && gh_jobs["jobs"]
+        jobs_mapped = gh_jobs["jobs"].map { |job| job }
+        active_job_ids = save_greenhouse_jobs(company, jobs_mapped)
+        deactivate_old_jobs(company, active_job_ids)
+      else
+        puts "No jobs found for #{company.company_name}"
+      end
+    else
+      puts "ATS type #{company.ats_type.ats_type_code} not supported for company: #{company.company_name}"
+    end
+  end
+
+  # Lever jobs -----------------------------------------------------------
   def self.get_lever_jobs(company)
     company_name = company.company_name.gsub(' ', '').downcase
     url = "https://api.lever.co/v0/postings/#{company_name}"
     uri = URI(url)
-    response = Net::HTTP.get(uri)
-    jobs = JSON.parse(response)
-
-    return jobs if jobs.is_a?(Array)
-
-    puts "Error: #{jobs['message']}, cannot get Lever jobs"
-    nil
+  
+    begin
+      response = Net::HTTP.get(uri)
+      jobs = JSON.parse(response)
+  
+      if jobs.is_a?(Array)
+        return jobs
+      else
+        company.error_details = "failed to fetch Lever jobs"
+        company.resolved = false
+        company.save!
+        
+        Adjudication.create!(
+          adjudicatable_type: 'Company',
+          adjudicatable_id: company.id,
+          error_details: "failed to fetch Lever jobs for #{company.company_name}",
+          resolved: false
+        )
+        puts "Error: #{jobs['message']}, cannot get Lever jobs. Logged to adjudications."
+        
+        nil
+      end
+    rescue StandardError => e
+      # Log the exception and create an adjudication for the failure
+      error_message = "Exception occurred while fetching Lever jobs for #{company.company_name}: #{e.message}"
+      puts error_message
+  
+      # Create an adjudication record
+      Adjudication.create!(
+        adjudicatable_type: 'Company',
+        adjudicatable_id: company.id,
+        error_details: error_message,
+        resolved: false
+      )
+  
+      nil
+    end
   end
+  
 
   def self.save_lever_jobs(company, jobs)
     active_job_ids = []
@@ -99,7 +137,7 @@ class JobPost < ApplicationRecord
       end
 
       # Map data values to job post fields
-      mapped_data = map_ats_data_return('lever', job)
+      mapped_data = map_ats_data_return('lever', job, company)
       job_count += 1
       
       # Prepare new job post data
@@ -116,27 +154,6 @@ class JobPost < ApplicationRecord
   end
 
   # Greenhouse jobs -----------------------------------------------------------
-  def self.fetch_greenhouse_jobs(company)
-    jobs = get_greenhouse_jobs(company)
-
-    if jobs && jobs["jobs"]
-      jobs_mapped = jobs["jobs"].map { |job| job }
-      active_job_ids = save_greenhouse_jobs(company, jobs_mapped)
-      deactivate_old_jobs(company, active_job_ids)
-    else
-      puts "No jobs found for #{company.company_name}"
-    end
-  end
-
-  def self.clear_greenhouse_data
-    Company.where(ats_type: AtsType.find_by(ats_type_code: 'greenhouse')).each do |company|
-      JobPost.where(company: company).delete_all
-    end
-    puts "Greenhouse jobs deleted from the database"
-  end
-
-  private
-
   def self.get_greenhouse_jobs(company)
     ats_id = company.ats_id
     url = "https://boards-api.greenhouse.io/v1/boards/#{ats_id}/jobs?content=true"
@@ -144,9 +161,23 @@ class JobPost < ApplicationRecord
     response = Net::HTTP.get(uri)
     jobs = JSON.parse(response)
 
-    return jobs if jobs.is_a?(Hash)
+    if jobs.is_a?(Hash)
+      return jobs
+    else
+      company.error_details = "failed to fetch Greenhouse jobs"
+      company.resolved = false
+      company.save!
 
-    puts "Error: #{jobs['message']}, cannot get Greenhouse jobs"
+      Adjudication.create!(
+        adjudicatable_type: 'Company',
+        adjudicatable_id: company.id,
+        error_details: "failed to fetch Greenhouse jobs for #{company.company_name}",
+        resolved: false
+      )
+      puts "Error: #{jobs['message']}, cannot get Greenhouse jobs. Logged to adjudications."
+
+      nil
+    end
     nil
   end
   
@@ -163,7 +194,7 @@ class JobPost < ApplicationRecord
       end
       
       # Map data values to job post fields
-      mapped_data = map_ats_data_return('greenhouse', job)
+      mapped_data = map_ats_data_return('greenhouse', job, company)
       job_count += 1
       
       # Prepare the new job post data
@@ -180,7 +211,7 @@ class JobPost < ApplicationRecord
   end
 
   # Map data values to job post fields
-  def self.map_ats_data_return(ats, job)
+  def self.map_ats_data_return(ats, job, company)
     puts "json: #{job['categories']['allLocations']} "
 
     if ats == 'lever'
