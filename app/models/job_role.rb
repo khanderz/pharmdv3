@@ -6,9 +6,21 @@ class JobRole < ApplicationRecord
   has_many :adjudications, as: :adjudicatable, dependent: :destroy 
   
   validates :role_name, presence: true, uniqueness: true
+
+  def self.clean_job_title(job_title)
+    cleaned_title = job_title.gsub(/\(.*?\)/, '').strip
+    
+    cleaned_title = cleaned_title.split(',').first.strip
+    
+    cleaned_title
+  end
      
   # Class method to find or create a job role and update department and team if necessary
   def self.find_or_create_with_department_and_team(job_title, department_name, team_name)
+    # Preprocess job title to remove extraneous information like "(2025 New Grad)"
+    cleaned_job_title = clean_job_title(job_title)
+    puts "job_title: #{job_title} ,Cleaned job title: #{cleaned_job_title}"
+
     # Find the department by name or its aliases
     department = Department.find_by('dept_name = ? OR ? = ANY (aliases)', department_name, department_name)
     
@@ -16,7 +28,7 @@ class JobRole < ApplicationRecord
       new_department = Department.create!(
         dept_name: department_name,
         error_details: "Department #{department_name} for job role #{job_title} not found in existing records",
-       resolved: false
+        resolved: false
       )
 
       Adjudication.create!(
@@ -51,21 +63,26 @@ class JobRole < ApplicationRecord
       return
     end
     
-    # Find or create the job role
-    job_role = JobRole.find_by('role_name = ? OR ? = ANY (aliases)', job_title, job_title)
-    
-    if job_role.nil?
-      job_role = JobRole.create(role_name: job_title, department: department, team: team)
+    # Find the job role by cleaned job title or its aliases
+    job_role = JobRole.find_by('role_name = ? OR ? = ANY (aliases)', cleaned_job_title, cleaned_job_title)
 
-      puts "Created new Job Role: #{job_title} with department: #{department_name} and team: #{team_name}"
+    if job_role.nil?
+      # Create the new job role
+      job_role = JobRole.create!(
+        role_name: cleaned_job_title, 
+        department: department, 
+        team: team
+      )
+
+      puts "Created new Job Role: #{cleaned_job_title} with department: #{department_name} and team: #{team_name}"
     elsif job_role.department.nil? && department.present?
       job_role.update(department: department)
 
-      puts "Updated Job Role: #{job_title} with department: #{department_name}"
+      puts "Updated Job Role: #{cleaned_job_title} with department: #{department_name}"
     elsif job_role.team.nil? && team.present?
       job_role.update(team: team)
 
-      puts "Updated Job Role: #{job_title} with team: #{team_name}"
+      puts "Updated Job Role: #{cleaned_job_title} with team: #{team_name}"
     end
 
     job_role
