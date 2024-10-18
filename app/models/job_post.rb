@@ -27,8 +27,6 @@ class JobPost < ApplicationRecord
   def self.process_existing_or_new_job(company, job_url, job_post_data)
     existing_job = JobPost.find_by(job_url: job_url)
 
-    puts "Job post data: #{job_post_data[:department_id]}, team id: #{job_post_data[:team_id]}"
-
     if existing_job
       if existing_job.attributes.except('id', 'created_at', 'updated_at') == job_post_data
         puts "Job post already exists and is unchanged for URL: #{job_url}"
@@ -40,7 +38,6 @@ class JobPost < ApplicationRecord
     else
       # Create new job post
       new_job_post = JobPost.create!(job_post_data)
-      puts "New job post data: #{new_job_post.inspect}"
 
       if new_job_post.save
         puts "#{company.company_name} job post added"

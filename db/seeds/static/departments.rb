@@ -1,5 +1,6 @@
 # Seeding common departments with aliases
 departments = [
+  { dept_name: 'Clinical Team', aliases: ['Medical Team', 'Care Team', 'Healthcare Team'] }
   { dept_name: 'Customer Support', aliases: ['Customer Service', 'Client Support', 'Help Desk'] },
   { dept_name: 'Data Science', aliases: ['Data Analytics', 'Machine Learning', 'AI'] },
   { dept_name: 'Design', aliases: ['UI/UX Design', 'Graphic Design'] },
@@ -12,7 +13,6 @@ departments = [
   { dept_name: 'Operations', aliases: ['Business Operations', 'Logistics', 'Supply Chain'] },
   { dept_name: 'Product Management', aliases: ['Product Development', 'Product'] },
   { dept_name: 'Sales', aliases: ['Business Development', 'Account Management'] },
-  { dept_name: 'Clinical Team', aliases: ['Medical Team', 'Care Team', 'Healthcare Team'] } # Added Clinical Team
 ]
 
 seeded_count = 0

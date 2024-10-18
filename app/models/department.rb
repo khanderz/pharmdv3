@@ -6,8 +6,6 @@ class Department < ApplicationRecord
 def self.find_department(department_name, adjudicatable_type, relation = nil)
     department = Department.find_by('LOWER(dept_name) = ? OR LOWER(?) = ANY (aliases)', department_name.downcase, department_name.downcase)
 
-    puts "Department #{department_name}"
-
     if department.nil?
         department = Department.create!(
             dept_name: department_name,
