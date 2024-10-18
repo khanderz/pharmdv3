@@ -57,7 +57,6 @@ job_roles.each do |role|
       role_record = JobRole.find_or_initialize_by(role_name: role[:role_name], department_id: department.id, team_id: team.id)
 
       if role_record.persisted?
-        # Update logic: Check if any changes were made
         changes_made = false
 
         if role_record.aliases.sort != role[:aliases].sort
@@ -74,7 +73,6 @@ job_roles.each do |role|
           puts "No changes for job role: #{role_record.role_name}."
         end
       else
-        # Create new role
         role_record.aliases = role[:aliases] if role[:aliases]
         role_record.save!
         seeded_count += 1

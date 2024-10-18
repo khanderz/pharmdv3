@@ -15,13 +15,9 @@ class JobRole < ApplicationRecord
     cleaned_title
   end
      
-  # Class method to find or create a job role and update department and team if necessary
   def self.find_or_create_with_department_and_team(job_title, department_name, team_name)
-    # Preprocess job title to remove extraneous information like "(2025 New Grad)"
     cleaned_job_title = clean_job_title(job_title)
-    puts "job_title: #{job_title} ,Cleaned job title: #{cleaned_job_title}"
 
-    # Find the department by name or its aliases
     department = Department.find_by('dept_name = ? OR ? = ANY (aliases)', department_name, department_name)
     
     if department.nil?
@@ -42,7 +38,6 @@ class JobRole < ApplicationRecord
       return
     end
 
-    # Find the team by name or its aliases
     team = Team.find_by('team_name = ? OR ? = ANY (aliases)', team_name, team_name)
     
     if team.nil?
@@ -63,18 +58,25 @@ class JobRole < ApplicationRecord
       return
     end
     
-    # Find the job role by cleaned job title or its aliases
     job_role = JobRole.find_by('role_name = ? OR ? = ANY (aliases)', cleaned_job_title, cleaned_job_title)
 
     if job_role.nil?
-      # Create the new job role
       job_role = JobRole.create!(
         role_name: cleaned_job_title, 
         department: department, 
-        team: team
+        team: team,
+        error_details: "Job Role: #{cleaned_job_title} not found in existing records",
+        resolved: false
       )
 
-      puts "Created new Job Role: #{cleaned_job_title} with department: #{department_name} and team: #{team_name}"
+      Adjudication.create!(
+        adjudicatable_type: 'JobRole',
+        adjudicatable_id: job_role.id,
+        error_details: "Job Role: #{cleaned_job_title} not found in existing records",
+        resolved: false
+      )
+
+      puts "Adjudication created for new job role: #{cleaned_job_title}."
     elsif job_role.department.nil? && department.present?
       job_role.update(department: department)
 
