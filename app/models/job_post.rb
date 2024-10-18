@@ -58,17 +58,16 @@ class JobPost < ApplicationRecord
 
 #  fetch jobs from ATS APIs
   def self.fetch_jobs(company)
-    if company.ats_type.ats_type_code == 'lever'
-      lever_jobs = get_lever_jobs(company)
-      if lever_jobs.present?
-        active_job_ids = save_lever_jobs(company, lever_jobs)
+    jobs = get_jobs(company)
+
+    if company.ats_type.ats_type_code == 'LEVER'
+      if jobs.present?
+        active_job_ids = save_lever_jobs(company, jobs)
         deactivate_old_jobs(company, active_job_ids)
       end
-    elsif company.ats_type.ats_type_code == 'greenhouse'
-      gh_jobs = get_greenhouse_jobs(company)
-
-      if gh_jobs && gh_jobs["jobs"]
-        jobs_mapped = gh_jobs["jobs"].map { |job| job }
+    elsif company.ats_type.ats_type_code == 'GREENHOUSE'
+      if jobs && jobs["jobs"]
+        jobs_mapped = jobs["jobs"].map { |job| job }
         active_job_ids = save_greenhouse_jobs(company, jobs_mapped)
         deactivate_old_jobs(company, active_job_ids)
       else
@@ -79,9 +78,10 @@ class JobPost < ApplicationRecord
     end
   end
 
-  # Lever jobs -----------------------------------------------------------
-  def self.get_lever_jobs(company)
-    company_name = company.company_name.gsub(' ', '').downcase
+  # Get jobs from ATS APIs
+  def self.get_jobs(company)
+    if company.ats_type.ats_type_code == 'LEVER'
+      company_name = company.company_name.gsub(' ', '').downcase
     url = "https://api.lever.co/v0/postings/#{company_name}"
     uri = URI(url)
   
@@ -121,9 +121,37 @@ class JobPost < ApplicationRecord
   
       nil
     end
-  end
+    elsif company.ats_type.ats_type_code == 'GREENHOUSE'
+      ats_id = company.ats_id
+      url = "https://boards-api.greenhouse.io/v1/boards/#{ats_id}/jobs?content=true"
+      uri = URI(url)
+      response = Net::HTTP.get(uri)
+      jobs = JSON.parse(response)
   
+      if jobs.is_a?(Hash)
+        return jobs
+      else
+        company.error_details = "failed to fetch Greenhouse jobs"
+        company.resolved = false
+        company.save!
+  
+        Adjudication.create!(
+          adjudicatable_type: 'Company',
+          adjudicatable_id: company.id,
+          error_details: "failed to fetch Greenhouse jobs for #{company.company_name}",
+          resolved: false
+        )
+        puts "Error: #{jobs['message']}, cannot get Greenhouse jobs. Logged to adjudications."
+  
+        nil
+      end
+      nil
+    else
+      puts "ATS type #{company.ats_type.ats_type_code} not supported for company: #{company.company_name}"
+    end
+  end
 
+  # Lever jobs -----------------------------------------------------------
   def self.save_lever_jobs(company, jobs)
     active_job_ids = []
     job_count = 0  
@@ -154,33 +182,6 @@ class JobPost < ApplicationRecord
   end
 
   # Greenhouse jobs -----------------------------------------------------------
-  def self.get_greenhouse_jobs(company)
-    ats_id = company.ats_id
-    url = "https://boards-api.greenhouse.io/v1/boards/#{ats_id}/jobs?content=true"
-    uri = URI(url)
-    response = Net::HTTP.get(uri)
-    jobs = JSON.parse(response)
-
-    if jobs.is_a?(Hash)
-      return jobs
-    else
-      company.error_details = "failed to fetch Greenhouse jobs"
-      company.resolved = false
-      company.save!
-
-      Adjudication.create!(
-        adjudicatable_type: 'Company',
-        adjudicatable_id: company.id,
-        error_details: "failed to fetch Greenhouse jobs for #{company.company_name}",
-        resolved: false
-      )
-      puts "Error: #{jobs['message']}, cannot get Greenhouse jobs. Logged to adjudications."
-
-      nil
-    end
-    nil
-  end
-  
   def self.save_greenhouse_jobs(company, jobs)
     active_job_ids = []
     job_count = 0  
