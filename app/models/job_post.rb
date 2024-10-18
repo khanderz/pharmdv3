@@ -27,6 +27,8 @@ class JobPost < ApplicationRecord
   def self.process_existing_or_new_job(company, job_url, job_post_data)
     existing_job = JobPost.find_by(job_url: job_url)
 
+    puts "Job post data: #{job_post_data[:department_id]}, team id: #{job_post_data[:team_id]}"
+
     if existing_job
       if existing_job.attributes.except('id', 'created_at', 'updated_at') == job_post_data
         puts "Job post already exists and is unchanged for URL: #{job_url}"
@@ -37,14 +39,16 @@ class JobPost < ApplicationRecord
       return existing_job.id
     else
       # Create new job post
-      new_job_post = JobPost.new(job_post_data)
+      new_job_post = JobPost.create!(job_post_data)
+      puts "New job post data: #{new_job_post.inspect}"
+
       if new_job_post.save
         puts "#{company.company_name} job post added"
         return new_job_post.id
       else
-        # Log errors to Adjudications table for manual review
         Adjudication.create!(
-          adjudicatable_type: new_job_post,
+          adjudicatable_type: 'JobPost',
+          adjudicatable_id: new_job_post.id,
           error_details: new_job_post.errors.full_messages.join(', '),
           resolved: false
         )
@@ -185,6 +189,7 @@ class JobPost < ApplicationRecord
       role_name, department_name, team_name = job_role_params
 
       job_role = JobRole.find_or_create_with_department_and_team(role_name, department_name, team_name)
+      puts "Job Role: #{job_role.role_name} - Department: #{department_name} - Team: #{team_name}"
       job_url = get_job_url(ats_code, job)
 
       # Map data values to job post fields
@@ -206,12 +211,14 @@ class JobPost < ApplicationRecord
 
   # Map data values to job post fields
   def self.map_ats_data_return(ats, job, company)
-    puts "json: #{job['categories']['allLocations']} "
+    # puts "json: #{job['categories']['allLocations']} "
 
     if ats == 'LEVER'
       {
         job_title: job['text'],
-        job_country_id: handle_country_record(job['country'], job['country'], company.id, job['hostedUrl']), 
+        country_id: handle_country_record(job['country'], job['country'], company.id, job['hostedUrl']), 
+        department_id: Department.find_department(job['categories']['department'], 'JobPost', job['hostedUrl']).id,
+        team_id: Team.find_or_create_by(team_name: job['categories']['team']).id,
         job_setting_id: find_setting_id_by_name(job['workplaceType']), 
         job_description: job['descriptionBodyPlain'],
         job_url: job['hostedUrl'],
@@ -263,7 +270,7 @@ def self.handle_country_record(country_code, country_name, company_id, job_url)
 end
 
 def self.find_setting_id_by_name(setting_name)
-  JobSetting.find_by(setting_name: setting_name)&.id
+  JobSetting.where('LOWER(setting_name) = ?', setting_name.downcase).first&.id
 end
 
 def self.find_commitment_id_by_name(commitment_name)

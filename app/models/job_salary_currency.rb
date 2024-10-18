@@ -5,6 +5,10 @@ class JobSalaryCurrency < ApplicationRecord
     validates :currency_code, presence: true, uniqueness: true
 
     def self.find_or_adjudicate_currency(currency_code, company_id, job_url)
+        if currency_code.nil?
+            return nil
+          end
+
         currency = JobSalaryCurrency.find_by(currency_code: currency_code)
 
         unless currency
