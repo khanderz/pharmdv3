@@ -7,7 +7,7 @@ Alto Pharmacy,TRUE,PHARMA,VIRTUAL_PHARMACY,GREENHOUSE,501-1000,SEED,https://www.
 Capsule,TRUE,PHARMA,VIRTUAL_PHARMACY,GREENHOUSE,501-1000,SEED,https://www.linkedin.com/company/capsule-co/,TRUE,2017,New York City,NY,US,AcquirerZ,capsulecares,test description 6
 Divvydose,FALSE,PHARMA,VITAMINS_SUPPLEMENTS,EIGHTFOLD,501-1000,SEED,https://www.linkedin.com/company/divvydose/,FALSE,2019,Chicago,Illinois,US,Optum,divvydose-ats,test description 7
 10X Genomics,TRUE,DIGITAL_HEALTH,GENETICS,GREENHOUSE,501-1000,SERIES_A,https://www.linkedin.com/company/10xgenomics,TRUE,2012,Pleasanton,,US,,10xgenomics-ats,test description 8
-1upHealth,TRUE,DIGITAL_HEALTH,DATA_INTEGRATION_ANALYTICS,GREENHOUSE,501-1000,SEED,https://www.linkedin.com/company/1uphealth,FALSE,2017,Boston,,US,,,test description 9
+1upHealth,TRUE,DIGITAL_HEALTH,DATA_INTEGRATION_ANALYTICS,GREENHOUSE,501-1000,SEED,https://www.linkedin.com/company/1uphealth,FALSE,2017,Boston,,US,,1uphealth,test description 9
 23andMe,TRUE,DIGITAL_HEALTH,GENETICS,GREENHOUSE,501-1000,SERIES_A,https://www.linkedin.com/company/23andme,TRUE,2006,Sunnyvale,,US,,23andme-ats,test description 10
 54gene,TRUE,DIGITAL_HEALTH,GENETICS,GREENHOUSE,501-1000,SERIES_A,https://www.linkedin.com/company/54gene,FALSE,2019,Washington,,US,,54gene-ats,test description 11
 89bio,TRUE,PHARMA,NOVEL_PHARMA,GREENHOUSE,501-1000,SEED,https://www.linkedin.com/company/89bio,FALSE,2018,San Francisco,,US,axq,89bio-ats,test description 12

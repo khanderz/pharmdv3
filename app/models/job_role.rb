@@ -5,11 +5,6 @@ class JobRole < ApplicationRecord
   has_many :job_posts
   has_many :adjudications, as: :adjudicatable, dependent: :destroy 
   
-  # # Storing additional role details in JSON format
-  # store :additional_attributes, accessors: [:job_function, :clearance_level], coder: JSON
-
-  # # Aliases for roles with similar names
-  # serialize :aliases, JSON
   validates :role_name, presence: true, uniqueness: true
      
   # Class method to find or create a job role and update department and team if necessary

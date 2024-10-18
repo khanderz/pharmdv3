@@ -50,6 +50,11 @@ class Company < ApplicationRecord
       changes_made = true
     end
 
+    if company.ats_id != row['ats_id']
+      company.ats_id = row['ats_id']
+      changes_made = true
+    end
+
     if ats_type && ats_type[:ats_type_code] != row['company_ats_type']
       company.ats_type = ats_type
       changes_made = true

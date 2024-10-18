@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_10_15_160224) do
+ActiveRecord::Schema[7.1].define(version: 2024_10_18_195457) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -60,6 +60,7 @@ ActiveRecord::Schema[7.1].define(version: 2024_10_15_160224) do
     t.bigint "healthcare_domain_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "ats_id"
     t.index ["ats_type_id"], name: "index_companies_on_ats_type_id"
     t.index ["city_id"], name: "index_companies_on_city_id"
     t.index ["company_name"], name: "index_companies_on_company_name", unique: true

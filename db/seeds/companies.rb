@@ -35,7 +35,8 @@ begin
           is_public: row['is_public'],
           year_founded: row['year_founded'],
           acquired_by: row['acquired_by'],
-          company_description: row['company_description']
+          company_description: row['company_description'],
+          ats_id: row['ats_id']
         )
 
         if ats_type
