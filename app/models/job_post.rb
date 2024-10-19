@@ -187,8 +187,6 @@ class JobPost < ApplicationRecord
     build_count = 0
 
     jobs.each do |job|
-      puts "job title: #{job['text']}, dept: #{job['categories']['department']}, team: #{job['categories']['team']}"
-
       job_role_params = get_job_role_params(ats_code, job)
       role_name, department_names, team_names = job_role_params
 
