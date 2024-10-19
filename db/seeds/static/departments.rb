@@ -1,4 +1,5 @@
 departments = [
+  { dept_name: 'Business Development', aliases: ['Sales', 'Business Development and Sales', 'Business Development & Sales'] },  
   { dept_name: 'Clinical Team', aliases: ['Medical Team', 'Care Team', 'Healthcare Team', 'Behavioral Health', 'Clinical Strategy and Services'] },
   { dept_name: 'Customer Support', aliases: ['Customer Service', 'Client Support', 'Help Desk'] },
   { dept_name: 'Data Science', aliases: ['Data Analytics', 'Machine Learning', 'AI'] },

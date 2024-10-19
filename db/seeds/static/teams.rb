@@ -1,8 +1,10 @@
 teams = [
+  { team_name: 'Business Development', aliases: ['Sales', 'Sales Team', 'Business Development Team'] },  
   { team_name: 'Care Operations', aliases: ['Care Team', 'Operations Team', 'Operations', 'Member Care'] },
   { team_name: 'Client Services', aliases: ['Customer Success', 'Customer Support', 'Strategic Alliances'] },
   { team_name: 'Clinical Team', aliases: ['Healthcare Team', 'Medical Team', 'Therapy', 'Psychiatry', 'Clinical Strategy and Services'] },
   { team_name: 'Information Security', aliases: ['Cybersecurity', 'Security Team', 'Information Technology'] },
+  { team_name: 'Finance', aliases: ['Accounting', 'Financial Planning', 'FP&A', 'Finance Team'] },
   { team_name: 'Marketing', aliases: ['Digital Marketing', 'Branding Team'] },
   { team_name: 'Product', aliases: ['Product Development', 'Product Team', 'Design'] },
   { team_name: 'Product Management', aliases: ['PM Team', 'Product Team'] },
