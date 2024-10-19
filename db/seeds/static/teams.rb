@@ -8,7 +8,10 @@ teams = [
   { team_name: 'Product', aliases: ['Product Development', 'Product Team', 'Design'] },
   { team_name: 'Product Management', aliases: ['PM Team', 'Product Team'] },
   { team_name: 'Sales', aliases: ['Business Development', 'Sales Team'] },
-  { team_name: 'Software Engineering', aliases: ['Development Team', 'Engineering Team'] }
+  { team_name: 'Software Engineering', aliases: ['Development Team', 'Engineering Team', 'Engineering'] },
+  { team_name: 'Tech Support', aliases: ['Technical Support', 'Help Desk', 'IT Support'] },
+  { team_name: 'Data Science', aliases: ['Data Team', 'Data Analytics', 'Data Engineering'] },
+  { team_name: 'Business Intelligence', aliases: ['BI Team', 'BI', 'Data Analytics'] },
 ]
 
 

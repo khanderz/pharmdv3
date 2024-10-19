@@ -9,25 +9,17 @@ class JobRole < ApplicationRecord
 
   # Utility method to clean the job title
   def self.clean_job_title(job_title)
-    def self.clean_job_title(job_title)
-      cleaned_title = job_title.gsub(/\(.*?\)/, '') # Remove content in parentheses
-                               .split('-').first.strip # Split by dash and get first part
-  
-      # Load all state names and codes from the State model and prepare for regex matching
-      states = State.all.pluck(:state_code, :state_name).flatten.map { |s| Regexp.escape(s) }
-      state_pattern = /\b(#{states.join('|')})\b/i # Create regex pattern for all state codes and names
-  
-      # Substitute any state code or name in the job title with an empty string
-      cleaned_title.gsub!(state_pattern, '') 
-  
-      # Final cleanup to remove extra spaces after the state names/codes have been removed
-      cleaned_title.strip
-    end
+    cleaned_title = job_title.gsub(/\(.*?\)/, '')                      
+          .split('-').first.strip                
+          .gsub(/\b(?:#{State.all.pluck(:state_code, :state_name).flatten.join('|')})\b/i, '') 
+          .strip                                   
+    cleaned_title
   end
 
   # Case-insensitive search and create method
   def self.find_or_create_with_department_and_team(job_title, department_name, team_name)
     cleaned_job_title = clean_job_title(job_title)
+    puts "Cleaned job title: #{cleaned_job_title}, dept: #{department_name}, team: #{team_name}"
     department = Department.find_department(department_name, 'JobRole', job_title)
     team = Team.find_team(team_name, 'JobRole', job_title)
 
@@ -35,7 +27,7 @@ class JobRole < ApplicationRecord
 
     # If job role is not found, search by aliases
     if job_role.nil?
-      job_role = JobRole.where('LOWER(aliases) @> ?', "{#{cleaned_job_title.downcase}}").first
+      job_role = JobRole.where('LOWER(?) = ANY (SELECT LOWER(unnest(aliases)))', cleaned_job_title.downcase).first
     end
 
     if job_role.nil?
