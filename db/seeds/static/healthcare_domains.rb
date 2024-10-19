@@ -21,6 +21,7 @@ healthcare_domains = [
   { key: 'PSYCHIATRY', value: 'Psychiatry' },
   { key: 'PUBLIC_HEALTH', value: 'Public Health' },
   { key: 'RADIOLOGY', value: 'Radiology' },
+  { key: 'RESEARCH', value: 'Research' },
   { key: 'RESPIRATORY', value: 'Respiratory' },
   { key: 'REHABILITATION', value: 'Rehabilitation' },
   { key: 'SPEECH_THERAPY', value: 'Speech-Language Pathology' },
@@ -37,10 +38,12 @@ healthcare_domains.each do |domain|
     
     if domain_record.persisted?
       existing_count += 1
+      puts "Domain #{domain[:key]} already exists."
     else
       domain_record.value = domain[:value]
       domain_record.save!
       seeded_count += 1
+      puts "Seeded new domain: #{domain[:key]} - #{domain[:value]}"
     end
   rescue StandardError => e
     puts "Error seeding healthcare domain: #{domain[:key]} - #{e.message}"

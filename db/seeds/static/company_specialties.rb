@@ -21,11 +21,18 @@ domains = {
   psychiatry: HealthcareDomain.find_by(key: 'PSYCHIATRY'),
   public_health: HealthcareDomain.find_by(key: 'PUBLIC_HEALTH'),
   radiology: HealthcareDomain.find_by(key: 'RADIOLOGY'),
+  research: HealthcareDomain.find_by(key: 'RESEARCH'),
   rehabilitation: HealthcareDomain.find_by(key: 'REHABILITATION'),
   respiratory: HealthcareDomain.find_by(key: 'RESPIRATORY'),
   speech_therapy: HealthcareDomain.find_by(key: 'SPEECH_THERAPY'),
   surgery: HealthcareDomain.find_by(key: 'SURGERY')
 }
+
+# Log missing domains for better feedback during seeding
+missing_domains = domains.select { |key, domain| domain.nil? }
+if missing_domains.any?
+  missing_domains.each { |key, _| puts "Warning: Healthcare domain '#{key}' not found in database." }
+end
 
 # Define the specialties for different healthcare domains
 specialties = {
@@ -47,7 +54,6 @@ specialties = {
   digital_health: [
     { key: 'APP_DEPLOYMENT', value: 'App Deployment' },
     { key: 'BILLING_AND_PAYMENTS', value: 'Billing & Payments' },
-    { key: 'BIOTECHNOLOGY_RESEARCH', value: 'Biotechnology & Research' },
     { key: 'CARE_COORDINATION_COLLABORATION', value: 'Care Coordination & Collaboration' },
     { key: 'CLINICAL_INTELLIGENCE', value: 'Clinical Intelligence' },
     { key: 'COMPUTER_AIDED_IMAGING', value: 'Computer-Aided Imaging' },
@@ -57,7 +63,6 @@ specialties = {
     { key: 'HOME_HEALTH_TECH', value: 'Home Health Tech' },
     { key: 'HYBRID_VIRTUAL_INPERSON_CARE', value: 'Hybrid Virtual In-Person Care' },
     { key: 'MEDIA', value: 'Media' },
-    { key: 'MENTAL_HEALTH', value: 'Mental Health' },
     { key: 'PATIENT_ENGAGEMENT', value: 'Patient Engagement' },
     { key: 'PROVIDER_DIRECTORIES_AND_CARE_NAVIGATION', value: 'Provider Directories & Care Navigation' },
     { key: 'REVENUE_CYCLE_MGMT', value: 'Revenue Cycle Management' },
@@ -78,6 +83,9 @@ specialties = {
   cardiology: [
     { key: 'CARDIAC_REHABILITATION', value: 'Cardiac Rehabilitation' },
     { key: 'HEART_SURGERY', value: 'Heart Surgery' }
+  ],
+  research: [
+    { key: 'BIOTECHNOLOGY', value: 'Biotechnology' },
   ]
 }
 
@@ -87,15 +95,20 @@ total_specialties = CompanySpecialty.count
 specialties.each do |domain_key, domain_specialties|
   domain = domains[domain_key]
 
+  if domain.nil?
+    puts "Skipping specialties for missing domain: #{domain_key}"
+    next
+  end
+
   domain_specialties.each do |specialty|
     specialty_record = CompanySpecialty.find_or_initialize_by(
-      key: specialty[:key],
-      healthcare_domain_id: domain.id # Correctly assigning healthcare_domain_id
+      key: specialty[:key]
     )
 
     unless specialty_record.persisted?
       specialty_record.update(value: specialty[:value])
       seeded_count += 1
+      puts "Seeded specialty: #{specialty[:value]} for domain: #{domain_key}"
     end
   end
 end

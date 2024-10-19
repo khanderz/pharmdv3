@@ -7,7 +7,8 @@ class Company < ApplicationRecord
   belongs_to :city, optional: true
   belongs_to :state, optional: true
   belongs_to :country
-  belongs_to :healthcare_domain, foreign_key: 'healthcare_domain_id', class_name: 'HealthcareDomain'
+  has_many :company_domains
+  has_many :healthcare_domains, through: :company_domains
 
   has_many :adjudications, as: :adjudicatable, dependent: :destroy
   has_many :job_posts, foreign_key: :company_id, dependent: :destroy
@@ -113,24 +114,33 @@ class Company < ApplicationRecord
       end
     end
 
-    # Healthcare domain and specialties
-    healthcare_domain = HealthcareDomain.find_by(key: row['healthcare_domain'])
-    if healthcare_domain && healthcare_domain != company.healthcare_domain
-      company.healthcare_domain = healthcare_domain
-      changes_made = true
+    # Handling multiple healthcare domains
+    if row['healthcare_domains'].present?
+      healthcare_domains = row['healthcare_domains'].split(',').map(&:strip)
+      domains = healthcare_domains.map do |domain_key|
+        HealthcareDomain.find_by(key: domain_key)
+      end.compact
+
+      if domains.present? && company.healthcare_domains.pluck(:id).sort != domains.pluck(:id).sort
+        company.healthcare_domains = domains
+        changes_made = true
+      end
+    else
+      puts "No healthcare domains found for company: #{row['company_name']}"
     end
 
-    if healthcare_domain
+    # Company specialties based on the found healthcare domains
+    if row['company_specialty'].present? && domains.present?
       specialties = row['company_specialty'].split(',').map do |specialty_key|
-        CompanySpecialty.find_by(key: specialty_key.strip, healthcare_domain_id: healthcare_domain.id)
+        CompanySpecialty.find_by(key: specialty_key.strip)
       end.compact
-  
+
       if specialties.present? && company.company_specialties.pluck(:id).sort != specialties.pluck(:id).sort
         company.company_specialties = specialties
         changes_made = true
       end
     else
-      puts "Healthcare domain not found for company: #{row['company_name']} with key: #{row['healthcare_domain']}"
+      puts "No specialties found for company: #{row['company_name']} or no valid healthcare domains."
     end
 
     changes_made

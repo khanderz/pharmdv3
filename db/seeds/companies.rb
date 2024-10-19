@@ -15,7 +15,7 @@ begin
                 Country.where('? = ANY(aliases)', row['company_country']).first  
 
       if company
-       puts "-----UPDATING #{row['company_name']}"
+        puts "-----UPDATING #{row['company_name']}"
         changes_made = Company.seed_existing_companies(company, row, ats_type, country)
 
         if changes_made
@@ -25,7 +25,6 @@ begin
           puts "#{company.company_name} has no changes."
         end
       else
-
         puts "-----CREATING #{row['company_name']}"
         # Create a new company
         new_company = Company.new(
@@ -116,15 +115,21 @@ begin
           end
         end
 
-        healthcare_domain = HealthcareDomain.find_by(key: row['healthcare_domain'])
-        if healthcare_domain
-          new_company.healthcare_domain = healthcare_domain
-        else
-          puts "Healthcare domain not found for company: #{row['company_name']} or key: #{row['healthcare_domain']}"
-        end
+        # Handle multiple healthcare domains
+        healthcare_domains = row['healthcare_domains'].split(',').map(&:strip)
+        domains = healthcare_domains.map do |domain_key|
+          domain = HealthcareDomain.find_by(key: domain_key)
+          if domain.nil?
+            puts "Healthcare domain not found for company: #{row['company_name']} or key: #{domain_key}"
+          end
+          domain
+        end.compact
 
+        new_company.healthcare_domains = domains
+
+        # Handle company specialties based on domains
         specialties = row['company_specialty'].split(',').map do |specialty_key|
-          specialty = CompanySpecialty.find_by(key: specialty_key.strip, healthcare_domain_id: healthcare_domain&.id)
+          specialty = CompanySpecialty.find_by(key: specialty_key.strip)
           if specialty.nil?
             puts "Specialty not found for company: #{row['company_name']} or key: #{specialty_key.strip}"
             nil

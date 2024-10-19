@@ -1,6 +1,7 @@
 class HealthcareDomain < ApplicationRecord
-    has_many :company_specialties
-    has_many :companies, foreign_key: 'healthcare_domain_id'
+    has_many :company_domains
+    has_many :companies, through: :company_domains
   
     validates :key, :value, presence: true, uniqueness: true
-end
+  end
+  

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_10_19_005103) do
+ActiveRecord::Schema[7.1].define(version: 2024_10_19_195022) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -57,7 +57,6 @@ ActiveRecord::Schema[7.1].define(version: 2024_10_19_005103) do
     t.bigint "country_id", null: false
     t.string "acquired_by"
     t.text "company_description"
-    t.bigint "healthcare_domain_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.string "ats_id"
@@ -70,9 +69,17 @@ ActiveRecord::Schema[7.1].define(version: 2024_10_19_005103) do
     t.index ["company_size_id"], name: "index_companies_on_company_size_id"
     t.index ["country_id"], name: "index_companies_on_country_id"
     t.index ["funding_type_id"], name: "index_companies_on_funding_type_id"
-    t.index ["healthcare_domain_id"], name: "index_companies_on_healthcare_domain_id"
     t.index ["linkedin_url"], name: "index_companies_on_linkedin_url", unique: true
     t.index ["state_id"], name: "index_companies_on_state_id"
+  end
+
+  create_table "company_domains", force: :cascade do |t|
+    t.bigint "company_id", null: false
+    t.bigint "healthcare_domain_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["company_id"], name: "index_company_domains_on_company_id"
+    t.index ["healthcare_domain_id"], name: "index_company_domains_on_healthcare_domain_id"
   end
 
   create_table "company_sizes", force: :cascade do |t|
@@ -273,8 +280,9 @@ ActiveRecord::Schema[7.1].define(version: 2024_10_19_005103) do
   add_foreign_key "companies", "company_sizes"
   add_foreign_key "companies", "countries"
   add_foreign_key "companies", "funding_types"
-  add_foreign_key "companies", "healthcare_domains"
   add_foreign_key "companies", "states"
+  add_foreign_key "company_domains", "companies"
+  add_foreign_key "company_domains", "healthcare_domains"
   add_foreign_key "company_specializations", "companies"
   add_foreign_key "company_specializations", "company_specialties"
   add_foreign_key "company_specialties", "healthcare_domains"
