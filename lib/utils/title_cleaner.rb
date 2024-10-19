@@ -23,7 +23,31 @@ module Utils
       cleaned_title.gsub!(employment_pattern, '')
 
       # List of seniority or job level terms to remove
-      seniority_terms = ['Senior', 'Sr.', 'I', 'II', 'III', 'Lead', 'Staff', 'junior', 'jr.', 'midlevel', 'mid-level', 'mid level', 'entry level', 'entry-level', 'principal', 'local']
+      seniority_terms = [
+        'Senior', 
+        'Sr.', 
+        'sr',
+        'I', 
+        'II', 
+        'III', 
+        'Lead', 
+        'Staff', 
+        'junior', 
+        'jr.', 
+        'midlevel', 
+        'mid-level', 
+        'mid level', 
+        'entry level', 
+        'entry-level', 
+        'principal', 
+        'local', 
+        'associate',
+       'collections',
+      'team',
+    'supervisor', 
+  'team leader',
+  "Mid-Market"
+]
 
       # Create a pattern for seniority or job level terms
       seniority_pattern = /\b(#{seniority_terms.join('|')})\b/i

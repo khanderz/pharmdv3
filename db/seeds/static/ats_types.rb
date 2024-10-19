@@ -6,11 +6,14 @@ ats_types = [
   { ats_type_code: 'BUILTIN', ats_type_name: 'BuiltIn' },
   { ats_type_code: 'DOVER', ats_type_name: 'Dover' },
   { ats_type_code: 'EIGHTFOLD', ats_type_name: 'Eightfold' },
+  { ats_type_code: 'FOUNTAIN  ', ats_type_name: 'Fountain' },
   { ats_type_code: 'GREENHOUSE', ats_type_name: 'Greenhouse' },
   { ats_type_code: 'ICIMS', ats_type_name: 'iCIMS' },
   { ats_type_code: 'JAZZHR', ats_type_name: 'JazzHR' },
   { ats_type_code: 'LEVER', ats_type_name: 'Lever' },
   { ats_type_code: 'MYWORKDAY', ats_type_name: 'MyWorkday' },
+  { ats_type_code: 'PINPOINTHQ', ats_type_name: 'PinpointHQ' },
+  { ats_type_code: 'PROPRIETARY', ats_type_name: 'Proprietary' },
   { ats_type_code: 'RIPPLING', ats_type_name: 'Rippling' },
   { ats_type_code: 'SMARTRECRUITERS', ats_type_name: 'SmartRecruiters' },
   { ats_type_code: 'TALEO', ats_type_name: 'Taleo' },
@@ -36,3 +39,4 @@ end
 total_ats_types = AtsType.count
 
 puts "*********** Seeded #{seeded_count} ATS types. Total ATS types in the table: #{total_ats_types}."
+

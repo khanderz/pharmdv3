@@ -1,19 +1,21 @@
 teams = [
-  { team_name: 'Business Development', aliases: ['Sales', 'Sales Team', 'Business Development Team'] },  
+  { team_name: 'Business Development', aliases: ['Sales', 'Sales Team', 'Business Development Team', "Product/S&O"] },  
+  { team_name: 'Business Intelligence', aliases: ['BI Team', 'BI', 'Data Analytics'] },
   { team_name: 'Care Operations', aliases: ['Care Team', 'Operations Team', 'Operations', 'Member Care'] },
-  { team_name: 'Client Services', aliases: ['Customer Success', 'Customer Support', 'Strategic Alliances'] },
+  { team_name: 'Client Services', aliases: ['Customer Success', 'Customer Support', 'Strategic Alliances', 'Customer Operations'] },
   { team_name: 'Clinical Team', aliases: ['Healthcare Team', 'Medical Team', 'Therapy', 'Psychiatry', 'Clinical Strategy and Services'] },
-  { team_name: 'Information Security', aliases: ['Cybersecurity', 'Security Team', 'Information Technology'] },
+  { team_name: 'Data Science', aliases: ['Data Team', 'Data Analytics', 'Data Engineering'] },
+  { team_name: 'DevOps', aliases: ['Infrastructure', 'Site Reliability', 'Cloud Engineering'] },
   { team_name: 'Finance', aliases: ['Accounting', 'Financial Planning', 'FP&A', 'Finance Team'] },
+  { team_name: 'Human Resources', aliases: ['HR', 'People Operations', 'Talent Acquisition'] },
+  { team_name: 'Information Security', aliases: ['Cybersecurity', 'Security Team', 'Information Technology'] },
+  { team_name: 'Legal', aliases: ['Corporate Law', 'Compliance', 'Legal Affairs'] },  
   { team_name: 'Marketing', aliases: ['Digital Marketing', 'Branding Team'] },
-  { team_name: 'Product', aliases: ['Product Development', 'Product Team', 'Design'] },
+  { team_name: 'Product', aliases: ['Product Development', 'Product Team', 'Design', "Product/S&O"] },
   { team_name: 'Product Management', aliases: ['PM Team', 'Product Team'] },
   { team_name: 'Sales', aliases: ['Business Development', 'Sales Team'] },
   { team_name: 'Software Engineering', aliases: ['Development Team', 'Engineering Team', 'Engineering'] },
-  { team_name: 'Tech Support', aliases: ['Technical Support', 'Help Desk', 'IT Support'] },
-  { team_name: 'Data Science', aliases: ['Data Team', 'Data Analytics', 'Data Engineering'] },
-  { team_name: 'Business Intelligence', aliases: ['BI Team', 'BI', 'Data Analytics'] },
-  { team_name: 'DevOps', aliases: ['Infrastructure', 'Site Reliability', 'Cloud Engineering'] }
+  { team_name: 'Technical Support', aliases: ['Tech Support', 'Help Desk', 'IT Support'] },
 ]
 
 seeded_count = 0
