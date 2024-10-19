@@ -1,15 +1,16 @@
 # Seeding common teams in job posts
 teams = [
-  { team_name: 'Care Operations', aliases: ['Care Team', 'Operations Team'] },
-  { team_name: 'Client Services', aliases: ['Customer Success', 'Customer Support'] },
-  { team_name: 'Clinical Team', aliases: ['Healthcare Team', 'Medical Team'] },
-  { team_name: 'Information Security', aliases: ['Cybersecurity', 'Security Team'] },
+  { team_name: 'Care Operations', aliases: ['Care Team', 'Operations Team', 'Operations', 'Member Care'] },
+  { team_name: 'Client Services', aliases: ['Customer Success', 'Customer Support', 'Strategic Alliances'] },
+  { team_name: 'Clinical Team', aliases: ['Healthcare Team', 'Medical Team', 'Therapy', 'Psychiatry', 'Clinical Strategy and Services'] },
+  { team_name: 'Information Security', aliases: ['Cybersecurity', 'Security Team', 'Information Technology'] },
   { team_name: 'Marketing', aliases: ['Digital Marketing', 'Branding Team'] },
-  { team_name: 'Product', aliases: ['Product Development', 'Product Team'] },
+  { team_name: 'Product', aliases: ['Product Development', 'Product Team', 'Design'] },
   { team_name: 'Product Management', aliases: ['PM Team', 'Product Team'] },
   { team_name: 'Sales', aliases: ['Business Development', 'Sales Team'] },
   { team_name: 'Software Engineering', aliases: ['Development Team', 'Engineering Team'] }
 ]
+
 
 seeded_count = 0
 existing_count = 0

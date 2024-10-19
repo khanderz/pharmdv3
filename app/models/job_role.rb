@@ -9,8 +9,20 @@ class JobRole < ApplicationRecord
 
   # Utility method to clean the job title
   def self.clean_job_title(job_title)
-    cleaned_title = job_title.gsub(/\(.*?\)/, '').strip
-    cleaned_title.split(',').first.strip
+    def self.clean_job_title(job_title)
+      cleaned_title = job_title.gsub(/\(.*?\)/, '') # Remove content in parentheses
+                               .split('-').first.strip # Split by dash and get first part
+  
+      # Load all state names and codes from the State model and prepare for regex matching
+      states = State.all.pluck(:state_code, :state_name).flatten.map { |s| Regexp.escape(s) }
+      state_pattern = /\b(#{states.join('|')})\b/i # Create regex pattern for all state codes and names
+  
+      # Substitute any state code or name in the job title with an empty string
+      cleaned_title.gsub!(state_pattern, '') 
+  
+      # Final cleanup to remove extra spaces after the state names/codes have been removed
+      cleaned_title.strip
+    end
   end
 
   # Case-insensitive search and create method
@@ -23,7 +35,7 @@ class JobRole < ApplicationRecord
 
     # If job role is not found, search by aliases
     if job_role.nil?
-      job_role = JobRole.joins(:adjudications).find_by('? = ANY (aliases)', cleaned_job_title.downcase)
+      job_role = JobRole.where('LOWER(aliases) @> ?', "{#{cleaned_job_title.downcase}}").first
     end
 
     if job_role.nil?
@@ -43,13 +55,11 @@ class JobRole < ApplicationRecord
       puts "Adjudication created for new job role: #{cleaned_job_title}."
     end
       
-  # Associate job role with department (now plural)
   unless job_role.departments.include?(department)
     job_role.departments << department
     puts "Associated Job Role: #{cleaned_job_title} with department: #{department_name}"
   end
 
-  # Associate job role with team (now plural)
   unless job_role.teams.include?(team)
     job_role.teams << team
     puts "Associated Job Role: #{cleaned_job_title} with team: #{team_name}"

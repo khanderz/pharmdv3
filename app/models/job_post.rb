@@ -209,6 +209,7 @@ class JobPost < ApplicationRecord
   # Map data values to job post fields
   def self.map_ats_data_return(ats, job, company)
     # puts "json: #{job['categories']['allLocations']} "
+puts "job title: #{job['text']}, dept: #{job['categories']['department']}, team: #{job['categories']['team']}"
 
     if ats == 'LEVER'
       {
