@@ -79,6 +79,7 @@ class JobPost < ApplicationRecord
       puts "ATS type #{ats_code} not supported for company: #{company.company_name}"
     end
   end
+
   # Get jobs from ATS APIs
   def self.get_jobs(company)
     if company.ats_type.ats_type_code == 'LEVER'
@@ -124,6 +125,7 @@ class JobPost < ApplicationRecord
     end
     elsif company.ats_type.ats_type_code == 'GREENHOUSE'
       ats_id = company.ats_id
+      puts "Fetching Greenhouse jobs for company: #{company.company_name}"
       url = "https://boards-api.greenhouse.io/v1/boards/#{ats_id}/jobs?content=true"
       uri = URI(url)
       response = Net::HTTP.get(uri)
@@ -177,23 +179,28 @@ class JobPost < ApplicationRecord
       role_name, department_names, team_names = job_role_params
       job_role = JobRole.find_or_create_with_department_and_team(role_name, department_names, team_names)
       job_url = get_job_url(ats_code, job)
+
       # Map data values to job post fields
       mapped_data = map_ats_data_return(ats_code, job, company)
       job_count += 1
+
       # Prepare new job post data
       job_post_data = build_job_post_data(company, mapped_data, job_role)
       build_count += 1
+
       # Use the helper method to handle checking/updating existing jobs
       active_job_ids << process_existing_or_new_job(company, job_url, job_post_data)
     end
+
     puts "Mapped #{job_count} jobs from #{ats_code}"
     puts "Built #{build_count} job posts"
     active_job_ids
   end 
+
   # Map data values to job post fields
   def self.map_ats_data_return(ats, job, company)
     # puts "json: #{job['categories']['allLocations']} "
-    puts "#{job['workplaceType']} , #{find_setting_id_by_name(job['workplaceType'])}"
+
     if ats == 'LEVER'
       {
         job_title: job['text'],
@@ -215,14 +222,21 @@ class JobPost < ApplicationRecord
         job_salary_interval_id: find_interval_id_by_name(job['salaryRange']&.dig('interval')) 
       }
     elsif ats == 'GREENHOUSE'
+      location_info = parse_location(job['location']['name'])
+      job_setting_id = find_job_setting_by_location(location_info[:location], location_info[:is_remote])
+
+      puts "job_setting_id: #{job_setting_id}, location_info: #{location_info}, #{job['location']}"
       {
         job_title: job["title"],
         # job_country_id: handle_country_record(job['country'], job['country'], company.id, job['absolute_url']), 
-        # job_setting_id: find_setting_id_by_name(job['offices'].first['name']), 
+        department_id: Department.find_department(job['departments'][0]['name'], 'JobPost', job['absolute_url']).id,
+        team_id: Team.find_or_create_by(team_name: job['departments'][0]['name']).id,
+        job_setting_id: job_setting_id,         
         job_description: job["content"],
         job_url: job["absolute_url"],
         job_applyUrl: job["absolute_url"],
-        job_locations: job['offices'].map { |office| office["name"] },  # neeed to update to json
+        # job_locations: job['offices'].map { |office| office["name"] },  # neeed to update to json
+        job_locations: location_info[:location],
         job_posted: job.is_a?(Hash) && job.key?("created_at") ? job["created_at"] : nil,
         job_updated: Time.parse(job["updated_at"]).strftime('%Y-%m-%d %H:%M:%S'),
         job_internal_id: job['internal_job_id'],
@@ -248,7 +262,44 @@ def self.handle_country_record(country_code, country_name, company_id, job_url)
   Country.find_or_adjudicate_country(country_code, country_name, company_id, job_url)
 end
 
+def self.parse_location(location_name)
+  states = State.pluck(:state_code, :state_name).to_h
+  cities = City.pluck(:city_name, :aliases).map { |name, aliases| [name, aliases || []].flatten }.flatten
+
+  location = location_name
+  is_remote = false
+
+  # Remove "or" if present in location name
+  if location_name.downcase.include?("or")
+    location = location.gsub(/\sor.*/i, '')
+    is_remote = true
+  end
+
+  # Match state or city
+  state_match = states.keys.find { |code| location.include?(code) } || states.values.find { |name| location.include?(name) }
+  city_match = cities.find { |city| location.include?(city) }
+
+  if state_match || city_match
+    is_remote = false  # If a state or city match is found, it's on-site
+  end
+
+  { location: location, is_remote: is_remote }
+end
+
+# Helper method to find job setting by location and remote status
+def self.find_job_setting_by_location(location, is_remote)
+  if is_remote
+    find_setting_id_by_name('Remote')
+  elsif location.present?
+    find_setting_id_by_name('On-site')
+  else
+    nil
+  end
+end
+
 def self.find_setting_id_by_name(setting_name)
+  return nil if setting_name.nil? 
+
   JobSetting.where('LOWER(setting_name) = ? OR LOWER(?) = ANY (SELECT LOWER(unnest(aliases)))', 
                    setting_name.downcase, setting_name.downcase).first&.id
 end

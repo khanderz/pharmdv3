@@ -20,6 +20,7 @@ cities = [
   { city_name: 'Portland' },
   { city_name: 'Raleigh' },
   { city_name: 'Salt Lake City' },
+  { city_name: "San Diego"},
   { city_name: 'San Francisco', aliases: ['SOMA', 'Mission District', 'Financial District', 'Nob Hill', 'Castro', 'Pacific Heights'] },
   { city_name: 'San Jose' },
   { city_name: 'Seattle', aliases: ['Capitol Hill', 'Belltown', 'Ballard', 'Fremont', 'Queen Anne', 'South Lake Union'] },
