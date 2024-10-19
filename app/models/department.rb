@@ -4,9 +4,10 @@ class Department < ApplicationRecord
     has_and_belongs_to_many :job_roles, join_table: :job_roles_departments
     has_many :adjudications, as: :adjudicatable, dependent: :destroy 
     validates :dept_name, presence: true, uniqueness: true
+    
     def self.find_department(department_name, adjudicatable_type, relation = nil)
-        department = Department.where('LOWER(dept_name) = ? OR ? = ANY (SELECT LOWER(unnest(aliases)))', 
-                                      department_name.downcase, department_name.downcase).first
+      department = Department.where('LOWER(dept_name) = ? OR LOWER(?) = ANY (SELECT LOWER(unnest(aliases)))',
+      department_name.downcase, department_name.downcase).first
       
         if department.nil?
           department = Department.create!(

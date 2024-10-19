@@ -54,7 +54,7 @@ job_roles = [
   { role_name: 'Director of Data Science', aliases: ['Data Science Director'], department_names: ['Data Science'], team_names: ['Data Science'] },
   { role_name: 'Director of Business Development', aliases: ['Business Development Director'], department_names: ['Sales', 'Business Development'], team_names: ['Sales', 'Business Development'] },
   { role_name: 'Director of Operations', aliases: ['Operations Director'], department_names: ['Operations'], team_names: ['Operations'] },
-  { role_name: 'Head of Growth', aliases: ['Growth Lead'], department_names: ['Marketing', 'Product'], team_names: ['Growth'] },
+  { role_name: 'Head of Growth', aliases: ['Growth Lead'], department_names: ['Marketing', 'Product'], team_names: ['Business Development', "Marketing"] },
   { role_name: 'Head of People', aliases: ['Head of HR', 'HR Lead'], department_names: ['Human Resources'], team_names: ['Human Resources'] },
   { role_name: 'Head of DevOps', aliases: ['DevOps Lead'], department_names: ['IT', 'Engineering'], team_names: ['DevOps'] },
   { role_name: 'Head of Customer Success', aliases: ['Customer Success Lead'], department_names: ['Customer Support'], team_names: ['Client Services'] }
@@ -90,7 +90,8 @@ job_roles.each do |role|
 
     # Associate with departments
     role[:department_names].each do |dept_name|
-      department = Department.find_by(dept_name: dept_name)
+      department = Department.find_by('LOWER(dept_name) = ? OR LOWER(?) = ANY (SELECT LOWER(unnest(aliases)))', 
+                                      dept_name.downcase, dept_name.downcase)
       if department
         unless role_record.departments.include?(department)
           role_record.departments << department
@@ -101,18 +102,19 @@ job_roles.each do |role|
       end
     end
 
-    # Associate with teams
-    role[:team_names].each do |team_name|
-      team = Team.find_by(team_name: team_name)
-      if team
-        unless role_record.teams.include?(team)
-          role_record.teams << team
-          puts "Associated #{role_record.role_name} with team #{team_name}."
-        end
-      else
-        puts "Error: Team #{team_name} not found for role #{role_record.role_name}."
-      end
+# Associate with teams
+role[:team_names].each do |team_name|
+  team = Team.find_by('LOWER(team_name) = ? OR LOWER(?) = ANY (SELECT LOWER(unnest(aliases)))', 
+                      team_name.downcase, team_name.downcase)
+  if team
+    unless role_record.teams.include?(team)
+      role_record.teams << team
+      puts "Associated #{role_record.role_name} with team #{team_name}."
     end
+  else
+    puts "Error: Team #{team_name} not found for role #{role_record.role_name}."
+  end
+end
 
   rescue StandardError => e
     puts "Error seeding job role: #{role[:role_name]} - #{e.message}"

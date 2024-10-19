@@ -14,6 +14,7 @@ class Company < ApplicationRecord
   has_many :company_specialties, through: :company_specializations
   validates :company_name, presence: true, uniqueness: true
   validates :linkedin_url, uniqueness: true, allow_blank: true
+  
   def self.seed_existing_companies(company, row, ats_type, country)
     changes_made = false
     if company.operating_status != ActiveModel::Type::Boolean.new.cast(row['operating_status'])

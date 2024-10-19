@@ -12,6 +12,7 @@ cities = [
   { city_name: 'Los Angeles', aliases: ['Hollywood', 'Santa Monica', 'Beverly Hills', 'Venice', 'Downtown LA', 'Westwood', 'Silver Lake'] },
   { city_name: 'Miami', aliases: ['Brickell', 'Wynwood', 'Little Havana', 'Coconut Grove', 'South Beach'] },
   { city_name: 'Minneapolis' },
+  { city_name: 'Nashville' },
   { city_name: 'New York', aliases: ['New York City', 'Manhattan', 'Brooklyn', 'Queens', 'Bronx', 'Staten Island', 'Harlem', 'SoHo', 'Tribeca', 'Chelsea'] },
   { city_name: 'Palo Alto' },
   { city_name: 'Philadelphia' },

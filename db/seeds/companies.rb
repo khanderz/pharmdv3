@@ -26,7 +26,7 @@ begin
         end
       else
         puts "-----CREATING #{row['company_name']}"
-        # Create a new company
+
         new_company = Company.new(
           company_name: row['company_name'],
           operating_status: row['operating_status'],
@@ -72,7 +72,7 @@ begin
             puts "State not found for company: #{row['company_name']} or name/code: #{row['company_state']}"
           end
         end
-
+puts "new_company: #{new_company.inspect}"
         if row['company_city'].present?
           city = City.find_by(city_name: row['company_city']) || City.where('? = ANY (aliases)', row['company_city']).first
 

@@ -2,7 +2,6 @@
 domains = {
   behavioral_health: HealthcareDomain.find_by(key: 'BEHAVIORAL_HEALTH'),
   cardiology: HealthcareDomain.find_by(key: 'CARDIOLOGY'),
-  critical_care: HealthcareDomain.find_by(key: 'CRITICAL_CARE'),
   dental: HealthcareDomain.find_by(key: 'DENTAL'),
   dermatology: HealthcareDomain.find_by(key: 'DERMATOLOGY'),
   digital_health: HealthcareDomain.find_by(key: 'DIGITAL_HEALTH'),

@@ -1,10 +1,11 @@
 departments = [
   { dept_name: 'Business Development', aliases: ['Sales', 'Business Development and Sales', 'Business Development & Sales'] },  
-  { dept_name: 'Clinical Team', aliases: ['Medical Team', 'Care Team', 'Healthcare Team', 'Behavioral Health', 'Clinical Strategy and Services'] },
+  { dept_name: 'Clinical Team', aliases: ['Medical Team', 'Care Team', 'Healthcare Team', 'Behavioral Health', 'Clinical Strategy and Services', 'Pharmacy'] },
   { dept_name: 'Customer Support', aliases: ['Customer Service', 'Client Support', 'Help Desk', 'Customer Operations'] },
   { dept_name: 'Data Science', aliases: ['Data Analytics', 'Machine Learning', 'AI'] },
   { dept_name: 'Design', aliases: ['UI/UX Design', 'Graphic Design', 'Product & Design'] },
   { dept_name: 'Engineering', aliases: ['Development', 'Software Engineering', 'Tech', 'Information Technology', 'DevOps'] },
+  { dept_name: "Internship", aliases: ['Interns', 'Internship Team', 'Internship Program', "fellowship", 'graduate'] },
   { dept_name: 'IT', aliases: ['Information Technology', 'Tech Support', 'Ops/Member Care', 'it operations'] },
   { dept_name: 'Finance', aliases: ['Accounting', 'Financial Planning', 'FP&A'] },
   { dept_name: 'Human Resources', aliases: ['HR', 'Talent Acquisition', 'People Operations', 'Talent & Organization'] },
