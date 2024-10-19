@@ -1,6 +1,6 @@
 class JobRole < ApplicationRecord
-  belongs_to :department
-  belongs_to :team
+  has_and_belongs_to_many :departments
+  has_and_belongs_to_many :teams
 
   has_many :job_posts
   has_many :adjudications, as: :adjudicatable, dependent: :destroy

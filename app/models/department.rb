@@ -1,5 +1,7 @@
 class Department < ApplicationRecord
     has_many :job_posts
+    has_and_belongs_to_many :job_roles
+
     has_many :adjudications, as: :adjudicatable, dependent: :destroy 
     validates :dept_name, presence: true, uniqueness: true
 
