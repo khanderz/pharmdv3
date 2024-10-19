@@ -1,31 +1,33 @@
-// application.js
 import ReactOnRails from 'react-on-rails';
 import NavBar from '../bundles/NavBar/NavBarServer'; // Client-side version
 import { createRoot } from 'react-dom/client';
+import { ThemeProvider } from '@mui/material/styles';
+import theme from '../design-system/theme';
 
-
-// Register global components like the NavBar
 ReactOnRails.register({ NavBar });
 
-// Conditionally load page-specific components or logic
 document.addEventListener('DOMContentLoaded', () => {
   const controllerName = document.body.getAttribute('data-controller');
   const actionName = document.body.getAttribute('data-action');
 
   if (controllerName === 'search' && actionName === 'searchPage') {
-    // Dynamically import SearchPage bundle
     import('../bundles/SearchPageBundle')
       .then((SearchPageModule) => {
         const SearchPage = SearchPageModule.default;
 
-        // Register the component explicitly
         ReactOnRails.register({ SearchPage });
 
         const container = document.getElementById('search-page-container');
 
         if (container) {
           const root = createRoot(container);
-          root.render(<SearchPage />);
+
+          // Wrap the component with ThemeProvider
+          root.render(
+            <ThemeProvider theme={theme}>
+              <SearchPage />
+            </ThemeProvider>
+          );
         } else {
           console.error('SearchPage container not found!');
         }
@@ -37,8 +39,10 @@ document.addEventListener('DOMContentLoaded', () => {
     import('../bundles/DirectoryBundle')
       .then((DirectoryModule) => {
         const Directory = DirectoryModule.default;
+
         ReactOnRails.register({ Directory });
-        ReactOnRails.reactOnRailsPageLoaded(); // Manually trigger
+
+        ReactOnRails.reactOnRailsPageLoaded();
       })
       .catch((error) => {
         console.error('Error loading DirectoryBundle:', error);
