@@ -6,8 +6,5 @@ class CreateCompanyDomains < ActiveRecord::Migration[7.1]
 
       t.timestamps
     end
-
-    # Optionally, remove healthcare_domain_id from companies table
-    remove_column :companies, :healthcare_domain_id, :bigint
   end
 end

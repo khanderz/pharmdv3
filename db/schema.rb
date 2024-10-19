@@ -10,15 +10,15 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_10_19_195022) do
+ActiveRecord::Schema[7.1].define(version: 2024_10_19_202804) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
   create_table "adjudications", force: :cascade do |t|
-    t.string "adjudicatable_type"
-    t.bigint "adjudicatable_id"
+    t.string "adjudicatable_type", null: false
+    t.bigint "adjudicatable_id", null: false
     t.text "error_details"
-    t.boolean "resolved", default: false
+    t.boolean "resolved"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["adjudicatable_type", "adjudicatable_id"], name: "index_adjudications_on_adjudicatable"
@@ -34,7 +34,7 @@ ActiveRecord::Schema[7.1].define(version: 2024_10_19_195022) do
 
   create_table "cities", force: :cascade do |t|
     t.string "city_name"
-    t.string "aliases", default: [], array: true
+    t.string "aliases"
     t.text "error_details"
     t.bigint "reference_id"
     t.boolean "resolved"
@@ -47,22 +47,22 @@ ActiveRecord::Schema[7.1].define(version: 2024_10_19_195022) do
     t.string "company_name"
     t.boolean "operating_status"
     t.bigint "ats_type_id", null: false
-    t.bigint "company_size_id"
-    t.bigint "funding_type_id"
+    t.bigint "company_size_id", null: false
+    t.bigint "funding_type_id", null: false
     t.string "linkedin_url"
     t.boolean "is_public"
     t.integer "year_founded"
-    t.bigint "city_id"
-    t.bigint "state_id"
+    t.bigint "city_id", null: false
+    t.bigint "state_id", null: false
     t.bigint "country_id", null: false
     t.string "acquired_by"
     t.text "company_description"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
     t.string "ats_id"
     t.text "error_details"
-    t.boolean "resolved"
     t.bigint "reference_id"
+    t.boolean "resolved"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
     t.index ["ats_type_id"], name: "index_companies_on_ats_type_id"
     t.index ["city_id"], name: "index_companies_on_city_id"
     t.index ["company_name"], name: "index_companies_on_company_name", unique: true
@@ -101,16 +101,14 @@ ActiveRecord::Schema[7.1].define(version: 2024_10_19_195022) do
   create_table "company_specialties", force: :cascade do |t|
     t.string "key"
     t.string "value"
-    t.bigint "healthcare_domain_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["healthcare_domain_id"], name: "index_company_specialties_on_healthcare_domain_id"
   end
 
   create_table "countries", force: :cascade do |t|
     t.string "country_code"
     t.string "country_name"
-    t.string "aliases", default: [], array: true
+    t.string "aliases"
     t.text "error_details"
     t.bigint "reference_id"
     t.boolean "resolved"
@@ -121,7 +119,7 @@ ActiveRecord::Schema[7.1].define(version: 2024_10_19_195022) do
 
   create_table "departments", force: :cascade do |t|
     t.string "dept_name"
-    t.string "aliases", default: [], array: true
+    t.string "aliases"
     t.text "error_details"
     t.bigint "reference_id"
     t.boolean "resolved"
@@ -152,15 +150,15 @@ ActiveRecord::Schema[7.1].define(version: 2024_10_19_195022) do
   end
 
   create_table "job_posts", force: :cascade do |t|
-    t.bigint "job_commitment_id"
+    t.bigint "job_commitment_id", null: false
     t.bigint "job_setting_id", null: false
-    t.bigint "country_id"
+    t.bigint "country_id", null: false
     t.bigint "department_id", null: false
     t.bigint "team_id", null: false
     t.bigint "company_id", null: false
     t.bigint "job_role_id", null: false
-    t.bigint "job_salary_currency_id"
-    t.bigint "job_salary_interval_id"
+    t.bigint "job_salary_currency_id", null: false
+    t.bigint "job_salary_interval_id", null: false
     t.string "job_title"
     t.text "job_description"
     t.string "job_url"
@@ -198,7 +196,7 @@ ActiveRecord::Schema[7.1].define(version: 2024_10_19_195022) do
 
   create_table "job_roles", force: :cascade do |t|
     t.string "role_name"
-    t.string "aliases", default: [], array: true
+    t.string "aliases"
     t.text "error_details"
     t.bigint "reference_id"
     t.boolean "resolved"
@@ -207,16 +205,20 @@ ActiveRecord::Schema[7.1].define(version: 2024_10_19_195022) do
     t.index ["role_name"], name: "index_job_roles_on_role_name", unique: true
   end
 
-  create_table "job_roles_departments", id: false, force: :cascade do |t|
+  create_table "job_roles_departments", force: :cascade do |t|
     t.bigint "job_role_id", null: false
     t.bigint "department_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
     t.index ["department_id"], name: "index_job_roles_departments_on_department_id"
     t.index ["job_role_id"], name: "index_job_roles_departments_on_job_role_id"
   end
 
-  create_table "job_roles_teams", id: false, force: :cascade do |t|
+  create_table "job_roles_teams", force: :cascade do |t|
     t.bigint "job_role_id", null: false
     t.bigint "team_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
     t.index ["job_role_id"], name: "index_job_roles_teams_on_job_role_id"
     t.index ["team_id"], name: "index_job_roles_teams_on_team_id"
   end
@@ -240,7 +242,7 @@ ActiveRecord::Schema[7.1].define(version: 2024_10_19_195022) do
 
   create_table "job_settings", force: :cascade do |t|
     t.string "setting_name"
-    t.string "aliases", default: [], array: true
+    t.string "aliases"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["setting_name"], name: "index_job_settings_on_setting_name", unique: true
@@ -256,7 +258,7 @@ ActiveRecord::Schema[7.1].define(version: 2024_10_19_195022) do
 
   create_table "teams", force: :cascade do |t|
     t.string "team_name"
-    t.string "aliases", default: [], array: true
+    t.string "aliases"
     t.text "error_details"
     t.bigint "reference_id"
     t.boolean "resolved"
@@ -285,7 +287,6 @@ ActiveRecord::Schema[7.1].define(version: 2024_10_19_195022) do
   add_foreign_key "company_domains", "healthcare_domains"
   add_foreign_key "company_specializations", "companies"
   add_foreign_key "company_specializations", "company_specialties"
-  add_foreign_key "company_specialties", "healthcare_domains"
   add_foreign_key "job_posts", "companies"
   add_foreign_key "job_posts", "countries"
   add_foreign_key "job_posts", "departments"
