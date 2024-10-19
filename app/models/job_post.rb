@@ -193,6 +193,7 @@ class JobPost < ApplicationRecord
   # Map data values to job post fields
   def self.map_ats_data_return(ats, job, company)
     # puts "json: #{job['categories']['allLocations']} "
+    puts "#{job['workplaceType']} , #{find_setting_id_by_name(job['workplaceType'])}"
     if ats == 'LEVER'
       {
         job_title: job['text'],
@@ -246,15 +247,20 @@ end
 def self.handle_country_record(country_code, country_name, company_id, job_url)
   Country.find_or_adjudicate_country(country_code, country_name, company_id, job_url)
 end
+
 def self.find_setting_id_by_name(setting_name)
-  JobSetting.where('LOWER(setting_name) = ?', setting_name.downcase).first&.id
+  JobSetting.where('LOWER(setting_name) = ? OR LOWER(?) = ANY (SELECT LOWER(unnest(aliases)))', 
+                   setting_name.downcase, setting_name.downcase).first&.id
 end
+
 def self.find_commitment_id_by_name(commitment_name)
   JobCommitment.find_by(commitment_name: commitment_name)&.id
 end
+
 def self.handle_currency_record(currency_code, company_id, job_url)
   JobSalaryCurrency.find_or_adjudicate_currency(currency_code, company_id, job_url)&.id
 end
+
 def self.find_interval_id_by_name(interval_name)
   JobSalaryInterval.find_by(interval: interval_name)&.id
 end
