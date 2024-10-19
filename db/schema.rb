@@ -10,15 +10,15 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_10_19_202804) do
+ActiveRecord::Schema[7.1].define(version: 2024_10_19_203237) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
   create_table "adjudications", force: :cascade do |t|
-    t.string "adjudicatable_type", null: false
-    t.bigint "adjudicatable_id", null: false
+    t.string "adjudicatable_type"
+    t.bigint "adjudicatable_id"
     t.text "error_details"
-    t.boolean "resolved"
+    t.boolean "resolved", default: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["adjudicatable_type", "adjudicatable_id"], name: "index_adjudications_on_adjudicatable"
@@ -34,7 +34,7 @@ ActiveRecord::Schema[7.1].define(version: 2024_10_19_202804) do
 
   create_table "cities", force: :cascade do |t|
     t.string "city_name"
-    t.string "aliases"
+    t.string "aliases", default: [], array: true
     t.text "error_details"
     t.bigint "reference_id"
     t.boolean "resolved"
@@ -47,13 +47,13 @@ ActiveRecord::Schema[7.1].define(version: 2024_10_19_202804) do
     t.string "company_name"
     t.boolean "operating_status"
     t.bigint "ats_type_id", null: false
-    t.bigint "company_size_id", null: false
-    t.bigint "funding_type_id", null: false
+    t.bigint "company_size_id"
+    t.bigint "funding_type_id"
     t.string "linkedin_url"
     t.boolean "is_public"
     t.integer "year_founded"
-    t.bigint "city_id", null: false
-    t.bigint "state_id", null: false
+    t.bigint "city_id"
+    t.bigint "state_id"
     t.bigint "country_id", null: false
     t.string "acquired_by"
     t.text "company_description"
@@ -108,7 +108,7 @@ ActiveRecord::Schema[7.1].define(version: 2024_10_19_202804) do
   create_table "countries", force: :cascade do |t|
     t.string "country_code"
     t.string "country_name"
-    t.string "aliases"
+    t.string "aliases", default: [], array: true
     t.text "error_details"
     t.bigint "reference_id"
     t.boolean "resolved"
@@ -119,7 +119,7 @@ ActiveRecord::Schema[7.1].define(version: 2024_10_19_202804) do
 
   create_table "departments", force: :cascade do |t|
     t.string "dept_name"
-    t.string "aliases"
+    t.string "aliases", default: [], array: true
     t.text "error_details"
     t.bigint "reference_id"
     t.boolean "resolved"
@@ -150,15 +150,15 @@ ActiveRecord::Schema[7.1].define(version: 2024_10_19_202804) do
   end
 
   create_table "job_posts", force: :cascade do |t|
-    t.bigint "job_commitment_id", null: false
+    t.bigint "job_commitment_id"
     t.bigint "job_setting_id", null: false
-    t.bigint "country_id", null: false
+    t.bigint "country_id"
     t.bigint "department_id", null: false
     t.bigint "team_id", null: false
     t.bigint "company_id", null: false
     t.bigint "job_role_id", null: false
-    t.bigint "job_salary_currency_id", null: false
-    t.bigint "job_salary_interval_id", null: false
+    t.bigint "job_salary_currency_id"
+    t.bigint "job_salary_interval_id"
     t.string "job_title"
     t.text "job_description"
     t.string "job_url"
@@ -196,7 +196,7 @@ ActiveRecord::Schema[7.1].define(version: 2024_10_19_202804) do
 
   create_table "job_roles", force: :cascade do |t|
     t.string "role_name"
-    t.string "aliases"
+    t.string "aliases", default: [], array: true
     t.text "error_details"
     t.bigint "reference_id"
     t.boolean "resolved"
@@ -242,7 +242,7 @@ ActiveRecord::Schema[7.1].define(version: 2024_10_19_202804) do
 
   create_table "job_settings", force: :cascade do |t|
     t.string "setting_name"
-    t.string "aliases"
+    t.string "aliases", default: [], array: true
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["setting_name"], name: "index_job_settings_on_setting_name", unique: true
@@ -258,7 +258,7 @@ ActiveRecord::Schema[7.1].define(version: 2024_10_19_202804) do
 
   create_table "teams", force: :cascade do |t|
     t.string "team_name"
-    t.string "aliases"
+    t.string "aliases", default: [], array: true
     t.text "error_details"
     t.bigint "reference_id"
     t.boolean "resolved"

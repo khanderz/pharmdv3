@@ -4,13 +4,13 @@ class CreateCompanies < ActiveRecord::Migration[7.1]
       t.string :company_name
       t.boolean :operating_status
       t.references :ats_type, null: false, foreign_key: true
-      t.references :company_size, null: false, foreign_key: true
-      t.references :funding_type, null: false, foreign_key: true
+      t.references :company_size, null: true, foreign_key: true
+      t.references :funding_type, null: true, foreign_key: true
       t.string :linkedin_url
       t.boolean :is_public
       t.integer :year_founded
-      t.references :city, null: false, foreign_key: true
-      t.references :state, null: false, foreign_key: true
+      t.references :city, null: true, foreign_key: true
+      t.references :state, null: true, foreign_key: true
       t.references :country, null: false, foreign_key: true
       t.string :acquired_by
       t.text :company_description
