@@ -7,7 +7,7 @@ class Team < ApplicationRecord
     validates :team_name, presence: true, uniqueness: true
 
     def self.find_team(team_name, adjudicatable_type, relation = nil)
-        team = Team.find_by('LOWER(team_name) = ? OR LOWER(?) = ANY (aliases)', team_name.downcase, team_name.downcase)
+        team = Team.where('LOWER(team_name) = ? OR LOWER(?) = ANY (ARRAY[LOWER(aliases)])', team_name.downcase, team_name.downcase).first
 
         if team.nil?
             team = Team.create!(

@@ -6,7 +6,7 @@ class Department < ApplicationRecord
     validates :dept_name, presence: true, uniqueness: true
 
 def self.find_department(department_name, adjudicatable_type, relation = nil)
-    department = Department.find_by('LOWER(dept_name) = ? OR LOWER(?) = ANY (aliases)', department_name.downcase, department_name.downcase)
+    department = Department.where('LOWER(dept_name) = ? OR LOWER(?) = ANY (ARRAY[LOWER(aliases)])', department_name.downcase, department_name.downcase).first
 
     if department.nil?
         department = Department.create!(

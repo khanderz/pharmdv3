@@ -186,7 +186,7 @@ class JobPost < ApplicationRecord
       role_name, department_name, team_name = job_role_params
 
       job_role = JobRole.find_or_create_with_department_and_team(role_name, department_name, team_name)
-      puts "Job Role: #{job_role.role_name} - Department: #{department_name} - Team: #{team_name}"
+
       job_url = get_job_url(ats_code, job)
 
       # Map data values to job post fields
