@@ -24,7 +24,10 @@ class JobRole < ApplicationRecord
   # Case-insensitive search and create method
   def self.find_or_create_with_department_and_team(job_title, department_names, team_names)
     cleaned_job_title = clean_job_title(job_title)
-    puts "Cleaned job title: #{cleaned_job_title}, dept: #{department_names}, team: #{team_names}"
+    puts "Cleaned job title: #{cleaned_job_title} dept: #{department_names} team: #{team_names}"
+
+    department_names = Array(department_names)
+    team_names = Array(team_names)
     
     departments = department_names.map do |department_name|
       Department.find_department(department_name, 'JobRole', job_title)

@@ -167,13 +167,18 @@ class JobPost < ApplicationRecord
   def self.get_job_role_params(ats_code, job)
     case ats_code
     when 'LEVER'
-      [job['text'], job['categories']['department'], job['categories']['team']]
+      # For Lever, it's likely a string for department/team
+      [job['text'], Array(job['categories']['department']), Array(job['categories']['team'])]
     when 'GREENHOUSE'
-      [job["title"], job["departments"][0]["name"], job['departments'][0]["name"]]
+      # Greenhouse has an array of department objects, so map the names
+      department_names = job["departments"].map { |dept| dept["name"] }
+      team_names = department_names  # Assuming team and department are the same in Greenhouse, adjust if needed
+      [job["title"], department_names, team_names]
     else
       puts "ATS type #{ats_code} not supported"
     end
   end
+  
 
   # safe jobs from ATS APIs
   def self.save_jobs(ats_code, company, jobs)
@@ -182,10 +187,12 @@ class JobPost < ApplicationRecord
     build_count = 0
 
     jobs.each do |job|
-      job_role_params = get_job_role_params(ats_code, job)
-      role_name, department_name, team_name = job_role_params
+      puts "job title: #{job['text']}, dept: #{job['categories']['department']}, team: #{job['categories']['team']}"
 
-      job_role = JobRole.find_or_create_with_department_and_team(role_name, department_name, team_name)
+      job_role_params = get_job_role_params(ats_code, job)
+      role_name, department_names, team_names = job_role_params
+
+      job_role = JobRole.find_or_create_with_department_and_team(role_name, department_names, team_names)
 
       job_url = get_job_url(ats_code, job)
 
@@ -209,7 +216,6 @@ class JobPost < ApplicationRecord
   # Map data values to job post fields
   def self.map_ats_data_return(ats, job, company)
     # puts "json: #{job['categories']['allLocations']} "
-# puts "job title: #{job['text']}, dept: #{job['categories']['department']}, team: #{job['categories']['team']}"
 
     if ats == 'LEVER'
       {
