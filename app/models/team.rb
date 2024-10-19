@@ -7,8 +7,10 @@ class Team < ApplicationRecord
     validates :team_name, presence: true, uniqueness: true
 
     def self.find_team(team_name, adjudicatable_type, relation = nil)
-        team = Team.where('LOWER(team_name) = ? OR ? = ANY (SELECT LOWER(unnest(aliases)))', 
-                          team_name.downcase, team_name.downcase).first
+      # In your Team model's find_team method
+cleaned_team_name = Utils::TitleCleaner.clean_title(team_name)
+team = Team.where('LOWER(team_name) = ? OR ? = ANY (SELECT LOWER(unnest(aliases)))', 
+                  cleaned_team_name.downcase, cleaned_team_name.downcase).first
       
         if team.nil?
           team = Team.create!(

@@ -7,23 +7,9 @@ class JobRole < ApplicationRecord
 
   validates :role_name, presence: true, uniqueness: true
 
-  # Utility method to clean the job title
-  def self.clean_job_title(job_title)
-    cleaned_title = job_title.gsub(/\(.*?\)/, '')
-                             .split(/[-,]/).first.strip
-  
-    states = State.all.pluck(:state_code, :state_name).flatten.map { |s| Regexp.escape(s) }
-    state_pattern = /\b(#{states.join('|')})\b/i
-  
-    cleaned_title.gsub!(state_pattern, '')
-  
-    cleaned_title.strip
-  end
-  
-
   # Case-insensitive search and create method
   def self.find_or_create_with_department_and_team(job_title, department_names, team_names)
-    cleaned_job_title = clean_job_title(job_title)
+    cleaned_job_title = Utils::TitleCleaner.clean_title(job_title)
     puts "Cleaned job title: #{cleaned_job_title} dept: #{department_names} team: #{team_names}"
 
     department_names = Array(department_names)
