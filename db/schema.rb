@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_10_19_001257) do
+ActiveRecord::Schema[7.1].define(version: 2024_10_19_005103) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -191,17 +191,13 @@ ActiveRecord::Schema[7.1].define(version: 2024_10_19_001257) do
 
   create_table "job_roles", force: :cascade do |t|
     t.string "role_name"
-    t.bigint "department_id", null: false
-    t.bigint "team_id", null: false
     t.string "aliases", default: [], array: true
     t.text "error_details"
     t.bigint "reference_id"
     t.boolean "resolved"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["department_id"], name: "index_job_roles_on_department_id"
     t.index ["role_name"], name: "index_job_roles_on_role_name", unique: true
-    t.index ["team_id"], name: "index_job_roles_on_team_id"
   end
 
   create_table "job_roles_departments", id: false, force: :cascade do |t|
@@ -291,8 +287,6 @@ ActiveRecord::Schema[7.1].define(version: 2024_10_19_001257) do
   add_foreign_key "job_posts", "job_salary_intervals"
   add_foreign_key "job_posts", "job_settings"
   add_foreign_key "job_posts", "teams"
-  add_foreign_key "job_roles", "departments"
-  add_foreign_key "job_roles", "teams"
   add_foreign_key "job_roles_departments", "departments"
   add_foreign_key "job_roles_departments", "job_roles"
   add_foreign_key "job_roles_teams", "job_roles"

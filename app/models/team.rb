@@ -25,5 +25,6 @@ class Team < ApplicationRecord
 
             puts "Team #{team_name} created and logged to adjudications with adjudicatable_type #{adjudicatable_type}."
         end
+        team
     end
 end
