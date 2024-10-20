@@ -1,68 +1,111 @@
-// app/javascript/design-system/theme.js
-
 import { createTheme } from '@mui/material/styles';
 
-// Helper function to read CSS variables
-const getCSSVariable = (variable: string) =>
-    getComputedStyle(document.documentElement).getPropertyValue(variable).trim();
-
+interface Grayscale {
+    main: string,
+    dark: string,
+    light: string,
+    contrastText: string,
+}
 declare module '@mui/material/styles' {
     interface Palette {
-        green: Palette['primary']
+        primary: Palette['primary'],
+        secondary: Palette['secondary'],
+        warning: Palette['warning'],
+        success: Palette['success'],
+        info: Palette['info'],
+        grayscale: Grayscale
     }
 
     interface PaletteOptions {
-        green?: PaletteOptions['primary']
+        primary?: PaletteOptions['primary'],
+        secondary?: PaletteOptions['secondary'],
+        warning?: PaletteOptions['warning'],
+        success?: PaletteOptions['success'],
+        info?: PaletteOptions['info'],
+        grayscale?: Grayscale
     }
-
-    // interface Theme extends CustomTheme {
-    //     green: Palette['primary']
-    // }
-
-    // interface ThemeOptions extends CustomTheme {
-    //     green?: PaletteOptions['primary']
-    // }
 }
-
 
 export const theme = createTheme({
     palette: {
-        green: {
-            main: '#226f54', // Your custom green color
-        },
         primary: {
-            main: '#226f54', // Also set as primary color for easier usage
+            main: '#226f54',  // Dark Spring Green
+            light: '#72e1d1', // Turquoise
+            dark: '#1c5942',  // Darker version of Dark Spring Green
+            contrastText: '#ffffff',  // White text for contrast
+        },
+        secondary: {
+            main: '#f9eeee',  // Lavender Blush
+            dark: '#f0dddd',  // Darker version of Lavender Blush
+            contrastText: '#9a0000',  // Penn Red as contrast text
+        },
+        warning: {
+            main: '#fb0000',  // Off Red
+            dark: '#9a0000',  // Penn Red as dark warning
+            light: '#f9eeee', // Lightest warning variant
+            contrastText: '#ffffff',  // White text
+        },
+        success: {
+            main: '#226f54',  // Dark Spring Green for success
+            light: '#72e1d1', // Light success (Turquoise)
+            dark: '#1c5942',  // Dark success variant
+            contrastText: '#ffffff',  // White text
+        },
+        info: {
+            main: '#72e1d1',  // Turquoise for informational messages
+            dark: '#56b6a3',  // Darker info variant
+            contrastText: '#ffffff',  // White text
+        },
+        grayscale: {
+            main: '#f5f5f5',  // Light grayscale (secondary)
+            dark: '#e0e0e0',  // Darker grayscale
+            light: '#ffffff', // Lightest grayscale (white)
+            contrastText: '#9a0000',  // Contrast text for grayscale
+        },
+    },
+    typography: {
+        fontFamily: ['"Open Sans"', 'Arial', 'sans-serif'].join(','),
+        h1: {
+            fontSize: '3rem',
+            fontWeight: 700,
+        },
+        h2: {
+            fontSize: '2.5rem',
+            fontWeight: 700,
+        },
+        h3: {
+            fontSize: '2rem',
+            fontWeight: 700,
+        },
+        h4: {
+            fontSize: '1.5rem',
+            fontWeight: 700,
+        },
+        h5: {
+            fontSize: '1.25rem',
+            fontWeight: 700,
+        },
+        h6: {
+            fontSize: '1rem',
+            fontWeight: 700,
+        },
+        body1: {
+            fontSize: '1rem',
+            fontWeight: 400,
+        },
+        body2: {
+            fontSize: '0.875rem',
+            fontWeight: 400,
+        },
+        subtitle1: {
+            fontSize: '1rem',
+            fontWeight: 400,
+        },
+        subtitle2: {
+            fontSize: '0.875rem',
+            fontWeight: 400,
         },
     },
 });
 
 export default theme;
-
-// type CustomTheme = {
-//     [Key in keyof typeof theme]: typeof theme[Key]
-// }
-
-// declare module '@mui/material/Typography' {
-//     interface TypographyPropsVariantOverrides { }
-// }
-
-
-// Function to create a theme after the DOM is loaded
-// const useTheme = () => {
-//     const primaryColor = getCSSVariable('--mui-palette-primary-main') || '#226f54'; // Fallback
-//     const fontFamily = getCSSVariable('--font-family') || '"Roboto", "Helvetica", "Arial", sans-serif';
-
-//     return createTheme({
-//         cssVariables: true,
-//         palette: {
-//             primary: {
-//                 main: primaryColor,
-//             },
-//         },
-//         typography: {
-//             fontFamily: fontFamily,
-//         },
-//     });
-// };
-
-// export default useTheme;

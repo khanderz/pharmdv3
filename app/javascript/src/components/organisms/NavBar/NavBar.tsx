@@ -41,12 +41,9 @@ function NavBar() {
   }
 
   return (
-    <AppBar position="static" sx={{ backgroundColor: 'green.main' }}
-    >
-      <Container
-      >
-        <Toolbar
-        >
+    <AppBar position="static" >
+      <Container>
+        <Toolbar>
           <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
             PharmDs in IT
           </Typography>
