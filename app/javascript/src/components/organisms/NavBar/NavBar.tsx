@@ -10,13 +10,18 @@ import {
   MenuItem,
   Button,
   Tooltip,
-  Avatar
+  Avatar,
+  useTheme,
 } from '@mui/material'
+
 
 const pages = ['Search', 'Directory', 'Pathfinder', 'Admin']
 const settings = ['Profile', 'Account', 'Dashboard', 'Logout']
 
 function NavBar() {
+  const theme = useTheme();
+  console.log(theme.palette.primary)
+
   const [anchorElNav, setAnchorElNav] = useState<null | HTMLElement>(null)
   const [anchorElUser, setAnchorElUser] = useState<null | HTMLElement>(null)
 
@@ -36,9 +41,12 @@ function NavBar() {
   }
 
   return (
-    <AppBar position="static">
-      <Container>
-        <Toolbar>
+    <AppBar position="static" sx={{ backgroundColor: 'green.main' }}
+    >
+      <Container
+      >
+        <Toolbar
+        >
           <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
             PharmDs in IT
           </Typography>
@@ -58,7 +66,7 @@ function NavBar() {
           <Box sx={{ flexGrow: 0 }}>
             <Tooltip title="Open settings">
               <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-                <Avatar alt="Remy Sharp"  />{' '}
+                <Avatar alt="Remy Sharp" />{' '}
                 {/*TODO change icon  */}
               </IconButton>
             </Tooltip>

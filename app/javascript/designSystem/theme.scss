@@ -1,26 +1,29 @@
 // app/javascript/design-system/colors.scss
 
-$primary-color: #3f51b5;
-$secondary-color: #ff4081;
-$custom-blue: #6096ba;
-$custom-warm: #FF7043;
 
-// Font configuration
+$mui-palette-primary-main: #fb0000;
+$mui-palette-secondary-main: #226f54;
+$turquoise: #72e1d1;
+$lavender-blush: #f9eeee;
+$penn-red: #9a0000;
+
 $font-family: 'Open Sans', sans-serif;
 
 // Export to :root for use in JS
 :root {
-    --primary-color: #3f51b5;
-    --secondary-color: #ff4081;
-    --custom-blue: #6096ba;
-    --custom-warm: #FF7043;
+    --mui-palette-primary-main: #fb0000;
+    --mui-palette-secondary-main: #226f54;
+    --turquoise: #72e1d1;
+    --lavender-blush: #f9eeee;
+    --penn-red: #9a0000;
     --font-family: 'Open Sans', sans-serif;
+
 }
 
 // example usage in sass file:
 // @import 'design-system/colors.scss';
 
 // body {
-//   background-color: $primary-color;
+//   background-color: $lavender-blush;
 //   font-family: $font-family;
 // }

@@ -3,14 +3,22 @@
   <head>
     <title>PharmDs in IT</title>
     <%= csrf_meta_tags %>
-    <%= javascript_pack_tag 'application' %> <!-- Make sure this is your main JS file -->
+    <%= javascript_pack_tag 'application' %> <!-- Ensure this is your main JS file for Webpack -->
     
     <!-- Add Google Fonts link for Open Sans -->
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;600;700&display=swap">
   </head>
 
   <body style="margin:0;padding:0" data-controller="<%= controller_name %>" data-action="<%= action_name %>">
-    <%= react_component("NavBar", prerender: false) %>
+    <!-- Global container for the React app -->
+    <div id="app-container">
+      <!-- React component will be rendered here, wrapped by ThemeProvider -->
+      <%= react_component("NavBar", prerender: false) %> <!-- Ensure NavBar loads here -->
+      <!-- Containers for dynamically loaded components -->
+      <div id="search-page-container"></div> <!-- For SearchPageBundle -->
+      <div id="directory-container"></div> <!-- For DirectoryBundle -->
+    </div>
+    
     <%= yield %>
   </body>
 </html>
