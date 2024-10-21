@@ -6,6 +6,7 @@ interface Grayscale {
     light: string,
     contrastText: string,
 }
+
 declare module '@mui/material/styles' {
     interface Palette {
         primary: Palette['primary'],
@@ -29,13 +30,11 @@ declare module '@mui/material/styles' {
         title: React.CSSProperties;
     }
 
-    // allow configuration using `createTheme`
     interface TypographyVariantsOptions {
         title?: React.CSSProperties;
     }
 }
 
-// Update the Typography's variant prop options
 declare module '@mui/material/Typography' {
     interface TypographyPropsVariantOverrides {
         title: true;
@@ -46,44 +45,44 @@ export const theme = createTheme({
     palette: {
         primary: {
             main: '#226f54',  // Dark Spring Green
-            light: '#72e1d1', // Turquoise
-            dark: '#1c5942',  // Darker version of Dark Spring Green
-            contrastText: '#ffffff',  // White text for contrast
+            light: '#72e1d1',
+            dark: '#1c5942',
+            contrastText: '#ffffff',
         },
         secondary: {
             main: '#f9eeee',  // Lavender Blush
-            dark: '#f0dddd',  // Darker version of Lavender Blush
-            contrastText: '#9a0000',  // Penn Red as contrast text
+            dark: '#f0dddd',
+            contrastText: '#9a0000',
         },
         warning: {
             main: '#fb0000',  // Off Red
-            dark: '#9a0000',  // Penn Red as dark warning
-            light: '#f9eeee', // Lightest warning variant
-            contrastText: '#ffffff',  // White text
+            dark: '#9a0000',
+            light: '#f9eeee',
+            contrastText: '#ffffff',
         },
         success: {
             main: '#226f54',  // Dark Spring Green for success
-            light: '#72e1d1', // Light success (Turquoise)
-            dark: '#1c5942',  // Dark success variant
-            contrastText: '#ffffff',  // White text
+            light: '#72e1d1',
+            dark: '#1c5942',
+            contrastText: '#ffffff',
         },
         info: {
             main: '#72e1d1',  // Turquoise for informational messages
-            dark: '#56b6a3',  // Darker info variant
-            contrastText: '#ffffff',  // White text
+            dark: '#56b6a3',
+            contrastText: '#ffffff',
         },
         grayscale: {
-            main: '#f5f5f5',  // Light grayscale (secondary)
-            dark: '#e0e0e0',  // Darker grayscale
-            light: '#ffffff', // Lightest grayscale (white)
-            contrastText: '#9a0000',  // Contrast text for grayscale
+            main: '#f5f5f5',
+            dark: '#e0e0e0',
+            light: '#ffffff',
+            contrastText: '#9a0000',
         },
     },
     typography: {
-        fontFamily: ['"Open Sans"', 'Arial', 'sans-serif'].join(','),
+        fontFamily: ['Archivo', 'Arial', 'sans-serif'].join(','),
         title: {
             fontSize: '2rem',
-            fontFamily: ['"Open Sans"', 'Arial', 'sans-serif'].join(','),
+            fontFamily: ['Archivo', 'Arial', 'sans-serif'].join(','),
         },
         h1: {
             fontSize: '3rem',

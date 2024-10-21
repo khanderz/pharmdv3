@@ -1,20 +1,19 @@
-import React from 'react'; // Import React
+import React from 'react';
 import ReactOnRails from 'react-on-rails';
 import NavBar from '../bundles/NavBar/NavBarServer'; // Client-side version
 import SearchPage from '../bundles/SearchPageBundle'; // Client-side version
 import { createRoot } from 'react-dom/client';
 import { ThemeProvider } from '@mui/material/styles';
-import theme from '../designSystem/theme'; // Import your global theme
+import theme from '../designSystem/theme';
 
 ReactOnRails.register({ NavBar });
 
 document.addEventListener('DOMContentLoaded', () => {
-  const container = document.getElementById('app-container'); // A global container for the entire app
+  const container = document.getElementById('app-container');
 
   if (container) {
     const root = createRoot(container);
 
-    // Wrap the entire app with ThemeProvider to apply the theme globally
     root.render(
       <ThemeProvider theme={theme}>
         <NavBar />
@@ -36,7 +35,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
         if (directoryContainer) {
           const directoryRoot = createRoot(directoryContainer);
-          // No need to wrap again with ThemeProvider because it's already global
           directoryRoot.render(<Directory />);
         } else {
           console.error('Directory container not found!');
