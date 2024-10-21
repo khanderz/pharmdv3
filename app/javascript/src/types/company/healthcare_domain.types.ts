@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 
-const [healthcareDomains, setHealthcareDomains] = useState<string[]>([]);
+const [healthcareDomains, setHealthcareDomains] = useState<{ key: string; value: string }[]>([]);
 
 useEffect(() => {
     const fetchHealthcareDomains = async () => {
@@ -19,9 +19,11 @@ useEffect(() => {
     fetchHealthcareDomains();
 }, []);
 
-export type HealthcareDomainEnum = typeof healthcareDomains[number];
+export type HealthcareDomainEnum = typeof healthcareDomains[number]['value'];
+export type HealthcareDomainKey = typeof healthcareDomains[number]['key'];
 
 export interface HealthcareDomain {
     healthcare_domain_id: number;
+    key: HealthcareDomainKey;
     value: HealthcareDomainEnum;
 }
