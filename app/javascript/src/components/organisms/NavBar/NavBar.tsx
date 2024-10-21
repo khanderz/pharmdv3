@@ -14,7 +14,6 @@ import {
   useTheme,
 } from '@mui/material'
 
-
 const pages = ['Directory', 'Pathfinder', 'Admin']
 const settings = ['Profile', 'Account', 'Dashboard', 'Logout']
 
@@ -42,12 +41,19 @@ function NavBar() {
 
   return (
     <AppBar position="static" >
-      <Container>
-        <Toolbar>
-          <Typography variant="title" component="div" sx={{ flexGrow: 1 }}>
-            PharmDs in IT
-          </Typography>
-          <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}>
+      <Container >
+        <Toolbar sx={{ justifyContent: 'space-around', width: '100%' }}>
+          <Button href="/" sx={{
+            color: 'white',
+            textTransform: 'none',
+            padding: 0,
+            textAlign: 'left',
+          }}>
+            <Typography variant="title" component="div">
+              PharmDs in IT
+            </Typography>
+          </Button>
+          <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' }, justifyContent: 'center' }}>
             {pages.map((page) => (
               <Button
                 key={page}
@@ -60,7 +66,7 @@ function NavBar() {
             ))}
           </Box>
 
-          <Box sx={{ flexGrow: 0 }}>
+          <Box sx={{ flexGrow: 0, marginRight: 5 }}>
             <Tooltip title="Open settings">
               <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
                 <Avatar alt="Remy Sharp" />{' '}

@@ -1,6 +1,7 @@
 import React from 'react'; // Import React
 import ReactOnRails from 'react-on-rails';
 import NavBar from '../bundles/NavBar/NavBarServer'; // Client-side version
+import SearchPage from '../bundles/SearchPageBundle'; // Client-side version
 import { createRoot } from 'react-dom/client';
 import { ThemeProvider } from '@mui/material/styles';
 import theme from '../designSystem/theme'; // Import your global theme
@@ -16,8 +17,8 @@ document.addEventListener('DOMContentLoaded', () => {
     // Wrap the entire app with ThemeProvider to apply the theme globally
     root.render(
       <ThemeProvider theme={theme}>
-        <NavBar /> {/* Render the NavBar globally */}
-        {/* Here you can conditionally render other components */}
+        <NavBar />
+        <SearchPage />
       </ThemeProvider>
     );
   }

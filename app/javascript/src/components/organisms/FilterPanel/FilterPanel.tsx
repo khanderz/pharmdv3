@@ -1,8 +1,9 @@
 import React from "react";
 import { Box, Typography, Select, MenuItem, Button, FormControl, InputLabel } from "@mui/material";
-import { Company, CompanySpecialty } from "../../../types/company.types";
+import { Company, CompanySpecialty, HealthcareDomainItem } from "../../../types/company.types";
 import { JobPost } from "../../../types/job_post.types";
 import { CompanyFilter } from "../../molecules/Filters/CompanyFilter/CompanyFilter";
+import { DigitalHealthSpecialtyValue } from "../../../types/company/company_specialty.types";
 
 interface FilterPanelProps {
   companies: Company['company_name'][];
@@ -11,6 +12,9 @@ interface FilterPanelProps {
   specialties: CompanySpecialty['value'][];
   selectedSpecialty: CompanySpecialty['value'] | null;
   onSpecialtyFilter: (specialty: CompanySpecialty['value'] | null) => void;
+  domains: HealthcareDomainItem['value'][];
+  selectedDomain: HealthcareDomainItem['value'] | null;
+  onDomainFilter: (domain: HealthcareDomainItem['value'] | null) => void;
   departments: JobPost['job_dept'][];
   selectedDepartment: JobPost['job_dept'] | null;
   onDepartmentFilter: (department: JobPost['job_dept'] | null) => void;
@@ -32,9 +36,12 @@ export const FilterPanel = ({
   teams,
   selectedTeam,
   onTeamFilter,
+  domains,
+  selectedDomain,
+  onDomainFilter,
 }: FilterPanelProps) => {
   return (
-    <Box sx={{ border: '1px solid #e0e0e0', borderRadius: '8px', p: 2 }}>
+    <Box sx={{ border: '1px solid #e0e0e0', borderRadius: '8px', p: 2 }} data-testid="filter-panel-box">
       <Typography variant="h6">Filters</Typography>
 
       {/* Company Filter */}
@@ -50,7 +57,7 @@ export const FilterPanel = ({
         <FormControl fullWidth>
           <Select
             value={selectedSpecialty || ''}
-            onChange={(e) => onSpecialtyFilter(e.target.value || null)}
+            onChange={(e) => onSpecialtyFilter(e.target.value as DigitalHealthSpecialtyValue || null)}
             displayEmpty
           >
             <MenuItem value="">

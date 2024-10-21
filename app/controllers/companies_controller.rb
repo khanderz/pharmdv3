@@ -1,33 +1,63 @@
 class CompaniesController < ApplicationController
-  before_action :set_company, only: %i[ show edit update destroy ]
+  before_action :set_company, only: %i[show edit update destroy]
 
   # GET /companies or /companies.json
   def index
-    # Check if `company_type` is passed in the query params
-    if params[:company_type]
-      @companies = Company.where(company_type: params[:company_type])
-                          .includes(:job_posts, :company_type, :company_specialties)
-    else
-      @companies = Company.includes(:job_posts, :company_type, :company_specialties).all
-    end
-    
-    render json: @companies.as_json(include: [:job_posts, :company_type, { company_specialties: { only: [:key, :value] } }])
+    @companies = Company.includes(
+      :job_posts, 
+      :company_size, 
+      :ats_type, 
+      :country, 
+      :state, 
+      :city, 
+      :company_specialties, 
+      :healthcare_domains  # Include healthcare domains
+    ).all
+
+    # Render JSON with nested relationships
+    render json: @companies.as_json(
+      include: {
+        job_posts: { only: [:job_title, :job_description, :job_active] },
+        company_size: { only: [:size_range] },
+        ats_type: { only: [:ats_type_name] },
+        country: { only: [:country_name] },
+        state: { only: [:state_name] },
+        city: { only: [:city_name] },
+        company_specialties: { only: [:key, :value] },
+        healthcare_domains: { only: [:key, :value] }  # Include healthcare domain details
+      }
+    )
   end
-  
-# GET /companies/1 or /companies/1.json
-def show
-  @company = Company.includes(:job_posts, :company_type, :company_specialties).find(params[:id])
 
-  # Add human-readable values for the enum fields
-  company_with_enums = @company.as_json(include: [:job_posts, { company_specialties: { only: [:key, :value] } }]).merge(
-    company_type: @company.company_type.name, # Assuming company_type has a `name` attribute
-    pharmacy_type: @company.pharmacy_type.present? ? Company::PHARMACY_TYPES[@company.pharmacy_type] : nil,
-    digital_health_type: @company.digital_health_type.present? ? Company::DIGITAL_HEALTH_TYPES[@company.digital_health_type] : nil
-  )
+  # GET /companies/1 or /companies/1.json
+  def show
+    @company = Company.includes(
+      :job_posts, 
+      :company_size, 
+      :ats_type, 
+      :country, 
+      :state, 
+      :city, 
+      :company_specialties, 
+      :healthcare_domains  # Include healthcare domains
+    ).find(params[:id])
 
-  render json: company_with_enums
-end
+    # Add human-readable values for associated models
+    company_with_details = @company.as_json(
+      include: {
+        job_posts: { only: [:job_title, :job_description, :job_active] },
+        company_size: { only: [:size_range] },
+        ats_type: { only: [:ats_type_name] },
+        country: { only: [:country_name] },
+        state: { only: [:state_name] },
+        city: { only: [:city_name] },
+        company_specialties: { only: [:key, :value] },
+        healthcare_domains: { only: [:key, :value] }  # Include healthcare domain details
+      }
+    )
 
+    render json: company_with_details
+  end
 
   # GET /companies/new
   def new
@@ -86,22 +116,21 @@ end
   # Only allow a list of trusted parameters through.
   def company_params
     params.require(:company).permit(
-      :company_name, 
-      :operating_status, 
-      :company_type, 
-      :pharmacy_type, 
-      :digital_health_type, 
-      :company_ats_type, 
-      :company_size, 
-      :last_funding_type, 
-      :linkedin_url, 
-      :is_public, 
-      :year_founded, 
-      :company_city, 
-      :company_state, 
-      :company_country, 
-      :acquired_by, 
-      :ats_id
+      :company_name,
+      :operating_status,
+      :company_size_id,
+      :ats_type_id,
+      :linkedin_url,
+      :is_public,
+      :year_founded,
+      :city_id,
+      :state_id,
+      :country_id,
+      :acquired_by,
+      :company_description,
+      :ats_id,
+      company_specialization_ids: [],   # Allow for company specializations
+      healthcare_domain_ids: []         # Allow for healthcare domain associations
     )
   end
 end

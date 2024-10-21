@@ -1,31 +1,64 @@
+import {
+    CompanySize,
+    AtsType,
+    PharmaSpecialtyKey,
+    DigitalHealthSpecialtyKey,
+    PharmaSpecialtyValue,
+    DigitalHealthSpecialtyValue,
+    HealthcareDomain,
+    FundingType,
+    CompanySpecialty
+} from "./company/index";
+import { Adjudication } from "./adjudication.types"
 
 export interface Company {
     id: number;
     company_name: string;
     operating_status: boolean;
-    company_type: string; // enum?
-    company_type_value: string;
-    company_ats_type: string; // enum?
-    company_size: string;
-    last_funding_type: string;
+    company_description: string;
     linkedin_url: string;
     is_public: boolean;
     year_founded: number;
-    company_city: string;
-    company_state: string;
-    company_country: string;
     acquired_by: string;
+
+    company_size?: CompanySize;
+    funding_type?: FundingType;
+    city?: City; // Reference to the city model
+    state?: State; // Reference to the state model
+    country?: Country; // Reference to the country model
+
     ats_id: string;
-    company_description: string;
+    ats_type: AtsType;
+
+    error_details: Adjudication['error_details'];
+    reference_id: Adjudication['adjudicatable_id'];
+    resolved: Adjudication['resolved'];
+
+    company_specialties: CompanySpecialty[];
+    healthcare_domains: HealthcareDomain[];
     created_at: Date;
     updated_at: Date;
-    company_specialties: CompanySpecialty[];
 }
 
-export interface CompanySpecialty {
-    key: string; // enum
-    value: string; // enum
-    company_type_id: number;
+export interface City {
+    id: number;
+    city_name: string;
+    created_at: Date;
+    updated_at: Date;
+}
+
+export interface State {
+    id: number;
+    state_code: string;
+    state_name: string;
+    created_at: Date;
+    updated_at: Date;
+}
+
+export interface Country {
+    id: number;
+    country_code: string;
+    country_name: string;
     created_at: Date;
     updated_at: Date;
 }

@@ -1,7 +1,8 @@
 import { Card, CardContent, Typography, Button } from "@mui/material"
 import React from "react"
+import { Company, CompanySpecialty } from "../../../types/company.types"
 import { JobPost } from "../../../types/job_post.types"
-import { Company } from "../../../types/company.types"
+import { HealthcareDomainValue } from "../../../types/company"
 
 interface JobCardProps {
     title: JobPost['job_title']
@@ -9,14 +10,15 @@ interface JobCardProps {
     job_location: JobPost['job_location']
     job_commitment: JobPost['job_commitment']
     job_applyUrl: JobPost['job_applyUrl']
-    company_specialty: Company['company_specialties']
+    company_specialty: CompanySpecialty['value']
+    healthcare_domains: HealthcareDomainItem['value']
 }
 
 
 export const JobCard = ({ title, company_name, job_location, job_commitment, job_applyUrl, company_specialty }: JobCardProps) => {
 
     return (
-        <Card variant="outlined" sx={{ p: 2 }}>
+        <Card variant="outlined" sx={{ p: 2 }} data-testid="job-card">
             <CardContent>
                 <Typography variant="h6">{title}</Typography>
                 <Typography variant="body2" color="text.secondary">
