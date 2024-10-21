@@ -16,5 +16,8 @@ export const Department = {
     SALES: 'Sales',
 } as const;
 
-export type DepartmentKey = keyof typeof Department;
-export type DepartmentValue = typeof Department[DepartmentKey];
+export interface Department {
+    department_id: number;
+    department_code: keyof typeof Department;
+    department_name: typeof Department[keyof typeof Department];
+}

@@ -6,6 +6,8 @@ import {
     JobSalaryCurrency
 } from './job_post';
 import { Adjudication } from './adjudication.types';
+import { Country } from './location.types';
+import { JobRole } from './job_role/job_role.types';
 
 export interface JobPost {
     id: number;
@@ -21,22 +23,25 @@ export interface JobPost {
     job_internal_id_string: string;
     job_salary_min: number;
     job_salary_max: number;
-    job_salary_interval_id: JobSalaryInterval;
-    job_salary_currency_id: JobSalaryCurrency;
-    job_commitment_id: JobCommitment;
-    job_setting_id: JobSetting;
-    job_team_id: number; // Reference to a team
-    job_dept_id: number; // Reference to department ID
     job_locations: Record<string, string>[];
     job_responsibilities: string;
-    job_qualifications: string[]; // Array of qualifications
+    job_qualifications: string[];
     job_applyUrl: string;
     job_additional: string;
-    country_id: number; // Reference to a country ID
-    country: string; // Country name or enum
+
+    job_role: JobRole;
+    job_salary_interval: JobSalaryInterval;
+    job_salary_currency: JobSalaryCurrency;
+    job_commitment: JobCommitment;
+    job_setting: JobSetting;
+    job_team: number; // Reference to a team
+    job_dept: number; // Reference to department ID
+    country: Country; // Country name or enum
+
     reference_id?: Adjudication['adjudicatable_id'];
     error_details?: Adjudication['error_details'];
     resolved: Adjudication['resolved'];
+
     created_at: Date;
     updated_at: Date;
 }

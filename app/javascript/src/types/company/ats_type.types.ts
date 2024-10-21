@@ -22,7 +22,7 @@ export enum AtsTypeEnum {
 }
 
 export interface AtsType {
-    id: number;
+    ats_type_id: number;
     ats_type_code: keyof typeof AtsTypeEnum;
     ats_type_name: typeof AtsTypeEnum[keyof typeof AtsTypeEnum];
 }

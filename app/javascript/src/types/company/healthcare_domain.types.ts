@@ -28,7 +28,7 @@ export const HealthcareDomainEnum = {
 } as const;
 
 export interface HealthcareDomain {
-    id: number;
+    healthcare_domain_id: number;
     key: keyof typeof HealthcareDomainEnum;
     value: typeof HealthcareDomainEnum[keyof typeof HealthcareDomainEnum];
 }

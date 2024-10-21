@@ -1,3 +1,5 @@
+import { Adjudication } from "../adjudication.types";
+
 export enum JobSalaryCurrencyEnum {
     AUD = 'AUD', // Australian Dollar
     BRL = 'BRL', // Brazilian Real
@@ -17,7 +19,10 @@ export enum JobSalaryCurrencyEnum {
 }
 
 export interface JobSalaryCurrency {
-    id: number;
+    job_salary_currency_id: number;
     job_salary_currency_key: keyof typeof JobSalaryCurrencyEnum;
     currrency_code: typeof JobSalaryCurrencyEnum[keyof typeof JobSalaryCurrencyEnum];
+    reference_id?: Adjudication['adjudicatable_id'];
+    error_details?: Adjudication['error_details'];
+    resolved: Adjudication['resolved'];
 }
