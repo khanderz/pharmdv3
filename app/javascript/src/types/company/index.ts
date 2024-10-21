@@ -3,8 +3,7 @@ import { AtsType } from './ats_type.types';
 import { FundingType } from './funding_type.types';
 import { CompanySize } from './/company_size.types';
 import {
-    PharmaSpecialty, PharmaSpecialtyKey, PharmaSpecialtyValue,
-    DigitalHealthSpecialty, DigitalHealthSpecialtyKey, DigitalHealthSpecialtyValue,
+    CompanySpecialtyEnum,
     CompanySpecialty,
 } from './company_specialty.types';
 import { Company } from './company.types';
@@ -16,6 +15,5 @@ export {
     FundingType,
     CompanySize,
     CompanySpecialty,
-    PharmaSpecialty, PharmaSpecialtyKey, PharmaSpecialtyValue,
-    DigitalHealthSpecialty, DigitalHealthSpecialtyKey, DigitalHealthSpecialtyValue,
+    CompanySpecialtyEnum
 };

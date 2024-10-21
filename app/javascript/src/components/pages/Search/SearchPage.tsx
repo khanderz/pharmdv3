@@ -4,8 +4,7 @@ import { JobPost } from '../../../types/job_post/job_post.types';
 import { FilterPanel } from '../../organisms/FilterPanel/FilterPanel';
 import { SearchPanel } from '../../molecules/SearchPanel/SearchPanel';
 import { JobCard } from '../../organisms/JobCard/JobCard';
-import { Company } from '../../../types/company.types';
-import { CompanySpecialty, HealthcareDomain } from '../../../types/company';
+import { Company, CompanySpecialty, HealthcareDomain } from '../../../types/company';
 import { Department, Team } from '../../../types/job_role';
 
 export const SearchPage = () => {
@@ -13,7 +12,7 @@ export const SearchPage = () => {
   const [filteredJobPosts, setFilteredJobPosts] = useState<JobPost[]>([]);
   const [selectedCompany, setSelectedCompany] = useState<Company['company_name'] | null>(null);
   const [selectedSpecialty, setSelectedSpecialty] = useState<CompanySpecialty['value'] | null>(null);
-  const [selectedDomain, setSelectedDomain] = useState<HealthcareDomain['value'] | null>(null); // New state for healthcare domains
+  const [selectedDomain, setSelectedDomain] = useState<HealthcareDomain['value'] | null>(null);
   const [selectedDepartment, setSelectedDepartment] = useState<Department['dept_name'] | null>(null);
   const [selectedTeam, setSelectedTeam] = useState<Team['team_name'] | null>(null);
 
@@ -39,17 +38,25 @@ export const SearchPage = () => {
   );
 
   // Extract unique specialties from job posts
-  const uniqueSpecialties: CompanySpecialty['value'][] = Array.from(
-    new Set(jobPosts.flatMap((jobPost) => jobPost.company.company_specialties?.map((spec) => spec.value)))
+  const uniqueSpecialties: CompanySpecialty[] = Array.from(
+    new Set(
+      jobPosts.flatMap((jobPost) =>
+        jobPost.company.company_specialties ?? []
+      )
+    )
   ).filter(Boolean);
 
   // Extract unique healthcare domains from job posts
-  const uniqueDomains: HealthcareDomain['value'][] = Array.from(
-    new Set(jobPosts.flatMap((jobPost) => jobPost.company.healthcare_domains?.map((domain) => domain.value)))
+  const uniqueDomains: HealthcareDomain[] = Array.from(
+    new Set(
+      jobPosts.flatMap((jobPost) =>
+        jobPost.company.healthcare_domains ?? []
+      )
+    )
   ).filter(Boolean);
 
-  // const uniqueDepartments: any = Array.from(new Set(jobPosts.map((jobPost) => jobPost.job_dept))).filter(Boolean);
-  // const uniqueTeams: any = Array.from(new Set(jobPosts.map((jobPost) => jobPost.job_team))).filter(Boolean);
+  const uniqueDepartments: any = Array.from(new Set(jobPosts.map((jobPost) => jobPost.job_dept))).filter(Boolean);
+  const uniqueTeams: any = Array.from(new Set(jobPosts.map((jobPost) => jobPost.job_team))).filter(Boolean);
 
   // Handle filtering based on the selected company
   const handleCompanyFilter = (companyName: Company['company_name'] | null) => {
@@ -84,8 +91,8 @@ export const SearchPage = () => {
     companyName: Company['company_name'] | null,
     specialty: CompanySpecialty['value'] | null,
     domain: HealthcareDomain['value'] | null,
-    department: any | null = null,
-    team: any | null = null
+    department: Department['dept_name'] | null = null,
+    team: Team['team_name'] | null = null
   ) => {
     let filtered = jobPosts;
 
@@ -105,13 +112,13 @@ export const SearchPage = () => {
       );
     }
 
-    // if (department) {
-    //   filtered = filtered.filter((jobPost) => jobPost.job_dept === department);
-    // }
+    if (department) {
+      filtered = filtered.filter((jobPost) => jobPost.job_dept.dept_name === department);
+    }
 
-    // if (team) {
-    //   filtered = filtered.filter((jobPost) => jobPost.job_team === team);
-    // }
+    if (team) {
+      filtered = filtered.filter((jobPost) => jobPost.job_team.team_name === team);
+    }
 
     setFilteredJobPosts(filtered);
   };
@@ -137,12 +144,12 @@ export const SearchPage = () => {
             domains={uniqueDomains}
             selectedDomain={selectedDomain}
             onDomainFilter={handleDomainFilter}
-          // departments={uniqueDepartments}
-          // selectedDepartment={selectedDepartment}
-          // onDepartmentFilter={handleDepartmentFilter}
-          // teams={uniqueTeams}
-          // selectedTeam={selectedTeam}
-          // onTeamFilter={handleTeamFilter}
+            departments={uniqueDepartments}
+            selectedDepartment={selectedDepartment}
+            onDepartmentFilter={handleDepartmentFilter}
+            teams={uniqueTeams}
+            selectedTeam={selectedTeam}
+            onTeamFilter={handleTeamFilter}
           />
         </Grid>
 

@@ -19,7 +19,6 @@ const settings = ['Profile', 'Account', 'Dashboard', 'Logout']
 
 function NavBar() {
   const theme = useTheme();
-  console.log(theme.palette.primary)
 
   const [anchorElNav, setAnchorElNav] = useState<null | HTMLElement>(null)
   const [anchorElUser, setAnchorElUser] = useState<null | HTMLElement>(null)

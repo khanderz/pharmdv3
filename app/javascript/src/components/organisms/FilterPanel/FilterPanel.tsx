@@ -1,27 +1,29 @@
 import React from "react";
 import { Box, Typography, Select, MenuItem, Button, FormControl, InputLabel } from "@mui/material";
-import { Company } from "../../../types/company.types";
-import { JobPost } from "../../../types/job_post/job_post.types";
 import { CompanyFilter } from "../../molecules/Filters/CompanyFilter/CompanyFilter";
-import { CompanySpecialty, DigitalHealthSpecialtyValue } from "../../../types/company/company_specialty.types";
-import { HealthcareDomain } from "../../../types/company";
+import { Company, CompanySpecialty, HealthcareDomain } from "../../../types/company";
+import { Department, Team } from "../../../types/job_role";
 
 interface FilterPanelProps {
   companies: Company['company_name'][];
   selectedCompany: Company['company_name'] | null;
   onCompanyFilter: (company_name: Company['company_name'] | null) => void;
-  specialties: CompanySpecialty['value'][];
+
+  specialties: CompanySpecialty[]
   selectedSpecialty: CompanySpecialty['value'] | null;
   onSpecialtyFilter: (specialty: CompanySpecialty['value'] | null) => void;
-  domains: HealthcareDomain['value'][];
+
+  domains: HealthcareDomain[];
   selectedDomain: HealthcareDomain['value'] | null;
   onDomainFilter: (domain: HealthcareDomain['value'] | null) => void;
-  // departments: JobPost['job_dept'][];
-  // selectedDepartment: JobPost['job_dept'] | null;
-  // onDepartmentFilter: (department: JobPost['job_dept'] | null) => void;
-  // teams: JobPost['job_team'][];
-  // selectedTeam: JobPost['job_team'] | null;
-  // onTeamFilter: (team: JobPost['job_team'] | null) => void;
+
+  departments: Department[];
+  selectedDepartment: Department['dept_name'] | null;
+  onDepartmentFilter: (department: Department['dept_name'] | null) => void;
+
+  teams: Team[];
+  selectedTeam: Team['team_name'] | null;
+  onTeamFilter: (team: Team['team_name'] | null) => void;
 }
 
 export const FilterPanel = ({
@@ -31,12 +33,12 @@ export const FilterPanel = ({
   specialties,
   selectedSpecialty,
   onSpecialtyFilter,
-  // departments,
-  // selectedDepartment,
-  // onDepartmentFilter,
-  // teams,
-  // selectedTeam,
-  // onTeamFilter,
+  departments,
+  selectedDepartment,
+  onDepartmentFilter,
+  teams,
+  selectedTeam,
+  onTeamFilter,
   domains,
   selectedDomain,
   onDomainFilter,
@@ -58,15 +60,15 @@ export const FilterPanel = ({
         <FormControl fullWidth>
           <Select
             value={selectedSpecialty || ''}
-            onChange={(e) => onSpecialtyFilter(e.target.value as DigitalHealthSpecialtyValue || null)}
+            onChange={(e) => onSpecialtyFilter(e.target.value || null)}
             displayEmpty
           >
             <MenuItem value="">
               <em>All Specialties</em>
             </MenuItem>
-            {specialties.map((specialty, index) => (
-              <MenuItem key={index} value={specialty}>
-                {specialty}
+            {specialties.map((specialty) => (
+              <MenuItem key={specialty.key} value={specialty.value}>
+                {specialty.value}
               </MenuItem>
             ))}
           </Select>
@@ -74,7 +76,7 @@ export const FilterPanel = ({
       </Box>
 
       {/* Department Filter */}
-      {/* <Box sx={{ mt: 2 }}>
+      <Box sx={{ mt: 2 }}>
         <Typography variant="body1">Department</Typography>
         <FormControl fullWidth  >
           <Select value={selectedDepartment || ''}
@@ -84,17 +86,17 @@ export const FilterPanel = ({
             <MenuItem value="">
               <em>All Departments</em>
             </MenuItem>
-            {departments.map((dept, index) => (
-              <MenuItem key={index} value={dept}>
-                {dept}
+            {departments.map((dept) => (
+              <MenuItem key={dept.department_id} value={dept.dept_name}>
+                {dept.dept_name}
               </MenuItem>
             ))}
           </Select>
         </FormControl>
-      </Box> */}
+      </Box>
 
       {/* Team Filter */}
-      {/* <Box sx={{ mt: 2 }}>
+      <Box sx={{ mt: 2 }}>
         <Typography variant="body1">Team</Typography>
         <FormControl fullWidth  >
           <Select value={selectedTeam || ''}
@@ -104,14 +106,14 @@ export const FilterPanel = ({
             <MenuItem value="">
               <em>All Teams</em>
             </MenuItem>
-            {teams.map((team, index) => (
-              <MenuItem key={index} value={team}>
-                {team}
+            {teams.map((team) => (
+              <MenuItem key={team.team_id} value={team.team_name}>
+                {team.team_name}
               </MenuItem>
             ))}
           </Select>
         </FormControl>
-      </Box> */}
+      </Box>
 
       <Box sx={{ mt: 2 }}>
         <Typography variant="body1">Location</Typography>
