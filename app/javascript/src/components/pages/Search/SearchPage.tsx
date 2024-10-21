@@ -6,6 +6,7 @@ import { SearchPanel } from '../../molecules/SearchPanel/SearchPanel';
 import { JobCard } from '../../organisms/JobCard/JobCard';
 import { Company } from '../../../types/company.types';
 import { CompanySpecialty, HealthcareDomain } from '../../../types/company';
+import { Department, Team } from '../../../types/job_role';
 
 export const SearchPage = () => {
   const [jobPosts, setJobPosts] = useState<JobPost[]>([]);
@@ -13,9 +14,8 @@ export const SearchPage = () => {
   const [selectedCompany, setSelectedCompany] = useState<Company['company_name'] | null>(null);
   const [selectedSpecialty, setSelectedSpecialty] = useState<CompanySpecialty['value'] | null>(null);
   const [selectedDomain, setSelectedDomain] = useState<HealthcareDomain['value'] | null>(null); // New state for healthcare domains
-  const [selectedDepartment, setSelectedDepartment] = useState<any | null>(null);
-  const [selectedTeam, setSelectedTeam] = useState<any | null>(null);
-  const [teams, setTeams] = useState<string[]>([]);
+  const [selectedDepartment, setSelectedDepartment] = useState<Department['dept_name'] | null>(null);
+  const [selectedTeam, setSelectedTeam] = useState<Team['team_name'] | null>(null);
 
   // Fetch job posts data
   useEffect(() => {

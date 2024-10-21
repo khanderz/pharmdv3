@@ -7,7 +7,7 @@ import {
 } from './job_post';
 import { Adjudication } from './adjudication.types';
 import { Country } from './location.types';
-import { JobRole } from './job_role/job_role.types';
+import { Department, JobRole, Team } from './job_role';
 
 export interface JobPost {
     id: number;
@@ -34,9 +34,9 @@ export interface JobPost {
     job_salary_currency: JobSalaryCurrency;
     job_commitment: JobCommitment;
     job_setting: JobSetting;
-    job_team: number; // Reference to a team
-    job_dept: number; // Reference to department ID
-    country: Country; // Country name or enum
+    job_team: Team;
+    job_dept: Department;
+    country: Country;
 
     reference_id?: Adjudication['adjudicatable_id'];
     error_details?: Adjudication['error_details'];

@@ -24,7 +24,7 @@ export type Teams = typeof teams[number];
 
 export interface Team {
     team_id: number;
-    team_name: Teams[];
+    team_name: Teams;
 
     error_details: Adjudication['error_details'];
     reference_id: Adjudication['adjudicatable_id'];

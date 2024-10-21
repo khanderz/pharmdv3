@@ -24,7 +24,7 @@ export type Departments = typeof departments[number];
 
 export interface Department {
     department_id: number;
-    dept_name: Departments[];
+    dept_name: Departments;
 
     error_details: Adjudication['error_details'];
     reference_id: Adjudication['adjudicatable_id'];

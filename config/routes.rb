@@ -8,6 +8,10 @@ Rails.application.routes.draw do
   resources :job_posts, defaults: { format: :json }
   resources :departments, defaults: { format: :json }
   resources :teams, defaults: { format: :json }
+  resources :job_roles, defaults: { format: :json }
+  resources :cities, defaults: { format: :json }
+  resources :countries, defaults: { format: :json }
+  resources :states, defaults: { format: :json }
 
   # Health status
   get "up" => "rails/health#show", as: :rails_health_check
