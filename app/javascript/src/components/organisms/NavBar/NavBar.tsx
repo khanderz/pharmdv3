@@ -44,7 +44,7 @@ function NavBar() {
     <AppBar position="static" >
       <Container>
         <Toolbar>
-          <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
+          <Typography variant="title" component="div" sx={{ flexGrow: 1 }}>
             PharmDs in IT
           </Typography>
           <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}>

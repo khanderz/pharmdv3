@@ -24,6 +24,22 @@ declare module '@mui/material/styles' {
         info?: PaletteOptions['info'],
         grayscale?: Grayscale
     }
+
+    interface TypographyVariants {
+        title: React.CSSProperties;
+    }
+
+    // allow configuration using `createTheme`
+    interface TypographyVariantsOptions {
+        title?: React.CSSProperties;
+    }
+}
+
+// Update the Typography's variant prop options
+declare module '@mui/material/Typography' {
+    interface TypographyPropsVariantOverrides {
+        title: true;
+    }
 }
 
 export const theme = createTheme({
@@ -65,6 +81,10 @@ export const theme = createTheme({
     },
     typography: {
         fontFamily: ['"Open Sans"', 'Arial', 'sans-serif'].join(','),
+        title: {
+            fontSize: '2rem',
+            fontFamily: ['"Open Sans"', 'Arial', 'sans-serif'].join(','),
+        },
         h1: {
             fontSize: '3rem',
             fontWeight: 700,
