@@ -37,7 +37,6 @@ document.addEventListener('DOMContentLoaded', () => {
         if (searchContainer) {
           const searchRoot = createRoot(searchContainer);
 
-          // No need to wrap again with ThemeProvider because it's already global
           searchRoot.render(<SearchPage />);
         } else {
           console.error('SearchPage container not found!');
