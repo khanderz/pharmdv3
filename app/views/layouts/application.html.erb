@@ -4,26 +4,27 @@
     <title>PharmDs in IT</title>
     <%= csrf_meta_tags %>
 
-      <!-- Favicon -->
-  <link rel="icon" type="image/x-icon" href="<%= asset_path 'favicon.ico' %>">
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="<%= asset_path 'favicon.ico' %>">
 
-
-    <%= javascript_pack_tag 'application' %> <!-- Ensure this is your main JS file for Webpack -->
+    <!-- Main JavaScript for Webpack -->
+    <%= javascript_pack_tag 'application' %> 
     
     <!-- Add Google Fonts link for Open Sans -->
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;600;700&display=swap">
   </head>
 
-  <body style="margin:0;padding:0" data-controller="<%= controller_name %>" data-action="<%= action_name %>">
+  <body style="margin:0;padding:0">
     <!-- Global container for the React app -->
     <div id="app-container">
-      <!-- React component will be rendered here, wrapped by ThemeProvider -->
-      <%= react_component("NavBar", prerender: false) %> <!-- Ensure NavBar loads here -->
+      <!-- React component NavBar is rendered here, wrapped by ThemeProvider -->
+      <%= react_component("NavBar", prerender: false) %>
+
       <!-- Containers for dynamically loaded components -->
-      <div id="search-page-container"></div> <!-- For SearchPageBundle -->
       <div id="directory-container"></div> <!-- For DirectoryBundle -->
+
+      <!-- SearchPage content (or other content based on routes) will be injected here -->
+      <%= yield %>
     </div>
-    
-    <%= yield %>
   </body>
 </html>

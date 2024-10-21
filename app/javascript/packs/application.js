@@ -24,29 +24,8 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   const controllerName = document.body.getAttribute('data-controller');
-  const actionName = document.body.getAttribute('data-action');
 
-  if (controllerName === 'search' && actionName === 'searchPage') {
-    import('../bundles/SearchPageBundle')
-      .then((SearchPageModule) => {
-        const SearchPage = SearchPageModule.default;
-
-        ReactOnRails.register({ SearchPage });
-
-        const searchContainer = document.getElementById('search-page-container');
-
-        if (searchContainer) {
-          const searchRoot = createRoot(searchContainer);
-
-          searchRoot.render(<SearchPage />);
-        } else {
-          console.error('SearchPage container not found!');
-        }
-      })
-      .catch((error) => {
-        console.error('Error loading SearchPageBundle:', error);
-      });
-  } else if (controllerName === 'directory') {
+  if (controllerName === 'directory') {
     import('../bundles/DirectoryBundle')
       .then((DirectoryModule) => {
         const Directory = DirectoryModule.default;

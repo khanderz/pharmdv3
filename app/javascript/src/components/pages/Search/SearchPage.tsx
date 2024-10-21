@@ -7,7 +7,10 @@ import { JobCard } from '@components/organisms/JobCard/JobCard';
 import { Company, CompanySpecialty, HealthcareDomain } from '@customtypes/company';
 import { Department, Team } from '@customtypes/job_role';
 
+const POSTS_PER_PAGE = 10;
+
 export const SearchPage = () => {
+  const [currentPage, setCurrentPage] = useState(1);
   const [jobPosts, setJobPosts] = useState<JobPost[]>([]);
   const [filteredJobPosts, setFilteredJobPosts] = useState<JobPost[]>([]);
   const [selectedCompany, setSelectedCompany] = useState<Company['company_name'] | null>(null);
@@ -32,6 +35,8 @@ export const SearchPage = () => {
     fetchJobPosts();
   }, []);
 
+  const totalPages = Math.ceil(filteredJobPosts.length / POSTS_PER_PAGE);
+
   // Extract unique companies with job posts
   const uniqueCompanies: Company['company_name'][] = Array.from(
     new Set(jobPosts.map((jobPost) => jobPost.company.company_name))
@@ -55,8 +60,8 @@ export const SearchPage = () => {
     )
   ).filter(Boolean);
 
-  const uniqueDepartments: any = Array.from(new Set(jobPosts.map((jobPost) => jobPost.job_dept))).filter(Boolean);
-  const uniqueTeams: any = Array.from(new Set(jobPosts.map((jobPost) => jobPost.job_team))).filter(Boolean);
+  const uniqueDepartments: Department[] = Array.from(new Set(jobPosts.map((jobPost) => jobPost.job_dept))).filter(Boolean);
+  const uniqueTeams: Team[] = Array.from(new Set(jobPosts.map((jobPost) => jobPost.job_team))).filter(Boolean);
 
   // Handle filtering based on the selected company
   const handleCompanyFilter = (companyName: Company['company_name'] | null) => {
@@ -76,12 +81,12 @@ export const SearchPage = () => {
     filterJobPosts(selectedCompany, selectedSpecialty, domain);
   };
 
-  const handleDepartmentFilter = (department: any | null) => {
+  const handleDepartmentFilter = (department: Department['dept_name'] | null) => {
     setSelectedDepartment(department);
     filterJobPosts(selectedCompany, selectedSpecialty, selectedDomain, department, selectedTeam);
   };
 
-  const handleTeamFilter = (team: any | null) => {
+  const handleTeamFilter = (team: Team['team_name'] | null) => {
     setSelectedTeam(team);
     filterJobPosts(selectedCompany, selectedSpecialty, selectedDomain, selectedDepartment, team);
   };
@@ -121,7 +126,17 @@ export const SearchPage = () => {
     }
 
     setFilteredJobPosts(filtered);
+    setCurrentPage(1)
   };
+
+  const handlePageChange = (event: React.ChangeEvent<unknown>, page: number) => {
+    setCurrentPage(page);
+  };
+
+  const paginatedJobPosts = filteredJobPosts.slice(
+    (currentPage - 1) * POSTS_PER_PAGE,
+    currentPage * POSTS_PER_PAGE
+  );
 
   return (
     <Container maxWidth="lg">
@@ -155,7 +170,7 @@ export const SearchPage = () => {
 
         <Grid item xs={12} md={9} data-testid="job-post-grid">
           <Grid container spacing={3} data-testid="job-cards-container">
-            {filteredJobPosts.map((jobPost) => (
+            {paginatedJobPosts.map((jobPost) => (
               <Grid item xs={12} key={jobPost.id}>
                 <JobCard
                   title={jobPost.job_title}
@@ -171,7 +186,7 @@ export const SearchPage = () => {
           </Grid>
 
           <Box sx={{ mt: 4, display: 'flex', justifyContent: 'center' }} data-testid="pagination-box">
-            <Pagination count={10} color="primary" />
+            <Pagination count={totalPages} page={currentPage} onChange={handlePageChange} color="primary" />
           </Box>
         </Grid>
       </Grid>
