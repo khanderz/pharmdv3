@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Box, Container, Grid, Pagination, Typography } from '@mui/material';
-import { JobPost } from '../../../types/job_post.types';
+import { JobPost } from '../../../types/job_post/job_post.types';
 import { FilterPanel } from '../../organisms/FilterPanel/FilterPanel';
 import { SearchPanel } from '../../molecules/SearchPanel/SearchPanel';
 import { JobCard } from '../../organisms/JobCard/JobCard';

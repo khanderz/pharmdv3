@@ -1,12 +1,10 @@
-import {
-    CompanySize,
-    AtsType,
-    HealthcareDomain,
-    FundingType,
-    CompanySpecialty
-} from "./company/index";
-import { Adjudication } from "./adjudication.types"
-import { City, State, Country } from "./location.types";
+import { Adjudication } from "../adjudication.types";
+import { City, State, Country } from "../location.types";
+import { AtsType } from "./ats_type.types";
+import { CompanySize } from "./company_size.types";
+import { CompanySpecialty } from "./company_specialty.types";
+import { FundingType } from "./funding_type.types";
+import { HealthcareDomain } from "./healthcare_domain.types";
 
 export interface Company {
     company_id: number;

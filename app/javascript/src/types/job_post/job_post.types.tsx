@@ -1,13 +1,13 @@
-import { Company } from './company.types';
 import {
     JobCommitment,
     JobSalaryInterval,
     JobSetting,
     JobSalaryCurrency
-} from './job_post';
-import { Adjudication } from './adjudication.types';
-import { Country } from './location.types';
-import { Department, JobRole, Team } from './job_role';
+} from '.';
+import { Adjudication } from '../adjudication.types';
+import { Country } from '../location.types';
+import { Department, JobRole, Team } from '../job_role';
+import { Company } from '../company/company.types';
 
 export interface JobPost {
     id: number;

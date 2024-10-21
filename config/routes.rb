@@ -12,6 +12,8 @@ Rails.application.routes.draw do
   resources :cities, defaults: { format: :json }
   resources :countries, defaults: { format: :json }
   resources :states, defaults: { format: :json }
+  resources :healthcare_domains, defaults: { format: :json }
+  resources :company_specialties, defaults: { format: :json }
 
   # Health status
   get "up" => "rails/health#show", as: :rails_health_check

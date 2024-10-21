@@ -7,8 +7,10 @@ import {
     DigitalHealthSpecialty, DigitalHealthSpecialtyKey, DigitalHealthSpecialtyValue,
     CompanySpecialty,
 } from './company_specialty.types';
+import { Company } from './company.types';
 
 export {
+    Company,
     HealthcareDomain,
     AtsType,
     FundingType,

@@ -1,7 +1,7 @@
 import React from "react";
 import { Box, Typography, Select, MenuItem, Button, FormControl, InputLabel } from "@mui/material";
 import { Company } from "../../../types/company.types";
-import { JobPost } from "../../../types/job_post.types";
+import { JobPost } from "../../../types/job_post/job_post.types";
 import { CompanyFilter } from "../../molecules/Filters/CompanyFilter/CompanyFilter";
 import { CompanySpecialty, DigitalHealthSpecialtyValue } from "../../../types/company/company_specialty.types";
 import { HealthcareDomain } from "../../../types/company";

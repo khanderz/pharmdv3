@@ -1,7 +1,7 @@
 import React from "react"
 import { Card, CardContent, Typography, Button } from "@mui/material"
 import { Company } from "../../../types/company.types"
-import { JobPost } from "../../../types/job_post.types"
+import { JobPost } from "../../../types/job_post/job_post.types"
 import { HealthcareDomain } from "../../../types/company"
 
 interface JobCardProps {
