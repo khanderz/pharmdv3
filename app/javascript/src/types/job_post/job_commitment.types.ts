@@ -10,6 +10,7 @@ export enum JobCommitmentEnum {
 }
 
 export interface JobCommitment {
+    id: number;
     key: keyof typeof JobCommitmentEnum;
     commitment_name: typeof JobCommitmentEnum[keyof typeof JobCommitmentEnum];
 }   

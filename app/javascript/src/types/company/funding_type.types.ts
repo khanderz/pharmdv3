@@ -31,6 +31,7 @@ export enum FundingTypeEnum {
 }
 
 export interface FundingType {
+    id: number;
     funding_type_code: keyof typeof FundingTypeEnum;
     funding_type_name: typeof FundingTypeEnum[keyof typeof FundingTypeEnum];
 }

@@ -17,6 +17,7 @@ export enum JobSalaryCurrencyEnum {
 }
 
 export interface JobSalaryCurrency {
+    id: number;
     job_salary_currency_key: keyof typeof JobSalaryCurrencyEnum;
     currrency_code: typeof JobSalaryCurrencyEnum[keyof typeof JobSalaryCurrencyEnum];
 }

@@ -9,6 +9,7 @@ export enum JobSalaryIntervalEnum {
 }
 
 export interface JobSalaryInterval {
+    id: number;
     key: keyof typeof JobSalaryIntervalEnum;
     interval: typeof JobSalaryIntervalEnum[keyof typeof JobSalaryIntervalEnum];
 }

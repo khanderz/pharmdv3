@@ -1,4 +1,5 @@
 export interface CompanySpecialty {
+    id: number;
     key: PharmaSpecialtyKey | DigitalHealthSpecialtyKey;
     value: PharmaSpecialtyValue | DigitalHealthSpecialtyValue;
 }

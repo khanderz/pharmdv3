@@ -4,16 +4,17 @@ import { JobPost } from '../../../types/job_post.types';
 import { FilterPanel } from '../../organisms/FilterPanel/FilterPanel';
 import { SearchPanel } from '../../molecules/SearchPanel/SearchPanel';
 import { JobCard } from '../../organisms/JobCard/JobCard';
-import { Company, CompanySpecialty, HealthcareDomainItem } from '../../../types/company.types';
+import { Company } from '../../../types/company.types';
+import { CompanySpecialty, HealthcareDomain } from '../../../types/company';
 
 export const SearchPage = () => {
   const [jobPosts, setJobPosts] = useState<JobPost[]>([]);
   const [filteredJobPosts, setFilteredJobPosts] = useState<JobPost[]>([]);
   const [selectedCompany, setSelectedCompany] = useState<Company['company_name'] | null>(null);
   const [selectedSpecialty, setSelectedSpecialty] = useState<CompanySpecialty['value'] | null>(null);
-  const [selectedDomain, setSelectedDomain] = useState<HealthcareDomainItem['value'] | null>(null); // New state for healthcare domains
-  const [selectedDepartment, setSelectedDepartment] = useState<JobPost['job_dept'] | null>(null);
-  const [selectedTeam, setSelectedTeam] = useState<JobPost['job_team'] | null>(null);
+  const [selectedDomain, setSelectedDomain] = useState<HealthcareDomain['value'] | null>(null); // New state for healthcare domains
+  const [selectedDepartment, setSelectedDepartment] = useState<any | null>(null);
+  const [selectedTeam, setSelectedTeam] = useState<any | null>(null);
 
   // Fetch job posts data
   useEffect(() => {
@@ -42,12 +43,12 @@ export const SearchPage = () => {
   ).filter(Boolean);
 
   // Extract unique healthcare domains from job posts
-  const uniqueDomains: HealthcareDomainItem['value'][] = Array.from(
+  const uniqueDomains: HealthcareDomain['value'][] = Array.from(
     new Set(jobPosts.flatMap((jobPost) => jobPost.company.healthcare_domains?.map((domain) => domain.value)))
   ).filter(Boolean);
 
-  const uniqueDepartments: JobPost['job_dept'][] = Array.from(new Set(jobPosts.map((jobPost) => jobPost.job_dept))).filter(Boolean);
-  const uniqueTeams: JobPost['job_team'][] = Array.from(new Set(jobPosts.map((jobPost) => jobPost.job_team))).filter(Boolean);
+  // const uniqueDepartments: any = Array.from(new Set(jobPosts.map((jobPost) => jobPost.job_dept))).filter(Boolean);
+  // const uniqueTeams: any = Array.from(new Set(jobPosts.map((jobPost) => jobPost.job_team))).filter(Boolean);
 
   // Handle filtering based on the selected company
   const handleCompanyFilter = (companyName: Company['company_name'] | null) => {
@@ -62,17 +63,17 @@ export const SearchPage = () => {
   };
 
   // Handle filtering based on the selected healthcare domain
-  const handleDomainFilter = (domain: HealthcareDomainItem['value'] | null) => {
+  const handleDomainFilter = (domain: HealthcareDomain['value'] | null) => {
     setSelectedDomain(domain);
     filterJobPosts(selectedCompany, selectedSpecialty, domain);
   };
 
-  const handleDepartmentFilter = (department: JobPost['job_dept'] | null) => {
+  const handleDepartmentFilter = (department: any | null) => {
     setSelectedDepartment(department);
     filterJobPosts(selectedCompany, selectedSpecialty, selectedDomain, department, selectedTeam);
   };
 
-  const handleTeamFilter = (team: JobPost['job_team'] | null) => {
+  const handleTeamFilter = (team: any | null) => {
     setSelectedTeam(team);
     filterJobPosts(selectedCompany, selectedSpecialty, selectedDomain, selectedDepartment, team);
   };
@@ -81,9 +82,9 @@ export const SearchPage = () => {
   const filterJobPosts = (
     companyName: Company['company_name'] | null,
     specialty: CompanySpecialty['value'] | null,
-    domain: HealthcareDomainItem['value'] | null,
-    department: JobPost['job_dept'] | null = null,
-    team: JobPost['job_team'] | null = null
+    domain: HealthcareDomain['value'] | null,
+    department: any | null = null,
+    team: any | null = null
   ) => {
     let filtered = jobPosts;
 
@@ -99,17 +100,17 @@ export const SearchPage = () => {
 
     if (domain) {
       filtered = filtered.filter((jobPost) =>
-        jobPost.company.healthcare_domains?.some((dom: HealthcareDomainItem) => dom.value === domain)
+        jobPost.company.healthcare_domains?.some((dom: HealthcareDomain) => dom.value === domain)
       );
     }
 
-    if (department) {
-      filtered = filtered.filter((jobPost) => jobPost.job_dept === department);
-    }
+    // if (department) {
+    //   filtered = filtered.filter((jobPost) => jobPost.job_dept === department);
+    // }
 
-    if (team) {
-      filtered = filtered.filter((jobPost) => jobPost.job_team === team);
-    }
+    // if (team) {
+    //   filtered = filtered.filter((jobPost) => jobPost.job_team === team);
+    // }
 
     setFilteredJobPosts(filtered);
   };
@@ -135,12 +136,12 @@ export const SearchPage = () => {
             domains={uniqueDomains}
             selectedDomain={selectedDomain}
             onDomainFilter={handleDomainFilter}
-            departments={uniqueDepartments}
-            selectedDepartment={selectedDepartment}
-            onDepartmentFilter={handleDepartmentFilter}
-            teams={uniqueTeams}
-            selectedTeam={selectedTeam}
-            onTeamFilter={handleTeamFilter}
+          // departments={uniqueDepartments}
+          // selectedDepartment={selectedDepartment}
+          // onDepartmentFilter={handleDepartmentFilter}
+          // teams={uniqueTeams}
+          // selectedTeam={selectedTeam}
+          // onTeamFilter={handleTeamFilter}
           />
         </Grid>
 
@@ -151,11 +152,11 @@ export const SearchPage = () => {
                 <JobCard
                   title={jobPost.job_title}
                   company_name={jobPost.company.company_name}
-                  job_location={jobPost.job_location}
-                  job_commitment={jobPost.job_commitment}
+                  // job_location={jobPost.job_location}
+                  // job_commitment={jobPost.job_commitment}
                   job_applyUrl={jobPost.job_applyUrl}
                   company_specialty={jobPost.company.company_specialties[0]?.value}
-                  healthcare_domain={jobPost.company.healthcare_domains[0]?.value}
+                // healthcare_domain={jobPost.company.healthcare_domains[0]?.value}
                 />
               </Grid>
             ))}

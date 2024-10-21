@@ -1,9 +1,10 @@
 import React from "react";
 import { Box, Typography, Select, MenuItem, Button, FormControl, InputLabel } from "@mui/material";
-import { Company, CompanySpecialty, HealthcareDomainItem } from "../../../types/company.types";
+import { Company } from "../../../types/company.types";
 import { JobPost } from "../../../types/job_post.types";
 import { CompanyFilter } from "../../molecules/Filters/CompanyFilter/CompanyFilter";
-import { DigitalHealthSpecialtyValue } from "../../../types/company/company_specialty.types";
+import { CompanySpecialty, DigitalHealthSpecialtyValue } from "../../../types/company/company_specialty.types";
+import { HealthcareDomain } from "../../../types/company";
 
 interface FilterPanelProps {
   companies: Company['company_name'][];
@@ -12,15 +13,15 @@ interface FilterPanelProps {
   specialties: CompanySpecialty['value'][];
   selectedSpecialty: CompanySpecialty['value'] | null;
   onSpecialtyFilter: (specialty: CompanySpecialty['value'] | null) => void;
-  domains: HealthcareDomainItem['value'][];
-  selectedDomain: HealthcareDomainItem['value'] | null;
-  onDomainFilter: (domain: HealthcareDomainItem['value'] | null) => void;
-  departments: JobPost['job_dept'][];
-  selectedDepartment: JobPost['job_dept'] | null;
-  onDepartmentFilter: (department: JobPost['job_dept'] | null) => void;
-  teams: JobPost['job_team'][];
-  selectedTeam: JobPost['job_team'] | null;
-  onTeamFilter: (team: JobPost['job_team'] | null) => void;
+  domains: HealthcareDomain['value'][];
+  selectedDomain: HealthcareDomain['value'] | null;
+  onDomainFilter: (domain: HealthcareDomain['value'] | null) => void;
+  // departments: JobPost['job_dept'][];
+  // selectedDepartment: JobPost['job_dept'] | null;
+  // onDepartmentFilter: (department: JobPost['job_dept'] | null) => void;
+  // teams: JobPost['job_team'][];
+  // selectedTeam: JobPost['job_team'] | null;
+  // onTeamFilter: (team: JobPost['job_team'] | null) => void;
 }
 
 export const FilterPanel = ({
@@ -30,12 +31,12 @@ export const FilterPanel = ({
   specialties,
   selectedSpecialty,
   onSpecialtyFilter,
-  departments,
-  selectedDepartment,
-  onDepartmentFilter,
-  teams,
-  selectedTeam,
-  onTeamFilter,
+  // departments,
+  // selectedDepartment,
+  // onDepartmentFilter,
+  // teams,
+  // selectedTeam,
+  // onTeamFilter,
   domains,
   selectedDomain,
   onDomainFilter,
@@ -73,7 +74,7 @@ export const FilterPanel = ({
       </Box>
 
       {/* Department Filter */}
-      <Box sx={{ mt: 2 }}>
+      {/* <Box sx={{ mt: 2 }}>
         <Typography variant="body1">Department</Typography>
         <FormControl fullWidth  >
           <Select value={selectedDepartment || ''}
@@ -90,10 +91,10 @@ export const FilterPanel = ({
             ))}
           </Select>
         </FormControl>
-      </Box>
+      </Box> */}
 
       {/* Team Filter */}
-      <Box sx={{ mt: 2 }}>
+      {/* <Box sx={{ mt: 2 }}>
         <Typography variant="body1">Team</Typography>
         <FormControl fullWidth  >
           <Select value={selectedTeam || ''}
@@ -110,7 +111,7 @@ export const FilterPanel = ({
             ))}
           </Select>
         </FormControl>
-      </Box>
+      </Box> */}
 
       <Box sx={{ mt: 2 }}>
         <Typography variant="body1">Location</Typography>

@@ -1,10 +1,6 @@
 import {
     CompanySize,
     AtsType,
-    PharmaSpecialtyKey,
-    DigitalHealthSpecialtyKey,
-    PharmaSpecialtyValue,
-    DigitalHealthSpecialtyValue,
     HealthcareDomain,
     FundingType,
     CompanySpecialty

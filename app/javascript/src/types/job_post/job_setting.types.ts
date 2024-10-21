@@ -7,6 +7,7 @@ export enum JobSettingEnum {
 }
 
 export interface JobSetting {
+    id: number;
     job_setting_key: keyof typeof JobSettingEnum;
     job_setting_name: typeof JobSettingEnum[keyof typeof JobSettingEnum];
 }

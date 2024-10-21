@@ -1,4 +1,5 @@
 export interface Adjudication {
+    id: number;
     adjudicatable_type: string;
     adjudicatable_id: number;
     error_details: string;
