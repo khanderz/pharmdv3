@@ -1,30 +1,30 @@
 import { useState, useEffect } from "react";
 import { Adjudication } from "../adjudication.types";
 
-const [departments, setDepartments] = useState<string[]>([]);
+const [teams, setTeams] = useState<string[]>([]);
 
 useEffect(() => {
-    const fetchDepartments = async () => {
+    const fetchTeams = async () => {
         try {
-            const response = await fetch('/departments.json');
+            const response = await fetch('/teams.json');
             if (!response.ok) {
                 throw new Error(`Error fetching departments: ${response.status}`);
             }
             const data = await response.json();
-            setDepartments(data);
+            setTeams(data);
         } catch (error) {
             console.error(error);
         }
     };
 
-    fetchDepartments();
+    fetchTeams();
 }, []);
 
-export type Departments = typeof departments[number];
+export type Teams = typeof teams[number];
 
-export interface Department {
-    department_id: number;
-    dept_name: Departments[];
+export interface Team {
+    team_id: number;
+    team_name: Teams[];
 
     error_details: Adjudication['error_details'];
     reference_id: Adjudication['adjudicatable_id'];

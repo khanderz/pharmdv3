@@ -6,6 +6,8 @@ Rails.application.routes.draw do
 
   resources :companies
   resources :job_posts, defaults: { format: :json }
+  resources :departments, defaults: { format: :json }
+  resources :teams, defaults: { format: :json }
 
   # Health status
   get "up" => "rails/health#show", as: :rails_health_check

@@ -15,6 +15,7 @@ export const SearchPage = () => {
   const [selectedDomain, setSelectedDomain] = useState<HealthcareDomain['value'] | null>(null); // New state for healthcare domains
   const [selectedDepartment, setSelectedDepartment] = useState<any | null>(null);
   const [selectedTeam, setSelectedTeam] = useState<any | null>(null);
+  const [teams, setTeams] = useState<string[]>([]);
 
   // Fetch job posts data
   useEffect(() => {
