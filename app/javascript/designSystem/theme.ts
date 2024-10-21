@@ -44,44 +44,53 @@ declare module '@mui/material/Typography' {
 export const theme = createTheme({
     palette: {
         primary: {
-            main: '#226f54',  // Dark Spring Green
-            light: '#72e1d1',
-            dark: '#1c5942',
-            contrastText: '#ffffff',
+            main: '#226f54',   // Dark Spring Green
+            light: '#66c1aa',
+            dark: '#184e3b',
+            contrastText: '#F9EEEE',
         },
         secondary: {
-            main: '#f9eeee',  // Lavender Blush
-            dark: '#f0dddd',
-            contrastText: '#9a0000',
+            main: '#84AFE6',   // Orchid Blue
+            light: '#b3d1f7',
+            dark: '#5a8bc2',
+            contrastText: '#1e1e1e',
+        },
+        error: {
+            main: '#E53935', // Strong Red 
+            light: '#FFCDD2',
+            dark: '#9a0000',
+            contrastText: '#F9EEEE',
         },
         warning: {
-            main: '#fb0000',  // Off Red
-            dark: '#9a0000',
-            light: '#f9eeee',
-            contrastText: '#ffffff',
+            main: '#F57C00', // Vibrant Orange
+            light: '#FFD180',
+            dark: '#E65100',
+            contrastText: '#F9EEEE',
         },
         success: {
-            main: '#226f54',  // Dark Spring Green for success
-            light: '#72e1d1',
+            main: '#3DA35D', // Lush Green
+            light: '#92CDA4',
             dark: '#1c5942',
-            contrastText: '#ffffff',
+            contrastText: '#F9EEEE',
         },
         info: {
-            main: '#72e1d1',  // Turquoise for informational messages
-            dark: '#56b6a3',
-            contrastText: '#ffffff',
+            main: '#9a0000', // Off Red
+            light: '#d84545',
+            dark: '#6e0000',
+            contrastText: '#F9EEEE',
         },
         grayscale: {
-            main: '#f5f5f5',
-            dark: '#e0e0e0',
-            light: '#ffffff',
-            contrastText: '#9a0000',
+            main: '#d1cfe2', // Grayish Lavender
+            light: '#f0eff9',
+            dark: '#a5a3b6',
+            contrastText: '#333333',
         },
     },
     typography: {
         fontFamily: ['Archivo', 'Arial', 'sans-serif'].join(','),
         title: {
             fontSize: '2rem',
+            fontWeight: 100,
             fontFamily: ['Archivo', 'Arial', 'sans-serif'].join(','),
         },
         h1: {

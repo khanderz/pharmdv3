@@ -11,14 +11,12 @@ import {
   Button,
   Tooltip,
   Avatar,
-  useTheme,
 } from '@mui/material'
 
 const pages = ['Directory', 'Pathfinder', 'Admin']
 const settings = ['Profile', 'Account', 'Dashboard', 'Logout']
 
 function NavBar() {
-  const theme = useTheme();
 
   const [anchorElNav, setAnchorElNav] = useState<null | HTMLElement>(null)
   const [anchorElUser, setAnchorElUser] = useState<null | HTMLElement>(null)
@@ -48,7 +46,7 @@ function NavBar() {
             padding: 0,
             textAlign: 'left',
           }}>
-            <Typography variant="title" component="div">
+            <Typography variant="title" component="div" sx={{ color: 'primary.contrastText' }}>
               PharmDs in IT
             </Typography>
           </Button>
@@ -58,7 +56,7 @@ function NavBar() {
                 key={page}
                 onClick={handleCloseNavMenu}
                 href={`/${page.toLowerCase()}`}
-                sx={{ my: 2, color: 'white', display: 'block' }}
+                sx={{ my: 2, color: 'primary.contrastText', display: 'block', fontWeight: 300 }}
               >
                 {page}
               </Button>
