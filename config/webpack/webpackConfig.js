@@ -3,17 +3,43 @@
 
 const clientWebpackConfig = require('./clientWebpackConfig')
 const serverWebpackConfig = require('./serverWebpackConfig')
+const path = require('path')
+
+const aliasPaths = {
+  '@javascript': path.resolve(__dirname, '../../app/javascript/src/'),
+  '@components': path.resolve(__dirname, '../../app/javascript/src/components'),
+  '@types': path.resolve(__dirname, '../../app/javascript/src/types'),
+  // Add more aliases as needed
+};
 
 const webpackConfig = (envSpecific) => {
   const clientConfig = clientWebpackConfig()
   const serverConfig = serverWebpackConfig()
+
+  // Add alias for client config
+  clientConfig.resolve = {
+    ...clientConfig.resolve,
+    alias: {
+      ...(clientConfig.resolve?.alias || {}),
+      ...aliasPaths
+    }
+  }
+
+  // Add alias for server config (if needed for SSR)
+  serverConfig.resolve = {
+    ...serverConfig.resolve,
+    alias: {
+      ...(serverConfig.resolve?.alias || {}),
+      ...aliasPaths
+    }
+  }
 
   if (envSpecific) {
     envSpecific(clientConfig, serverConfig)
   }
 
   let result
-  // For HMR, need to separate the the client and server webpack configurations
+  // For HMR, need to separate the client and server webpack configurations
   if (process.env.WEBPACK_SERVE || process.env.CLIENT_BUNDLE_ONLY) {
     // eslint-disable-next-line no-console
     console.log('[React on Rails] Creating only the client bundles.')

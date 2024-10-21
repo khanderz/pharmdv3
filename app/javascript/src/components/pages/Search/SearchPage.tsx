@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { Box, Container, Grid, Pagination, Typography } from '@mui/material';
-import { JobPost } from '../../../types/job_post/job_post.types';
-import { FilterPanel } from '../../organisms/FilterPanel/FilterPanel';
-import { SearchPanel } from '../../molecules/SearchPanel/SearchPanel';
-import { JobCard } from '../../organisms/JobCard/JobCard';
-import { Company, CompanySpecialty, HealthcareDomain } from '../../../types/company';
-import { Department, Team } from '../../../types/job_role';
+import { JobPost } from '@customtypes/job_post'
+import { SearchPanel } from '@components/molecules/SearchPanel/SearchPanel';
+import { FilterPanel } from '@components/organisms/FilterPanel/FilterPanel';
+import { JobCard } from '@components/organisms/JobCard/JobCard';
+import { Company, CompanySpecialty, HealthcareDomain } from '@customtypes/company';
+import { Department, Team } from '@customtypes/job_role';
 
 export const SearchPage = () => {
   const [jobPosts, setJobPosts] = useState<JobPost[]>([]);

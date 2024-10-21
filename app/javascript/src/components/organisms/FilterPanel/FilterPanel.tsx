@@ -1,8 +1,9 @@
 import React from "react";
-import { Box, Typography, Select, MenuItem, Button, FormControl, InputLabel } from "@mui/material";
-import { CompanyFilter } from "../../molecules/Filters/CompanyFilter/CompanyFilter";
-import { Company, CompanySpecialty, HealthcareDomain } from "../../../types/company";
-import { Department, Team } from "../../../types/job_role";
+import { Box, Typography, Select, MenuItem, Button, FormControl } from "@mui/material";
+import { CompanyFilter } from "@components/molecules/Filters/CompanyFilter/CompanyFilter";
+import { Company, CompanySpecialty, HealthcareDomain } from "@customtypes/company";
+import { Department, Team } from "@customtypes/job_role";
+
 
 interface FilterPanelProps {
   companies: Company['company_name'][];

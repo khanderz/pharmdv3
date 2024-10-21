@@ -1,5 +1,17 @@
 {
     "compilerOptions": {
+        "baseUrl": "app/javascript/src",
+        "paths": {
+            "@customtypes/*": [
+                "types/*"
+            ],
+            "@components/*": [
+                "components/*"
+            ],
+            "@javascript/*": [
+                "*"
+            ]
+        },
         "declaration": false,
         "emitDecoratorMetadata": true,
         "experimentalDecorators": true,
