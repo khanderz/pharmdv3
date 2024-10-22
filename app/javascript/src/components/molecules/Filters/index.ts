@@ -3,4 +3,6 @@ import {
   CompanyFilterProps,
 } from './CompanyFilter/CompanyFilter';
 
-export { CompanyFilter, CompanyFilterProps };
+export { CompanyFilter };
+
+export type { CompanyFilterProps }; // due to webpack

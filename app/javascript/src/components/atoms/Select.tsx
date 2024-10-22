@@ -7,22 +7,17 @@ import {
   Box,
 } from '@mui/material';
 
-export type SelectOption = {
-  key: string;
-  value: string;
-};
-
 export type SelectProps = MuiSelectProps & {
   inputLabel: string;
-  options: SelectOption[];
+  children: any;
 };
 
-export const Select = ({ inputLabel, options, ...props }: SelectProps) => {
+export const Select = ({ inputLabel, children, ...props }: SelectProps) => {
   return (
     <Box
       data-testid={`${inputLabel}-select-box`}
       sx={{
-        ...props.sx,
+        mt: 2,
       }}
     >
       <InputLabel
@@ -38,16 +33,12 @@ export const Select = ({ inputLabel, options, ...props }: SelectProps) => {
         onChange={props.onChange}
         displayEmpty
         label={inputLabel}
-        sx={{ ...props.sx }}
+        sx={{ width: '100%', mt: 0.5, ...props.sx }}
       >
         <MuiMenuItem value="">
           <em>All {inputLabel}</em>
         </MuiMenuItem>
-        {options.map((option) => (
-          <MuiMenuItem key={option.key} value={option.value}>
-            {option.value}
-          </MuiMenuItem>
-        ))}
+        {children}
       </MuiSelect>
     </Box>
   );
