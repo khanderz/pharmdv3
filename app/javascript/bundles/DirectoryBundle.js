@@ -1,3 +1,3 @@
-import { Directory } from '../src/components/pages/Directory/Directory'
+import { Directory } from '@components/pages/index';
 
-export default Directory
+export default Directory;

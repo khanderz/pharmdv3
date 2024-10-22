@@ -1,3 +1,3 @@
-import NavBar from '../../src/components/organisms/NavBar/NavBar'
+import NavBar from '@components/organisms/NavBar/NavBar';
 
-export default NavBar
+export default NavBar;
