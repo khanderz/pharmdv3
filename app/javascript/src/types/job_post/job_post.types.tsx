@@ -23,7 +23,7 @@ export interface JobPost extends Adjudicated {
   job_internal_id_string: string;
   job_salary_min: number;
   job_salary_max: number;
-  job_locations: Record<string, string>[];
+  job_locations: string[] | string;
   job_responsibilities: string;
   job_qualifications: string[];
   job_applyUrl: string;

@@ -253,9 +253,7 @@ export const SearchPage = () => {
 
     if (domain) {
       filtered = filtered.filter((jobPost) =>
-        jobPost.company.healthcare_domains?.some(
-          (dom: HealthcareDomain) => dom.id === domain
-        )
+        jobPost.company.company_domains?.some((dom) => dom.id === domain)
       );
     }
 
@@ -329,7 +327,7 @@ export const SearchPage = () => {
     }
 
     if (selectedJobSetting) {
-      filters.push(`for job setting "${selectedJobSetting}"`);
+      filters.push(`for job setting "${selectedJobSetting.setting_name}"`);
     }
 
     if (selectedJobCommitment) {
@@ -353,7 +351,7 @@ export const SearchPage = () => {
 
     return message;
   };
-  console.log({ jobPosts });
+
   return (
     <Container
       sx={{
@@ -416,24 +414,49 @@ export const SearchPage = () => {
               ) : (
                 <>
                   <Grid container spacing={3} data-testid="job-cards-container">
-                    {paginatedJobPosts.map((jobPost) => (
-                      <Grid item xs={12} key={jobPost.id}>
-                        <JobCard
-                          title={jobPost.job_title}
-                          company_name={jobPost.company.company_name}
-                          job_applyUrl={jobPost.job_url}
-                          company_specialty={
-                            jobPost.company.company_specialties[0]?.value
-                          }
-                          job_posted={jobPost.job_posted}
-                          job_location={jobPost.job_locations[0]}
-                          job_commitment={jobPost.job_commitment}
-                          healthcare_domains={
-                            jobPost.company.healthcare_domains ?? []
-                          }
-                        />
-                      </Grid>
-                    ))}
+                    {paginatedJobPosts.map((jobPost) => {
+                      const jobCommitmentType = jobCommitments.find(
+                        (commitment) =>
+                          commitment.id === jobPost.job_commitment_id
+                      );
+
+                      const companySpecialties =
+                        jobPost.company.company_specialties.map(
+                          (specialty) => specialty.value
+                        );
+
+                      const jobSetting = jobSettings.find(
+                        (setting) => setting.id === jobPost.job_setting_id
+                      );
+
+                      const domains = jobPost.company.company_domains.map(
+                        (domain) => domain.healthcare_domain['value']
+                      );
+
+                      const locations = Array.isArray(jobPost.job_locations)
+                        ? jobPost.job_locations.map((location) => location)
+                        : [jobPost.job_locations];
+
+                      return (
+                        <Grid item xs={12} key={jobPost.id}>
+                          <JobCard
+                            title={jobPost.job_title}
+                            company_name={jobPost.company.company_name}
+                            job_applyUrl={jobPost.job_url}
+                            company_specialty={companySpecialties}
+                            job_posted={jobPost.job_posted}
+                            job_location={locations}
+                            job_setting={
+                              jobSetting?.setting_name as JobSetting['setting_name']
+                            }
+                            job_commitment={
+                              jobCommitmentType?.commitment_name as JobCommitment['commitment_name']
+                            }
+                            healthcare_domains={domains}
+                          />
+                        </Grid>
+                      );
+                    })}
                   </Grid>
 
                   <Box

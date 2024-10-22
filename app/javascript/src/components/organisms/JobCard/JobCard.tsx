@@ -5,16 +5,17 @@ import {
   CompanySpecialty,
   HealthcareDomain,
 } from '@customtypes/company';
-import { JobPost } from '@customtypes/job_post';
+import { JobCommitment, JobPost, JobSetting } from '@customtypes/job_post';
 import { Button } from '@components/atoms/Button';
 
 interface JobCardProps {
   title: JobPost['job_title'];
   company_name: Company['company_name'];
-  job_location: any;
-  job_commitment: any;
+  job_location?: any;
+  job_setting: JobSetting['setting_name'];
+  job_commitment: JobCommitment['commitment_name'];
   job_applyUrl: JobPost['job_applyUrl'];
-  company_specialty: CompanySpecialty['value'];
+  company_specialty: CompanySpecialty['value'][];
   healthcare_domains: HealthcareDomain['value'][];
   job_posted: JobPost['job_posted'];
 }
@@ -30,6 +31,17 @@ export const JobCard = ({
   healthcare_domains,
 }: JobCardProps) => {
   const jobPostDate = new Date(job_posted).toLocaleDateString();
+
+  // Determine pluralization based on array lengths
+  const specialtyLabel =
+    company_specialty && company_specialty.length > 1
+      ? 'Specialties'
+      : 'Specialty';
+  const domainsLabel =
+    healthcare_domains && healthcare_domains.length > 1
+      ? 'Healthcare Domains'
+      : 'Healthcare Domain';
+
   return (
     <Card
       variant="outlined"
@@ -46,10 +58,14 @@ export const JobCard = ({
           {company_name || 'Unknown Company'}
         </Typography>
         <Typography variant="body2" sx={{ mt: 1 }}>
-          Specialty: {company_specialty ? company_specialty : 'N/A'}
+          {specialtyLabel}:{' '}
+          {company_specialty.length > 0 ? company_specialty.join(', ') : 'N/A'}
         </Typography>
         <Typography variant="body2" sx={{ mt: 1 }}>
-          Healthcare Domains: {healthcare_domains ? healthcare_domains : 'N/A'}
+          {domainsLabel}:{' '}
+          {healthcare_domains.length > 0
+            ? healthcare_domains.join(', ')
+            : 'N/A'}
         </Typography>
         <Typography variant="body2" sx={{ mt: 1 }}>
           Job Posted Date: {jobPostDate || 'N/A'}
@@ -58,7 +74,7 @@ export const JobCard = ({
           Location: {job_location || 'N/A'}
         </Typography>
         <Typography variant="body2" sx={{ mt: 1 }}>
-          Job Type: {job_commitment || 'N/A'}
+          Job Commitment Type: {job_commitment || 'N/A'}
         </Typography>
         <Button
           variant="contained"

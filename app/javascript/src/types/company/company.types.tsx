@@ -26,7 +26,14 @@ export interface Company extends Adjudicated {
   ats_type: AtsType;
 
   company_specialties: CompanySpecialty[];
-  healthcare_domains: HealthcareDomain[];
+  company_domains: CompanyDomain[];
   created_at: Date;
   updated_at: Date;
+}
+
+export interface CompanyDomain {
+  id: number;
+  company_id: Company['id'];
+  healthcare_domain: HealthcareDomain;
+  healthcare_domain_id: number;
 }
