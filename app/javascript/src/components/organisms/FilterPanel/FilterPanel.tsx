@@ -13,20 +13,14 @@ import { Box } from '@components/atoms/Box';
 import {
   CompanyFilter,
   CompanyFilterProps,
+  DomainFilter,
+  DomainFilterProps,
 } from '@components/molecules/Filters/index';
 
-interface FilterPanelProps {
-  companies: CompanyFilterProps['companies'];
-  selectedCompany: CompanyFilterProps['selectedCompany'];
-  onCompanyFilter: CompanyFilterProps['onCompanyFilter'];
-
+interface FilterPanelProps extends CompanyFilterProps, DomainFilterProps {
   specialties: CompanySpecialty[];
   selectedSpecialty: CompanySpecialty['value'] | null;
   onSpecialtyFilter: (specialty: CompanySpecialty['value'] | null) => void;
-
-  domains: HealthcareDomain[];
-  selectedDomain: HealthcareDomain | null;
-  onDomainFilter: (domain: HealthcareDomain | null) => void;
 
   departments: Department[];
   selectedDepartment: Department | null;
@@ -66,30 +60,11 @@ export const FilterPanel = ({
       />
 
       {/* Domain Filter */}
-      <MuiBox sx={{ mt: 2, borderRadius: '2px' }}>
-        <Typography variant="body1">Domain</Typography>
-        <FormControl fullWidth>
-          <Select
-            value={selectedDomain?.key || ''}
-            onChange={(e) => {
-              const selectedDomain = domains.find(
-                (domain) => domain.key === e.target.value
-              );
-              onDomainFilter(selectedDomain || null);
-            }}
-            displayEmpty
-          >
-            <MenuItem value="">
-              <em>All Domains</em>
-            </MenuItem>
-            {domains.map((domain) => (
-              <MenuItem key={domain.key} value={domain.key}>
-                {domain.value}
-              </MenuItem>
-            ))}
-          </Select>
-        </FormControl>
-      </MuiBox>
+      <DomainFilter
+        domains={domains}
+        selectedDomain={selectedDomain}
+        onDomainFilter={onDomainFilter}
+      />
 
       {/* Specialty Filter */}
       <MuiBox sx={{ mt: 2, borderRadius: '2px' }}>

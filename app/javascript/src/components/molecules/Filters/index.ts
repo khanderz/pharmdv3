@@ -2,7 +2,8 @@ import {
   CompanyFilter,
   CompanyFilterProps,
 } from './CompanyFilter/CompanyFilter';
+import { DomainFilter, DomainFilterProps } from './DomainFilter/DomainFilter';
 
-export { CompanyFilter };
+export { CompanyFilter, DomainFilter };
 
-export type { CompanyFilterProps }; // due to webpack
+export type { CompanyFilterProps, DomainFilterProps }; // due to webpack
