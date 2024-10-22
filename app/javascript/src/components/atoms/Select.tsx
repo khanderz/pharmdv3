@@ -5,6 +5,7 @@ import {
   SelectProps as MuiSelectProps,
   InputLabel,
   Box,
+  Typography,
 } from '@mui/material';
 
 export type SelectProps = MuiSelectProps & {
@@ -23,9 +24,11 @@ export const Select = ({ inputLabel, children, ...props }: SelectProps) => {
       <InputLabel
         id={`${inputLabel}-input-label`}
         data-testid={`${inputLabel}-input-label`}
+        style={{ display: 'none' }}
       >
         {inputLabel}
       </InputLabel>
+      <Typography component="label">{inputLabel}</Typography>
       <MuiSelect
         {...props}
         labelId={`${inputLabel}-input-label`}
@@ -33,7 +36,17 @@ export const Select = ({ inputLabel, children, ...props }: SelectProps) => {
         onChange={props.onChange}
         displayEmpty
         label={inputLabel}
-        sx={{ width: '100%', mt: 0.5, ...props.sx }}
+        sx={{
+          width: '100%',
+          mt: 0.5,
+          '& .MuiOutlinedInput-notchedOutline': {
+            top: 0,
+            legend: {
+              display: 'none',
+            },
+          },
+          ...props.sx,
+        }}
       >
         <MuiMenuItem value="">
           <em>All {inputLabel}</em>
