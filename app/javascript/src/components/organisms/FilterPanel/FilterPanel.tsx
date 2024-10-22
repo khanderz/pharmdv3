@@ -14,8 +14,8 @@ import {
   DomainFilterProps,
   DepartmentFilter,
   DepartmentFilterProps,
-  TeamFilter,
-  TeamFilterProps,
+  SpecialtyFilter,
+  SpecialtyFilterProps,
 } from '@components/molecules/Filters';
 import { Box, Button } from '@components/atoms/index';
 
@@ -23,11 +23,7 @@ interface FilterPanelProps
   extends CompanyFilterProps,
     DomainFilterProps,
     DepartmentFilterProps,
-    TeamFilterProps {
-  specialties: CompanySpecialty[];
-  selectedSpecialty: CompanySpecialty['value'] | null;
-  onSpecialtyFilter: (specialty: CompanySpecialty['value'] | null) => void;
-}
+    SpecialtyFilterProps {}
 
 export const FilterPanel = ({
   companies,
@@ -39,9 +35,6 @@ export const FilterPanel = ({
   departments,
   selectedDepartment,
   onDepartmentFilter,
-  teams,
-  selectedTeam,
-  onTeamFilter,
   domains,
   selectedDomain,
   onDomainFilter,
@@ -65,25 +58,11 @@ export const FilterPanel = ({
       />
 
       {/* Specialty Filter */}
-      <MuiBox sx={{ mt: 2, borderRadius: '2px' }}>
-        <Typography variant="body1">Specialty</Typography>
-        <FormControl fullWidth>
-          <Select
-            value={selectedSpecialty || ''}
-            onChange={(e) => onSpecialtyFilter(e.target.value || null)}
-            displayEmpty
-          >
-            <MenuItem value="">
-              <em>All Specialties</em>
-            </MenuItem>
-            {specialties.map((specialty) => (
-              <MenuItem key={specialty.key} value={specialty.value}>
-                {specialty.value}
-              </MenuItem>
-            ))}
-          </Select>
-        </FormControl>
-      </MuiBox>
+      <SpecialtyFilter
+        specialties={specialties}
+        selectedSpecialty={selectedSpecialty}
+        onSpecialtyFilter={onSpecialtyFilter}
+      />
 
       {/* Department Filter */}
       <DepartmentFilter
@@ -92,12 +71,7 @@ export const FilterPanel = ({
         onDepartmentFilter={onDepartmentFilter}
       />
 
-      {/* Team Filter */}
-      <TeamFilter
-        teams={teams}
-        selectedTeam={selectedTeam}
-        onTeamFilter={onTeamFilter}
-      />
+      {/* Job Role Filter */}
 
       <MuiBox sx={{ mt: 2, borderRadius: '2px' }}>
         <Typography variant="body1">Location</Typography>

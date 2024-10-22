@@ -13,7 +13,6 @@ import {
   useHealthcareDomains,
   useJobPosts,
   useDepartments,
-  useTeams,
   useCompanySpecialties,
   useCities,
   useStates,
@@ -70,18 +69,14 @@ export const SearchPage = () => {
     error: countriesError,
   } = useCountries();
 
-  const { teams, loading: teamsLoading, error: teamsError } = useTeams();
-
   /* --------------------- States --------------------- */
 
   const [currentPage, setCurrentPage] = useState(1);
   const [selectedCompany, setSelectedCompany] = useState<Company | null>(null);
-  const [selectedSpecialty, setSelectedSpecialty] = useState<
-    CompanySpecialty['value'] | null
-  >(null);
+  const [selectedSpecialty, setSelectedSpecialty] =
+    useState<CompanySpecialty | null>(null);
   const [selectedDepartment, setSelectedDepartment] =
     useState<Department | null>(null);
-  const [selectedTeam, setSelectedTeam] = useState<Team | null>(null);
 
   /* --------------------- Constants --------------------- */
 
@@ -112,7 +107,6 @@ export const SearchPage = () => {
     loading ||
     domainsLoading ||
     departmentsLoading ||
-    teamsLoading ||
     specialtiesLoading ||
     jobRolesLoading ||
     citiesLoading ||
@@ -123,7 +117,6 @@ export const SearchPage = () => {
     error ||
     domainsError ||
     departmentsError ||
-    teamsError ||
     specialtiesError ||
     jobRolesError ||
     citiesError ||
@@ -137,9 +130,7 @@ export const SearchPage = () => {
     filterJobPosts(company, selectedSpecialty, selectedDomain?.id ?? null);
   };
 
-  const handleSpecialtyFilter = (
-    specialty: CompanySpecialty['value'] | null
-  ) => {
+  const handleSpecialtyFilter = (specialty: CompanySpecialty | null) => {
     setSelectedSpecialty(specialty);
     filterJobPosts(selectedCompany, specialty, selectedDomain?.id ?? null);
   };
@@ -155,29 +146,16 @@ export const SearchPage = () => {
       selectedCompany,
       selectedSpecialty,
       selectedDomain?.id ?? null,
-      department,
-      selectedTeam
-    );
-  };
-
-  const handleTeamFilter = (team: Team | null) => {
-    setSelectedTeam(team);
-    filterJobPosts(
-      selectedCompany,
-      selectedSpecialty,
-      selectedDomain?.id ?? null,
-      selectedDepartment,
-      team
+      department
     );
   };
 
   // Filter job posts based on selected filters
   const filterJobPosts = (
     company: Company | null,
-    specialty: CompanySpecialty['value'] | null,
+    specialty: CompanySpecialty | null,
     domain: number | null,
-    department: Department | null = null,
-    team: Team | null = null
+    department: Department | null = null
   ) => {
     let filtered = jobPosts;
 
@@ -190,7 +168,7 @@ export const SearchPage = () => {
     if (specialty) {
       filtered = filtered.filter((jobPost) =>
         jobPost.company.company_specialties?.some(
-          (spec: CompanySpecialty) => spec.value === specialty
+          (spec: CompanySpecialty) => spec.id === specialty.id
         )
       );
     }
@@ -209,10 +187,6 @@ export const SearchPage = () => {
       );
     }
 
-    if (team) {
-      filtered = filtered.filter((jobPost) => jobPost.team_id === team?.id);
-    }
-
     setFilteredJobPosts(filtered);
     setCurrentPage(1);
   };
@@ -229,7 +203,6 @@ export const SearchPage = () => {
     setSelectedSpecialty(null);
     setSelectedDomain(null);
     setSelectedDepartment(null);
-    setSelectedTeam(null);
     setFilteredJobPosts(jobPosts);
   };
 
@@ -250,10 +223,6 @@ export const SearchPage = () => {
 
     if (selectedDepartment) {
       filters.push(`for department "${selectedDepartment.dept_name}"`);
-    }
-
-    if (selectedTeam) {
-      filters.push(`in team "${selectedTeam.team_name}"`);
     }
 
     let message = 'No matching job posts';
@@ -313,9 +282,6 @@ export const SearchPage = () => {
                 departments={departments}
                 selectedDepartment={selectedDepartment}
                 onDepartmentFilter={handleDepartmentFilter}
-                teams={teams}
-                selectedTeam={selectedTeam}
-                onTeamFilter={handleTeamFilter}
               />
             </Grid>
 
