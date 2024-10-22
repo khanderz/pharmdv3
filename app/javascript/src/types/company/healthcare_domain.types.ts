@@ -13,11 +13,10 @@ useEffect(() => {
   }
 }, [allDomains]);
 
-export type HealthcareDomainEnum = (typeof healthcareDomains)[number]['value'];
-export type HealthcareDomainKey = (typeof healthcareDomains)[number]['key'];
+export type HealthcareDomains = (typeof healthcareDomains)[number];
 
 export interface HealthcareDomain {
   id: number;
-  key: HealthcareDomainKey;
-  value: HealthcareDomainEnum;
+  key: HealthcareDomains['key'];
+  value: HealthcareDomains['value'];
 }

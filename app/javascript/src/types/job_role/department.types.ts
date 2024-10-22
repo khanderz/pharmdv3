@@ -5,7 +5,7 @@ import { useDepartments } from '@javascript/hooks';
 const [departments, setDepartments] = useState<
   {
     id: number;
-    dept_name: string[];
+    dept_name: string;
     error_details: Adjudicated['error_details'];
     reference_id: Adjudicated['reference_id'];
     resolved: Adjudicated['resolved'];
@@ -20,9 +20,9 @@ useEffect(() => {
   }
 }, [allDepartments]);
 
-export type Departments = (typeof departments)[number]['dept_name'];
+export type Departments = (typeof departments)[number];
 
 export interface Department extends Adjudicated {
   id: number;
-  dept_name: Departments;
+  dept_name: Departments['dept_name'];
 }

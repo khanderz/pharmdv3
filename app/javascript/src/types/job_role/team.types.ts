@@ -5,7 +5,7 @@ import { useTeams } from '@javascript/hooks';
 const [teams, setTeams] = useState<
   {
     id: number;
-    team_name: string[];
+    team_name: string;
     error_details: Adjudicated['error_details'];
     reference_id: Adjudicated['reference_id'];
     resolved: Adjudicated['resolved'];
@@ -20,9 +20,9 @@ useEffect(() => {
   }
 }, [allTeams]);
 
-export type Teams = (typeof teams)[number]['team_name'];
+export type Teams = (typeof teams)[number];
 
 export interface Team extends Adjudicated {
   id: number;
-  team_name: Teams;
+  team_name: Teams['team_name'];
 }
