@@ -81,56 +81,68 @@ export const theme = {
       fontWeight: 100,
       fontFamily: ['Archivo', 'Arial', 'sans-serif'].join(','),
       letterSpacing: '0.1em',
+
+      lineHeight: 1.4,
     },
     h1: {
       fontSize: '3rem',
       fontWeight: 700,
       letterSpacing: '0.05em',
+      lineHeight: 1.4,
     },
     h2: {
       fontSize: '2.5rem',
       fontWeight: 700,
       letterSpacing: '0.05em',
+      lineHeight: 1.4,
     },
     h3: {
       fontSize: '2rem',
       fontWeight: 700,
       letterSpacing: '0.05em',
+      lineHeight: 1.4,
     },
     h4: {
       fontSize: '1.5rem',
       fontWeight: 700,
       letterSpacing: '0.05em',
+      lineHeight: 1.4,
     },
     h5: {
       fontSize: '1.25rem',
       fontWeight: 700,
       letterSpacing: '0.05em',
+      lineHeight: 1.4,
     },
     h6: {
       fontSize: '1rem',
       fontWeight: 700,
       letterSpacing: '0.05em',
+      lineHeight: 1.4,
     },
     body1: {
       fontSize: '1rem',
       fontWeight: 400,
       letterSpacing: '0.05em',
+      lineHeight: 1.4,
     },
     body2: {
       fontSize: '0.875rem',
       fontWeight: 400,
       letterSpacing: '0.05em',
+      lineHeight: 1.4,
     },
     subtitle1: {
       fontSize: '1rem',
       fontWeight: 400,
       letterSpacing: '0.05em',
+      lineHeight: 1.4,
     },
     subtitle2: {
       fontSize: '0.875rem',
       fontWeight: 400,
       letterSpacing: '0.05em',
+      lineHeight: 1.4,
     },
   },
   components: {

@@ -234,29 +234,42 @@ export const SearchPage = () => {
   };
 
   const getNoResultsMessage = () => {
-    let message = 'No matching job posts';
+    const filters = [];
 
     if (selectedCompany) {
-      message += ` for company "${selectedCompany.company_name}"`;
+      filters.push(`for company "${selectedCompany.company_name}"`);
     }
 
     if (selectedSpecialty) {
-      message += ` with specialty "${selectedSpecialty}"`;
+      filters.push(`with specialty "${selectedSpecialty}"`);
     }
 
     if (selectedDomain) {
-      message += ` in domain "${selectedDomain.value}"`;
+      filters.push(`in domain "${selectedDomain.value}"`);
     }
 
     if (selectedDepartment) {
-      message += ` for department "${selectedDepartment.dept_name}"`;
+      filters.push(`for department "${selectedDepartment.dept_name}"`);
     }
 
     if (selectedTeam) {
-      message += ` in team "${selectedTeam.team_name}"`;
+      filters.push(`in team "${selectedTeam.team_name}"`);
     }
 
-    return message + '.';
+    let message = 'No matching job posts';
+
+    if (filters.length > 0) {
+      const lastFilter = filters.pop();
+      if (filters.length > 0) {
+        message += ` ${filters.join(', ')} and ${lastFilter}.`;
+      } else {
+        message += ` ${lastFilter}.`;
+      }
+    } else {
+      message += '.';
+    }
+
+    return message;
   };
 
   return (
@@ -282,6 +295,7 @@ export const SearchPage = () => {
           >
             <Typography variant="title">Search for a job post</Typography>
           </Box>
+
           <SearchPanel />
 
           <Grid container spacing={4} data-testid="search-page-container">

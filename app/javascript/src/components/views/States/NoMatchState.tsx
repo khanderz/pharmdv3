@@ -19,7 +19,7 @@ export const NoMatchState = ({ message, onReset }: NoMatchStateProps) => {
         height: '100%',
       }}
     >
-      <Typography variant="h4" color="textSecondary">
+      <Typography variant="h4" color="textSecondary" align="center">
         {message}
       </Typography>
       <Button variant="contained" color="primary" onClick={onReset}>
