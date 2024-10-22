@@ -1,9 +1,13 @@
-import {
-  CompanyFilter,
+import { CompanyFilter, CompanyFilterProps } from './CompanyFilter';
+import { DepartmentFilter, DepartmentFilterProps } from './DepartmentFilter';
+import { DomainFilter, DomainFilterProps } from './DomainFilter';
+import { TeamFilter, TeamFilterProps } from './TeamFilter';
+
+export { CompanyFilter, DomainFilter, DepartmentFilter, TeamFilter };
+
+export type {
   CompanyFilterProps,
-} from './CompanyFilter/CompanyFilter';
-import { DomainFilter, DomainFilterProps } from './DomainFilter/DomainFilter';
-
-export { CompanyFilter, DomainFilter };
-
-export type { CompanyFilterProps, DomainFilterProps }; // due to webpack
+  DomainFilterProps,
+  DepartmentFilterProps,
+  TeamFilterProps,
+}; // due to webpack

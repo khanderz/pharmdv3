@@ -16,7 +16,7 @@ export const CompanyFilter = ({
 }: CompanyFilterProps) => {
   return (
     <Select
-      inputLabel="Company"
+      inputLabel="Companies"
       value={selectedCompany?.id || ''}
       onChange={(e) => {
         const company = companies.find(

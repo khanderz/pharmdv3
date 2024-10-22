@@ -6,8 +6,7 @@ import {
   MenuItem,
   FormControl,
 } from '@mui/material';
-import { CompanySpecialty, HealthcareDomain } from '@customtypes/company';
-import { Department, Team } from '@customtypes/job_role';
+import { CompanySpecialty } from '@customtypes/company';
 import { Button } from '@components/atoms/Button';
 import { Box } from '@components/atoms/Box';
 import {
@@ -15,20 +14,20 @@ import {
   CompanyFilterProps,
   DomainFilter,
   DomainFilterProps,
+  DepartmentFilter,
+  DepartmentFilterProps,
+  TeamFilter,
+  TeamFilterProps,
 } from '@components/molecules/Filters/index';
 
-interface FilterPanelProps extends CompanyFilterProps, DomainFilterProps {
+interface FilterPanelProps
+  extends CompanyFilterProps,
+    DomainFilterProps,
+    DepartmentFilterProps,
+    TeamFilterProps {
   specialties: CompanySpecialty[];
   selectedSpecialty: CompanySpecialty['value'] | null;
   onSpecialtyFilter: (specialty: CompanySpecialty['value'] | null) => void;
-
-  departments: Department[];
-  selectedDepartment: Department | null;
-  onDepartmentFilter: (department: Department | null) => void;
-
-  teams: Team[];
-  selectedTeam: Team | null;
-  onTeamFilter: (team: Team | null) => void;
 }
 
 export const FilterPanel = ({
@@ -88,56 +87,18 @@ export const FilterPanel = ({
       </MuiBox>
 
       {/* Department Filter */}
-      <MuiBox sx={{ mt: 2, borderRadius: '2px' }}>
-        <Typography variant="body1">Department</Typography>
-        <FormControl fullWidth>
-          <Select
-            value={selectedDepartment?.id || ''}
-            onChange={(e) => {
-              const selectedDept = departments.find(
-                (dept) => dept.id === e.target.value
-              );
-              onDepartmentFilter(selectedDept || null);
-            }}
-            displayEmpty
-          >
-            <MenuItem value="">
-              <em>All Departments</em>
-            </MenuItem>
-            {departments.map((dept) => (
-              <MenuItem key={dept.id} value={dept.id}>
-                {dept.dept_name}
-              </MenuItem>
-            ))}
-          </Select>
-        </FormControl>
-      </MuiBox>
+      <DepartmentFilter
+        departments={departments}
+        selectedDepartment={selectedDepartment}
+        onDepartmentFilter={onDepartmentFilter}
+      />
 
       {/* Team Filter */}
-      <MuiBox sx={{ mt: 2, borderRadius: '2px' }}>
-        <Typography variant="body1">Team</Typography>
-        <FormControl fullWidth>
-          <Select
-            value={selectedTeam?.id || ''}
-            onChange={(e) => {
-              const selectedTeam = teams.find(
-                (team) => team.id === e.target.value
-              );
-              onTeamFilter(selectedTeam || null);
-            }}
-            displayEmpty
-          >
-            <MenuItem value="">
-              <em>All Teams</em>
-            </MenuItem>
-            {teams.map((team) => (
-              <MenuItem key={team.id} value={team.id}>
-                {team.team_name}
-              </MenuItem>
-            ))}
-          </Select>
-        </FormControl>
-      </MuiBox>
+      <TeamFilter
+        teams={teams}
+        selectedTeam={selectedTeam}
+        onTeamFilter={onTeamFilter}
+      />
 
       <MuiBox sx={{ mt: 2, borderRadius: '2px' }}>
         <Typography variant="body1">Location</Typography>

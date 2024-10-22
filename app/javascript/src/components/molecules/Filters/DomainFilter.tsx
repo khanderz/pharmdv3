@@ -16,7 +16,7 @@ export const DomainFilter = ({
 }: DomainFilterProps) => {
   return (
     <Select
-      inputLabel="Domain"
+      inputLabel="Domains"
       value={selectedDomain?.key || ''}
       onChange={(e) => {
         const domain = domains.find((domain) => domain.key === e.target.value);
