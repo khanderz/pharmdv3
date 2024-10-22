@@ -20,7 +20,11 @@ import {
   useCountries,
   useJobRoles,
 } from '@javascript/hooks';
-import { LoadingState, ErrorState } from '@components/views/index';
+import {
+  LoadingState,
+  ErrorState,
+  NoMatchState,
+} from '@components/views/index';
 
 const POSTS_PER_PAGE = 10;
 
@@ -29,7 +33,8 @@ export const SearchPage = () => {
     null
   );
 
-  // hooks
+  /* --------------------- Hooks --------------------- */
+
   const { jobPosts, filteredJobPosts, setFilteredJobPosts, loading, error } =
     useJobPosts(selectedDomain?.id ?? null);
 
@@ -67,7 +72,8 @@ export const SearchPage = () => {
 
   const { teams, loading: teamsLoading, error: teamsError } = useTeams();
 
-  // states
+  /* --------------------- States --------------------- */
+
   const [currentPage, setCurrentPage] = useState(1);
   const [selectedCompany, setSelectedCompany] = useState<Company | null>(null);
   const [selectedSpecialty, setSelectedSpecialty] = useState<
@@ -77,7 +83,11 @@ export const SearchPage = () => {
     useState<Department | null>(null);
   const [selectedTeam, setSelectedTeam] = useState<Team | null>(null);
 
+  /* --------------------- Constants --------------------- */
+
   const totalPages = Math.ceil(filteredJobPosts.length / POSTS_PER_PAGE);
+
+  const noMatchingResults = filteredJobPosts.length === 0;
 
   const uniqueCompanies: Company[] = Array.from(
     new Map(
@@ -92,6 +102,35 @@ export const SearchPage = () => {
         .map((specialty) => [specialty.value, specialty])
     ).values()
   ).filter(Boolean);
+
+  const paginatedJobPosts = filteredJobPosts.slice(
+    (currentPage - 1) * POSTS_PER_PAGE,
+    currentPage * POSTS_PER_PAGE
+  );
+
+  const currentlyLoading =
+    loading ||
+    domainsLoading ||
+    departmentsLoading ||
+    teamsLoading ||
+    specialtiesLoading ||
+    jobRolesLoading ||
+    citiesLoading ||
+    statesLoading ||
+    countriesLoading;
+
+  const errors =
+    error ||
+    domainsError ||
+    departmentsError ||
+    teamsError ||
+    specialtiesError ||
+    jobRolesError ||
+    citiesError ||
+    statesError ||
+    countriesError;
+
+  /* --------------------- Handles --------------------- */
 
   const handleCompanyFilter = (company: Company | null) => {
     setSelectedCompany(company);
@@ -185,11 +224,6 @@ export const SearchPage = () => {
     setCurrentPage(page);
   };
 
-  const paginatedJobPosts = filteredJobPosts.slice(
-    (currentPage - 1) * POSTS_PER_PAGE,
-    currentPage * POSTS_PER_PAGE
-  );
-
   const resetFilters = () => {
     setSelectedCompany(null);
     setSelectedSpecialty(null);
@@ -199,27 +233,31 @@ export const SearchPage = () => {
     setFilteredJobPosts(jobPosts);
   };
 
-  const currentlyLoading =
-    loading ||
-    domainsLoading ||
-    departmentsLoading ||
-    teamsLoading ||
-    specialtiesLoading ||
-    jobRolesLoading ||
-    citiesLoading ||
-    statesLoading ||
-    countriesLoading;
+  const getNoResultsMessage = () => {
+    let message = 'No matching job posts';
 
-  const errors =
-    error ||
-    domainsError ||
-    departmentsError ||
-    teamsError ||
-    specialtiesError ||
-    jobRolesError ||
-    citiesError ||
-    statesError ||
-    countriesError;
+    if (selectedCompany) {
+      message += ` for company "${selectedCompany.company_name}"`;
+    }
+
+    if (selectedSpecialty) {
+      message += ` with specialty "${selectedSpecialty}"`;
+    }
+
+    if (selectedDomain) {
+      message += ` in domain "${selectedDomain.value}"`;
+    }
+
+    if (selectedDepartment) {
+      message += ` for department "${selectedDepartment.dept_name}"`;
+    }
+
+    if (selectedTeam) {
+      message += ` in team "${selectedTeam.team_name}"`;
+    }
+
+    return message + '.';
+  };
 
   return (
     <Container
@@ -268,32 +306,41 @@ export const SearchPage = () => {
             </Grid>
 
             <Grid item xs={12} md={9} data-testid="job-post-grid">
-              <Grid container spacing={3} data-testid="job-cards-container">
-                {paginatedJobPosts.map((jobPost) => (
-                  <Grid item xs={12} key={jobPost.id}>
-                    <JobCard
-                      title={jobPost.job_title}
-                      company_name={jobPost.company.company_name}
-                      job_applyUrl={jobPost.job_url}
-                      company_specialty={
-                        jobPost.company.company_specialties[0]?.value
-                      }
-                    />
-                  </Grid>
-                ))}
-              </Grid>
-
-              <Box
-                sx={{ mt: 4, display: 'flex', justifyContent: 'center' }}
-                data-testid="pagination-box"
-              >
-                <Pagination
-                  count={totalPages}
-                  page={currentPage}
-                  onChange={handlePageChange}
-                  color="primary"
+              {noMatchingResults ? (
+                <NoMatchState
+                  message={getNoResultsMessage()}
+                  onReset={resetFilters}
                 />
-              </Box>
+              ) : (
+                <>
+                  <Grid container spacing={3} data-testid="job-cards-container">
+                    {paginatedJobPosts.map((jobPost) => (
+                      <Grid item xs={12} key={jobPost.id}>
+                        <JobCard
+                          title={jobPost.job_title}
+                          company_name={jobPost.company.company_name}
+                          job_applyUrl={jobPost.job_url}
+                          company_specialty={
+                            jobPost.company.company_specialties[0]?.value
+                          }
+                        />
+                      </Grid>
+                    ))}
+                  </Grid>
+
+                  <Box
+                    sx={{ mt: 4, display: 'flex', justifyContent: 'center' }}
+                    data-testid="pagination-box"
+                  >
+                    <Pagination
+                      count={totalPages}
+                      page={currentPage}
+                      onChange={handlePageChange}
+                      color="primary"
+                    />
+                  </Box>
+                </>
+              )}
             </Grid>
           </Grid>
         </>

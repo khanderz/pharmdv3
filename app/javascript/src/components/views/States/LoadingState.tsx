@@ -5,11 +5,12 @@ export interface LoadingStateProps {}
 
 export const LoadingState = () => (
   <Box
+    flexDirection="column"
+    rowGap={2}
     sx={{
       display: 'flex',
       justifyContent: 'center',
       alignItems: 'center',
-      flexDirection: 'column',
       height: '100vh',
       width: '100vw',
     }}
