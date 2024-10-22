@@ -6,18 +6,14 @@ import {
   MenuItem,
   FormControl,
 } from '@mui/material';
-import {
-  CompanyFilter,
-  CompanyFilterProps,
-} from '@components/molecules/Filters/CompanyFilter/CompanyFilter';
-import {
-  Company,
-  CompanySpecialty,
-  HealthcareDomain,
-} from '@customtypes/company';
+import { CompanySpecialty, HealthcareDomain } from '@customtypes/company';
 import { Department, Team } from '@customtypes/job_role';
 import { Button } from '@components/atoms/Button';
 import { Box } from '@components/atoms/Box';
+import {
+  CompanyFilter,
+  CompanyFilterProps,
+} from '@components/molecules/Filters/index';
 
 interface FilterPanelProps {
   companies: CompanyFilterProps['companies'];
