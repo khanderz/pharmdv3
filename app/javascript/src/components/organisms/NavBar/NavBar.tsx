@@ -12,6 +12,8 @@ import {
   Tooltip,
   Avatar,
 } from '@mui/material'
+// @ts-ignore
+import logo from '../../logo2.png'
 
 const pages = ['Directory', 'Pathfinder', 'Admin']
 const settings = ['Profile', 'Account', 'Dashboard', 'Logout']
@@ -45,6 +47,11 @@ function NavBar() {
             padding: 0,
             textAlign: 'left',
           }}>
+            <img
+              src={logo}
+              alt="PharmDs in IT Logo"
+              style={{ width: 50, height: 50, marginRight: 10, borderRadius: "4px" }}
+            />
             <Typography variant="title" component="div" sx={{ color: 'primary.contrastText' }}>
               PharmDs in IT
             </Typography>
