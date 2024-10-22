@@ -1,3 +1,3 @@
-import { Directory } from '@components/pages/index';
+import { Directory } from '@components/views/index';
 
 export default Directory;

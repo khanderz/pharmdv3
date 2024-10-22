@@ -1,12 +1,5 @@
 import React, { useState } from 'react';
-import {
-  Box,
-  Container,
-  Grid,
-  Pagination,
-  Typography,
-  CircularProgress,
-} from '@mui/material';
+import { Box, Container, Grid, Pagination, Typography } from '@mui/material';
 import { SearchPanel } from '@components/molecules/SearchPanel/SearchPanel';
 import { FilterPanel } from '@components/organisms/FilterPanel/FilterPanel';
 import { JobCard } from '@components/organisms/JobCard/JobCard';
@@ -21,7 +14,13 @@ import {
   useJobPosts,
   useDepartments,
   useTeams,
+  useCompanySpecialties,
+  useCities,
+  useStates,
+  useCountries,
+  useJobRoles,
 } from '@javascript/hooks';
+import { LoadingState, ErrorState } from '@components/views/index';
 
 const POSTS_PER_PAGE = 10;
 
@@ -45,6 +44,25 @@ export const SearchPage = () => {
     loading: departmentsLoading,
     error: departmentsError,
   } = useDepartments();
+
+  const {
+    companySpecialties,
+    loading: specialtiesLoading,
+    error: specialtiesError,
+  } = useCompanySpecialties();
+  const {
+    jobRoles,
+    loading: jobRolesLoading,
+    error: jobRolesError,
+  } = useJobRoles();
+
+  const { cities, loading: citiesLoading, error: citiesError } = useCities();
+  const { states, loading: statesLoading, error: statesError } = useStates();
+  const {
+    countries,
+    loading: countriesLoading,
+    error: countriesError,
+  } = useCountries();
 
   const { teams, loading: teamsLoading, error: teamsError } = useTeams();
 
@@ -147,12 +165,12 @@ export const SearchPage = () => {
 
     if (department) {
       filtered = filtered.filter(
-        (jobPost) => jobPost.department_id === department.id
+        (jobPost) => jobPost.department_id === department?.id
       );
     }
 
     if (team) {
-      filtered = filtered.filter((jobPost) => jobPost.team_id === team.id);
+      filtered = filtered.filter((jobPost) => jobPost.team_id === team?.id);
     }
 
     setFilteredJobPosts(filtered);
@@ -180,80 +198,105 @@ export const SearchPage = () => {
     setFilteredJobPosts(jobPosts);
   };
 
-  if (loading || domainsLoading) {
-    return <CircularProgress />;
-  }
+  const currentlyLoading =
+    loading ||
+    domainsLoading ||
+    departmentsLoading ||
+    teamsLoading ||
+    specialtiesLoading ||
+    jobRolesLoading ||
+    citiesLoading ||
+    statesLoading ||
+    countriesLoading;
 
-  if (error || domainsError) {
-    return (
-      <Typography color="error">
-        Error loading data: {error || domainsError}
-      </Typography>
-    );
-  }
+  const errors =
+    error ||
+    domainsError ||
+    departmentsError ||
+    teamsError ||
+    specialtiesError ||
+    jobRolesError ||
+    citiesError ||
+    statesError ||
+    countriesError;
 
   return (
-    <Container maxWidth="lg">
-      <Box
-        justifyContent="center"
-        display="flex"
-        sx={{ margin: 2 }}
-        data-testid="search-page-title"
-      >
-        <Typography variant="title">Search for a job post</Typography>
-      </Box>
-      <SearchPanel />
-
-      <Grid container spacing={4} data-testid="search-page-container">
-        <Grid item xs={12} md={3} data-testid="filter-panel-grid">
-          <FilterPanel
-            companies={uniqueCompanies}
-            selectedCompany={selectedCompany}
-            onCompanyFilter={handleCompanyFilter}
-            specialties={uniqueSpecialties}
-            selectedSpecialty={selectedSpecialty}
-            onSpecialtyFilter={handleSpecialtyFilter}
-            domains={allDomains}
-            selectedDomain={selectedDomain}
-            onDomainFilter={handleDomainFilter}
-            departments={departments}
-            selectedDepartment={selectedDepartment}
-            onDepartmentFilter={handleDepartmentFilter}
-            teams={teams}
-            selectedTeam={selectedTeam}
-            onTeamFilter={handleTeamFilter}
-          />
-        </Grid>
-
-        <Grid item xs={12} md={9} data-testid="job-post-grid">
-          <Grid container spacing={3} data-testid="job-cards-container">
-            {paginatedJobPosts.map((jobPost) => (
-              <Grid item xs={12} key={jobPost.id}>
-                <JobCard
-                  title={jobPost.job_title}
-                  company_name={jobPost.company.company_name}
-                  job_applyUrl={jobPost.job_url}
-                  company_specialty={
-                    jobPost.company.company_specialties[0]?.value
-                  }
-                />
-              </Grid>
-            ))}
-          </Grid>
-
+    <Container
+      sx={{
+        height: '100vh',
+        width: '100vw',
+        display: 'flex',
+        flexDirection: 'column',
+      }}
+    >
+      {errors ? (
+        <ErrorState errors={errors} />
+      ) : currentlyLoading ? (
+        <LoadingState />
+      ) : (
+        <>
           <Box
-            sx={{ mt: 4, display: 'flex', justifyContent: 'center' }}
-            data-testid="pagination-box"
+            justifyContent="center"
+            display="flex"
+            sx={{ margin: 2 }}
+            data-testid="search-page-title"
           >
-            <Pagination
-              count={totalPages}
-              page={currentPage}
-              onChange={handlePageChange}
-              color="primary"
-            />
+            <Typography variant="title">Search for a job post</Typography>
           </Box>
-        </Grid>
-      </Grid>
+          <SearchPanel />
+
+          <Grid container spacing={4} data-testid="search-page-container">
+            <Grid item xs={12} md={3} data-testid="filter-panel-grid">
+              <FilterPanel
+                companies={uniqueCompanies}
+                selectedCompany={selectedCompany}
+                onCompanyFilter={handleCompanyFilter}
+                specialties={uniqueSpecialties}
+                selectedSpecialty={selectedSpecialty}
+                onSpecialtyFilter={handleSpecialtyFilter}
+                domains={allDomains}
+                selectedDomain={selectedDomain}
+                onDomainFilter={handleDomainFilter}
+                departments={departments}
+                selectedDepartment={selectedDepartment}
+                onDepartmentFilter={handleDepartmentFilter}
+                teams={teams}
+                selectedTeam={selectedTeam}
+                onTeamFilter={handleTeamFilter}
+              />
+            </Grid>
+
+            <Grid item xs={12} md={9} data-testid="job-post-grid">
+              <Grid container spacing={3} data-testid="job-cards-container">
+                {paginatedJobPosts.map((jobPost) => (
+                  <Grid item xs={12} key={jobPost.id}>
+                    <JobCard
+                      title={jobPost.job_title}
+                      company_name={jobPost.company.company_name}
+                      job_applyUrl={jobPost.job_url}
+                      company_specialty={
+                        jobPost.company.company_specialties[0]?.value
+                      }
+                    />
+                  </Grid>
+                ))}
+              </Grid>
+
+              <Box
+                sx={{ mt: 4, display: 'flex', justifyContent: 'center' }}
+                data-testid="pagination-box"
+              >
+                <Pagination
+                  count={totalPages}
+                  page={currentPage}
+                  onChange={handlePageChange}
+                  color="primary"
+                />
+              </Box>
+            </Grid>
+          </Grid>
+        </>
+      )}
     </Container>
   );
 };
