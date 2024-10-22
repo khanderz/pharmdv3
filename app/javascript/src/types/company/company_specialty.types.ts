@@ -14,10 +14,10 @@ useEffect(() => {
   }
 }, [allSpecialties]);
 
-export type CompanySpecialtyEnum = (typeof companySpecialties)[number]['value'];
+export type CompanySpecialties = (typeof companySpecialties)[number];
 
 export interface CompanySpecialty {
   id: number;
   key: HealthcareDomain['key'];
-  value: CompanySpecialtyEnum;
+  value: CompanySpecialties['value'];
 }

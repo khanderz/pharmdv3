@@ -1,6 +1,6 @@
 import React from 'react';
 import { Company } from '@customtypes/company';
-import { Select } from '@components/atoms/Select';
+import { Select } from '@components/atoms/index';
 import { MenuItem } from '@mui/material';
 
 export type CompanyFilterProps = {

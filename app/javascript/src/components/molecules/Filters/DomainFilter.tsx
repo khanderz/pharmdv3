@@ -1,5 +1,5 @@
 import React from 'react';
-import { Select } from '@components/atoms/Select';
+import { Select } from '@components/atoms/index';
 import { MenuItem } from '@mui/material';
 import { HealthcareDomain } from '@customtypes/company';
 

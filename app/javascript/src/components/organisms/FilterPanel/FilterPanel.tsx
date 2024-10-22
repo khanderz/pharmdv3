@@ -7,8 +7,6 @@ import {
   FormControl,
 } from '@mui/material';
 import { CompanySpecialty } from '@customtypes/company';
-import { Button } from '@components/atoms/Button';
-import { Box } from '@components/atoms/Box';
 import {
   CompanyFilter,
   CompanyFilterProps,
@@ -19,6 +17,7 @@ import {
   TeamFilter,
   TeamFilterProps,
 } from '@components/molecules/Filters/index';
+import { Box, Button } from '@components/atoms/index';
 
 interface FilterPanelProps
   extends CompanyFilterProps,
@@ -118,7 +117,7 @@ export const FilterPanel = ({
       </MuiBox>
 
       <MuiBox sx={{ mt: 2, borderRadius: '2px' }}>
-        <Typography variant="body1">Remote</Typography>
+        <Typography variant="body1">Setting</Typography>
         <Button variant="outlined" fullWidth sx={{ my: 1 }}>
           Remote
         </Button>

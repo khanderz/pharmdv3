@@ -6,6 +6,7 @@ import { useCompanySpecialties } from './get_specialties';
 import { useCities } from './get_cities';
 import { useCountries } from './get_countries';
 import { useStates } from './get_states';
+import { useJobRoles } from './get_job_roles';
 
 export {
   useHealthcareDomains,
@@ -16,4 +17,5 @@ export {
   useCities,
   useStates,
   useCountries,
+  useJobRoles,
 };

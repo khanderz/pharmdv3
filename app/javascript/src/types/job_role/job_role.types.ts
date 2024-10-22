@@ -1,33 +1,25 @@
 import { useState, useEffect } from 'react';
 import { Adjudicated } from '../adjudication.types';
+import { useJobRoles } from '@javascript/hooks';
 
 const [jobRoles, setJobRoles] = useState<
   {
-    job_role_id: number;
-    job_role_name: string[];
+    id: number;
+    job_role_name: string;
   }[]
 >([]);
 
-useEffect(() => {
-  const fetchJobRoles = async () => {
-    try {
-      const response = await fetch('/job_roles.json');
-      if (!response.ok) {
-        throw new Error(`Error fetching job roles: ${response.status}`);
-      }
-      const data = await response.json();
-      setJobRoles(data);
-    } catch (error) {
-      console.error(error);
-    }
-  };
+const { jobRoles: allJobRoles } = useJobRoles();
 
-  fetchJobRoles();
-}, []);
+useEffect(() => {
+  if (allJobRoles) {
+    setJobRoles(allJobRoles);
+  }
+}, [allJobRoles]);
 
 export type JobRoles = (typeof jobRoles)[number];
 
 export interface JobRole extends Adjudicated {
-  job_role_id: number;
-  job_role_name: JobRoles;
+  id: number;
+  job_role_name: JobRoles['job_role_name'];
 }
