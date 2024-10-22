@@ -37,11 +37,10 @@ function NavBar() {
   }
 
   return (
-    <AppBar position="static" >
+    <AppBar position="static" sx={{ boxShadow: 'none' }} >
       <Container >
         <Toolbar sx={{ justifyContent: 'space-around', width: '100%' }}>
           <Button href="/" sx={{
-            color: 'white',
             textTransform: 'none',
             padding: 0,
             textAlign: 'left',
@@ -56,7 +55,7 @@ function NavBar() {
                 key={page}
                 onClick={handleCloseNavMenu}
                 href={`/${page.toLowerCase()}`}
-                sx={{ my: 2, color: 'primary.contrastText', display: 'block', fontWeight: 300 }}
+                sx={{ my: 2, color: 'primary.contrastText', display: 'block', letterSpacing: '0.05em' }}
               >
                 {page}
               </Button>

@@ -1,8 +1,10 @@
 import React from "react";
-import { Box, Typography, Select, MenuItem, Button, FormControl } from "@mui/material";
+import { Box as MuiBox, Typography, Select, MenuItem, FormControl } from "@mui/material";
 import { CompanyFilter } from "@components/molecules/Filters/CompanyFilter/CompanyFilter";
 import { Company, CompanySpecialty, HealthcareDomain } from "@customtypes/company";
 import { Department, Team } from "@customtypes/job_role";
+import { Button } from "@components/atoms/Button";
+import { Box } from "@components/atoms/Box";
 
 
 interface FilterPanelProps {
@@ -45,7 +47,8 @@ export const FilterPanel = ({
   onDomainFilter,
 }: FilterPanelProps) => {
   return (
-    <Box sx={{ border: '1px solid #e0e0e0', borderRadius: '8px', p: 2 }} data-testid="filter-panel-box">
+    <Box sx={{ p: 2 }}
+      data-testid="filter-panel-box">
       <Typography variant="h6">Filters</Typography>
 
       {/* Company Filter */}
@@ -55,8 +58,29 @@ export const FilterPanel = ({
         onCompanyFilter={onCompanyFilter}
       />
 
+      {/* Domain Filter */}
+      <MuiBox sx={{ mt: 2, borderRadius: '2px' }}>
+        <Typography variant="body1">Domain</Typography>
+        <FormControl fullWidth>
+          <Select
+            value={selectedDomain || ''}
+            onChange={(e) => onDomainFilter(e.target.value || null)}
+            displayEmpty
+          >
+            <MenuItem value="">
+              <em>All Domains</em>
+            </MenuItem>
+            {domains.map((domain) => (
+              <MenuItem key={domain.key} value={domain.value}>
+                {domain.value}
+              </MenuItem>
+            ))}
+          </Select>
+        </FormControl>
+      </MuiBox>
+
       {/* Specialty Filter */}
-      <Box sx={{ mt: 2 }}>
+      <MuiBox sx={{ mt: 2, borderRadius: '2px', }}>
         <Typography variant="body1">Specialty</Typography>
         <FormControl fullWidth>
           <Select
@@ -74,10 +98,10 @@ export const FilterPanel = ({
             ))}
           </Select>
         </FormControl>
-      </Box>
+      </MuiBox>
 
       {/* Department Filter */}
-      <Box sx={{ mt: 2 }}>
+      <MuiBox sx={{ mt: 2, borderRadius: '2px', }}>
         <Typography variant="body1">Department</Typography>
         <FormControl fullWidth  >
           <Select value={selectedDepartment || ''}
@@ -94,10 +118,10 @@ export const FilterPanel = ({
             ))}
           </Select>
         </FormControl>
-      </Box>
+      </MuiBox>
 
       {/* Team Filter */}
-      <Box sx={{ mt: 2 }}>
+      <MuiBox sx={{ mt: 2, borderRadius: '2px', }}>
         <Typography variant="body1">Team</Typography>
         <FormControl fullWidth  >
           <Select value={selectedTeam || ''}
@@ -114,16 +138,16 @@ export const FilterPanel = ({
             ))}
           </Select>
         </FormControl>
-      </Box>
+      </MuiBox>
 
-      <Box sx={{ mt: 2 }}>
+      <MuiBox sx={{ mt: 2, borderRadius: '2px', }}>
         <Typography variant="body1">Location</Typography>
         <Button variant="outlined" fullWidth sx={{ my: 1 }}>
           United States
         </Button>
-      </Box>
+      </MuiBox>
 
-      <Box sx={{ mt: 2 }}>
+      <MuiBox sx={{ mt: 2, borderRadius: '2px', }}>
         <Typography variant="body1">Job Type</Typography>
         <Button variant="outlined" fullWidth sx={{ my: 1 }}>
           Full-time
@@ -131,14 +155,14 @@ export const FilterPanel = ({
         <Button variant="outlined" fullWidth sx={{ my: 1 }}>
           Part-time
         </Button>
-      </Box>
+      </MuiBox>
 
-      <Box sx={{ mt: 2 }}>
+      <MuiBox sx={{ mt: 2, borderRadius: '2px', }}>
         <Typography variant="body1">Remote</Typography>
         <Button variant="outlined" fullWidth sx={{ my: 1 }}>
           Remote
         </Button>
-      </Box>
+      </MuiBox>
     </Box>
   );
 };

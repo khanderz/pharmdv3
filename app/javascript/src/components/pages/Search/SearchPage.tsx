@@ -12,6 +12,8 @@ const POSTS_PER_PAGE = 10;
 export const SearchPage = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [jobPosts, setJobPosts] = useState<JobPost[]>([]);
+  const [allDomains, setAllDomains] = useState<HealthcareDomain[]>([]);
+
   const [filteredJobPosts, setFilteredJobPosts] = useState<JobPost[]>([]);
   const [selectedCompany, setSelectedCompany] = useState<Company['company_name'] | null>(null);
   const [selectedSpecialty, setSelectedSpecialty] = useState<CompanySpecialty['value'] | null>(null);
@@ -33,6 +35,20 @@ export const SearchPage = () => {
     };
 
     fetchJobPosts();
+  }, []);
+
+  useEffect(() => {
+    const fetchDomains = async () => {
+      try {
+        const response = await fetch('/healthcare_domains.json');
+        const data = await response.json();
+        setAllDomains(data); // Store all domains
+      } catch (error) {
+        console.error('Error fetching healthcare domains:', error);
+      }
+    };
+
+    fetchDomains();
   }, []);
 
   const totalPages = Math.ceil(filteredJobPosts.length / POSTS_PER_PAGE);
@@ -156,7 +172,7 @@ export const SearchPage = () => {
             specialties={uniqueSpecialties}
             selectedSpecialty={selectedSpecialty}
             onSpecialtyFilter={handleSpecialtyFilter}
-            domains={uniqueDomains}
+            domains={allDomains}
             selectedDomain={selectedDomain}
             onDomainFilter={handleDomainFilter}
             departments={uniqueDepartments}
