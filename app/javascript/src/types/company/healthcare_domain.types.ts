@@ -23,7 +23,7 @@ export type HealthcareDomainEnum = typeof healthcareDomains[number]['value'];
 export type HealthcareDomainKey = typeof healthcareDomains[number]['key'];
 
 export interface HealthcareDomain {
-    healthcare_domain_id: number;
+    id: number;
     key: HealthcareDomainKey;
     value: HealthcareDomainEnum;
 }

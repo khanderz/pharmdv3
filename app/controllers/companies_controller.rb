@@ -1,33 +1,33 @@
 class CompaniesController < ApplicationController
   before_action :set_company, only: %i[show edit update destroy]
 
-  # GET /companies or /companies.json
-  def index
-    @companies = Company.includes(
-      :job_posts, 
-      :company_size, 
-      :ats_type, 
-      :country, 
-      :state, 
-      :city, 
-      :company_specialties, 
-      :healthcare_domains  # Include healthcare domains
-    ).all
-
-    # Render JSON with nested relationships
-    render json: @companies.as_json(
-      include: {
-        job_posts: { only: [:job_title, :job_description, :job_active] },
-        company_size: { only: [:size_range] },
-        ats_type: { only: [:ats_type_name] },
-        country: { only: [:country_name] },
-        state: { only: [:state_name] },
-        city: { only: [:city_name] },
-        company_specialties: { only: [:key, :value] },
-        healthcare_domains: { only: [:key, :value] }  # Include healthcare domain details
-      }
-    )
+# GET /companies or /companies.json
+def index
+  # Check if a domain filter is applied
+  if params[:domain_id].present?
+    # Filter companies that have the selected healthcare domain
+    @companies = Company.joins(:healthcare_domains)
+                        .where(healthcare_domains: { id: params[:domain_id] })
+                        .includes(:job_posts, :company_size, :ats_type, :country, :state, :city, :company_specialties, :healthcare_domains)
+  else
+    # No filter applied, return all companies
+    @companies = Company.includes(:job_posts, :company_size, :ats_type, :country, :state, :city, :company_specialties, :healthcare_domains).all
   end
+
+  # Render JSON with nested relationships
+  render json: @companies.as_json(
+    include: {
+      job_posts: { only: [:job_title, :job_description, :job_active] },
+      company_size: { only: [:size_range] },
+      ats_type: { only: [:ats_type_name] },
+      country: { only: [:country_name] },
+      state: { only: [:state_name] },
+      city: { only: [:city_name] },
+      company_specialties: { only: [:key, :value] },
+      healthcare_domains: { only: [:key, :value] }
+    }
+  )
+end
 
   # GET /companies/1 or /companies/1.json
   def show

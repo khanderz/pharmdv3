@@ -1,6 +1,6 @@
 import React from "react"
 import { Card, CardContent, Typography } from "@mui/material"
-import { Company, CompanySpecialty } from "@customtypes/company"
+import { Company, CompanySpecialty, HealthcareDomain } from "@customtypes/company"
 import { JobPost } from "@customtypes/job_post"
 import { Button } from "@components/atoms/Button"
 

@@ -1,12 +1,23 @@
 class JobPostsController < ApplicationController
   before_action :set_job_post, only: %i[ show edit update destroy ]
 
-  # GET /job_posts or /job_posts.json
   def index
-    @job_posts = JobPost.includes(company: :company_specialties).all
+    @job_posts = JobPost.includes(company: { company_specialties: [], company_domains: :healthcare_domain })
+
+    # If a domain is provided in params, filter by it
+    if params[:domain_id]
+      @job_posts = JobPost.joins(company: :healthcare_domains)
+                          .where(healthcare_domains: { id: params[:domain_id] })
+    else
+      @job_posts = JobPost.all
+    end
+
     render json: @job_posts.as_json(include: { 
       company: { 
-        include: :company_specialties 
+        include: {
+          company_specialties: {},
+          company_domains: { include: :healthcare_domain }
+        }
       }
     })
   end
@@ -15,7 +26,10 @@ class JobPostsController < ApplicationController
   def show
     render json: @job_post.as_json(include: { 
       company: { 
-        include: :company_specialties 
+        include: {
+          company_specialties: {},
+          company_domains: { include: :healthcare_domain }
+        }
       }
     })
   end

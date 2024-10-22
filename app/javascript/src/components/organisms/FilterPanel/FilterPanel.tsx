@@ -17,8 +17,8 @@ interface FilterPanelProps {
   onSpecialtyFilter: (specialty: CompanySpecialty['value'] | null) => void;
 
   domains: HealthcareDomain[];
-  selectedDomain: HealthcareDomain['value'] | null;
-  onDomainFilter: (domain: HealthcareDomain['value'] | null) => void;
+  selectedDomain: HealthcareDomain | null;
+  onDomainFilter: (domain: HealthcareDomain | null) => void;
 
   departments: Department[];
   selectedDepartment: Department['dept_name'] | null;
@@ -63,21 +63,25 @@ export const FilterPanel = ({
         <Typography variant="body1">Domain</Typography>
         <FormControl fullWidth>
           <Select
-            value={selectedDomain || ''}
-            onChange={(e) => onDomainFilter(e.target.value || null)}
+            value={selectedDomain?.key || ''}
+            onChange={(e) => {
+              const selectedDomain = domains.find(domain => domain.key === e.target.value);
+              onDomainFilter(selectedDomain || null);
+            }}
             displayEmpty
           >
             <MenuItem value="">
               <em>All Domains</em>
             </MenuItem>
             {domains.map((domain) => (
-              <MenuItem key={domain.key} value={domain.value}>
+              <MenuItem key={domain.key} value={domain.key}>
                 {domain.value}
               </MenuItem>
             ))}
           </Select>
         </FormControl>
       </MuiBox>
+
 
       {/* Specialty Filter */}
       <MuiBox sx={{ mt: 2, borderRadius: '2px', }}>
