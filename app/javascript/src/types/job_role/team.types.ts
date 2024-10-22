@@ -1,32 +1,28 @@
 import { useState, useEffect } from 'react';
-import { Adjudication } from '../adjudication.types';
+import { Adjudicated } from '../adjudication.types';
+import { useTeams } from '@javascript/hooks';
 
-const [teams, setTeams] = useState<string[]>([]);
+const [teams, setTeams] = useState<
+  {
+    id: number;
+    team_name: string[];
+    error_details: Adjudicated['error_details'];
+    reference_id: Adjudicated['reference_id'];
+    resolved: Adjudicated['resolved'];
+  }[]
+>([]);
+
+const { teams: allTeams } = useTeams();
 
 useEffect(() => {
-  const fetchTeams = async () => {
-    try {
-      const response = await fetch('/teams.json');
-      if (!response.ok) {
-        throw new Error(`Error fetching departments: ${response.status}`);
-      }
-      const data = await response.json();
-      setTeams(data);
-    } catch (error) {
-      console.error(error);
-    }
-  };
+  if (allTeams) {
+    setTeams(allTeams);
+  }
+}, [allTeams]);
 
-  fetchTeams();
-}, []);
+export type Teams = (typeof teams)[number]['team_name'];
 
-export type Teams = (typeof teams)[number];
-
-export interface Team {
+export interface Team extends Adjudicated {
   id: number;
   team_name: Teams;
-
-  error_details: Adjudication['error_details'];
-  reference_id: Adjudication['adjudicatable_id'];
-  resolved: Adjudication['resolved'];
 }

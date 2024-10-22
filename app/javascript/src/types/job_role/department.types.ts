@@ -1,32 +1,28 @@
 import { useState, useEffect } from 'react';
-import { Adjudication } from '../adjudication.types';
+import { Adjudicated } from '../adjudication.types';
+import { useDepartments } from '@javascript/hooks';
 
-const [departments, setDepartments] = useState<string[]>([]);
+const [departments, setDepartments] = useState<
+  {
+    id: number;
+    dept_name: string[];
+    error_details: Adjudicated['error_details'];
+    reference_id: Adjudicated['reference_id'];
+    resolved: Adjudicated['resolved'];
+  }[]
+>([]);
+
+const { departments: allDepartments } = useDepartments();
 
 useEffect(() => {
-  const fetchDepartments = async () => {
-    try {
-      const response = await fetch('/departments.json');
-      if (!response.ok) {
-        throw new Error(`Error fetching departments: ${response.status}`);
-      }
-      const data = await response.json();
-      setDepartments(data);
-    } catch (error) {
-      console.error(error);
-    }
-  };
+  if (allDepartments) {
+    setDepartments(allDepartments);
+  }
+}, [allDepartments]);
 
-  fetchDepartments();
-}, []);
+export type Departments = (typeof departments)[number]['dept_name'];
 
-export type Departments = (typeof departments)[number];
-
-export interface Department {
+export interface Department extends Adjudicated {
   id: number;
   dept_name: Departments;
-
-  error_details: Adjudication['error_details'];
-  reference_id: Adjudication['adjudicatable_id'];
-  resolved: Adjudication['resolved'];
 }

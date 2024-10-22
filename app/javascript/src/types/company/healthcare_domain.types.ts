@@ -1,29 +1,23 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect } from 'react';
+import { useHealthcareDomains } from '@javascript/hooks';
 
-const [healthcareDomains, setHealthcareDomains] = useState<{ key: string; value: string }[]>([]);
+const [healthcareDomains, setHealthcareDomains] = useState<
+  { id: number; key: string; value: string }[]
+>([]);
+
+const { allDomains } = useHealthcareDomains();
 
 useEffect(() => {
-    const fetchHealthcareDomains = async () => {
-        try {
-            const response = await fetch('/healthcare_domains.json');
-            if (!response.ok) {
-                throw new Error(`Error fetching healthcare domains: ${response.status}`);
-            }
-            const data = await response.json();
-            setHealthcareDomains(data);
-        } catch (error) {
-            console.error(error);
-        }
-    };
+  if (allDomains) {
+    setHealthcareDomains(allDomains);
+  }
+}, [allDomains]);
 
-    fetchHealthcareDomains();
-}, []);
-
-export type HealthcareDomainEnum = typeof healthcareDomains[number]['value'];
-export type HealthcareDomainKey = typeof healthcareDomains[number]['key'];
+export type HealthcareDomainEnum = (typeof healthcareDomains)[number]['value'];
+export type HealthcareDomainKey = (typeof healthcareDomains)[number]['key'];
 
 export interface HealthcareDomain {
-    id: number;
-    key: HealthcareDomainKey;
-    value: HealthcareDomainEnum;
+  id: number;
+  key: HealthcareDomainKey;
+  value: HealthcareDomainEnum;
 }

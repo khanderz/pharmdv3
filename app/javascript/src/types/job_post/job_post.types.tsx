@@ -4,12 +4,12 @@ import {
   JobSetting,
   JobSalaryCurrency,
 } from '.';
-import { Adjudication } from '../adjudication.types';
+import { Adjudicated } from '../adjudication.types';
 import { Country } from '../location.types';
 import { Department, JobRole, Team } from '../job_role';
 import { Company } from '../company/company.types';
 
-export interface JobPost {
+export interface JobPost extends Adjudicated {
   id: number;
   company: Company;
   job_title: string;
@@ -37,10 +37,6 @@ export interface JobPost {
   team_id: Team['id'];
   department_id: Department['id'];
   country: Country;
-
-  reference_id?: Adjudication['adjudicatable_id'];
-  error_details?: Adjudication['error_details'];
-  resolved: Adjudication['resolved'];
 
   created_at: Date;
   updated_at: Date;
