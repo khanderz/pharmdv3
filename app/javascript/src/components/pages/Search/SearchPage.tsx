@@ -169,7 +169,7 @@ export const SearchPage = () => {
                 <JobCard
                   title={jobPost.job_title}
                   company_name={jobPost.company.company_name}
-                  job_applyUrl={jobPost.job_applyUrl}
+                  job_applyUrl={jobPost.job_url}
                   company_specialty={jobPost.company.company_specialties[0]?.value}
                 />
               </Grid>

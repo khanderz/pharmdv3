@@ -1,5 +1,7 @@
-import { Box, Typography, FormControl, Select, MenuItem } from "@mui/material";
 import React from "react";
+import { Box, Typography, FormControl, Select, MenuItem } from "@mui/material";
+import { Company } from "@customtypes/company";
+
 
 export interface CompanyFilterProps {
     companies: Company['company_name'][];
