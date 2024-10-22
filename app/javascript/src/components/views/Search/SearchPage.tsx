@@ -8,7 +8,7 @@ import {
   CompanySpecialty,
   HealthcareDomain,
 } from '@customtypes/company';
-import { Department, Team } from '@customtypes/job_role';
+import { Department, JobRole } from '@customtypes/job_role';
 import {
   useHealthcareDomains,
   useJobPosts,
@@ -60,6 +60,7 @@ export const SearchPage = () => {
     loading: jobRolesLoading,
     error: jobRolesError,
   } = useJobRoles();
+  console.log({ jobRoles });
 
   const { cities, loading: citiesLoading, error: citiesError } = useCities();
   const { states, loading: statesLoading, error: statesError } = useStates();
@@ -77,6 +78,7 @@ export const SearchPage = () => {
     useState<CompanySpecialty | null>(null);
   const [selectedDepartment, setSelectedDepartment] =
     useState<Department | null>(null);
+  const [selectedJobRole, setSelectedJobRole] = useState<JobRole | null>(null);
 
   /* --------------------- Constants --------------------- */
 
@@ -97,6 +99,20 @@ export const SearchPage = () => {
         .map((specialty) => [specialty.value, specialty])
     ).values()
   ).filter(Boolean);
+
+  const uniqueJobRoles: JobRole[] = Array.from(
+    jobPosts
+      .reduce((map, jobPost) => {
+        const jobRole = jobRoles.find(
+          (role) => role.id === jobPost.job_role_id
+        );
+        if (jobRole && !map.has(jobRole.id)) {
+          map.set(jobRole.id, jobRole);
+        }
+        return map;
+      }, new Map<number, JobRole>())
+      .values()
+  );
 
   const paginatedJobPosts = filteredJobPosts.slice(
     (currentPage - 1) * POSTS_PER_PAGE,
@@ -130,14 +146,14 @@ export const SearchPage = () => {
     filterJobPosts(company, selectedSpecialty, selectedDomain?.id ?? null);
   };
 
-  const handleSpecialtyFilter = (specialty: CompanySpecialty | null) => {
-    setSelectedSpecialty(specialty);
-    filterJobPosts(selectedCompany, specialty, selectedDomain?.id ?? null);
-  };
-
   const handleDomainFilter = (domain: HealthcareDomain | null) => {
     setSelectedDomain(domain);
     filterJobPosts(selectedCompany, selectedSpecialty, domain?.id ?? null);
+  };
+
+  const handleSpecialtyFilter = (specialty: CompanySpecialty | null) => {
+    setSelectedSpecialty(specialty);
+    filterJobPosts(selectedCompany, specialty, selectedDomain?.id ?? null);
   };
 
   const handleDepartmentFilter = (department: Department | null) => {
@@ -150,12 +166,25 @@ export const SearchPage = () => {
     );
   };
 
+  const handleJobRoleFilter = (jobRole: JobRole | null) => {
+    console.log({ jobRole });
+    setSelectedJobRole(jobRole);
+    filterJobPosts(
+      selectedCompany,
+      selectedSpecialty,
+      selectedDomain?.id ?? null,
+      selectedDepartment,
+      jobRole
+    );
+  };
+
   // Filter job posts based on selected filters
   const filterJobPosts = (
     company: Company | null,
     specialty: CompanySpecialty | null,
     domain: number | null,
-    department: Department | null = null
+    department: Department | null = null,
+    jobRole: JobRole | null = null
   ) => {
     let filtered = jobPosts;
 
@@ -187,6 +216,12 @@ export const SearchPage = () => {
       );
     }
 
+    if (jobRole) {
+      filtered = filtered.filter(
+        (jobPost) => jobPost.job_role_id === jobRole.id
+      );
+    }
+
     setFilteredJobPosts(filtered);
     setCurrentPage(1);
   };
@@ -203,6 +238,7 @@ export const SearchPage = () => {
     setSelectedSpecialty(null);
     setSelectedDomain(null);
     setSelectedDepartment(null);
+    setSelectedJobRole(null);
     setFilteredJobPosts(jobPosts);
   };
 
@@ -223,6 +259,10 @@ export const SearchPage = () => {
 
     if (selectedDepartment) {
       filters.push(`for department "${selectedDepartment.dept_name}"`);
+    }
+
+    if (selectedJobRole) {
+      filters.push(`for job role "${selectedJobRole.role_name}"`);
     }
 
     let message = 'No matching job posts';
@@ -282,6 +322,9 @@ export const SearchPage = () => {
                 departments={departments}
                 selectedDepartment={selectedDepartment}
                 onDepartmentFilter={handleDepartmentFilter}
+                jobRoles={uniqueJobRoles}
+                selectedJobRole={selectedJobRole}
+                onJobRoleFilter={handleJobRoleFilter}
               />
             </Grid>
 

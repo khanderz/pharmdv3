@@ -1,12 +1,5 @@
 import React from 'react';
-import {
-  Box as MuiBox,
-  Typography,
-  Select,
-  MenuItem,
-  FormControl,
-} from '@mui/material';
-import { CompanySpecialty } from '@customtypes/company';
+import { Box as MuiBox, Typography } from '@mui/material';
 import {
   CompanyFilter,
   CompanyFilterProps,
@@ -16,6 +9,8 @@ import {
   DepartmentFilterProps,
   SpecialtyFilter,
   SpecialtyFilterProps,
+  JobRoleFilter,
+  JobRoleFilterProps,
 } from '@components/molecules/Filters';
 import { Box, Button } from '@components/atoms/index';
 
@@ -23,7 +18,8 @@ interface FilterPanelProps
   extends CompanyFilterProps,
     DomainFilterProps,
     DepartmentFilterProps,
-    SpecialtyFilterProps {}
+    SpecialtyFilterProps,
+    JobRoleFilterProps {}
 
 export const FilterPanel = ({
   companies,
@@ -38,6 +34,9 @@ export const FilterPanel = ({
   domains,
   selectedDomain,
   onDomainFilter,
+  jobRoles,
+  selectedJobRole,
+  onJobRoleFilter,
 }: FilterPanelProps) => {
   return (
     <Box sx={{ p: 2 }} data-testid="filter-panel-box">
@@ -72,6 +71,11 @@ export const FilterPanel = ({
       />
 
       {/* Job Role Filter */}
+      <JobRoleFilter
+        jobRoles={jobRoles}
+        selectedJobRole={selectedJobRole}
+        onJobRoleFilter={onJobRoleFilter}
+      />
 
       <MuiBox sx={{ mt: 2, borderRadius: '2px' }}>
         <Typography variant="body1">Location</Typography>

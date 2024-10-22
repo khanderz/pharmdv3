@@ -1,6 +1,6 @@
 class JobRolesController < ApplicationController
     def index
-        job_roles = JobRole.pluck(:role_name)
+        job_roles = JobRole.all
         render json: job_roles
     end
 end

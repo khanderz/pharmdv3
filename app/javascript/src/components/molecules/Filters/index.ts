@@ -1,6 +1,7 @@
 import { CompanyFilter, CompanyFilterProps } from './CompanyFilter';
 import { DepartmentFilter, DepartmentFilterProps } from './DepartmentFilter';
 import { DomainFilter, DomainFilterProps } from './DomainFilter';
+import { JobRoleFilter, JobRoleFilterProps } from './JobRoleFilter';
 import { SpecialtyFilter, SpecialtyFilterProps } from './SpecialtyFilter';
 import { TeamFilter, TeamFilterProps } from './TeamFilter';
 
@@ -10,6 +11,7 @@ export {
   DepartmentFilter,
   TeamFilter,
   SpecialtyFilter,
+  JobRoleFilter,
 };
 
 export type {
@@ -18,4 +20,5 @@ export type {
   DepartmentFilterProps,
   TeamFilterProps,
   SpecialtyFilterProps,
+  JobRoleFilterProps,
 }; // due to webpack

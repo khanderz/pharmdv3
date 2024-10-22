@@ -5,7 +5,7 @@ import { useJobRoles } from '@javascript/hooks';
 const [jobRoles, setJobRoles] = useState<
   {
     id: number;
-    job_role_name: string;
+    role_name: string;
   }[]
 >([]);
 
@@ -21,5 +21,5 @@ export type JobRoles = (typeof jobRoles)[number];
 
 export interface JobRole extends Adjudicated {
   id: number;
-  job_role_name: JobRoles['job_role_name'];
+  role_name: JobRoles['role_name'];
 }

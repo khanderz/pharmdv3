@@ -29,7 +29,7 @@ export interface JobPost extends Adjudicated {
   job_applyUrl: string;
   job_additional: string;
 
-  job_role: JobRole;
+  job_role_id: JobRole['id'];
   job_salary_interval: JobSalaryInterval;
   job_salary_currency: JobSalaryCurrency;
   job_commitment: JobCommitment;

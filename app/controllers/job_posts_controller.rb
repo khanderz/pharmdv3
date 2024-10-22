@@ -86,8 +86,13 @@ class JobPostsController < ApplicationController
       @job_post = JobPost.find(params[:id])
     end
 
-    # Only allow a list of trusted parameters through.
-    def job_post_params
-      params.require(:job_post).permit(:job_title, :job_description, :job_url, :job_location, :job_salary_min, :job_salary_max, :job_dept, :job_country, :job_posted, :job_updated, :job_active)
-    end
+def job_post_params
+  params.require(:job_post).permit(
+    :job_title, :job_description, :job_url, :job_salary_min, 
+    :job_salary_max, :job_posted, :job_updated, :job_active, 
+    :department_id, :country_id, :team_id, :job_role_id, 
+    :job_commitment_id, :job_setting_id, :company_id
+  )
+end
+
 end
