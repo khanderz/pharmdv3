@@ -1,6 +1,7 @@
 class TeamsController < ApplicationController
     def index
-        teams = Team.pluck(:team_name)
-        render json: teams
+      @teams = Team.all
+      render json: @teams
     end
-end
+  end
+  

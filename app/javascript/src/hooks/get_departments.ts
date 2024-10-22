@@ -1,26 +1,24 @@
 import { useState, useEffect } from 'react';
-import { HealthcareDomain } from '@customtypes/company';
+import { Department } from '@customtypes/job_role';
 
-export const useHealthcareDomains = () => {
-  const [allDomains, setAllDomains] = useState<HealthcareDomain[]>([]);
+export const useDepartments = () => {
+  const [departments, setDepartments] = useState<Department[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    const fetchDomains = async () => {
+    const fetchDepartments = async () => {
       try {
         setLoading(true);
         setError(null);
 
-        const response = await fetch('/healthcare_domains.json');
+        const response = await fetch('/departments.json');
         if (!response.ok) {
-          throw new Error(
-            `Error fetching healthcare domains: ${response.status}`
-          );
+          throw new Error(`Error fetching departments: ${response.status}`);
         }
 
         const data = await response.json();
-        setAllDomains(data);
+        setDepartments(data);
       } catch (err) {
         setError(
           err instanceof Error ? err.message : 'An unknown error occurred'
@@ -30,8 +28,8 @@ export const useHealthcareDomains = () => {
       }
     };
 
-    fetchDomains();
+    fetchDepartments();
   }, []);
 
-  return { allDomains, loading, error };
+  return { departments, loading, error };
 };

@@ -1,7 +1,6 @@
 class DepartmentsController < ApplicationController
-    def index
-      departments = Department.pluck(:dept_name)
-      render json: departments
-    end
+  def index
+    @departments = Department.all
+    render json: @departments
   end
-  
+end

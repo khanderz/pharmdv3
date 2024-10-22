@@ -33,7 +33,8 @@
     "exclude": [
         "**/*.spec.ts",
         "node_modules",
-        "public"
+        "public",
+        ".prettierrc",
     ],
     "compileOnSave": false
 }

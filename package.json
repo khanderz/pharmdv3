@@ -1,6 +1,9 @@
 {
   "name": "app",
   "private": true,
+  "scripts": {
+    "format": "prettier --write ."
+  },
   "dependencies": {
     "@aws-sdk/client-rds": "^3.529.1",
     "@babel/core": "7",
