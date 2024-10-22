@@ -50,6 +50,7 @@ export const SearchPage = () => {
     loading: specialtiesLoading,
     error: specialtiesError,
   } = useCompanySpecialties();
+
   const {
     jobRoles,
     loading: jobRolesLoading,

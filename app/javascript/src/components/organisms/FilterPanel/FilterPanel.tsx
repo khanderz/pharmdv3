@@ -16,7 +16,7 @@ import {
   DepartmentFilterProps,
   TeamFilter,
   TeamFilterProps,
-} from '@components/molecules/Filters/index';
+} from '@components/molecules/Filters';
 import { Box, Button } from '@components/atoms/index';
 
 interface FilterPanelProps
