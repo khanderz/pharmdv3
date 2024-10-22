@@ -32,8 +32,8 @@ export interface JobPost extends Adjudicated {
   job_role_id: JobRole['id'];
   job_salary_interval: JobSalaryInterval;
   job_salary_currency: JobSalaryCurrency;
-  job_commitment: JobCommitment;
-  job_setting: JobSetting;
+  job_commitment_id: JobCommitment['id'];
+  job_setting_id: JobSetting['id'];
   team_id: Team['id'];
   department_id: Department['id'];
   country: Country;

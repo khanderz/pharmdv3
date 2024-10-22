@@ -14,7 +14,6 @@ export const JobRoleFilter = ({
   selectedJobRole,
   onJobRoleFilter,
 }: JobRoleFilterProps) => {
-  console.log({ jobRoles, selectedJobRole });
   return (
     <Select
       inputLabel="Job Roles"

@@ -7,17 +7,27 @@ import {
   Company,
   CompanySpecialty,
   HealthcareDomain,
+  FundingType,
+  CompanySize,
 } from '@customtypes/company';
 import { Department, JobRole } from '@customtypes/job_role';
+import {
+  JobCommitment,
+  JobSalaryInterval,
+  JobSetting,
+  JobSalaryCurrency,
+} from '@customtypes/job_post';
+import { City, State, Country } from '@customtypes/location.types';
 import {
   useHealthcareDomains,
   useJobPosts,
   useDepartments,
-  useCompanySpecialties,
   useCities,
   useStates,
   useCountries,
   useJobRoles,
+  useJobCommitments,
+  useJobSettings,
 } from '@javascript/hooks';
 import {
   LoadingState,
@@ -50,17 +60,21 @@ export const SearchPage = () => {
   } = useDepartments();
 
   const {
-    companySpecialties,
-    loading: specialtiesLoading,
-    error: specialtiesError,
-  } = useCompanySpecialties();
-
-  const {
     jobRoles,
     loading: jobRolesLoading,
     error: jobRolesError,
   } = useJobRoles();
-  console.log({ jobRoles });
+
+  const {
+    jobCommitments,
+    loading: jobCommitmentsLoading,
+    error: jobCommitmentsError,
+  } = useJobCommitments();
+  const {
+    jobSettings,
+    loading: jobSettingsLoading,
+    error: jobSettingsError,
+  } = useJobSettings();
 
   const { cities, loading: citiesLoading, error: citiesError } = useCities();
   const { states, loading: statesLoading, error: statesError } = useStates();
@@ -79,6 +93,13 @@ export const SearchPage = () => {
   const [selectedDepartment, setSelectedDepartment] =
     useState<Department | null>(null);
   const [selectedJobRole, setSelectedJobRole] = useState<JobRole | null>(null);
+  const [selectedCity, setSelectedCity] = useState<string | null>(null);
+  const [selectedState, setSelectedState] = useState<string | null>(null);
+  const [selectedCountry, setSelectedCountry] = useState<string | null>(null);
+  const [selectedJobCommitment, setSelectedJobCommitment] =
+    useState<JobCommitment | null>(null);
+  const [selectedJobSetting, setSelectedJobSetting] =
+    useState<JobSetting | null>(null);
 
   /* --------------------- Constants --------------------- */
 
@@ -123,21 +144,23 @@ export const SearchPage = () => {
     loading ||
     domainsLoading ||
     departmentsLoading ||
-    specialtiesLoading ||
     jobRolesLoading ||
     citiesLoading ||
     statesLoading ||
-    countriesLoading;
+    countriesLoading ||
+    jobCommitmentsLoading ||
+    jobSettingsLoading;
 
   const errors =
     error ||
     domainsError ||
     departmentsError ||
-    specialtiesError ||
     jobRolesError ||
     citiesError ||
     statesError ||
-    countriesError;
+    countriesError ||
+    jobCommitmentsError ||
+    jobSettingsError;
 
   /* --------------------- Handles --------------------- */
 
@@ -167,7 +190,6 @@ export const SearchPage = () => {
   };
 
   const handleJobRoleFilter = (jobRole: JobRole | null) => {
-    console.log({ jobRole });
     setSelectedJobRole(jobRole);
     filterJobPosts(
       selectedCompany,
@@ -178,13 +200,40 @@ export const SearchPage = () => {
     );
   };
 
+  const handleJobSettingFilter = (jobSetting: JobSetting | null) => {
+    setSelectedJobSetting(jobSetting ?? null);
+    filterJobPosts(
+      selectedCompany,
+      selectedSpecialty,
+      selectedDomain?.id ?? null,
+      selectedDepartment,
+      selectedJobRole,
+      jobSetting
+    );
+  };
+
+  const handleJobCommitmentFilter = (jobCommitment: JobCommitment | null) => {
+    setSelectedJobCommitment(jobCommitment);
+    filterJobPosts(
+      selectedCompany,
+      selectedSpecialty,
+      selectedDomain?.id ?? null,
+      selectedDepartment,
+      selectedJobRole,
+      selectedJobSetting,
+      jobCommitment
+    );
+  };
+
   // Filter job posts based on selected filters
   const filterJobPosts = (
     company: Company | null,
     specialty: CompanySpecialty | null,
     domain: number | null,
     department: Department | null = null,
-    jobRole: JobRole | null = null
+    jobRole: JobRole | null = null,
+    jobSetting: JobSetting | null = null,
+    jobCommitment: JobCommitment | null = null
   ) => {
     let filtered = jobPosts;
 
@@ -222,6 +271,18 @@ export const SearchPage = () => {
       );
     }
 
+    if (jobSetting) {
+      filtered = filtered.filter(
+        (jobPost) => jobPost.job_setting_id === jobSetting.id
+      );
+    }
+
+    if (jobCommitment) {
+      filtered = filtered.filter(
+        (jobPost) => jobPost.job_commitment_id === jobCommitment.id
+      );
+    }
+
     setFilteredJobPosts(filtered);
     setCurrentPage(1);
   };
@@ -239,6 +300,8 @@ export const SearchPage = () => {
     setSelectedDomain(null);
     setSelectedDepartment(null);
     setSelectedJobRole(null);
+    setSelectedJobSetting(null);
+    setSelectedJobCommitment(null);
     setFilteredJobPosts(jobPosts);
   };
 
@@ -265,6 +328,16 @@ export const SearchPage = () => {
       filters.push(`for job role "${selectedJobRole.role_name}"`);
     }
 
+    if (selectedJobSetting) {
+      filters.push(`for job setting "${selectedJobSetting}"`);
+    }
+
+    if (selectedJobCommitment) {
+      filters.push(
+        `for job commitment "${selectedJobCommitment.commitment_name}"`
+      );
+    }
+
     let message = 'No matching job posts';
 
     if (filters.length > 0) {
@@ -280,7 +353,7 @@ export const SearchPage = () => {
 
     return message;
   };
-
+  console.log({ jobPosts });
   return (
     <Container
       sx={{
@@ -325,6 +398,12 @@ export const SearchPage = () => {
                 jobRoles={uniqueJobRoles}
                 selectedJobRole={selectedJobRole}
                 onJobRoleFilter={handleJobRoleFilter}
+                jobSettings={jobSettings}
+                selectedJobSetting={selectedJobSetting}
+                onJobSettingFilter={handleJobSettingFilter}
+                jobCommitments={jobCommitments}
+                selectedJobCommitment={selectedJobCommitment}
+                onJobCommitmentFilter={handleJobCommitmentFilter}
               />
             </Grid>
 
@@ -345,6 +424,12 @@ export const SearchPage = () => {
                           job_applyUrl={jobPost.job_url}
                           company_specialty={
                             jobPost.company.company_specialties[0]?.value
+                          }
+                          job_posted={jobPost.job_posted}
+                          job_location={jobPost.job_locations[0]}
+                          job_commitment={jobPost.job_commitment}
+                          healthcare_domains={
+                            jobPost.company.healthcare_domains ?? []
                           }
                         />
                       </Grid>

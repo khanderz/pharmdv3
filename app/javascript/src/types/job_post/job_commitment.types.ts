@@ -1,16 +1,15 @@
 export enum JobCommitmentEnum {
-    CONTRACTOR = 'Contractor',
-    FREELANCE = 'Freelance',
-    FULL_TIME = 'Full-time',
-    INTERNSHIP = 'Internship',
-    PART_TIME = 'Part-time',
-    PER_DIEM = 'Per Diem',
-    TEMPORARY = 'Temporary',
-    VOLUNTEER = 'Volunteer',
+  CONTRACTOR = 'Contractor',
+  FREELANCE = 'Freelance',
+  FULL_TIME = 'Full-time',
+  INTERNSHIP = 'Internship',
+  PART_TIME = 'Part-time',
+  PER_DIEM = 'Per Diem',
+  TEMPORARY = 'Temporary',
+  VOLUNTEER = 'Volunteer',
 }
 
 export interface JobCommitment {
-    job_commitment_id: number;
-    key: keyof typeof JobCommitmentEnum;
-    commitment_name: typeof JobCommitmentEnum[keyof typeof JobCommitmentEnum];
-}   
+  id: number;
+  commitment_name: keyof typeof JobCommitmentEnum;
+}

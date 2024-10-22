@@ -11,6 +11,10 @@ import {
   SpecialtyFilterProps,
   JobRoleFilter,
   JobRoleFilterProps,
+  JobSettingFilter,
+  JobSettingFilterProps,
+  JobCommitmentFilter,
+  JobCommitmentFilterProps,
 } from '@components/molecules/Filters';
 import { Box, Button } from '@components/atoms/index';
 
@@ -19,7 +23,9 @@ interface FilterPanelProps
     DomainFilterProps,
     DepartmentFilterProps,
     SpecialtyFilterProps,
-    JobRoleFilterProps {}
+    JobRoleFilterProps,
+    JobSettingFilterProps,
+    JobCommitmentFilterProps {}
 
 export const FilterPanel = ({
   companies,
@@ -37,6 +43,12 @@ export const FilterPanel = ({
   jobRoles,
   selectedJobRole,
   onJobRoleFilter,
+  jobSettings,
+  selectedJobSetting,
+  onJobSettingFilter,
+  jobCommitments,
+  selectedJobCommitment,
+  onJobCommitmentFilter,
 }: FilterPanelProps) => {
   return (
     <Box sx={{ p: 2 }} data-testid="filter-panel-box">
@@ -84,21 +96,22 @@ export const FilterPanel = ({
         </Button>
       </MuiBox>
 
+      {/* Job Commitment Filter */}
       <MuiBox sx={{ mt: 2, borderRadius: '2px' }}>
-        <Typography variant="body1">Job Type</Typography>
-        <Button variant="outlined" fullWidth sx={{ my: 1 }}>
-          Full-time
-        </Button>
-        <Button variant="outlined" fullWidth sx={{ my: 1 }}>
-          Part-time
-        </Button>
+        <JobCommitmentFilter
+          jobCommitments={jobCommitments}
+          selectedJobCommitment={selectedJobCommitment}
+          onJobCommitmentFilter={onJobCommitmentFilter}
+        />
       </MuiBox>
 
+      {/* Job Setting Filter */}
       <MuiBox sx={{ mt: 2, borderRadius: '2px' }}>
-        <Typography variant="body1">Setting</Typography>
-        <Button variant="outlined" fullWidth sx={{ my: 1 }}>
-          Remote
-        </Button>
+        <JobSettingFilter
+          jobSettings={jobSettings}
+          selectedJobSetting={selectedJobSetting}
+          onJobSettingFilter={onJobSettingFilter}
+        />
       </MuiBox>
     </Box>
   );

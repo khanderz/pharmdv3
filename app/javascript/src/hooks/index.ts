@@ -7,6 +7,8 @@ import { useCities } from './get_cities';
 import { useCountries } from './get_countries';
 import { useStates } from './get_states';
 import { useJobRoles } from './get_job_roles';
+import { useJobCommitments } from './get_job_commitments';
+import { useJobSettings } from './get_job_settings';
 
 export {
   useHealthcareDomains,
@@ -18,4 +20,6 @@ export {
   useStates,
   useCountries,
   useJobRoles,
+  useJobCommitments,
+  useJobSettings,
 };
