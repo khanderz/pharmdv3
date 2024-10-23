@@ -55,7 +55,7 @@ export const JobSettingFilter = ({
               sx={{ my: 1 }}
               onClick={() => handleJobSettingToggle(jobSetting)}
             >
-              {jobSetting.setting_name}
+              {jobSetting.setting_name as string}
             </Button>
           ))
         : remoteJobSetting && (
@@ -72,7 +72,7 @@ export const JobSettingFilter = ({
               sx={{ my: 1 }}
               onClick={() => handleJobSettingToggle(remoteJobSetting)}
             >
-              {remoteJobSetting.setting_name}
+              {remoteJobSetting.setting_name as string}
             </Button>
           )}
     </>

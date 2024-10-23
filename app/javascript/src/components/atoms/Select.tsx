@@ -14,7 +14,6 @@ export type SelectProps = MuiSelectProps & {
 };
 
 export const Select = ({ inputLabel, children, ...props }: SelectProps) => {
-  console.log({ inputLabel });
   return (
     <Box
       data-testid={`${inputLabel}-select-box`}
