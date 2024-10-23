@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import {
   Typography,
-  Accordion,
   AccordionDetails,
   AccordionSummary,
   Box,
@@ -26,6 +25,7 @@ import {
   JobCommitmentFilterProps,
 } from '@components/molecules/Filters';
 import { SearchPanel } from '@components/molecules/SearchPanel/SearchPanel';
+import { Accordion } from '@components/atoms/Accordion';
 
 interface FilterPanelProps
   extends CompanyFilterProps,
@@ -66,82 +66,72 @@ export const FilterPanel = ({
   };
 
   return (
-    <>
-      <Accordion
-        expanded={isExpanded}
-        onChange={toggleAccordion}
-        sx={{
-          border: '1px solid',
-          borderColor: 'primary.main',
-          borderRadius: '2px',
-        }}
+    <Accordion expanded={isExpanded} onChange={toggleAccordion}>
+      <AccordionSummary
+        aria-controls="more-filters-content"
+        id="more-filters-header"
       >
-        <AccordionSummary
-          // expandIcon={<FilterList />}
-          aria-controls="more-filters-content"
-          id="more-filters-header"
+        <Box
+          flexDirection="column"
+          rowGap={2}
+          sx={{
+            display: 'flex',
+            width: '100%',
+          }}
         >
           <Box
-            flexDirection="column"
-            rowGap={2}
+            flexDirection="row"
             sx={{
-              width: '100%',
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
             }}
           >
-            <Box
-              flexDirection="row"
-              sx={{
-                display: 'flex',
-                justifyContent: 'space-between',
-                alignItems: 'center',
-              }}
-            >
-              <Typography variant="h6">Filters</Typography>
-              <IconButton onClick={toggleAccordion}>
-                <FilterList />
-              </IconButton>
-            </Box>
-
-            <SearchPanel />
-            <Grid
-              container
-              direction="row"
-              justifyContent="space-around"
-              alignItems="center"
-              columnSpacing={2}
-            >
-              {/* Company Filter */}
-              <Grid item xs={5}>
-                <CompanyFilter
-                  companies={companies}
-                  selectedCompany={selectedCompany}
-                  onCompanyFilter={onCompanyFilter}
-                />
-              </Grid>
-
-              {/* Domain Filter */}
-              <Grid item xs={5}>
-                <DomainFilter
-                  domains={domains}
-                  selectedDomain={selectedDomain}
-                  onDomainFilter={onDomainFilter}
-                />
-              </Grid>
-
-              {/* Job Setting Filter */}
-              <Grid item xs={2}>
-                <JobSettingFilter
-                  jobSettings={jobSettings}
-                  selectedJobSetting={selectedJobSetting}
-                  onJobSettingFilter={onJobSettingFilter}
-                  expanded={isExpanded}
-                />
-              </Grid>
-            </Grid>
+            <Typography variant="h5">Filters</Typography>
+            <IconButton onClick={toggleAccordion}>
+              <FilterList />
+            </IconButton>
           </Box>
-        </AccordionSummary>
-        {/* <Box sx={{ p: 2 }} role="presentation"> */}
 
+          <SearchPanel />
+          <Grid
+            container
+            direction="row"
+            justifyContent="space-around"
+            alignItems="center"
+            columnSpacing={2}
+          >
+            {/* Company Filter */}
+            <Grid item xs={5}>
+              <CompanyFilter
+                companies={companies}
+                selectedCompany={selectedCompany}
+                onCompanyFilter={onCompanyFilter}
+              />
+            </Grid>
+
+            {/* Domain Filter */}
+            <Grid item xs={5}>
+              <DomainFilter
+                domains={domains}
+                selectedDomain={selectedDomain}
+                onDomainFilter={onDomainFilter}
+              />
+            </Grid>
+
+            {/* Job Setting Filter */}
+            <Grid item xs={2}>
+              <JobSettingFilter
+                jobSettings={jobSettings}
+                selectedJobSetting={selectedJobSetting}
+                onJobSettingFilter={onJobSettingFilter}
+                expanded={isExpanded}
+              />
+            </Grid>
+          </Grid>
+        </Box>
+      </AccordionSummary>
+      <Box sx={{ p: 2 }} role="presentation">
         <AccordionDetails>
           {/* Specialty Filter */}
           <SpecialtyFilter
@@ -171,8 +161,7 @@ export const FilterPanel = ({
             onJobCommitmentFilter={onJobCommitmentFilter}
           />
         </AccordionDetails>
-        {/* </Box> */}
-      </Accordion>
-    </>
+      </Box>
+    </Accordion>
   );
 };
