@@ -460,7 +460,7 @@ export const SearchPage = () => {
                   </Grid>
 
                   <Box
-                    sx={{ mt: 4, display: 'flex', justifyContent: 'center' }}
+                    sx={{ my: 4, display: 'flex', justifyContent: 'center' }}
                     data-testid="pagination-box"
                   >
                     <Pagination
