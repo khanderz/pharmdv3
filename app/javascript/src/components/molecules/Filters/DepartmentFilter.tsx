@@ -5,25 +5,32 @@ import { Department } from '@customtypes/job_role';
 
 export type DepartmentFilterProps = {
   departments: Department[];
-  selectedDepartment: Department | null;
-  onDepartmentFilter: (department: Department | null) => void;
+  selectedDepartments: Department[] | null;
+  onDepartmentFilter: (department: Department[] | null) => void;
 };
 
 export const DepartmentFilter = ({
   departments,
-  selectedDepartment,
+  selectedDepartments,
   onDepartmentFilter,
 }: DepartmentFilterProps) => {
   return (
     <Select
+      multiple
       inputLabel="Departments"
-      value={selectedDepartment?.id || ''}
+      value={(selectedDepartments ?? []).map((d) => d.id)}
       onChange={(e) => {
-        const department = departments.find(
-          (department) => department.id === e.target.value
+        const selectedValues = e.target.value as Department['id'][];
+        const selected = departments.filter((department) =>
+          selectedValues.includes(department.id)
         );
-        onDepartmentFilter(department || null);
+        onDepartmentFilter(selected);
       }}
+      renderValue={(selected) =>
+        (selected as Department['id'][])
+          .map((value) => departments.find((d) => d.id === value)?.dept_name)
+          .join(', ')
+      }
     >
       {departments.map((department) => (
         <MenuItem key={department.id} value={department.id}>

@@ -5,7 +5,7 @@ class JobPostsController < ApplicationController
     @job_posts = JobPost.includes(company: { company_specialties: [], company_domains: :healthcare_domain })
 
     # If a domain is provided in params, filter by it
-    if params[:domain_id]
+    if params[:domain_id].present?
       @job_posts = JobPost.joins(company: :healthcare_domains)
                           .where(healthcare_domains: { id: params[:domain_id] })
     else

@@ -5,20 +5,36 @@ import { JobSetting } from '@customtypes/job_post';
 
 export type JobSettingFilterProps = {
   jobSettings: JobSetting[];
-  selectedJobSetting: JobSetting | null;
-  onJobSettingFilter: (jobSetting: JobSetting | null) => void;
+  selectedJobSettings: JobSetting[] | null;
+  onJobSettingFilter: (jobSetting: JobSetting[] | null) => void;
   expanded?: boolean;
 };
 
 export const JobSettingFilter = ({
   jobSettings,
-  selectedJobSetting,
+  selectedJobSettings,
   onJobSettingFilter,
   expanded = false,
 }: JobSettingFilterProps) => {
   const remoteJobSetting = jobSettings.find(
     (jobSetting) => jobSetting.id === 5 // Remote
   );
+
+  const handleJobSettingToggle = (jobSetting: JobSetting) => {
+    const isSelected = (selectedJobSettings ?? []).some(
+      (selected) => selected.id === jobSetting.id
+    );
+
+    if (isSelected) {
+      onJobSettingFilter(
+        (selectedJobSettings ?? []).filter(
+          (selected) => selected.id !== jobSetting.id
+        )
+      );
+    } else {
+      onJobSettingFilter([...(selectedJobSettings ?? []), jobSetting]);
+    }
+  };
 
   return (
     <>
@@ -29,13 +45,15 @@ export const JobSettingFilter = ({
             <Button
               key={jobSetting.id}
               variant={
-                selectedJobSetting?.id === jobSetting.id
+                (selectedJobSettings ?? []).some(
+                  (selected) => selected.id === jobSetting.id
+                )
                   ? 'contained'
                   : 'outlined'
               }
               fullWidth
               sx={{ my: 1 }}
-              onClick={() => onJobSettingFilter(jobSetting)}
+              onClick={() => handleJobSettingToggle(jobSetting)}
             >
               {jobSetting.setting_name}
             </Button>
@@ -44,13 +62,15 @@ export const JobSettingFilter = ({
             <Button
               key={remoteJobSetting.id}
               variant={
-                selectedJobSetting?.id === remoteJobSetting.id
+                (selectedJobSettings ?? []).some(
+                  (selected) => selected.id === remoteJobSetting.id
+                )
                   ? 'contained'
                   : 'outlined'
               }
               fullWidth
               sx={{ my: 1 }}
-              onClick={() => onJobSettingFilter(remoteJobSetting)}
+              onClick={() => handleJobSettingToggle(remoteJobSetting)}
             >
               {remoteJobSetting.setting_name}
             </Button>

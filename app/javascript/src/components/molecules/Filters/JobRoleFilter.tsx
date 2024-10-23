@@ -5,25 +5,32 @@ import { JobRole } from '@customtypes/job_role';
 
 export type JobRoleFilterProps = {
   jobRoles: JobRole[];
-  selectedJobRole: JobRole | null;
-  onJobRoleFilter: (jobRole: JobRole | null) => void;
+  selectedJobRoles: JobRole[] | null;
+  onJobRoleFilter: (jobRole: JobRole[] | null) => void;
 };
 
 export const JobRoleFilter = ({
   jobRoles,
-  selectedJobRole,
+  selectedJobRoles,
   onJobRoleFilter,
 }: JobRoleFilterProps) => {
   return (
     <Select
+      multiple
       inputLabel="Job Roles"
-      value={selectedJobRole?.id || ''}
+      value={(selectedJobRoles ?? []).map((jr) => jr.id as JobRole['id'])}
       onChange={(e) => {
-        const jobRole = jobRoles.find(
-          (jobRole) => jobRole.id === e.target.value
+        const selectedValues = e.target.value as JobRole['id'][];
+        const selected = jobRoles.filter((jobRole) =>
+          selectedValues.includes(jobRole.id)
         );
-        onJobRoleFilter(jobRole || null);
+        onJobRoleFilter(selected);
       }}
+      renderValue={(selected) =>
+        (selected as JobRole['id'][])
+          .map((value) => jobRoles.find((jr) => jr.id === value)?.role_name)
+          .join(', ')
+      }
     >
       {jobRoles.map((jobRole) => (
         <MenuItem key={jobRole.id} value={jobRole.id}>

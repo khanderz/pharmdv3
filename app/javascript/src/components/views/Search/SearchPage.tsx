@@ -21,25 +21,25 @@ export const SearchPage = () => {
     errors,
     currentlyLoading,
     uniqueCompanies,
-    selectedCompany,
+    selectedCompanies,
     handleCompanyFilter,
     uniqueSpecialties,
-    selectedSpecialty,
+    selectedSpecialties,
     handleSpecialtyFilter,
     allDomains,
-    selectedDomain,
+    selectedDomains,
     handleDomainFilter,
     departments,
-    selectedDepartment,
+    selectedDepartments,
     handleDepartmentFilter,
     uniqueJobRoles,
-    selectedJobRole,
+    selectedJobRoles,
     handleJobRoleFilter,
     jobSettings,
-    selectedJobSetting,
+    selectedJobSettings,
     handleJobSettingFilter,
     jobCommitments,
-    selectedJobCommitment,
+    selectedJobCommitments,
     handleJobCommitmentFilter,
     noMatchingResults,
     getNoResultsMessage,
@@ -77,25 +77,25 @@ export const SearchPage = () => {
             <Grid item xs={12} data-testid="filter-panel-grid">
               <FilterPanel
                 companies={uniqueCompanies}
-                selectedCompany={selectedCompany}
+                selectedCompanies={selectedCompanies}
                 onCompanyFilter={handleCompanyFilter}
                 specialties={uniqueSpecialties}
-                selectedSpecialty={selectedSpecialty}
+                selectedSpecialties={selectedSpecialties}
                 onSpecialtyFilter={handleSpecialtyFilter}
                 domains={allDomains}
-                selectedDomain={selectedDomain}
+                selectedDomains={selectedDomains}
                 onDomainFilter={handleDomainFilter}
                 departments={departments}
-                selectedDepartment={selectedDepartment}
+                selectedDepartments={selectedDepartments}
                 onDepartmentFilter={handleDepartmentFilter}
                 jobRoles={uniqueJobRoles}
-                selectedJobRole={selectedJobRole}
+                selectedJobRoles={selectedJobRoles}
                 onJobRoleFilter={handleJobRoleFilter}
                 jobSettings={jobSettings}
-                selectedJobSetting={selectedJobSetting}
+                selectedJobSettings={selectedJobSettings}
                 onJobSettingFilter={handleJobSettingFilter}
                 jobCommitments={jobCommitments}
-                selectedJobCommitment={selectedJobCommitment}
+                selectedJobCommitments={selectedJobCommitments}
                 onJobCommitmentFilter={handleJobCommitmentFilter}
               />
             </Grid>

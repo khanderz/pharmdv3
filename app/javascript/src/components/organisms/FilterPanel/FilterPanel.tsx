@@ -38,28 +38,28 @@ interface FilterPanelProps
 
 export const FilterPanel = ({
   companies,
-  selectedCompany,
+  selectedCompanies,
   onCompanyFilter,
   specialties,
-  selectedSpecialty,
+  selectedSpecialties,
   onSpecialtyFilter,
   departments,
-  selectedDepartment,
+  selectedDepartments,
   onDepartmentFilter,
   domains,
-  selectedDomain,
+  selectedDomains,
   onDomainFilter,
   jobRoles,
-  selectedJobRole,
+  selectedJobRoles,
   onJobRoleFilter,
   jobSettings,
-  selectedJobSetting,
+  selectedJobSettings,
   onJobSettingFilter,
   jobCommitments,
-  selectedJobCommitment,
+  selectedJobCommitments,
   onJobCommitmentFilter,
 }: FilterPanelProps) => {
-  const [isExpanded, setExpanded] = useState(false);
+  const [isExpanded, setExpanded] = useState(true);
 
   const toggleAccordion = () => {
     setExpanded(!isExpanded);
@@ -95,7 +95,10 @@ export const FilterPanel = ({
             }}
           >
             <Typography variant="h5">Filters</Typography>
-            <IconButton onClick={toggleAccordion} sx={{ cursor: 'pointer' }}>
+            <IconButton
+              onClick={toggleAccordion}
+              sx={{ color: 'primary.main' }}
+            >
               <FilterList />
             </IconButton>
           </Box>
@@ -112,7 +115,7 @@ export const FilterPanel = ({
             <Grid item xs={5}>
               <CompanyFilter
                 companies={companies}
-                selectedCompany={selectedCompany}
+                selectedCompanies={selectedCompanies}
                 onCompanyFilter={onCompanyFilter}
               />
             </Grid>
@@ -121,7 +124,7 @@ export const FilterPanel = ({
             <Grid item xs={5}>
               <DomainFilter
                 domains={domains}
-                selectedDomain={selectedDomain}
+                selectedDomains={selectedDomains}
                 onDomainFilter={onDomainFilter}
               />
             </Grid>
@@ -130,7 +133,7 @@ export const FilterPanel = ({
             <Grid item xs={2}>
               <JobSettingFilter
                 jobSettings={jobSettings}
-                selectedJobSetting={selectedJobSetting}
+                selectedJobSettings={selectedJobSettings}
                 onJobSettingFilter={onJobSettingFilter}
                 expanded={isExpanded}
               />
@@ -143,28 +146,28 @@ export const FilterPanel = ({
           {/* Specialty Filter */}
           <SpecialtyFilter
             specialties={specialties}
-            selectedSpecialty={selectedSpecialty}
+            selectedSpecialties={selectedSpecialties}
             onSpecialtyFilter={onSpecialtyFilter}
           />
 
           {/* Department Filter */}
           <DepartmentFilter
             departments={departments}
-            selectedDepartment={selectedDepartment}
+            selectedDepartments={selectedDepartments}
             onDepartmentFilter={onDepartmentFilter}
           />
 
           {/* Job Role Filter */}
           <JobRoleFilter
             jobRoles={jobRoles}
-            selectedJobRole={selectedJobRole}
+            selectedJobRoles={selectedJobRoles}
             onJobRoleFilter={onJobRoleFilter}
           />
 
           {/* Job Commitment Filter */}
           <JobCommitmentFilter
             jobCommitments={jobCommitments}
-            selectedJobCommitment={selectedJobCommitment}
+            selectedJobCommitments={selectedJobCommitments}
             onJobCommitmentFilter={onJobCommitmentFilter}
           />
         </AccordionDetails>

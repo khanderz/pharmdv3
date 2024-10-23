@@ -5,25 +5,34 @@ import { CompanySpecialty } from '@customtypes/company';
 
 export type SpecialtyFilterProps = {
   specialties: CompanySpecialty[];
-  selectedSpecialty: CompanySpecialty | null;
-  onSpecialtyFilter: (specialty: CompanySpecialty | null) => void;
+  selectedSpecialties: CompanySpecialty[] | null;
+  onSpecialtyFilter: (specialties: CompanySpecialty[] | null) => void;
 };
 
 export const SpecialtyFilter = ({
   specialties,
-  selectedSpecialty,
+  selectedSpecialties,
   onSpecialtyFilter,
 }: SpecialtyFilterProps) => {
   return (
     <Select
+      multiple
       inputLabel="Specialties"
-      value={selectedSpecialty?.key || ''}
+      value={(selectedSpecialties ?? []).map(
+        (s) => s.key as CompanySpecialty['key']
+      )}
       onChange={(e) => {
-        const specialty = specialties.find(
-          (specialty) => specialty.key === e.target.value
+        const selectedValues = e.target.value as CompanySpecialty['key'][];
+        const selected = specialties.filter((specialty) =>
+          selectedValues.includes(specialty.key)
         );
-        onSpecialtyFilter(specialty || null);
+        onSpecialtyFilter(selected);
       }}
+      renderValue={(selected) =>
+        (selected as CompanySpecialty['value'][])
+          .map((value) => specialties.find((s) => s.key === value)?.value)
+          .join(', ')
+      }
     >
       {specialties.map((specialty) => (
         <MenuItem key={specialty.key} value={specialty.key}>

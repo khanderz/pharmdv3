@@ -5,25 +5,37 @@ import { JobCommitment } from '@customtypes/job_post';
 
 export type JobCommitmentFilterProps = {
   jobCommitments: JobCommitment[];
-  selectedJobCommitment: JobCommitment | null;
-  onJobCommitmentFilter: (jobCommitment: JobCommitment | null) => void;
+  selectedJobCommitments: JobCommitment[] | null;
+  onJobCommitmentFilter: (jobCommitment: JobCommitment[] | null) => void;
 };
 
 export const JobCommitmentFilter = ({
   jobCommitments,
-  selectedJobCommitment,
+  selectedJobCommitments,
   onJobCommitmentFilter,
 }: JobCommitmentFilterProps) => {
   return (
     <Select
+      multiple
       inputLabel="Job Commitment Types"
-      value={selectedJobCommitment?.id || ''}
+      value={(selectedJobCommitments ?? []).map(
+        (c) => c.id as JobCommitment['id']
+      )}
       onChange={(e) => {
-        const jobCommitment = jobCommitments.find(
-          (jobCommitment) => jobCommitment.id === e.target.value
+        const selectedValues = e.target.value as JobCommitment['id'][];
+        const selected = jobCommitments.filter((jobCommitment) =>
+          selectedValues.includes(jobCommitment.id)
         );
-        onJobCommitmentFilter(jobCommitment || null);
+        onJobCommitmentFilter(selected);
       }}
+      renderValue={(selected) =>
+        (selected as JobCommitment['id'][])
+          .map(
+            (value) =>
+              jobCommitments.find((c) => c.id === value)?.commitment_name
+          )
+          .join(', ')
+      }
     >
       {jobCommitments.map((jobCommitment) => (
         <MenuItem key={jobCommitment.id} value={jobCommitment.id}>

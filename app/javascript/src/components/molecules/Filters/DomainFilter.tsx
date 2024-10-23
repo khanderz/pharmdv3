@@ -5,23 +5,34 @@ import { HealthcareDomain } from '@customtypes/company';
 
 export type DomainFilterProps = {
   domains: HealthcareDomain[];
-  selectedDomain: HealthcareDomain | null;
-  onDomainFilter: (domain: HealthcareDomain | null) => void;
+  selectedDomains: HealthcareDomain[] | null;
+  onDomainFilter: (domains: HealthcareDomain[] | null) => void;
 };
 
 export const DomainFilter = ({
   domains,
-  selectedDomain,
+  selectedDomains,
   onDomainFilter,
 }: DomainFilterProps) => {
   return (
     <Select
+      multiple
       inputLabel="Domains"
-      value={selectedDomain?.key || ''}
+      value={(selectedDomains ?? []).map(
+        (d) => d.key as HealthcareDomain['key']
+      )}
       onChange={(e) => {
-        const domain = domains.find((domain) => domain.key === e.target.value);
-        onDomainFilter(domain || null);
+        const selectedValues = e.target.value as HealthcareDomain['key'][];
+        const selected = domains.filter((domain) =>
+          selectedValues.includes(domain.key)
+        );
+        onDomainFilter(selected);
       }}
+      renderValue={(selected) =>
+        (selected as HealthcareDomain['value'][])
+          .map((value) => domains.find((d) => d.key === value)?.value)
+          .join(', ')
+      }
     >
       {domains.map((domain) => (
         <MenuItem key={domain.key} value={domain.key}>
