@@ -1,6 +1,5 @@
 import React from 'react';
 import { Box, Grid, Pagination, Typography } from '@mui/material';
-import { SearchPanel } from '@components/molecules/SearchPanel/SearchPanel';
 import { FilterPanel } from '@components/organisms/FilterPanel/FilterPanel';
 import { JobCard } from '@components/organisms/JobCard/JobCard';
 import {
@@ -73,8 +72,6 @@ export const SearchPage = () => {
           >
             <Typography variant="title">Search for a job post</Typography>
           </Box>
-
-          <SearchPanel />
 
           <Grid container spacing={4} data-testid="search-page-container">
             <Grid item xs={12} data-testid="filter-panel-grid">

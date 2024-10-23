@@ -1,22 +1,23 @@
-import React from "react"
-import { TextField, Box } from "@mui/material"
+import React from 'react';
+import { TextField, Box } from '@mui/material';
 
-interface SearchPanelProps { }
+interface SearchPanelProps {}
 
-
-export const SearchPanel = ({ }: SearchPanelProps) => {
-
-
+export const SearchPanel = ({}: SearchPanelProps) => {
   return (
-    <Box sx={{
-      mt: 3, mb: 4, border: '1px solid #66c1aa',
-      borderRadius: '2px',
-    }} data-testid="search-panel">
+    <Box
+      sx={{
+        border: '2px solid #000000',
+        boxShadow: '3px 3px 0px 0px #000000',
+        borderRadius: '2px',
+      }}
+      data-testid="search-panel"
+    >
       <TextField
         fullWidth
         variant="outlined"
         placeholder="Search for jobs or companies..."
       />
     </Box>
-  )
-}
+  );
+};

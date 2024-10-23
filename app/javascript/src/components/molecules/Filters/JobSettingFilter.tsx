@@ -2,7 +2,6 @@ import React from 'react';
 import { Button } from '@components/atoms/index';
 import { Typography } from '@mui/material';
 import { JobSetting } from '@customtypes/job_post';
-import { JobSettingEnum } from './JobSettingEnum';
 
 export type JobSettingFilterProps = {
   jobSettings: JobSetting[];
@@ -18,7 +17,7 @@ export const JobSettingFilter = ({
   expanded = false,
 }: JobSettingFilterProps) => {
   const remoteJobSetting = jobSettings.find(
-    (jobSetting) => jobSetting.setting_name === 'REMOTE'
+    (jobSetting) => jobSetting.id === 5 // Remote
   );
 
   return (
@@ -38,7 +37,7 @@ export const JobSettingFilter = ({
               sx={{ my: 1 }}
               onClick={() => onJobSettingFilter(jobSetting)}
             >
-              {JobSettingEnum[jobSetting.setting_name]}
+              {jobSetting.setting_name}
             </Button>
           ))
         : remoteJobSetting && (
@@ -53,7 +52,7 @@ export const JobSettingFilter = ({
               sx={{ my: 1 }}
               onClick={() => onJobSettingFilter(remoteJobSetting)}
             >
-              {JobSettingEnum[remoteJobSetting.setting_name]}
+              {remoteJobSetting.setting_name}
             </Button>
           )}
     </>
