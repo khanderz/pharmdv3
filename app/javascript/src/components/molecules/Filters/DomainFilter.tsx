@@ -18,9 +18,7 @@ export const DomainFilter = ({
     <Select
       multiple
       inputLabel="Domains"
-      value={(selectedDomains ?? []).map(
-        (d) => d.key as HealthcareDomain['key']
-      )}
+      value={selectedDomains ? selectedDomains.map((d) => d.key) : []}
       onChange={(e) => {
         const selectedValues = e.target.value as HealthcareDomain['key'][];
         const selected = domains.filter((domain) =>
