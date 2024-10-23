@@ -6,7 +6,9 @@ import {
   InputLabel,
   Box,
   Typography,
+  Divider,
 } from '@mui/material';
+import { Button } from './Button';
 
 export type SelectProps = MuiSelectProps & {
   inputLabel: string;
@@ -39,22 +41,18 @@ export const Select = ({ inputLabel, children, ...props }: SelectProps) => {
         displayEmpty
         label={inputLabel}
         renderValue={(selected) => {
-          // If the selection is an array and empty
           if (Array.isArray(selected) && selected.length === 0) {
             return <em>All {inputLabel}</em>;
           }
 
-          // If it's a multi-select, join selected values
           if (Array.isArray(selected)) {
             return selected.join(', ');
           }
 
-          // Handle single-select case or empty value
           if (selected === '' || selected === null || selected === undefined) {
             return <em>All {inputLabel}</em>;
           }
 
-          // Return the selected value as string
           return String(selected);
         }}
         sx={{
@@ -73,6 +71,15 @@ export const Select = ({ inputLabel, children, ...props }: SelectProps) => {
           <em>All {inputLabel}</em>
         </MuiMenuItem>
         {children}
+        <Divider />
+        <Button
+          data-testid={`${inputLabel}-reset-button`}
+          variant="contained"
+          color="secondary"
+          sx={{ mt: 1, mx: 2, mb: 2, float: 'right' }}
+        >
+          Reset
+        </Button>
       </MuiSelect>
     </Box>
   );

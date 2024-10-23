@@ -141,7 +141,7 @@ export const FilterPanel = ({
           </Grid>
         </Box>
       </AccordionSummary>
-      <Box sx={{ p: 2 }} role="presentation" data-testid="expanded-filters">
+      <Box role="presentation" data-testid="expanded-filters">
         <AccordionDetails>
           {/* Specialty Filter */}
           <SpecialtyFilter
