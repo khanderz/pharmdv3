@@ -8,6 +8,7 @@ export type JobSettingFilterProps = {
   selectedJobSettings: JobSetting[] | null;
   onJobSettingFilter: (jobSetting: JobSetting[] | null) => void;
   expanded?: boolean;
+  resetJobSettingFilter: () => void;
 };
 
 export const JobSettingFilter = ({
@@ -15,6 +16,7 @@ export const JobSettingFilter = ({
   selectedJobSettings,
   onJobSettingFilter,
   expanded = false,
+  resetJobSettingFilter,
 }: JobSettingFilterProps) => {
   const remoteJobSetting = jobSettings.find(
     (jobSetting) => jobSetting.id === 5 // Remote

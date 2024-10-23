@@ -13,9 +13,15 @@ import { Button } from './Button';
 export type SelectProps = MuiSelectProps & {
   inputLabel: string;
   children: any;
+  onReset?: () => void;
 };
 
-export const Select = ({ inputLabel, children, ...props }: SelectProps) => {
+export const Select = ({
+  inputLabel,
+  children,
+  onReset,
+  ...props
+}: SelectProps) => {
   const value = props.value ?? (props.multiple ? [] : '');
 
   return (
@@ -77,6 +83,7 @@ export const Select = ({ inputLabel, children, ...props }: SelectProps) => {
           variant="contained"
           color="secondary"
           sx={{ mt: 1, mx: 2, mb: 2, float: 'right' }}
+          onClick={onReset}
         >
           Reset
         </Button>

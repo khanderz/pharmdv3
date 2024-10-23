@@ -7,12 +7,14 @@ export type JobCommitmentFilterProps = {
   jobCommitments: JobCommitment[];
   selectedJobCommitments: JobCommitment[] | null;
   onJobCommitmentFilter: (jobCommitment: JobCommitment[] | null) => void;
+  resetJobCommitmentFilter: () => void;
 };
 
 export const JobCommitmentFilter = ({
   jobCommitments,
   selectedJobCommitments,
   onJobCommitmentFilter,
+  resetJobCommitmentFilter,
 }: JobCommitmentFilterProps) => {
   return (
     <Select
@@ -36,6 +38,7 @@ export const JobCommitmentFilter = ({
           )
           .join(', ')
       }
+      onReset={resetJobCommitmentFilter}
     >
       {jobCommitments.map((jobCommitment) => (
         <MenuItem key={jobCommitment.id} value={jobCommitment.id}>

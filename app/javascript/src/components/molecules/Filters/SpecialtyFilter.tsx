@@ -7,12 +7,14 @@ export type SpecialtyFilterProps = {
   specialties: CompanySpecialty[];
   selectedSpecialties: CompanySpecialty[] | null;
   onSpecialtyFilter: (specialties: CompanySpecialty[] | null) => void;
+  resetSpecialtyFilter: () => void;
 };
 
 export const SpecialtyFilter = ({
   specialties,
   selectedSpecialties,
   onSpecialtyFilter,
+  resetSpecialtyFilter,
 }: SpecialtyFilterProps) => {
   return (
     <Select
@@ -33,6 +35,7 @@ export const SpecialtyFilter = ({
           .map((value) => specialties.find((s) => s.key === value)?.value)
           .join(', ')
       }
+      onReset={resetSpecialtyFilter}
     >
       {specialties.map((specialty) => (
         <MenuItem key={specialty.key} value={specialty.key}>

@@ -26,6 +26,7 @@ import {
 } from '@components/molecules/Filters';
 import { SearchPanel } from '@components/molecules/SearchPanel/SearchPanel';
 import { Accordion } from '@components/atoms/Accordion';
+import { Button } from '@components/atoms';
 
 interface FilterPanelProps
   extends CompanyFilterProps,
@@ -34,7 +35,9 @@ interface FilterPanelProps
     SpecialtyFilterProps,
     JobRoleFilterProps,
     JobSettingFilterProps,
-    JobCommitmentFilterProps {}
+    JobCommitmentFilterProps {
+  resetFilters: () => void;
+}
 
 export const FilterPanel = ({
   companies,
@@ -58,6 +61,14 @@ export const FilterPanel = ({
   jobCommitments,
   selectedJobCommitments,
   onJobCommitmentFilter,
+  resetFilters,
+  resetCompanyFilter,
+  resetDomainFilter,
+  resetSpecialtyFilter,
+  resetDepartmentFilter,
+  resetJobRoleFilter,
+  resetJobSettingFilter,
+  resetJobCommitmentFilter,
 }: FilterPanelProps) => {
   const [isExpanded, setExpanded] = useState(true);
 
@@ -95,12 +106,33 @@ export const FilterPanel = ({
             }}
           >
             <Typography variant="h5">Filters</Typography>
-            <IconButton
-              onClick={toggleAccordion}
-              sx={{ color: 'primary.main' }}
+            <Box
+              flexDirection="row"
+              sx={{
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+              }}
             >
-              <FilterList />
-            </IconButton>
+              <Button
+                data-testid={`filter-panel-reset-button`}
+                variant="contained"
+                color="secondary"
+                sx={{ m: 2, float: 'right' }}
+                onClick={() => {
+                  resetFilters();
+                  // setExpanded(false);
+                }}
+              >
+                Reset
+              </Button>
+              <IconButton
+                onClick={toggleAccordion}
+                sx={{ color: 'primary.main' }}
+              >
+                <FilterList />
+              </IconButton>
+            </Box>
           </Box>
 
           <SearchPanel />
@@ -117,6 +149,7 @@ export const FilterPanel = ({
                 companies={companies}
                 selectedCompanies={selectedCompanies}
                 onCompanyFilter={onCompanyFilter}
+                resetCompanyFilter={resetCompanyFilter}
               />
             </Grid>
 
@@ -126,6 +159,7 @@ export const FilterPanel = ({
                 domains={domains}
                 selectedDomains={selectedDomains}
                 onDomainFilter={onDomainFilter}
+                resetDomainFilter={resetDomainFilter}
               />
             </Grid>
 
@@ -136,6 +170,7 @@ export const FilterPanel = ({
                 selectedJobSettings={selectedJobSettings}
                 onJobSettingFilter={onJobSettingFilter}
                 expanded={isExpanded}
+                resetJobSettingFilter={resetJobSettingFilter}
               />
             </Grid>
           </Grid>
@@ -148,6 +183,7 @@ export const FilterPanel = ({
             specialties={specialties}
             selectedSpecialties={selectedSpecialties}
             onSpecialtyFilter={onSpecialtyFilter}
+            resetSpecialtyFilter={resetSpecialtyFilter}
           />
 
           {/* Department Filter */}
@@ -155,6 +191,7 @@ export const FilterPanel = ({
             departments={departments}
             selectedDepartments={selectedDepartments}
             onDepartmentFilter={onDepartmentFilter}
+            resetDepartmentFilter={resetDepartmentFilter}
           />
 
           {/* Job Role Filter */}
@@ -162,6 +199,7 @@ export const FilterPanel = ({
             jobRoles={jobRoles}
             selectedJobRoles={selectedJobRoles}
             onJobRoleFilter={onJobRoleFilter}
+            resetJobRoleFilter={resetJobRoleFilter}
           />
 
           {/* Job Commitment Filter */}
@@ -169,6 +207,7 @@ export const FilterPanel = ({
             jobCommitments={jobCommitments}
             selectedJobCommitments={selectedJobCommitments}
             onJobCommitmentFilter={onJobCommitmentFilter}
+            resetJobCommitmentFilter={resetJobCommitmentFilter}
           />
         </AccordionDetails>
       </Box>

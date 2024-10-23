@@ -7,12 +7,14 @@ export type JobRoleFilterProps = {
   jobRoles: JobRole[];
   selectedJobRoles: JobRole[] | null;
   onJobRoleFilter: (jobRole: JobRole[] | null) => void;
+  resetJobRoleFilter: () => void;
 };
 
 export const JobRoleFilter = ({
   jobRoles,
   selectedJobRoles,
   onJobRoleFilter,
+  resetJobRoleFilter,
 }: JobRoleFilterProps) => {
   return (
     <Select
@@ -31,6 +33,7 @@ export const JobRoleFilter = ({
           .map((value) => jobRoles.find((jr) => jr.id === value)?.role_name)
           .join(', ')
       }
+      onReset={resetJobRoleFilter}
     >
       {jobRoles.map((jobRole) => (
         <MenuItem key={jobRole.id} value={jobRole.id}>

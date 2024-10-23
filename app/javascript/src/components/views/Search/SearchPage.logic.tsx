@@ -265,17 +265,6 @@ export const useSearchPageLogic = () => {
     setCurrentPage(page);
   };
 
-  const resetFilters = () => {
-    setSelectedCompanies([]);
-    setSelectedSpecialties([]);
-    setSelectedDomains([]);
-    setSelectedDepartments([]);
-    setSelectedJobRoles([]);
-    setSelectedJobSettings([]);
-    setSelectedJobCommitments([]);
-    setFilteredJobPosts(jobPosts);
-  };
-
   const getNoResultsMessage = () => {
     const filters = [];
 
@@ -328,6 +317,48 @@ export const useSearchPageLogic = () => {
     }
 
     return message;
+  };
+
+  /* --------------------- Reset Handles --------------------- */
+
+  const resetCompanyFilter = () => {
+    setSelectedCompanies([]);
+    console.log('-------------reset');
+  };
+
+  const resetDomainFilter = () => {
+    setSelectedDomains([]);
+  };
+
+  const resetSpecialtyFilter = () => {
+    setSelectedSpecialties([]);
+  };
+
+  const resetDepartmentFilter = () => {
+    setSelectedDepartments([]);
+  };
+
+  const resetJobRoleFilter = () => {
+    setSelectedJobRoles([]);
+  };
+
+  const resetJobSettingFilter = () => {
+    setSelectedJobSettings([]);
+  };
+
+  const resetJobCommitmentFilter = () => {
+    setSelectedJobCommitments([]);
+  };
+
+  const resetFilters = () => {
+    setSelectedCompanies([]);
+    setSelectedSpecialties([]);
+    setSelectedDomains([]);
+    setSelectedDepartments([]);
+    setSelectedJobRoles([]);
+    setSelectedJobSettings([]);
+    setSelectedJobCommitments([]);
+    setFilteredJobPosts(jobPosts);
   };
 
   /* --------------------- Effect to filter job posts --------------------- */
@@ -386,5 +417,12 @@ export const useSearchPageLogic = () => {
     totalPages,
     currentPage,
     handlePageChange,
+    resetCompanyFilter,
+    resetDomainFilter,
+    resetSpecialtyFilter,
+    resetDepartmentFilter,
+    resetJobRoleFilter,
+    resetJobSettingFilter,
+    resetJobCommitmentFilter,
   };
 };

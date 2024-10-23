@@ -7,12 +7,14 @@ export type DepartmentFilterProps = {
   departments: Department[];
   selectedDepartments: Department[] | null;
   onDepartmentFilter: (department: Department[] | null) => void;
+  resetDepartmentFilter: () => void;
 };
 
 export const DepartmentFilter = ({
   departments,
   selectedDepartments,
   onDepartmentFilter,
+  resetDepartmentFilter,
 }: DepartmentFilterProps) => {
   return (
     <Select
@@ -31,6 +33,7 @@ export const DepartmentFilter = ({
           .map((value) => departments.find((d) => d.id === value)?.dept_name)
           .join(', ')
       }
+      onReset={resetDepartmentFilter}
     >
       {departments.map((department) => (
         <MenuItem key={department.id} value={department.id}>

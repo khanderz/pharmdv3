@@ -48,6 +48,13 @@ export const SearchPage = () => {
     totalPages,
     currentPage,
     handlePageChange,
+    resetCompanyFilter,
+    resetDomainFilter,
+    resetSpecialtyFilter,
+    resetDepartmentFilter,
+    resetJobRoleFilter,
+    resetJobSettingFilter,
+    resetJobCommitmentFilter,
   } = useSearchPageLogic();
 
   return (
@@ -97,6 +104,14 @@ export const SearchPage = () => {
                 jobCommitments={jobCommitments}
                 selectedJobCommitments={selectedJobCommitments}
                 onJobCommitmentFilter={handleJobCommitmentFilter}
+                resetFilters={resetFilters}
+                resetCompanyFilter={resetCompanyFilter}
+                resetDomainFilter={resetDomainFilter}
+                resetSpecialtyFilter={resetSpecialtyFilter}
+                resetDepartmentFilter={resetDepartmentFilter}
+                resetJobRoleFilter={resetJobRoleFilter}
+                resetJobSettingFilter={resetJobSettingFilter}
+                resetJobCommitmentFilter={resetJobCommitmentFilter}
               />
             </Grid>
 

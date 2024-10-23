@@ -7,12 +7,14 @@ export type DomainFilterProps = {
   domains: HealthcareDomain[];
   selectedDomains: HealthcareDomain[] | null;
   onDomainFilter: (domains: HealthcareDomain[] | null) => void;
+  resetDomainFilter: () => void;
 };
 
 export const DomainFilter = ({
   domains,
   selectedDomains,
   onDomainFilter,
+  resetDomainFilter,
 }: DomainFilterProps) => {
   return (
     <Select
@@ -38,6 +40,7 @@ export const DomainFilter = ({
 
         return selectedNames.join(', ');
       }}
+      onReset={resetDomainFilter}
     >
       {domains.map((domain) => (
         <MenuItem key={domain.id} value={domain.id}>

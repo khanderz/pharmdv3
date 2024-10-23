@@ -7,12 +7,14 @@ export type CompanyFilterProps = {
   companies: Company[];
   selectedCompanies: Company[] | null;
   onCompanyFilter: (companies: Company[] | null) => void;
+  resetCompanyFilter: () => void;
 };
 
 export const CompanyFilter = ({
   companies,
   selectedCompanies,
   onCompanyFilter,
+  resetCompanyFilter,
 }: CompanyFilterProps) => {
   return (
     <Select
@@ -39,6 +41,7 @@ export const CompanyFilter = ({
           return <em>All Companies</em>;
         }
       }}
+      onReset={resetCompanyFilter}
     >
       {companies.map((company) => (
         <MenuItem key={company.id} value={company.company_name}>
