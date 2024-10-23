@@ -66,12 +66,19 @@ export const FilterPanel = ({
   };
 
   return (
-    <Accordion expanded={isExpanded} onChange={toggleAccordion}>
+    <Accordion expanded={isExpanded} componentName="filter-panel">
       <AccordionSummary
         aria-controls="more-filters-content"
         id="more-filters-header"
+        sx={{
+          '&.MuiButtonBase-root, & .MuiAccordionSummary-root, & .MuiAccordionSummary-content':
+            {
+              cursor: 'default',
+            },
+        }}
       >
         <Box
+          data-testid="non-expanded-filters"
           flexDirection="column"
           rowGap={2}
           sx={{
@@ -88,7 +95,7 @@ export const FilterPanel = ({
             }}
           >
             <Typography variant="h5">Filters</Typography>
-            <IconButton onClick={toggleAccordion}>
+            <IconButton onClick={toggleAccordion} sx={{ cursor: 'pointer' }}>
               <FilterList />
             </IconButton>
           </Box>
@@ -131,7 +138,7 @@ export const FilterPanel = ({
           </Grid>
         </Box>
       </AccordionSummary>
-      <Box sx={{ p: 2 }} role="presentation">
+      <Box sx={{ p: 2 }} role="presentation" data-testid="expanded-filters">
         <AccordionDetails>
           {/* Specialty Filter */}
           <SpecialtyFilter

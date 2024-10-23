@@ -4,12 +4,15 @@ import {
   AccordionProps as MuiAccordionProps,
 } from '@mui/material';
 
-export interface AccordionProps extends MuiAccordionProps {}
+export interface AccordionProps extends MuiAccordionProps {
+  componentName: string;
+}
 
-export const Accordion = ({ ...props }: AccordionProps) => {
+export const Accordion = ({ componentName, ...props }: AccordionProps) => {
   return (
     <MuiAccordion
       {...props}
+      data-testid={`${componentName}-accordion`}
       sx={{
         display: 'flex',
         flexDirection: 'column',
