@@ -1,5 +1,14 @@
-import React from 'react';
-import { Box as MuiBox, Typography } from '@mui/material';
+import React, { useState } from 'react';
+import {
+  IconButton,
+  Typography,
+  Box as MuiBox,
+  Accordion,
+  AccordionDetails,
+  AccordionSummary,
+} from '@mui/material';
+import { FilterList } from '@mui/icons-material';
+import { Box, Button } from '@components/atoms/index';
 import {
   CompanyFilter,
   CompanyFilterProps,
@@ -16,7 +25,6 @@ import {
   JobCommitmentFilter,
   JobCommitmentFilterProps,
 } from '@components/molecules/Filters';
-import { Box, Button } from '@components/atoms/index';
 
 interface FilterPanelProps
   extends CompanyFilterProps,
@@ -50,69 +58,87 @@ export const FilterPanel = ({
   selectedJobCommitment,
   onJobCommitmentFilter,
 }: FilterPanelProps) => {
+  const [isExpanded, setExpanded] = useState(false);
+
+  const toggleAccordion = () => {
+    setExpanded(!isExpanded);
+  };
+
   return (
-    <Box sx={{ p: 2 }} data-testid="filter-panel-box">
-      <Typography variant="h6">Filters</Typography>
+    <>
+      <Accordion
+        expanded={isExpanded}
+        onChange={toggleAccordion}
+        sx={{
+          border: '1px solid',
+          borderColor: 'primary.main',
+          borderRadius: '2px',
+        }}
+      >
+        <AccordionSummary
+          expandIcon={<FilterList />}
+          aria-controls="more-filters-content"
+          id="more-filters-header"
+        >
+          <Typography variant="h6" sx={{ mb: 2 }}>
+            Filters
+          </Typography>
 
-      {/* Company Filter */}
-      <CompanyFilter
-        companies={companies}
-        selectedCompany={selectedCompany}
-        onCompanyFilter={onCompanyFilter}
-      />
+          {/* Company Filter */}
+          <CompanyFilter
+            companies={companies}
+            selectedCompany={selectedCompany}
+            onCompanyFilter={onCompanyFilter}
+          />
 
-      {/* Domain Filter */}
-      <DomainFilter
-        domains={domains}
-        selectedDomain={selectedDomain}
-        onDomainFilter={onDomainFilter}
-      />
+          {/* Domain Filter */}
+          <DomainFilter
+            domains={domains}
+            selectedDomain={selectedDomain}
+            onDomainFilter={onDomainFilter}
+          />
 
-      {/* Specialty Filter */}
-      <SpecialtyFilter
-        specialties={specialties}
-        selectedSpecialty={selectedSpecialty}
-        onSpecialtyFilter={onSpecialtyFilter}
-      />
+          {/* Job Setting Filter */}
+          <JobSettingFilter
+            jobSettings={jobSettings}
+            selectedJobSetting={selectedJobSetting}
+            onJobSettingFilter={onJobSettingFilter}
+            expanded={isExpanded}
+          />
+        </AccordionSummary>
+        {/* <Box sx={{ p: 2 }} role="presentation"> */}
 
-      {/* Department Filter */}
-      <DepartmentFilter
-        departments={departments}
-        selectedDepartment={selectedDepartment}
-        onDepartmentFilter={onDepartmentFilter}
-      />
+        <AccordionDetails>
+          {/* Specialty Filter */}
+          <SpecialtyFilter
+            specialties={specialties}
+            selectedSpecialty={selectedSpecialty}
+            onSpecialtyFilter={onSpecialtyFilter}
+          />
 
-      {/* Job Role Filter */}
-      <JobRoleFilter
-        jobRoles={jobRoles}
-        selectedJobRole={selectedJobRole}
-        onJobRoleFilter={onJobRoleFilter}
-      />
+          {/* Department Filter */}
+          <DepartmentFilter
+            departments={departments}
+            selectedDepartment={selectedDepartment}
+            onDepartmentFilter={onDepartmentFilter}
+          />
 
-      <MuiBox sx={{ mt: 2, borderRadius: '2px' }}>
-        <Typography variant="body1">Location</Typography>
-        <Button variant="outlined" fullWidth sx={{ my: 1 }}>
-          United States
-        </Button>
-      </MuiBox>
+          {/* Job Role Filter */}
+          <JobRoleFilter
+            jobRoles={jobRoles}
+            selectedJobRole={selectedJobRole}
+            onJobRoleFilter={onJobRoleFilter}
+          />
 
-      {/* Job Commitment Filter */}
-      <MuiBox sx={{ mt: 2, borderRadius: '2px' }}>
-        <JobCommitmentFilter
-          jobCommitments={jobCommitments}
-          selectedJobCommitment={selectedJobCommitment}
-          onJobCommitmentFilter={onJobCommitmentFilter}
-        />
-      </MuiBox>
-
-      {/* Job Setting Filter */}
-      <MuiBox sx={{ mt: 2, borderRadius: '2px' }}>
-        <JobSettingFilter
-          jobSettings={jobSettings}
-          selectedJobSetting={selectedJobSetting}
-          onJobSettingFilter={onJobSettingFilter}
-        />
-      </MuiBox>
-    </Box>
+          {/* Job Commitment Filter */}
+          <JobCommitmentFilter
+            jobCommitments={jobCommitments}
+            selectedJobCommitment={selectedJobCommitment}
+            onJobCommitmentFilter={onJobCommitmentFilter}
+          />
+        </AccordionDetails>
+        {/* </Box> */}
+      </Accordion>
+    </>
   );
 };
