@@ -18,22 +18,29 @@ export const DomainFilter = ({
     <Select
       multiple
       inputLabel="Domains"
-      value={selectedDomains ? selectedDomains.map((d) => d.key) : []}
+      value={selectedDomains ? selectedDomains.map((d) => d.id) : []}
       onChange={(e) => {
-        const selectedValues = e.target.value as HealthcareDomain['key'][];
+        const selectedValues = e.target.value as number[];
         const selected = domains.filter((domain) =>
-          selectedValues.includes(domain.key)
+          selectedValues.includes(domain.id)
         );
         onDomainFilter(selected);
       }}
-      renderValue={(selected) =>
-        (selected as HealthcareDomain['value'][])
-          .map((value) => domains.find((d) => d.key === value)?.value)
-          .join(', ')
-      }
+      renderValue={(selected) => {
+        if ((selected as []).length === 0) {
+          return <em>All Domains</em>;
+        }
+
+        const selectedNames = (selected as number[]).map((id) => {
+          const domain = domains.find((domain) => domain.id === id);
+          return domain?.value;
+        });
+
+        return selectedNames.join(', ');
+      }}
     >
       {domains.map((domain) => (
-        <MenuItem key={domain.key} value={domain.key}>
+        <MenuItem key={domain.id} value={domain.id}>
           {domain.value}
         </MenuItem>
       ))}

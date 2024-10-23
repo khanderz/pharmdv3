@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import {
   Company,
   CompanySpecialty,
@@ -33,14 +33,16 @@ export const useSearchPageLogic = () => {
     []
   );
 
+  const domainIds = useMemo(() => {
+    return selectedDomains.length > 0
+      ? selectedDomains.map((domain) => domain.id)
+      : null;
+  }, [selectedDomains]);
+
   /* --------------------- Hooks --------------------- */
 
   const { jobPosts, filteredJobPosts, setFilteredJobPosts, loading, error } =
-    useJobPosts(
-      selectedDomains.length > 0
-        ? selectedDomains.map((domain) => domain.id)
-        : null
-    );
+    useJobPosts(domainIds);
 
   const {
     allDomains,
@@ -200,7 +202,7 @@ export const useSearchPageLogic = () => {
     jobSettings: JobSetting[],
     jobCommitments: JobCommitment[]
   ) => {
-    let filtered = jobPosts;
+    let filtered = [...jobPosts];
 
     if (companies.length > 0) {
       filtered = filtered.filter((jobPost) =>
@@ -217,11 +219,13 @@ export const useSearchPageLogic = () => {
     }
 
     if (domains.length > 0) {
-      filtered = filtered.filter((jobPost) =>
-        jobPost.company.company_domains?.some((dom) =>
-          domains.some((selectedDomain) => selectedDomain.id === dom.id)
-        )
-      );
+      filtered = filtered.filter((jobPost) => {
+        return jobPost.company.company_domains?.some((dom) =>
+          domains.some(
+            (selectedDomain) => selectedDomain.id === dom.healthcare_domain_id
+          )
+        );
+      });
     }
 
     if (departments.length > 0) {
@@ -329,15 +333,17 @@ export const useSearchPageLogic = () => {
   /* --------------------- Effect to filter job posts --------------------- */
 
   useEffect(() => {
-    filterJobPosts(
-      selectedCompanies,
-      selectedSpecialties,
-      selectedDomains,
-      selectedDepartments,
-      selectedJobRoles,
-      selectedJobSettings,
-      selectedJobCommitments
-    );
+    if (jobPosts.length > 0) {
+      filterJobPosts(
+        selectedCompanies,
+        selectedSpecialties,
+        selectedDomains,
+        selectedDepartments,
+        selectedJobRoles,
+        selectedJobSettings,
+        selectedJobCommitments
+      );
+    }
   }, [
     selectedCompanies,
     selectedSpecialties,
@@ -346,6 +352,7 @@ export const useSearchPageLogic = () => {
     selectedJobRoles,
     selectedJobSettings,
     selectedJobCommitments,
+    jobPosts,
   ]);
 
   return {

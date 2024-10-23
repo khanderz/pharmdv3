@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react';
 import { JobPost } from '@customtypes/job_post';
+import { HealthcareDomain } from '@customtypes/company';
 
-export const useJobPosts = (domainIds: number[] | null) => {
+export const useJobPosts = (domainIds: HealthcareDomain['id'][] | null) => {
   const [jobPosts, setJobPosts] = useState<JobPost[]>([]);
   const [filteredJobPosts, setFilteredJobPosts] = useState<JobPost[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
@@ -15,7 +16,7 @@ export const useJobPosts = (domainIds: number[] | null) => {
 
         if (domainIds && domainIds.length > 0) {
           const domainParams = domainIds
-            .map((id) => `domain_id[]=${id}`)
+            .map((id) => `domain_ids[]=${id}`)
             .join('&');
           url += `?${domainParams}`;
         }
@@ -24,6 +25,7 @@ export const useJobPosts = (domainIds: number[] | null) => {
         if (!response.ok) {
           throw new Error(`Error fetching job posts: ${response.status}`);
         }
+
         const data = await response.json();
         setJobPosts(data);
         setFilteredJobPosts(data);

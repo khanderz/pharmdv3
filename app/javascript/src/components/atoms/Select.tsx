@@ -14,6 +14,8 @@ export type SelectProps = MuiSelectProps & {
 };
 
 export const Select = ({ inputLabel, children, ...props }: SelectProps) => {
+  const value = props.value ?? (props.multiple ? [] : '');
+
   return (
     <Box
       data-testid={`${inputLabel}-select-box`}
@@ -32,15 +34,28 @@ export const Select = ({ inputLabel, children, ...props }: SelectProps) => {
       <MuiSelect
         {...props}
         labelId={`${inputLabel}-input-label`}
-        value={props.multiple ? (props.value ?? []) : (props.value ?? '')}
+        value={value}
         onChange={props.onChange}
         displayEmpty
         label={inputLabel}
         renderValue={(selected) => {
-          if ((selected as []).length === 0) {
+          // If the selection is an array and empty
+          if (Array.isArray(selected) && selected.length === 0) {
             return <em>All {inputLabel}</em>;
           }
-          return (selected as string[]).join(', ');
+
+          // If it's a multi-select, join selected values
+          if (Array.isArray(selected)) {
+            return selected.join(', ');
+          }
+
+          // Handle single-select case or empty value
+          if (selected === '' || selected === null || selected === undefined) {
+            return <em>All {inputLabel}</em>;
+          }
+
+          // Return the selected value as string
+          return String(selected);
         }}
         sx={{
           width: '100%',
