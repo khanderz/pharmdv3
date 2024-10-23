@@ -6,7 +6,7 @@ import { Department } from '@customtypes/job_role';
 export type DepartmentFilterProps = {
   departments: Department[];
   selectedDepartments: Department[] | null;
-  onDepartmentFilter: (department: Department[] | null) => void;
+  onDepartmentFilter: React.Dispatch<React.SetStateAction<Department[] | null>>;
   resetDepartmentFilter: () => void;
 };
 

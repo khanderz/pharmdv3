@@ -6,7 +6,9 @@ import { HealthcareDomain } from '@customtypes/company';
 export type DomainFilterProps = {
   domains: HealthcareDomain[];
   selectedDomains: HealthcareDomain[] | null;
-  onDomainFilter: (domains: HealthcareDomain[] | null) => void;
+  onDomainFilter: React.Dispatch<
+    React.SetStateAction<HealthcareDomain[] | null>
+  >;
   resetDomainFilter: () => void;
 };
 

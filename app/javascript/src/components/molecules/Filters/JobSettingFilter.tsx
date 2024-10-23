@@ -6,7 +6,7 @@ import { JobSetting } from '@customtypes/job_post';
 export type JobSettingFilterProps = {
   jobSettings: JobSetting[];
   selectedJobSettings: JobSetting[] | null;
-  onJobSettingFilter: (jobSetting: JobSetting[] | null) => void;
+  onJobSettingFilter: React.Dispatch<React.SetStateAction<JobSetting[] | null>>;
   expanded?: boolean;
   resetJobSettingFilter: () => void;
 };

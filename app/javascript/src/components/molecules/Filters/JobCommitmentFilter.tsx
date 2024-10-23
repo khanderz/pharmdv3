@@ -6,7 +6,9 @@ import { JobCommitment } from '@customtypes/job_post';
 export type JobCommitmentFilterProps = {
   jobCommitments: JobCommitment[];
   selectedJobCommitments: JobCommitment[] | null;
-  onJobCommitmentFilter: (jobCommitment: JobCommitment[] | null) => void;
+  onJobCommitmentFilter: React.Dispatch<
+    React.SetStateAction<JobCommitment[] | null>
+  >;
   resetJobCommitmentFilter: () => void;
 };
 

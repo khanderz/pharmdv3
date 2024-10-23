@@ -6,7 +6,9 @@ import { CompanySpecialty } from '@customtypes/company';
 export type SpecialtyFilterProps = {
   specialties: CompanySpecialty[];
   selectedSpecialties: CompanySpecialty[] | null;
-  onSpecialtyFilter: (specialties: CompanySpecialty[] | null) => void;
+  onSpecialtyFilter: React.Dispatch<
+    React.SetStateAction<CompanySpecialty[] | null>
+  >;
   resetSpecialtyFilter: () => void;
 };
 

@@ -83,7 +83,12 @@ export const Select = ({
           variant="contained"
           color="secondary"
           sx={{ mt: 1, mx: 2, mb: 2, float: 'right' }}
-          onClick={onReset}
+          onClick={() => {
+            if (onReset) {
+              console.log('--------reset on select ,menu ');
+              onReset();
+            }
+          }}
         >
           Reset
         </Button>

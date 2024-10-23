@@ -6,7 +6,7 @@ import { JobRole } from '@customtypes/job_role';
 export type JobRoleFilterProps = {
   jobRoles: JobRole[];
   selectedJobRoles: JobRole[] | null;
-  onJobRoleFilter: (jobRole: JobRole[] | null) => void;
+  onJobRoleFilter: React.Dispatch<React.SetStateAction<JobRole[] | null>>;
   resetJobRoleFilter: () => void;
 };
 

@@ -6,7 +6,7 @@ import { Box, MenuItem } from '@mui/material';
 export type CompanyFilterProps = {
   companies: Company[];
   selectedCompanies: Company[] | null;
-  onCompanyFilter: (companies: Company[] | null) => void;
+  onCompanyFilter: React.Dispatch<React.SetStateAction<Company[] | null>>;
   resetCompanyFilter: () => void;
 };
 
