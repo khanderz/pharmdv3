@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Box, Container, Grid, Pagination, Typography } from '@mui/material';
+import { Box, Grid, Pagination, Typography } from '@mui/material';
 import { SearchPanel } from '@components/molecules/SearchPanel/SearchPanel';
 import { FilterPanel } from '@components/organisms/FilterPanel/FilterPanel';
 import { JobCard } from '@components/organisms/JobCard/JobCard';
@@ -34,6 +34,7 @@ import {
   ErrorState,
   NoMatchState,
 } from '@components/views/index';
+import { Container } from '@components/atoms/Paper';
 
 const POSTS_PER_PAGE = 10;
 
@@ -354,10 +355,8 @@ export const SearchPage = () => {
 
   return (
     <Container
+      dataTestId="search"
       sx={{
-        height: '100vh',
-        width: '100vw',
-        display: 'flex',
         flexDirection: 'column',
       }}
     >
