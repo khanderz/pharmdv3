@@ -177,7 +177,6 @@ export const theme = {
     MuiAutocomplete: {
       styleOverrides: {
         root: {
-          // border: '2px solid #000000',
           boxShadow: '3px 3px 0px 0px #000000',
           '&:hover': {
             backgroundColor: '#f0eff9',
@@ -187,12 +186,20 @@ export const theme = {
           '.MuiAutocomplete-popupIndicator': {
             color: '#226f54',
           },
+          '.MuiAutocomplete-clearIndicator': {
+            color: '#226f54',
+            '&:hover': {
+              backgroundColor: '#cce8d8',
+              color: '#184e3b',
+            },
+          },
         },
         tag: {
           backgroundColor: '#cce8d8',
           '& .MuiChip-deleteIcon': {
             color: '#226f54',
             '&:hover': {
+              backgroundColor: '#cce8d8',
               color: '#184e3b',
             },
           },

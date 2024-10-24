@@ -27,6 +27,7 @@ import {
 import { SearchPanel } from '@components/molecules/SearchPanel/SearchPanel';
 import { Accordion } from '@components/atoms/Accordion';
 import { Button } from '@components/atoms';
+import { Autocomplete } from '@components/atoms';
 
 interface FilterPanelProps
   extends CompanyFilterProps,
@@ -178,36 +179,41 @@ export const FilterPanel = ({
       </AccordionSummary>
       <Box role="presentation" data-testid="expanded-filters">
         <AccordionDetails>
-          {/* Specialty Filter */}
-          <SpecialtyFilter
-            specialties={specialties}
-            selectedSpecialties={selectedSpecialties}
-            onSpecialtyFilter={onSpecialtyFilter}
-          />
+          <Grid container spacing={2}>
+            <Grid container item xs={6} direction="column">
+              {/* Specialty Filter */}
+              <SpecialtyFilter
+                specialties={specialties}
+                selectedSpecialties={selectedSpecialties}
+                onSpecialtyFilter={onSpecialtyFilter}
+              />
 
-          {/* Department Filter */}
-          <DepartmentFilter
-            departments={departments}
-            selectedDepartments={selectedDepartments}
-            onDepartmentFilter={onDepartmentFilter}
-            departmentsLoading={departmentsLoading}
-          />
+              {/* Department Filter */}
+              <DepartmentFilter
+                departments={departments}
+                selectedDepartments={selectedDepartments}
+                onDepartmentFilter={onDepartmentFilter}
+                departmentsLoading={departmentsLoading}
+              />
 
-          {/* Job Role Filter */}
-          <JobRoleFilter
-            jobRoles={jobRoles}
-            selectedJobRoles={selectedJobRoles}
-            onJobRoleFilter={onJobRoleFilter}
-            jobRolesLoading={jobRolesLoading}
-          />
-
-          {/* Job Commitment Filter */}
-          <JobCommitmentFilter
-            jobCommitments={jobCommitments}
-            selectedJobCommitments={selectedJobCommitments}
-            onJobCommitmentFilter={onJobCommitmentFilter}
-            jobCommitmentsLoading={jobCommitmentsLoading}
-          />
+              {/* Job Role Filter */}
+              <JobRoleFilter
+                jobRoles={jobRoles}
+                selectedJobRoles={selectedJobRoles}
+                onJobRoleFilter={onJobRoleFilter}
+                jobRolesLoading={jobRolesLoading}
+              />
+            </Grid>
+            <Grid container item xs={6} direction="column">
+              {/* Job Commitment Filter */}
+              <JobCommitmentFilter
+                jobCommitments={jobCommitments}
+                selectedJobCommitments={selectedJobCommitments}
+                onJobCommitmentFilter={onJobCommitmentFilter}
+                jobCommitmentsLoading={jobCommitmentsLoading}
+              />
+            </Grid>
+          </Grid>
         </AccordionDetails>
       </Box>
     </Accordion>

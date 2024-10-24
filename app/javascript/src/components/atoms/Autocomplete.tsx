@@ -60,7 +60,7 @@ export const Autocomplete = ({
         loading={loading}
         disableClearable={disableClearable}
         sx={{
-          mt: 0.5,
+          mt: '2em',
           ...sx,
         }}
         renderInput={(params) => (
