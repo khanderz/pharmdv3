@@ -1,6 +1,5 @@
 import React from 'react';
-import { Select } from '@components/atoms/index';
-import { MenuItem } from '@mui/material';
+import { Autocomplete } from '@components/atoms/index';
 import { CompanySpecialty } from '@customtypes/company';
 
 export type SpecialtyFilterProps = {
@@ -9,41 +8,35 @@ export type SpecialtyFilterProps = {
   onSpecialtyFilter: React.Dispatch<
     React.SetStateAction<CompanySpecialty[] | null>
   >;
-  resetSpecialtyFilter: () => void;
 };
 
 export const SpecialtyFilter = ({
   specialties,
   selectedSpecialties,
   onSpecialtyFilter,
-  resetSpecialtyFilter,
 }: SpecialtyFilterProps) => {
   return (
-    <Select
+    <Autocomplete
       multiple
       inputLabel="Specialties"
-      value={(selectedSpecialties ?? []).map(
-        (s) => s.key as CompanySpecialty['key']
-      )}
-      onChange={(e) => {
-        const selectedValues = e.target.value as CompanySpecialty['key'][];
-        const selected = specialties.filter((specialty) =>
-          selectedValues.includes(specialty.key)
+      options={specialties.map((specialty) => ({
+        key: specialty.key,
+        value: specialty.value,
+      }))}
+      value={(selectedSpecialties ?? []).map((s) => s.value)}
+      onChange={(e, value) => {
+        const selectedValues = (value as CompanySpecialty['value'][]).filter(
+          Boolean
         );
+
+        const selected = specialties.filter((specialty) =>
+          selectedValues.includes(specialty.value)
+        );
+
         onSpecialtyFilter(selected);
       }}
-      renderValue={(selected) =>
-        (selected as CompanySpecialty['value'][])
-          .map((value) => specialties.find((s) => s.key === value)?.value)
-          .join(', ')
-      }
-      onReset={resetSpecialtyFilter}
-    >
-      {specialties.map((specialty) => (
-        <MenuItem key={specialty.key} value={specialty.key}>
-          {specialty.value}
-        </MenuItem>
-      ))}
-    </Select>
+      loading={false}
+      disableClearable={false}
+    />
   );
 };

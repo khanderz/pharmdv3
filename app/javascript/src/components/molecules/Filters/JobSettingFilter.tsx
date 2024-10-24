@@ -8,7 +8,7 @@ export type JobSettingFilterProps = {
   selectedJobSettings: JobSetting[] | null;
   onJobSettingFilter: React.Dispatch<React.SetStateAction<JobSetting[] | null>>;
   expanded?: boolean;
-  resetJobSettingFilter: () => void;
+  jobSettingsLoading: boolean;
 };
 
 export const JobSettingFilter = ({
@@ -16,7 +16,7 @@ export const JobSettingFilter = ({
   selectedJobSettings,
   onJobSettingFilter,
   expanded = false,
-  resetJobSettingFilter,
+  jobSettingsLoading,
 }: JobSettingFilterProps) => {
   const remoteJobSetting = jobSettings.find(
     (jobSetting) => jobSetting.id === 5 // Remote

@@ -1,5 +1,5 @@
 import { Box } from './Box';
 import { Button } from './Button';
-import { Select } from './Select';
+import { Autocomplete } from './Autocomplete';
 
-export { Box, Button, Select };
+export { Box, Button, Autocomplete };

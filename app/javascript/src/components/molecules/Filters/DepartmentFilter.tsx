@@ -1,45 +1,42 @@
 import React from 'react';
-import { Select } from '@components/atoms/index';
-import { MenuItem } from '@mui/material';
+import { Autocomplete } from '@components/atoms/index';
 import { Department } from '@customtypes/job_role';
 
 export type DepartmentFilterProps = {
   departments: Department[];
   selectedDepartments: Department[] | null;
   onDepartmentFilter: React.Dispatch<React.SetStateAction<Department[] | null>>;
-  resetDepartmentFilter: () => void;
+  departmentsLoading: boolean;
 };
 
 export const DepartmentFilter = ({
   departments,
   selectedDepartments,
   onDepartmentFilter,
-  resetDepartmentFilter,
+  departmentsLoading,
 }: DepartmentFilterProps) => {
   return (
-    <Select
+    <Autocomplete
       multiple
       inputLabel="Departments"
-      value={(selectedDepartments ?? []).map((d) => d.id)}
-      onChange={(e) => {
-        const selectedValues = e.target.value as Department['id'][];
-        const selected = departments.filter((department) =>
-          selectedValues.includes(department.id)
+      options={departments.map((department) => ({
+        key: department.id,
+        value: department.dept_name,
+      }))}
+      value={(selectedDepartments ?? []).map((d) => d.dept_name)}
+      onChange={(e, value) => {
+        const selectedValues = (value as Department['dept_name'][]).filter(
+          Boolean
         );
+
+        const selected = departments.filter((department) =>
+          selectedValues.includes(department.dept_name)
+        );
+
         onDepartmentFilter(selected);
       }}
-      renderValue={(selected) =>
-        (selected as Department['id'][])
-          .map((value) => departments.find((d) => d.id === value)?.dept_name)
-          .join(', ')
-      }
-      onReset={resetDepartmentFilter}
-    >
-      {departments.map((department) => (
-        <MenuItem key={department.id} value={department.id}>
-          {department.dept_name}
-        </MenuItem>
-      ))}
-    </Select>
+      loading={departmentsLoading}
+      disableClearable={false}
+    />
   );
 };

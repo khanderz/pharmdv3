@@ -85,6 +85,7 @@ export const useSearchPageLogic = () => {
 
   const [currentPage, setCurrentPage] = useState(1);
   const [selectedCompanies, setSelectedCompanies] = useState<Company[]>([]);
+  const [companiesLoading, setCompaniesLoading] = useState<boolean>(false);
   const [selectedSpecialties, setSelectedSpecialties] = useState<
     CompanySpecialty[]
   >([]);
@@ -171,8 +172,9 @@ export const useSearchPageLogic = () => {
   };
 
   const filterJobPosts = () => {
+    console.log('----------filter job posts');
     let filtered = [...jobPosts];
-
+    console.log({ filtered });
     if (selectedCompanies.length > 0) {
       filtered = filtered.filter((jobPost) =>
         selectedCompanies.some((company) => jobPost.company.id === company.id)
@@ -226,9 +228,19 @@ export const useSearchPageLogic = () => {
         )
       );
     }
-
+    console.log({ selectedCompanies }, '-----filtered');
     setFilteredJobPosts(filtered);
     setCurrentPage(1);
+  };
+
+  const resetFilters = () => {
+    setSelectedCompanies([]);
+    setSelectedSpecialties([]);
+    setSelectedDomains([]);
+    setSelectedDepartments([]);
+    setSelectedJobRoles([]);
+    setSelectedJobSettings([]);
+    setSelectedJobCommitments([]);
   };
 
   const getNoResultsMessage = () => {
@@ -285,54 +297,15 @@ export const useSearchPageLogic = () => {
     return message;
   };
 
-  /* --------------------- Reset Handles --------------------- */
-
-  const resetCompanyFilter = () => {
-    setSelectedCompanies([]);
-    console.log({ selectedCompanies });
-    console.log('--------reset');
-  };
-
-  const resetDomainFilter = () => {
-    setSelectedDomains([]);
-  };
-
-  const resetSpecialtyFilter = () => {
-    setSelectedSpecialties([]);
-  };
-
-  const resetDepartmentFilter = () => {
-    setSelectedDepartments([]);
-  };
-
-  const resetJobRoleFilter = () => {
-    setSelectedJobRoles([]);
-  };
-
-  const resetJobSettingFilter = () => {
-    setSelectedJobSettings([]);
-  };
-
-  const resetJobCommitmentFilter = () => {
-    setSelectedJobCommitments([]);
-  };
-
-  const resetFilters = () => {
-    setSelectedCompanies([]);
-    setSelectedSpecialties([]);
-    setSelectedDomains([]);
-    setSelectedDepartments([]);
-    setSelectedJobRoles([]);
-    setSelectedJobSettings([]);
-    setSelectedJobCommitments([]);
-  };
-
   /* --------------------- Effect to filter job posts --------------------- */
 
   useEffect(() => {
-    if (jobPosts.length > 0) {
-      filterJobPosts();
-    }
+    console.log('use effect');
+    filterJobPosts();
+    // if (jobPosts.length > 0) {
+    //   console.log('use effect');
+    //   filterJobPosts();
+    // }
   }, [
     selectedCompanies,
     selectedSpecialties,
@@ -374,13 +347,24 @@ export const useSearchPageLogic = () => {
     totalPages,
     currentPage,
     handlePageChange,
-    resetCompanyFilter,
-    resetDomainFilter,
-    resetSpecialtyFilter,
-    resetDepartmentFilter,
-    resetJobRoleFilter,
-    resetJobSettingFilter,
-    resetJobCommitmentFilter,
     getNoResultsMessage,
+    loading,
+    domainsLoading,
+    departmentsLoading,
+    jobRolesLoading,
+    citiesLoading,
+    statesLoading,
+    countriesLoading,
+    jobCommitmentsLoading,
+    jobSettingsLoading,
+    error,
+    domainsError,
+    departmentsError,
+    jobRolesError,
+    citiesError,
+    statesError,
+    countriesError,
+    jobCommitmentsError,
+    jobSettingsError,
   };
 };

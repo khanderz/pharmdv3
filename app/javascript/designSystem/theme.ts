@@ -173,7 +173,7 @@ export const theme = {
         },
       },
     },
-    MuiSelect: {
+    MuiAutocomplete: {
       styleOverrides: {
         root: {
           borderRadius: '2px',

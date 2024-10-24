@@ -1,6 +1,5 @@
 import React from 'react';
-import { Select } from '@components/atoms/index';
-import { MenuItem } from '@mui/material';
+import { Autocomplete } from '@components/atoms/index';
 import { JobCommitment } from '@customtypes/job_post';
 
 export type JobCommitmentFilterProps = {
@@ -9,44 +8,37 @@ export type JobCommitmentFilterProps = {
   onJobCommitmentFilter: React.Dispatch<
     React.SetStateAction<JobCommitment[] | null>
   >;
-  resetJobCommitmentFilter: () => void;
+  jobCommitmentsLoading: boolean;
 };
 
 export const JobCommitmentFilter = ({
   jobCommitments,
   selectedJobCommitments,
   onJobCommitmentFilter,
-  resetJobCommitmentFilter,
+  jobCommitmentsLoading,
 }: JobCommitmentFilterProps) => {
   return (
-    <Select
+    <Autocomplete
       multiple
       inputLabel="Job Commitment Types"
-      value={(selectedJobCommitments ?? []).map(
-        (c) => c.id as JobCommitment['id']
-      )}
-      onChange={(e) => {
-        const selectedValues = e.target.value as JobCommitment['id'][];
+      options={jobCommitments.map((commitment) => ({
+        key: commitment.id,
+        value: commitment.commitment_name,
+      }))}
+      value={(selectedJobCommitments ?? []).map((c) => c.commitment_name)}
+      onChange={(e, value) => {
+        const selectedValues = (
+          value as JobCommitment['commitment_name'][]
+        ).filter(Boolean);
+
         const selected = jobCommitments.filter((jobCommitment) =>
-          selectedValues.includes(jobCommitment.id)
+          selectedValues.includes(jobCommitment.commitment_name)
         );
+
         onJobCommitmentFilter(selected);
       }}
-      renderValue={(selected) =>
-        (selected as JobCommitment['id'][])
-          .map(
-            (value) =>
-              jobCommitments.find((c) => c.id === value)?.commitment_name
-          )
-          .join(', ')
-      }
-      onReset={resetJobCommitmentFilter}
-    >
-      {jobCommitments.map((jobCommitment) => (
-        <MenuItem key={jobCommitment.id} value={jobCommitment.id}>
-          {jobCommitment.commitment_name}
-        </MenuItem>
-      ))}
-    </Select>
+      loading={jobCommitmentsLoading}
+      disableClearable={false}
+    />
   );
 };

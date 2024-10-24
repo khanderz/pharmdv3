@@ -1,45 +1,42 @@
 import React from 'react';
-import { Select } from '@components/atoms/index';
-import { MenuItem } from '@mui/material';
+import { Autocomplete } from '@components/atoms/index';
 import { JobRole } from '@customtypes/job_role';
 
 export type JobRoleFilterProps = {
   jobRoles: JobRole[];
   selectedJobRoles: JobRole[] | null;
   onJobRoleFilter: React.Dispatch<React.SetStateAction<JobRole[] | null>>;
-  resetJobRoleFilter: () => void;
+  jobRolesLoading: boolean;
 };
 
 export const JobRoleFilter = ({
   jobRoles,
   selectedJobRoles,
   onJobRoleFilter,
-  resetJobRoleFilter,
+  jobRolesLoading,
 }: JobRoleFilterProps) => {
   return (
-    <Select
+    <Autocomplete
       multiple
       inputLabel="Job Roles"
-      value={(selectedJobRoles ?? []).map((jr) => jr.id as JobRole['id'])}
-      onChange={(e) => {
-        const selectedValues = e.target.value as JobRole['id'][];
-        const selected = jobRoles.filter((jobRole) =>
-          selectedValues.includes(jobRole.id)
+      options={jobRoles.map((jobRole) => ({
+        key: jobRole.id,
+        value: jobRole.role_name,
+      }))}
+      value={(selectedJobRoles ?? []).map((jr) => jr.role_name)}
+      onChange={(e, value) => {
+        const selectedValues = (value as JobRole['role_name'][]).filter(
+          Boolean
         );
+
+        const selected = jobRoles.filter((jobRole) =>
+          selectedValues.includes(jobRole.role_name)
+        );
+
         onJobRoleFilter(selected);
       }}
-      renderValue={(selected) =>
-        (selected as JobRole['id'][])
-          .map((value) => jobRoles.find((jr) => jr.id === value)?.role_name)
-          .join(', ')
-      }
-      onReset={resetJobRoleFilter}
-    >
-      {jobRoles.map((jobRole) => (
-        <MenuItem key={jobRole.id} value={jobRole.id}>
-          {jobRole.role_name}
-        </MenuItem>
-      ))}
-    </Select>
+      loading={jobRolesLoading}
+      disableClearable={false}
+    />
   );
 };

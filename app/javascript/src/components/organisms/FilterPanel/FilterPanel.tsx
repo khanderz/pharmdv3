@@ -62,13 +62,11 @@ export const FilterPanel = ({
   selectedJobCommitments,
   onJobCommitmentFilter,
   resetFilters,
-  resetCompanyFilter,
-  resetDomainFilter,
-  resetSpecialtyFilter,
-  resetDepartmentFilter,
-  resetJobRoleFilter,
-  resetJobSettingFilter,
-  resetJobCommitmentFilter,
+  domainsLoading,
+  departmentsLoading,
+  jobRolesLoading,
+  jobCommitmentsLoading,
+  jobSettingsLoading,
 }: FilterPanelProps) => {
   const [isExpanded, setExpanded] = useState(true);
 
@@ -149,7 +147,6 @@ export const FilterPanel = ({
                 companies={companies}
                 selectedCompanies={selectedCompanies}
                 onCompanyFilter={onCompanyFilter}
-                resetCompanyFilter={resetCompanyFilter}
               />
             </Grid>
 
@@ -159,7 +156,7 @@ export const FilterPanel = ({
                 domains={domains}
                 selectedDomains={selectedDomains}
                 onDomainFilter={onDomainFilter}
-                resetDomainFilter={resetDomainFilter}
+                domainsLoading={domainsLoading}
               />
             </Grid>
 
@@ -170,7 +167,7 @@ export const FilterPanel = ({
                 selectedJobSettings={selectedJobSettings}
                 onJobSettingFilter={onJobSettingFilter}
                 expanded={isExpanded}
-                resetJobSettingFilter={resetJobSettingFilter}
+                jobSettingsLoading={jobSettingsLoading}
               />
             </Grid>
           </Grid>
@@ -183,7 +180,6 @@ export const FilterPanel = ({
             specialties={specialties}
             selectedSpecialties={selectedSpecialties}
             onSpecialtyFilter={onSpecialtyFilter}
-            resetSpecialtyFilter={resetSpecialtyFilter}
           />
 
           {/* Department Filter */}
@@ -191,7 +187,7 @@ export const FilterPanel = ({
             departments={departments}
             selectedDepartments={selectedDepartments}
             onDepartmentFilter={onDepartmentFilter}
-            resetDepartmentFilter={resetDepartmentFilter}
+            departmentsLoading={departmentsLoading}
           />
 
           {/* Job Role Filter */}
@@ -199,7 +195,7 @@ export const FilterPanel = ({
             jobRoles={jobRoles}
             selectedJobRoles={selectedJobRoles}
             onJobRoleFilter={onJobRoleFilter}
-            resetJobRoleFilter={resetJobRoleFilter}
+            jobRolesLoading={jobRolesLoading}
           />
 
           {/* Job Commitment Filter */}
@@ -207,7 +203,7 @@ export const FilterPanel = ({
             jobCommitments={jobCommitments}
             selectedJobCommitments={selectedJobCommitments}
             onJobCommitmentFilter={onJobCommitmentFilter}
-            resetJobCommitmentFilter={resetJobCommitmentFilter}
+            jobCommitmentsLoading={jobCommitmentsLoading}
           />
         </AccordionDetails>
       </Box>
