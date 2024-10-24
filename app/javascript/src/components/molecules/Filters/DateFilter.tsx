@@ -19,7 +19,7 @@ export const DateFilter = () => {
     <Autocomplete
       inputLabel="Date Posted"
       options={options}
-      value={selectedOption} // Use the matching option object as value
+      value={selectedOption}
       onChange={(event, newValue) => {
         const selectedValue = (newValue as AutocompleteOption)?.value || '';
         setSelectedDatePosted(selectedValue as string);
