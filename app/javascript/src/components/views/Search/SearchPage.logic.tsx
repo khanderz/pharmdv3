@@ -1,107 +1,41 @@
-import React, { useEffect, useMemo, useState } from 'react';
-import {
-  Company,
-  CompanySpecialty,
-  HealthcareDomain,
-  FundingType,
-  CompanySize,
-} from '@customtypes/company';
-import { Department, JobRole } from '@customtypes/job_role';
-import {
-  JobCommitment,
-  JobSalaryInterval,
-  JobSetting,
-  JobSalaryCurrency,
-} from '@customtypes/job_post';
-import { City, State, Country } from '@customtypes/location.types';
-import {
-  useHealthcareDomains,
-  useJobPosts,
-  useDepartments,
-  useCities,
-  useStates,
-  useCountries,
-  useJobRoles,
-  useJobCommitments,
-  useJobSettings,
-} from '@javascript/hooks';
+import React, { useState } from 'react';
+import { useFiltersContext } from '@javascript/providers/FiltersProvider';
 
 const POSTS_PER_PAGE = 10;
 
 export const useSearchPageLogic = () => {
-  const [selectedDomains, setSelectedDomains] = useState<HealthcareDomain[]>(
-    []
-  );
-
-  const domainIds = useMemo(() => {
-    return selectedDomains.length > 0
-      ? selectedDomains.map((domain) => domain.id)
-      : null;
-  }, [selectedDomains]);
-
   /* --------------------- Hooks --------------------- */
-
-  const { jobPosts, filteredJobPosts, setFilteredJobPosts, loading, error } =
-    useJobPosts(domainIds);
-
   const {
+    selectedCompanies,
+    setSelectedCompanies,
+    selectedDomains,
+    setSelectedDomains,
+    selectedSpecialties,
+    setSelectedSpecialties,
+    selectedDepartments,
+    setSelectedDepartments,
+    selectedJobRoles,
+    setSelectedJobRoles,
+    selectedJobSettings,
+    setSelectedJobSettings,
+    selectedJobCommitments,
+    setSelectedJobCommitments,
+    errors,
+    currentlyLoading,
+    uniqueCompanies,
+    uniqueSpecialties,
     allDomains,
-    loading: domainsLoading,
-    error: domainsError,
-  } = useHealthcareDomains();
-
-  const {
     departments,
-    loading: departmentsLoading,
-    error: departmentsError,
-  } = useDepartments();
-
-  const {
-    jobRoles,
-    loading: jobRolesLoading,
-    error: jobRolesError,
-  } = useJobRoles();
-
-  const {
-    jobCommitments,
-    loading: jobCommitmentsLoading,
-    error: jobCommitmentsError,
-  } = useJobCommitments();
-  const {
+    uniqueJobRoles,
     jobSettings,
-    loading: jobSettingsLoading,
-    error: jobSettingsError,
-  } = useJobSettings();
-
-  const { cities, loading: citiesLoading, error: citiesError } = useCities();
-  const { states, loading: statesLoading, error: statesError } = useStates();
-  const {
-    countries,
-    loading: countriesLoading,
-    error: countriesError,
-  } = useCountries();
+    jobCommitments,
+    filteredJobPosts,
+    resetFilters,
+  } = useFiltersContext();
 
   /* --------------------- States --------------------- */
 
   const [currentPage, setCurrentPage] = useState(1);
-  const [selectedCompanies, setSelectedCompanies] = useState<Company[]>([]);
-  const [companiesLoading, setCompaniesLoading] = useState<boolean>(false);
-  const [selectedSpecialties, setSelectedSpecialties] = useState<
-    CompanySpecialty[]
-  >([]);
-  const [selectedDepartments, setSelectedDepartments] = useState<Department[]>(
-    []
-  );
-  const [selectedJobRoles, setSelectedJobRoles] = useState<JobRole[]>([]);
-  const [selectedJobSettings, setSelectedJobSettings] = useState<JobSetting[]>(
-    []
-  );
-  const [selectedJobCommitments, setSelectedJobCommitments] = useState<
-    JobCommitment[]
-  >([]);
-  const [selectedCity, setSelectedCity] = useState<string | null>(null);
-  const [selectedState, setSelectedState] = useState<string | null>(null);
-  const [selectedCountry, setSelectedCountry] = useState<string | null>(null);
 
   /* --------------------- Constants --------------------- */
   const totalPages = Math.ceil(filteredJobPosts.length / POSTS_PER_PAGE);
@@ -111,56 +45,6 @@ export const useSearchPageLogic = () => {
     currentPage * POSTS_PER_PAGE
   );
 
-  const currentlyLoading =
-    loading ||
-    domainsLoading ||
-    departmentsLoading ||
-    jobRolesLoading ||
-    citiesLoading ||
-    statesLoading ||
-    countriesLoading ||
-    jobCommitmentsLoading ||
-    jobSettingsLoading;
-
-  const errors =
-    error ||
-    domainsError ||
-    departmentsError ||
-    jobRolesError ||
-    citiesError ||
-    statesError ||
-    countriesError ||
-    jobCommitmentsError ||
-    jobSettingsError;
-
-  const uniqueCompanies: Company[] = Array.from(
-    new Map(
-      jobPosts.map((jobPost) => [jobPost.company.id, jobPost.company])
-    ).values()
-  );
-
-  const uniqueSpecialties: CompanySpecialty[] = Array.from(
-    new Map(
-      jobPosts
-        .flatMap((jobPost) => jobPost.company.company_specialties ?? [])
-        .map((specialty) => [specialty.value, specialty])
-    ).values()
-  ).filter(Boolean);
-
-  const uniqueJobRoles: JobRole[] = Array.from(
-    jobPosts
-      .reduce((map, jobPost) => {
-        const jobRole = jobRoles.find(
-          (role) => role.id === jobPost.job_role_id
-        );
-        if (jobRole && !map.has(jobRole.id)) {
-          map.set(jobRole.id, jobRole);
-        }
-        return map;
-      }, new Map<number, JobRole>())
-      .values()
-  );
-
   /* --------------------- Handles --------------------- */
 
   const handlePageChange = (
@@ -168,77 +52,6 @@ export const useSearchPageLogic = () => {
     page: number
   ) => {
     setCurrentPage(page);
-  };
-
-  const filterJobPosts = () => {
-    let filtered = [...jobPosts];
-
-    if (selectedCompanies.length > 0) {
-      filtered = filtered.filter((jobPost) =>
-        selectedCompanies.some((company) => jobPost.company.id === company.id)
-      );
-    }
-
-    if (selectedSpecialties.length > 0) {
-      filtered = filtered.filter((jobPost) =>
-        jobPost.company.company_specialties?.some((spec) =>
-          selectedSpecialties.some(
-            (selectedSpec) => selectedSpec.id === spec.id
-          )
-        )
-      );
-    }
-
-    if (selectedDomains.length > 0) {
-      filtered = filtered.filter((jobPost) =>
-        jobPost.company.company_domains?.some((dom) =>
-          selectedDomains.some(
-            (selectedDomain) => selectedDomain.id === dom.healthcare_domain_id
-          )
-        )
-      );
-    }
-
-    if (selectedDepartments.length > 0) {
-      filtered = filtered.filter((jobPost) =>
-        selectedDepartments.some((dept) => jobPost.department_id === dept.id)
-      );
-    }
-
-    if (selectedJobRoles.length > 0) {
-      filtered = filtered.filter((jobPost) =>
-        selectedJobRoles.some((role) => jobPost.job_role_id === role.id)
-      );
-    }
-
-    if (selectedJobSettings.length > 0) {
-      filtered = filtered.filter((jobPost) =>
-        selectedJobSettings.some(
-          (setting) => jobPost.job_setting_id === setting.id
-        )
-      );
-    }
-
-    if (selectedJobCommitments.length > 0) {
-      filtered = filtered.filter((jobPost) =>
-        selectedJobCommitments.some(
-          (commitment) => jobPost.job_commitment_id === commitment.id
-        )
-      );
-    }
-
-    setFilteredJobPosts(filtered);
-    setCurrentPage(1);
-  };
-
-  const resetFilters = () => {
-    setSelectedCompanies([]);
-    setSelectedSpecialties([]);
-    setSelectedDomains([]);
-    setSelectedDepartments([]);
-    setSelectedJobRoles([]);
-    setSelectedJobSettings([]);
-    setSelectedJobCommitments([]);
   };
 
   const getNoResultsMessage = () => {
@@ -295,23 +108,6 @@ export const useSearchPageLogic = () => {
     return message;
   };
 
-  /* --------------------- Effect to filter job posts --------------------- */
-
-  useEffect(() => {
-    if (jobPosts.length > 0) {
-      filterJobPosts();
-    }
-  }, [
-    selectedCompanies,
-    selectedSpecialties,
-    selectedDomains,
-    selectedDepartments,
-    selectedJobRoles,
-    selectedJobSettings,
-    selectedJobCommitments,
-    jobPosts,
-  ]);
-
   return {
     errors,
     currentlyLoading,
@@ -343,23 +139,5 @@ export const useSearchPageLogic = () => {
     currentPage,
     handlePageChange,
     getNoResultsMessage,
-    loading,
-    domainsLoading,
-    departmentsLoading,
-    jobRolesLoading,
-    citiesLoading,
-    statesLoading,
-    countriesLoading,
-    jobCommitmentsLoading,
-    jobSettingsLoading,
-    error,
-    domainsError,
-    departmentsError,
-    jobRolesError,
-    citiesError,
-    statesError,
-    countriesError,
-    jobCommitmentsError,
-    jobSettingsError,
   };
 };
