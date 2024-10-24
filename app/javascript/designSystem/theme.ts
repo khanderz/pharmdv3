@@ -20,6 +20,7 @@ export const theme = {
     primary: {
       main: '#226f54', // Dark Spring Green
       light: '#66c1aa',
+      lightest: '#cce8d8',
       dark: '#184e3b',
       hover: '#1a5b45',
       disabled: '#a5d1be',
@@ -161,13 +162,13 @@ export const theme = {
           '& .MuiOutlinedInput-root': {
             borderRadius: '2px',
             '& fieldset': {
-              borderColor: 'primary.main', // double check these work or change back to hex
+              borderColor: '#226f54', // double check these work or change back to hex
             },
             '&:hover fieldset': {
-              borderColor: 'primary.main',
+              borderColor: '#226f54',
             },
             '&.Mui-focused fieldset': {
-              borderColor: 'primary.main',
+              borderColor: '#226f54',
             },
           },
         },
@@ -178,11 +179,22 @@ export const theme = {
         root: {
           borderRadius: '2px',
           '&:hover': {
-            backgroundColor: '#e0e0e0',
+            backgroundColor: '#f0eff9',
           },
         },
-        icon: {
-          color: '#226f54',
+        endAdornment: {
+          '.MuiAutocomplete-popupIndicator': {
+            color: '#226f54',
+          },
+        },
+        tag: {
+          backgroundColor: '#cce8d8',
+          '& .MuiChip-deleteIcon': {
+            color: '#226f54',
+            '&:hover': {
+              color: '#184e3b',
+            },
+          },
         },
       },
     },

@@ -8,13 +8,13 @@ import {
 import { JobRoleFilter, JobRoleFilterProps } from './JobRoleFilter';
 import { JobSettingFilter, JobSettingFilterProps } from './JobSettingFilter';
 import { SpecialtyFilter, SpecialtyFilterProps } from './SpecialtyFilter';
-import { TeamFilter, TeamFilterProps } from './TeamFilter';
+// import { TeamFilter, TeamFilterProps } from './TeamFilter';
 
 export {
   CompanyFilter,
   DomainFilter,
   DepartmentFilter,
-  TeamFilter,
+  // TeamFilter,
   SpecialtyFilter,
   JobRoleFilter,
   JobSettingFilter,
@@ -25,7 +25,7 @@ export type {
   CompanyFilterProps,
   DomainFilterProps,
   DepartmentFilterProps,
-  TeamFilterProps,
+  // TeamFilterProps,
   SpecialtyFilterProps,
   JobRoleFilterProps,
   JobSettingFilterProps,

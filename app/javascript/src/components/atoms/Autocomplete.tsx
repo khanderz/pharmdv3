@@ -47,23 +47,28 @@ export const Autocomplete = ({
       }}
     >
       <MuiAutocomplete
+        fullWidth
         data-testid={`${inputLabel}-autocomplete`}
         value={valueProp}
         multiple={multiple}
         id={id}
-        options={options.map((option) => option.value)} // Pass only the values from options
+        options={options.map((option) => option.value)}
         onChange={(e, value) => {
           onChange(e, value ?? (multiple ? [] : ''));
         }}
         loadingText="Loading..."
         loading={loading}
         disableClearable={disableClearable}
-        sx={sx}
+        sx={{
+          mt: 0.5,
+          ...sx,
+        }}
         renderInput={(params) => (
           <MuiTextField
             {...params}
             label={inputLabel}
             variant="outlined"
+            placeholder={inputLabel}
             InputLabelProps={{ shrink: true }}
             InputProps={{
               ...params.InputProps,
