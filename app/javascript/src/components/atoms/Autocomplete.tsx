@@ -6,22 +6,22 @@ import {
   Typography,
 } from '@mui/material';
 
-interface AutocompleteOptions {
+export interface AutocompleteOption {
   key: string | number;
   value: string | number;
 }
 
 export type AutocompleteProps = {
   inputLabel: string;
-  options: AutocompleteOptions[];
-  value: string | number | (string | number)[];
+  options: AutocompleteOption[];
+  value: AutocompleteOption | AutocompleteOption[] | null;
   multiple?: boolean;
   id?: string;
   loading?: boolean;
   disableClearable?: boolean;
   onChange: (
     event: React.SyntheticEvent<Element, Event>,
-    value: string | number | (string | number)[]
+    value: AutocompleteOption | AutocompleteOption[] | null
   ) => void;
   sx?: Record<string, any>;
 };
@@ -37,7 +37,7 @@ export const Autocomplete = ({
   onChange,
   sx,
 }: AutocompleteProps) => {
-  const valueProp = value ?? (multiple ? [] : '');
+  const valueProp = value ?? (multiple ? [] : null);
 
   return (
     <Box
@@ -52,9 +52,15 @@ export const Autocomplete = ({
         value={valueProp}
         multiple={multiple}
         id={id}
-        options={options.map((option) => option.value)}
-        onChange={(e, value) => {
-          onChange(e, value ?? (multiple ? [] : ''));
+        options={options}
+        onChange={(e, newValue) => {
+          onChange(e, newValue ?? (multiple ? [] : null));
+        }}
+        isOptionEqualToValue={(
+          option: AutocompleteOption,
+          value: AutocompleteOption
+        ) => {
+          return option.key === value.key;
         }}
         loadingText="Loading..."
         loading={loading}
@@ -63,6 +69,9 @@ export const Autocomplete = ({
           mt: '2em',
           ...sx,
         }}
+        getOptionLabel={(option) =>
+          option.value ? option.value.toString() : ''
+        } // <- Safely handling null/undefined values
         renderInput={(params) => (
           <MuiTextField
             {...params}

@@ -20,6 +20,7 @@ import {
 import { SearchPanel } from '@components/molecules/SearchPanel/SearchPanel';
 import { Accordion } from '@components/atoms/Accordion';
 import { Button } from '@components/atoms';
+import { DateFilter } from '@components/molecules/Filters/DateFilter';
 
 interface FilterPanelProps {
   resetFilters: () => void;
@@ -102,17 +103,14 @@ export const FilterPanel = ({ resetFilters }: FilterPanelProps) => {
             alignItems="center"
             columnSpacing={2}
           >
-            {/* Company Filter */}
             <Grid item xs={5}>
               <CompanyFilter />
             </Grid>
 
-            {/* Domain Filter */}
             <Grid item xs={5}>
               <DomainFilter />
             </Grid>
 
-            {/* Job Setting Filter */}
             <Grid item xs={2}>
               <JobSettingFilter expanded={isExpanded} />
             </Grid>
@@ -123,18 +121,16 @@ export const FilterPanel = ({ resetFilters }: FilterPanelProps) => {
         <AccordionDetails>
           <Grid container spacing={2}>
             <Grid container item xs={6} direction="column">
-              {/* Specialty Filter */}
               <SpecialtyFilter />
 
-              {/* Department Filter */}
               <DepartmentFilter />
 
-              {/* Job Role Filter */}
               <JobRoleFilter />
             </Grid>
             <Grid container item xs={6} direction="column">
-              {/* Job Commitment Filter */}
               <JobCommitmentFilter />
+
+              <DateFilter />
             </Grid>
           </Grid>
         </AccordionDetails>

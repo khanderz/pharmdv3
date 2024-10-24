@@ -23,6 +23,7 @@ import {
   useStates,
   useCountries,
 } from '@javascript/hooks';
+import dayjs from 'dayjs';
 
 interface FiltersContextProps {
   selectedCompanies: Company[];
@@ -39,6 +40,8 @@ interface FiltersContextProps {
   setSelectedJobSettings: (jobSettings: JobSetting[]) => void;
   selectedJobCommitments: JobCommitment[];
   setSelectedJobCommitments: (jobCommitments: JobCommitment[]) => void;
+  selectedDatePosted: string | null;
+  setSelectedDatePosted: (datePosted: string) => void;
   errors: string | null;
   currentlyLoading: boolean;
   uniqueCompanies: Company[];
@@ -74,6 +77,8 @@ export const FiltersContext = createContext<FiltersContextProps>({
   setSelectedJobSettings: () => {},
   selectedJobCommitments: [],
   setSelectedJobCommitments: () => {},
+  selectedDatePosted: '',
+  setSelectedDatePosted: () => {},
   errors: null,
   currentlyLoading: false,
   uniqueCompanies: [],
@@ -143,18 +148,9 @@ export function FiltersProvider({ children }: FiltersProviderProps) {
     error: jobSettingsError,
   } = useJobSettings();
 
-  const { cities, loading: citiesLoading, error: citiesError } = useCities();
-  const { states, loading: statesLoading, error: statesError } = useStates();
-  const {
-    countries,
-    loading: countriesLoading,
-    error: countriesError,
-  } = useCountries();
-
   /* --------------------- States --------------------- */
 
   const [selectedCompanies, setSelectedCompanies] = useState<Company[]>([]);
-
   const [selectedSpecialties, setSelectedSpecialties] = useState<
     CompanySpecialty[]
   >([]);
@@ -168,9 +164,9 @@ export function FiltersProvider({ children }: FiltersProviderProps) {
   const [selectedJobCommitments, setSelectedJobCommitments] = useState<
     JobCommitment[]
   >([]);
-  const [selectedCity, setSelectedCity] = useState<string | null>(null);
-  const [selectedState, setSelectedState] = useState<string | null>(null);
-  const [selectedCountry, setSelectedCountry] = useState<string | null>(null);
+  const [selectedDatePosted, setSelectedDatePosted] = useState<string | null>(
+    null
+  );
 
   /* --------------------- Constants --------------------- */
 
@@ -181,9 +177,6 @@ export function FiltersProvider({ children }: FiltersProviderProps) {
     domainsLoading ||
     departmentsLoading ||
     jobRolesLoading ||
-    citiesLoading ||
-    statesLoading ||
-    countriesLoading ||
     jobCommitmentsLoading ||
     jobSettingsLoading;
 
@@ -192,9 +185,6 @@ export function FiltersProvider({ children }: FiltersProviderProps) {
     domainsError ||
     departmentsError ||
     jobRolesError ||
-    citiesError ||
-    statesError ||
-    countriesError ||
     jobCommitmentsError ||
     jobSettingsError;
 
@@ -284,6 +274,27 @@ export function FiltersProvider({ children }: FiltersProviderProps) {
       );
     }
 
+    if (selectedDatePosted) {
+      const now = dayjs();
+
+      filtered = filtered.filter((jobPost) => {
+        const postDate = dayjs(jobPost.job_posted);
+
+        switch (selectedDatePosted) {
+          case 'Past 24 hours':
+            return now.diff(postDate, 'hour') <= 24;
+          case 'Past 3 days':
+            return now.diff(postDate, 'day') <= 3;
+          case 'Past week':
+            return now.diff(postDate, 'day') <= 7;
+          case 'Past month':
+            return now.diff(postDate, 'day') <= 30;
+          default:
+            return true;
+        }
+      });
+    }
+
     setFilteredJobPosts(filtered);
   };
 
@@ -295,6 +306,7 @@ export function FiltersProvider({ children }: FiltersProviderProps) {
     setSelectedJobRoles([]);
     setSelectedJobSettings([]);
     setSelectedJobCommitments([]);
+    setSelectedDatePosted(null);
   };
 
   const getNoResultsMessage = () => {
@@ -342,6 +354,10 @@ export function FiltersProvider({ children }: FiltersProviderProps) {
       );
     }
 
+    if (selectedDatePosted) {
+      filters.push(`posted in ${selectedDatePosted}`);
+    }
+
     let message = 'No matching job posts';
 
     if (filters.length > 0) {
@@ -365,6 +381,7 @@ export function FiltersProvider({ children }: FiltersProviderProps) {
     selectedJobRoles,
     selectedJobSettings,
     selectedJobCommitments,
+    selectedDatePosted,
     jobPosts,
   ]);
 
@@ -384,6 +401,8 @@ export function FiltersProvider({ children }: FiltersProviderProps) {
       setSelectedJobSettings,
       selectedJobCommitments,
       setSelectedJobCommitments,
+      selectedDatePosted,
+      setSelectedDatePosted,
       errors,
       currentlyLoading,
       uniqueCompanies,
@@ -411,6 +430,7 @@ export function FiltersProvider({ children }: FiltersProviderProps) {
     selectedJobRoles,
     selectedJobSettings,
     selectedJobCommitments,
+    selectedDatePosted,
     errors,
     currentlyLoading,
     uniqueCompanies,

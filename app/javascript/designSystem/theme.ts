@@ -212,34 +212,34 @@ export const theme = {
         },
       },
     },
-    MuiMenuItem: {
-      styleOverrides: {
-        root: {
-          fontSize: '1rem',
-          padding: '8px 16px',
-          '&.Mui-focusVisible': {
-            backgroundColor: '#226f54',
-            color: '#ffffff',
-          },
-          '&.Mui-selected': {
-            backgroundColor: '#226f54',
-            color: '#F9EEEE',
-            '&:hover': {
-              backgroundColor: '#184e3b',
-              color: '#ffffff',
-            },
-          },
-          '&:hover': {
-            backgroundColor: '#226f54',
-            color: '#ffffff',
-          },
-          '&.Mui-focusVisible.Mui-selected': {
-            backgroundColor: '#184e3b',
-            color: '#ffffff',
-          },
-        },
-      },
-    },
+    // MuiMenuItem: {
+    //   styleOverrides: {
+    //     root: {
+    //       fontSize: '1rem',
+    //       padding: '8px 16px',
+    //       '&.Mui-focusVisible': {
+    //         backgroundColor: '#226f54',
+    //         color: '#ffffff',
+    //       },
+    //       '&.Mui-selected': {
+    //         backgroundColor: '#226f54',
+    //         color: '#F9EEEE',
+    //         '&:hover': {
+    //           backgroundColor: '#184e3b',
+    //           color: '#ffffff',
+    //         },
+    //       },
+    //       '&:hover': {
+    //         backgroundColor: '#226f54',
+    //         color: '#ffffff',
+    //       },
+    //       '&.Mui-focusVisible.Mui-selected': {
+    //         backgroundColor: '#184e3b',
+    //         color: '#ffffff',
+    //       },
+    //     },
+    //   },
+    // },
   },
 } as const;
 
