@@ -1,13 +1,10 @@
-import { CompanyFilter, CompanyFilterProps } from './CompanyFilter';
-import { DepartmentFilter, DepartmentFilterProps } from './DepartmentFilter';
-import { DomainFilter, DomainFilterProps } from './DomainFilter';
-import {
-  JobCommitmentFilter,
-  JobCommitmentFilterProps,
-} from './JobCommitmentFilter';
-import { JobRoleFilter, JobRoleFilterProps } from './JobRoleFilter';
-import { JobSettingFilter, JobSettingFilterProps } from './JobSettingFilter';
-import { SpecialtyFilter, SpecialtyFilterProps } from './SpecialtyFilter';
+import { CompanyFilter } from './CompanyFilter';
+import { DepartmentFilter } from './DepartmentFilter';
+import { DomainFilter } from './DomainFilter';
+import { JobCommitmentFilter } from './JobCommitmentFilter';
+import { JobRoleFilter } from './JobRoleFilter';
+import { JobSettingFilter } from './JobSettingFilter';
+import { SpecialtyFilter } from './SpecialtyFilter';
 // import { TeamFilter, TeamFilterProps } from './TeamFilter';
 
 export {
@@ -20,14 +17,3 @@ export {
   JobSettingFilter,
   JobCommitmentFilter,
 };
-
-export type {
-  CompanyFilterProps,
-  DomainFilterProps,
-  DepartmentFilterProps,
-  // TeamFilterProps,
-  SpecialtyFilterProps,
-  JobRoleFilterProps,
-  JobSettingFilterProps,
-  JobCommitmentFilterProps,
-}; // due to webpack

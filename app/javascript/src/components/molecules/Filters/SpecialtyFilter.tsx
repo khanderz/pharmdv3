@@ -1,39 +1,28 @@
 import React from 'react';
 import { Autocomplete } from '@components/atoms/index';
-import { CompanySpecialty } from '@customtypes/company';
+import { useFiltersContext } from '@javascript/providers/FiltersProvider';
 
-export type SpecialtyFilterProps = {
-  specialties: CompanySpecialty[];
-  selectedSpecialties: CompanySpecialty[] | null;
-  onSpecialtyFilter: React.Dispatch<
-    React.SetStateAction<CompanySpecialty[] | null>
-  >;
-};
+export const SpecialtyFilter = () => {
+  const { selectedSpecialties, setSelectedSpecialties, uniqueSpecialties } =
+    useFiltersContext();
 
-export const SpecialtyFilter = ({
-  specialties,
-  selectedSpecialties,
-  onSpecialtyFilter,
-}: SpecialtyFilterProps) => {
   return (
     <Autocomplete
       multiple
       inputLabel="Specialties"
-      options={specialties.map((specialty) => ({
+      options={uniqueSpecialties.map((specialty) => ({
         key: specialty.key,
         value: specialty.value,
       }))}
       value={(selectedSpecialties ?? []).map((s) => s.value)}
       onChange={(e, value) => {
-        const selectedValues = (value as CompanySpecialty['value'][]).filter(
-          Boolean
-        );
+        const selectedValues = (value as string[]).filter(Boolean);
 
-        const selected = specialties.filter((specialty) =>
+        const selected = uniqueSpecialties.filter((specialty) =>
           selectedValues.includes(specialty.value)
         );
 
-        onSpecialtyFilter(selected);
+        setSelectedSpecialties(selected);
       }}
       loading={false}
       disableClearable={false}

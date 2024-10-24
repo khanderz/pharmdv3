@@ -5,6 +5,7 @@ import SearchPage from '../bundles/SearchPageBundle'; // Client-side version
 import { createRoot } from 'react-dom/client';
 import { ThemeProvider } from '@mui/material/styles';
 import theme from '../designSystem/theme';
+import { FiltersProvider } from '../src/providers/FiltersProvider';
 
 ReactOnRails.register({ NavBar });
 
@@ -16,8 +17,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
     root.render(
       <ThemeProvider theme={theme}>
-        <NavBar />
-        <SearchPage />
+        <FiltersProvider>
+          <NavBar />
+          <SearchPage />
+        </FiltersProvider>
       </ThemeProvider>
     );
   }
@@ -31,7 +34,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
         ReactOnRails.register({ Directory });
 
-        const directoryContainer = document.getElementById('directory-container');
+        const directoryContainer = document.getElementById(
+          'directory-container'
+        );
 
         if (directoryContainer) {
           const directoryRoot = createRoot(directoryContainer);

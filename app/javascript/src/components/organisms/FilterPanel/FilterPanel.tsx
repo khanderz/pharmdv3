@@ -10,65 +10,22 @@ import {
 import { FilterList } from '@mui/icons-material';
 import {
   CompanyFilter,
-  CompanyFilterProps,
   DomainFilter,
-  DomainFilterProps,
   DepartmentFilter,
-  DepartmentFilterProps,
   SpecialtyFilter,
-  SpecialtyFilterProps,
   JobRoleFilter,
-  JobRoleFilterProps,
   JobSettingFilter,
-  JobSettingFilterProps,
   JobCommitmentFilter,
-  JobCommitmentFilterProps,
 } from '@components/molecules/Filters';
 import { SearchPanel } from '@components/molecules/SearchPanel/SearchPanel';
 import { Accordion } from '@components/atoms/Accordion';
 import { Button } from '@components/atoms';
-import { Autocomplete } from '@components/atoms';
 
-interface FilterPanelProps
-  extends CompanyFilterProps,
-    DomainFilterProps,
-    DepartmentFilterProps,
-    SpecialtyFilterProps,
-    JobRoleFilterProps,
-    JobSettingFilterProps,
-    JobCommitmentFilterProps {
+interface FilterPanelProps {
   resetFilters: () => void;
 }
 
-export const FilterPanel = ({
-  companies,
-  selectedCompanies,
-  onCompanyFilter,
-  specialties,
-  selectedSpecialties,
-  onSpecialtyFilter,
-  departments,
-  selectedDepartments,
-  onDepartmentFilter,
-  domains,
-  selectedDomains,
-  onDomainFilter,
-  jobRoles,
-  selectedJobRoles,
-  onJobRoleFilter,
-  jobSettings,
-  selectedJobSettings,
-  onJobSettingFilter,
-  jobCommitments,
-  selectedJobCommitments,
-  onJobCommitmentFilter,
-  resetFilters,
-  domainsLoading,
-  departmentsLoading,
-  jobRolesLoading,
-  jobCommitmentsLoading,
-  jobSettingsLoading,
-}: FilterPanelProps) => {
+export const FilterPanel = ({ resetFilters }: FilterPanelProps) => {
   const [isExpanded, setExpanded] = useState(true);
 
   const toggleAccordion = () => {
@@ -147,32 +104,17 @@ export const FilterPanel = ({
           >
             {/* Company Filter */}
             <Grid item xs={5}>
-              <CompanyFilter
-                companies={companies}
-                selectedCompanies={selectedCompanies}
-                onCompanyFilter={onCompanyFilter}
-              />
+              <CompanyFilter />
             </Grid>
 
             {/* Domain Filter */}
             <Grid item xs={5}>
-              <DomainFilter
-                domains={domains}
-                selectedDomains={selectedDomains}
-                onDomainFilter={onDomainFilter}
-                domainsLoading={domainsLoading}
-              />
+              <DomainFilter />
             </Grid>
 
             {/* Job Setting Filter */}
             <Grid item xs={2}>
-              <JobSettingFilter
-                jobSettings={jobSettings}
-                selectedJobSettings={selectedJobSettings}
-                onJobSettingFilter={onJobSettingFilter}
-                expanded={isExpanded}
-                jobSettingsLoading={jobSettingsLoading}
-              />
+              <JobSettingFilter expanded={isExpanded} />
             </Grid>
           </Grid>
         </Box>
@@ -182,36 +124,17 @@ export const FilterPanel = ({
           <Grid container spacing={2}>
             <Grid container item xs={6} direction="column">
               {/* Specialty Filter */}
-              <SpecialtyFilter
-                specialties={specialties}
-                selectedSpecialties={selectedSpecialties}
-                onSpecialtyFilter={onSpecialtyFilter}
-              />
+              <SpecialtyFilter />
 
               {/* Department Filter */}
-              <DepartmentFilter
-                departments={departments}
-                selectedDepartments={selectedDepartments}
-                onDepartmentFilter={onDepartmentFilter}
-                departmentsLoading={departmentsLoading}
-              />
+              <DepartmentFilter />
 
               {/* Job Role Filter */}
-              <JobRoleFilter
-                jobRoles={jobRoles}
-                selectedJobRoles={selectedJobRoles}
-                onJobRoleFilter={onJobRoleFilter}
-                jobRolesLoading={jobRolesLoading}
-              />
+              <JobRoleFilter />
             </Grid>
             <Grid container item xs={6} direction="column">
               {/* Job Commitment Filter */}
-              <JobCommitmentFilter
-                jobCommitments={jobCommitments}
-                selectedJobCommitments={selectedJobCommitments}
-                onJobCommitmentFilter={onJobCommitmentFilter}
-                jobCommitmentsLoading={jobCommitmentsLoading}
-              />
+              <JobCommitmentFilter />
             </Grid>
           </Grid>
         </AccordionDetails>

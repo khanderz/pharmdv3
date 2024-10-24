@@ -1,22 +1,15 @@
 import React from 'react';
 import { Autocomplete } from '@components/atoms/index';
-import { JobCommitment } from '@customtypes/job_post';
+import { useFiltersContext } from '@javascript/providers/FiltersProvider';
 
-export type JobCommitmentFilterProps = {
-  jobCommitments: JobCommitment[];
-  selectedJobCommitments: JobCommitment[] | null;
-  onJobCommitmentFilter: React.Dispatch<
-    React.SetStateAction<JobCommitment[] | null>
-  >;
-  jobCommitmentsLoading: boolean;
-};
+export const JobCommitmentFilter = () => {
+  const {
+    selectedJobCommitments,
+    setSelectedJobCommitments,
+    jobCommitments,
+    jobCommitmentsLoading,
+  } = useFiltersContext();
 
-export const JobCommitmentFilter = ({
-  jobCommitments,
-  selectedJobCommitments,
-  onJobCommitmentFilter,
-  jobCommitmentsLoading,
-}: JobCommitmentFilterProps) => {
   return (
     <Autocomplete
       multiple
@@ -27,15 +20,13 @@ export const JobCommitmentFilter = ({
       }))}
       value={(selectedJobCommitments ?? []).map((c) => c.commitment_name)}
       onChange={(e, value) => {
-        const selectedValues = (
-          value as JobCommitment['commitment_name'][]
-        ).filter(Boolean);
+        const selectedValues = (value as string[]).filter(Boolean);
 
-        const selected = jobCommitments.filter((jobCommitment) =>
-          selectedValues.includes(jobCommitment.commitment_name)
+        const selected = jobCommitments.filter((commitment) =>
+          selectedValues.includes(commitment.commitment_name)
         );
 
-        onJobCommitmentFilter(selected);
+        setSelectedJobCommitments(selected);
       }}
       loading={jobCommitmentsLoading}
       disableClearable={false}

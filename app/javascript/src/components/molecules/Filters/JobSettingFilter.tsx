@@ -1,23 +1,17 @@
 import React from 'react';
 import { Button } from '@components/atoms/index';
 import { Typography } from '@mui/material';
+import { useFiltersContext } from '@javascript/providers/FiltersProvider';
 import { JobSetting } from '@customtypes/job_post';
 
-export type JobSettingFilterProps = {
-  jobSettings: JobSetting[];
-  selectedJobSettings: JobSetting[] | null;
-  onJobSettingFilter: React.Dispatch<React.SetStateAction<JobSetting[] | null>>;
-  expanded?: boolean;
-  jobSettingsLoading: boolean;
-};
+export const JobSettingFilter = ({ expanded = false }) => {
+  const {
+    selectedJobSettings,
+    setSelectedJobSettings,
+    jobSettings,
+    jobSettingsLoading,
+  } = useFiltersContext();
 
-export const JobSettingFilter = ({
-  jobSettings,
-  selectedJobSettings,
-  onJobSettingFilter,
-  expanded = false,
-  jobSettingsLoading,
-}: JobSettingFilterProps) => {
   const remoteJobSetting = jobSettings.find(
     (jobSetting) => jobSetting.id === 5 // Remote
   );
@@ -28,13 +22,13 @@ export const JobSettingFilter = ({
     );
 
     if (isSelected) {
-      onJobSettingFilter(
+      setSelectedJobSettings(
         (selectedJobSettings ?? []).filter(
           (selected) => selected.id !== jobSetting.id
         )
       );
     } else {
-      onJobSettingFilter([...(selectedJobSettings ?? []), jobSetting]);
+      setSelectedJobSettings([...(selectedJobSettings ?? []), jobSetting]);
     }
   };
 

@@ -15,57 +15,21 @@ import {
 } from '@components/views/index';
 import { Container } from '@components/atoms/Paper';
 import { useSearchPageLogic } from './SearchPage.logic';
+import { useFiltersContext } from '@javascript/providers/FiltersProvider';
 
 export const SearchPage = () => {
   const {
-    errors,
-    currentlyLoading,
-    uniqueCompanies,
-    selectedCompanies,
-    handleCompanyFilter,
-    uniqueSpecialties,
-    selectedSpecialties,
-    handleSpecialtyFilter,
-    allDomains,
-    selectedDomains,
-    handleDomainFilter,
-    departments,
-    selectedDepartments,
-    handleDepartmentFilter,
-    uniqueJobRoles,
-    selectedJobRoles,
-    handleJobRoleFilter,
-    jobSettings,
-    selectedJobSettings,
-    handleJobSettingFilter,
-    jobCommitments,
-    selectedJobCommitments,
-    handleJobCommitmentFilter,
-    noMatchingResults,
-    getNoResultsMessage,
-    resetFilters,
+    resetAndHandlePageChange,
     paginatedJobPosts,
     totalPages,
     currentPage,
     handlePageChange,
-    loading,
-    domainsLoading,
-    departmentsLoading,
-    jobRolesLoading,
-    citiesLoading,
-    statesLoading,
-    countriesLoading,
-    jobCommitmentsLoading,
-    jobSettingsLoading,
-    error,
-    domainsError,
-    departmentsError,
-    jobRolesError,
-    citiesError,
-    statesError,
-    countriesError,
-    jobCommitmentsError,
-    jobSettingsError,
+    errors,
+    currentlyLoading,
+    jobSettings,
+    jobCommitments,
+    noMatchingResults,
+    getNoResultsMessage,
   } = useSearchPageLogic();
 
   return (
@@ -93,42 +57,14 @@ export const SearchPage = () => {
 
           <Grid container spacing={4} data-testid="search-page-container">
             <Grid item xs={12} data-testid="filter-panel-grid">
-              <FilterPanel
-                companies={uniqueCompanies}
-                selectedCompanies={selectedCompanies}
-                onCompanyFilter={handleCompanyFilter}
-                specialties={uniqueSpecialties}
-                selectedSpecialties={selectedSpecialties}
-                onSpecialtyFilter={handleSpecialtyFilter}
-                domains={allDomains}
-                selectedDomains={selectedDomains}
-                onDomainFilter={handleDomainFilter}
-                departments={departments}
-                selectedDepartments={selectedDepartments}
-                onDepartmentFilter={handleDepartmentFilter}
-                jobRoles={uniqueJobRoles}
-                selectedJobRoles={selectedJobRoles}
-                onJobRoleFilter={handleJobRoleFilter}
-                jobSettings={jobSettings}
-                selectedJobSettings={selectedJobSettings}
-                onJobSettingFilter={handleJobSettingFilter}
-                jobCommitments={jobCommitments}
-                selectedJobCommitments={selectedJobCommitments}
-                onJobCommitmentFilter={handleJobCommitmentFilter}
-                resetFilters={resetFilters}
-                departmentsLoading={departmentsLoading}
-                domainsLoading={domainsLoading}
-                jobCommitmentsLoading={jobCommitmentsLoading}
-                jobRolesLoading={jobRolesLoading}
-                jobSettingsLoading={jobSettingsLoading}
-              />
+              <FilterPanel resetFilters={resetAndHandlePageChange} />
             </Grid>
 
             <Grid item xs={12} data-testid="job-post-grid">
-              {noMatchingResults ? (
+              {noMatchingResults && getNoResultsMessage ? (
                 <NoMatchState
                   message={getNoResultsMessage()}
-                  onReset={resetFilters}
+                  onReset={resetAndHandlePageChange}
                 />
               ) : (
                 <>

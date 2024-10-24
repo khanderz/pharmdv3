@@ -6,29 +6,12 @@ const POSTS_PER_PAGE = 10;
 export const useSearchPageLogic = () => {
   /* --------------------- Hooks --------------------- */
   const {
-    selectedCompanies,
-    setSelectedCompanies,
-    selectedDomains,
-    setSelectedDomains,
-    selectedSpecialties,
-    setSelectedSpecialties,
-    selectedDepartments,
-    setSelectedDepartments,
-    selectedJobRoles,
-    setSelectedJobRoles,
-    selectedJobSettings,
-    setSelectedJobSettings,
-    selectedJobCommitments,
-    setSelectedJobCommitments,
     errors,
     currentlyLoading,
-    uniqueCompanies,
-    uniqueSpecialties,
-    allDomains,
-    departments,
-    uniqueJobRoles,
     jobSettings,
     jobCommitments,
+    noMatchingResults,
+    getNoResultsMessage,
     filteredJobPosts,
     resetFilters,
   } = useFiltersContext();
@@ -54,90 +37,24 @@ export const useSearchPageLogic = () => {
     setCurrentPage(page);
   };
 
-  const getNoResultsMessage = () => {
-    const filters = [];
-
-    if (selectedCompanies.length > 0) {
-      filters.push(
-        `for companies ${selectedCompanies.map((c) => c.company_name).join(', ')}`
-      );
-    }
-
-    if (selectedSpecialties.length > 0) {
-      filters.push(
-        `with specialties ${selectedSpecialties.map((s) => s.value).join(', ')}`
-      );
-    }
-
-    if (selectedDomains.length > 0) {
-      filters.push(
-        `in domains ${selectedDomains.map((d) => d.value).join(', ')}`
-      );
-    }
-
-    if (selectedDepartments.length > 0) {
-      filters.push(
-        `in departments ${selectedDepartments.map((d) => d.dept_name).join(', ')}`
-      );
-    }
-
-    if (selectedJobRoles.length > 0) {
-      filters.push(
-        `for job roles ${selectedJobRoles.map((r) => r.role_name).join(', ')}`
-      );
-    }
-
-    if (selectedJobSettings.length > 0) {
-      filters.push(
-        `for job settings ${selectedJobSettings.map((s) => s.setting_name).join(', ')}`
-      );
-    }
-
-    if (selectedJobCommitments.length > 0) {
-      filters.push(
-        `for job commitments ${selectedJobCommitments.map((c) => c.commitment_name).join(', ')}`
-      );
-    }
-
-    let message = 'No matching job posts';
-
-    if (filters.length > 0) {
-      message += ` ${filters.join(', ')}.`;
-    }
-
-    return message;
+  const resetAndHandlePageChange = () => {
+    resetFilters();
+    setCurrentPage(1);
   };
 
   return {
-    errors,
-    currentlyLoading,
-    uniqueCompanies,
-    selectedCompanies,
-    handleCompanyFilter: setSelectedCompanies,
-    uniqueSpecialties,
-    selectedSpecialties,
-    handleSpecialtyFilter: setSelectedSpecialties,
-    allDomains,
-    selectedDomains,
-    handleDomainFilter: setSelectedDomains,
-    departments,
-    selectedDepartments,
-    handleDepartmentFilter: setSelectedDepartments,
-    uniqueJobRoles,
-    selectedJobRoles,
-    handleJobRoleFilter: setSelectedJobRoles,
-    jobSettings,
-    selectedJobSettings,
-    handleJobSettingFilter: setSelectedJobSettings,
-    jobCommitments,
-    selectedJobCommitments,
-    handleJobCommitmentFilter: setSelectedJobCommitments,
-    noMatchingResults: filteredJobPosts.length === 0,
-    resetFilters,
+    resetAndHandlePageChange,
     paginatedJobPosts,
     totalPages,
     currentPage,
     handlePageChange,
+    errors,
+    currentlyLoading,
+    jobSettings,
+    jobCommitments,
+    noMatchingResults,
     getNoResultsMessage,
+    filteredJobPosts,
+    resetFilters,
   };
 };

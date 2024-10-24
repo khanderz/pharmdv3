@@ -44,12 +44,19 @@ interface FiltersContextProps {
   uniqueCompanies: Company[];
   uniqueSpecialties: CompanySpecialty[];
   allDomains: HealthcareDomain[];
+  domainsLoading: boolean;
   departments: Department[];
+  departmentsLoading: boolean;
   uniqueJobRoles: JobRole[];
+  jobRolesLoading: boolean;
   jobSettings: JobSetting[];
+  jobSettingsLoading: boolean;
   jobCommitments: JobCommitment[];
+  jobCommitmentsLoading: boolean;
   filteredJobPosts: JobPost[];
   resetFilters: () => void;
+  noMatchingResults: boolean;
+  getNoResultsMessage?: () => string;
 }
 
 export const FiltersContext = createContext<FiltersContextProps>({
@@ -72,23 +79,26 @@ export const FiltersContext = createContext<FiltersContextProps>({
   uniqueCompanies: [],
   uniqueSpecialties: [],
   allDomains: [],
+  domainsLoading: false,
   departments: [],
+  departmentsLoading: false,
   uniqueJobRoles: [],
+  jobRolesLoading: false,
   jobSettings: [],
+  jobSettingsLoading: false,
   jobCommitments: [],
+  jobCommitmentsLoading: false,
   filteredJobPosts: [],
   resetFilters: () => {},
+  noMatchingResults: false,
+  getNoResultsMessage: () => '',
 } as FiltersContextProps);
 
 interface FiltersProviderProps {
   children: React.ReactNode;
-  setCurrentPage: (page: number) => void;
 }
 
-export function FiltersProvider({
-  children,
-  setCurrentPage,
-}: FiltersProviderProps) {
+export function FiltersProvider({ children }: FiltersProviderProps) {
   const [selectedDomains, setSelectedDomains] = useState<HealthcareDomain[]>(
     []
   );
@@ -161,6 +171,10 @@ export function FiltersProvider({
   const [selectedCity, setSelectedCity] = useState<string | null>(null);
   const [selectedState, setSelectedState] = useState<string | null>(null);
   const [selectedCountry, setSelectedCountry] = useState<string | null>(null);
+
+  /* --------------------- Constants --------------------- */
+
+  const noMatchingResults = filteredJobPosts.length === 0;
 
   const currentlyLoading =
     loading ||
@@ -271,7 +285,6 @@ export function FiltersProvider({
     }
 
     setFilteredJobPosts(filtered);
-    setCurrentPage(1);
   };
 
   const resetFilters = () => {
@@ -282,6 +295,60 @@ export function FiltersProvider({
     setSelectedJobRoles([]);
     setSelectedJobSettings([]);
     setSelectedJobCommitments([]);
+  };
+
+  const getNoResultsMessage = () => {
+    const filters = [];
+
+    if (selectedCompanies.length > 0) {
+      filters.push(
+        `for companies ${selectedCompanies.map((c) => c.company_name).join(', ')}`
+      );
+    }
+
+    if (selectedSpecialties.length > 0) {
+      filters.push(
+        `with specialties ${selectedSpecialties.map((s) => s.value).join(', ')}`
+      );
+    }
+
+    if (selectedDomains.length > 0) {
+      filters.push(
+        `in domains ${selectedDomains.map((d) => d.value).join(', ')}`
+      );
+    }
+
+    if (selectedDepartments.length > 0) {
+      filters.push(
+        `in departments ${selectedDepartments.map((d) => d.dept_name).join(', ')}`
+      );
+    }
+
+    if (selectedJobRoles.length > 0) {
+      filters.push(
+        `for job roles ${selectedJobRoles.map((r) => r.role_name).join(', ')}`
+      );
+    }
+
+    if (selectedJobSettings.length > 0) {
+      filters.push(
+        `for job settings ${selectedJobSettings.map((s) => s.setting_name).join(', ')}`
+      );
+    }
+
+    if (selectedJobCommitments.length > 0) {
+      filters.push(
+        `for job commitments ${selectedJobCommitments.map((c) => c.commitment_name).join(', ')}`
+      );
+    }
+
+    let message = 'No matching job posts';
+
+    if (filters.length > 0) {
+      message += ` ${filters.join(', ')}.`;
+    }
+
+    return message;
   };
 
   /* --------------------- Lifecycle methods --------------------- */
@@ -322,12 +389,19 @@ export function FiltersProvider({
       uniqueCompanies,
       uniqueSpecialties,
       allDomains,
+      domainsLoading,
       departments,
+      departmentsLoading,
       uniqueJobRoles,
+      jobRolesLoading,
       jobSettings,
+      jobSettingsLoading,
       jobCommitments,
+      jobCommitmentsLoading,
       filteredJobPosts,
       resetFilters,
+      noMatchingResults,
+      getNoResultsMessage,
     };
   }, [
     selectedCompanies,
@@ -342,12 +416,17 @@ export function FiltersProvider({
     uniqueCompanies,
     uniqueSpecialties,
     allDomains,
+    domainsLoading,
     departments,
+    departmentsLoading,
     uniqueJobRoles,
+    jobRolesLoading,
     jobSettings,
+    jobSettingsLoading,
     jobCommitments,
+    jobCommitmentsLoading,
     filteredJobPosts,
-    resetFilters,
+    noMatchingResults,
   ]);
   return (
     <FiltersContext.Provider value={value}>{children}</FiltersContext.Provider>

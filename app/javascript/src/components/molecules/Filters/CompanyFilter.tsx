@@ -1,25 +1,17 @@
 import React from 'react';
 import { Company } from '@customtypes/company';
 import { Autocomplete } from '@components/atoms/index';
+import { useFiltersContext } from '@javascript/providers/FiltersProvider';
 
-export type CompanyFilterProps = {
-  companies: Company[];
-  selectedCompanies: Company[] | null;
-  onCompanyFilter: React.Dispatch<React.SetStateAction<Company[] | null>>;
-  // loading: boolean;
-};
+export const CompanyFilter = () => {
+  const { selectedCompanies, setSelectedCompanies, uniqueCompanies } =
+    useFiltersContext();
 
-export const CompanyFilter = ({
-  companies,
-  selectedCompanies,
-  onCompanyFilter,
-  // loading,
-}: CompanyFilterProps) => {
   return (
     <Autocomplete
       multiple
       inputLabel="Companies"
-      options={companies.map((company) => ({
+      options={uniqueCompanies.map((company) => ({
         key: company.id,
         value: company.company_name,
       }))}
@@ -28,10 +20,10 @@ export const CompanyFilter = ({
         const selectedValues = (value as Company['company_name'][]).filter(
           Boolean
         ) as Company['company_name'][];
-        const selected = companies.filter((company) =>
+        const selected = uniqueCompanies.filter((company) =>
           selectedValues.includes(company.company_name)
         );
-        onCompanyFilter(selected);
+        setSelectedCompanies(selected);
       }}
       loading={false}
       disableClearable={false}
