@@ -162,7 +162,7 @@ export const theme = {
           '& .MuiOutlinedInput-root': {
             borderRadius: '2px',
             '& fieldset': {
-              borderColor: '#226f54', // double check these work or change back to hex
+              borderColor: '#226f54',
             },
             '&:hover fieldset': {
               borderColor: '#226f54',
@@ -177,7 +177,8 @@ export const theme = {
     MuiAutocomplete: {
       styleOverrides: {
         root: {
-          borderRadius: '2px',
+          // border: '2px solid #000000',
+          boxShadow: '3px 3px 0px 0px #000000',
           '&:hover': {
             backgroundColor: '#f0eff9',
           },
@@ -196,6 +197,12 @@ export const theme = {
             },
           },
         },
+        popper: {
+          '& .MuiPopper-root, &.MuiAutocomplete-popper': {
+            border: '2px solid #000000',
+            boxShadow: '3px 3px 0px 0px #000000',
+          },
+        },
       },
     },
     MuiMenuItem: {
@@ -204,24 +211,24 @@ export const theme = {
           fontSize: '1rem',
           padding: '8px 16px',
           '&.Mui-focusVisible': {
-            backgroundColor: '#226f54', // Set your primary color for focused state
-            color: '#ffffff', // Text color when focused
+            backgroundColor: '#226f54',
+            color: '#ffffff',
           },
           '&.Mui-selected': {
             backgroundColor: '#226f54',
-            color: '#F9EEEE', // Text color when selected
+            color: '#F9EEEE',
             '&:hover': {
-              backgroundColor: '#184e3b', // Darker shade when both selected and hovered
-              color: '#ffffff', // Text color when both selected and hovered
+              backgroundColor: '#184e3b',
+              color: '#ffffff',
             },
           },
           '&:hover': {
             backgroundColor: '#226f54',
-            color: '#ffffff', // Text color on hover
+            color: '#ffffff',
           },
           '&.Mui-focusVisible.Mui-selected': {
-            backgroundColor: '#184e3b', // Darker primary color when both selected and focused
-            color: '#ffffff', // Text color when both selected and focused
+            backgroundColor: '#184e3b',
+            color: '#ffffff',
           },
         },
       },

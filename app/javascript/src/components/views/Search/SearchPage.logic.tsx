@@ -104,7 +104,6 @@ export const useSearchPageLogic = () => {
   const [selectedCountry, setSelectedCountry] = useState<string | null>(null);
 
   /* --------------------- Constants --------------------- */
-  console.log({ selectedCompanies, jobPosts, filteredJobPosts });
   const totalPages = Math.ceil(filteredJobPosts.length / POSTS_PER_PAGE);
 
   const paginatedJobPosts = filteredJobPosts.slice(
@@ -172,9 +171,8 @@ export const useSearchPageLogic = () => {
   };
 
   const filterJobPosts = () => {
-    console.log('----------filter job posts');
     let filtered = [...jobPosts];
-    console.log({ filtered });
+
     if (selectedCompanies.length > 0) {
       filtered = filtered.filter((jobPost) =>
         selectedCompanies.some((company) => jobPost.company.id === company.id)
@@ -228,7 +226,7 @@ export const useSearchPageLogic = () => {
         )
       );
     }
-    console.log({ selectedCompanies }, '-----filtered');
+
     setFilteredJobPosts(filtered);
     setCurrentPage(1);
   };
@@ -300,12 +298,9 @@ export const useSearchPageLogic = () => {
   /* --------------------- Effect to filter job posts --------------------- */
 
   useEffect(() => {
-    console.log('use effect');
-    filterJobPosts();
-    // if (jobPosts.length > 0) {
-    //   console.log('use effect');
-    //   filterJobPosts();
-    // }
+    if (jobPosts.length > 0) {
+      filterJobPosts();
+    }
   }, [
     selectedCompanies,
     selectedSpecialties,

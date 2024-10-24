@@ -84,6 +84,9 @@ export const FilterPanel = ({
             {
               cursor: 'default',
             },
+          '&.Mui-focused, &:focus, &:hover, &.Mui-focusVisible': {
+            backgroundColor: 'transparent',
+          },
         }}
       >
         <Box
