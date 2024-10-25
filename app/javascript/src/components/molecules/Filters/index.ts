@@ -6,6 +6,7 @@ import { JobRoleFilter } from './JobRoleFilter';
 import { JobSettingFilter } from './JobSettingFilter';
 import { SpecialtyFilter } from './SpecialtyFilter';
 import {CompanySizeFilter} from './CompanySizeFilter';
+import {CurrencyFilter} from './CurrencyFilter';
 
 export {
   CompanyFilter,
@@ -15,5 +16,6 @@ export {
   JobRoleFilter,
   JobSettingFilter,
   JobCommitmentFilter,
-  CompanySizeFilter
+  CompanySizeFilter,
+  CurrencyFilter
 };

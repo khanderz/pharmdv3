@@ -12,6 +12,18 @@ class JobPostsController < ApplicationController
     else
       @job_posts = JobPost.includes(company: { company_specialties: [], company_domains: :healthcare_domain }).all
     end
+
+    if params[:salary_min].present?
+      @job_posts = @job_posts.where("job_salary_min >= ?", params[:salary_min])
+    end
+    if params[:salary_max].present?
+      @job_posts = @job_posts.where("job_salary_max <= ?", params[:salary_max])
+    end
+  
+
+    if params[:job_salary_currency_id].present?
+      @job_posts = @job_posts.where(job_salary_currency_id: params[:job_salary_currency_id])
+    end
   
     render json: @job_posts.as_json(include: { 
       company: { 
@@ -90,10 +102,12 @@ class JobPostsController < ApplicationController
   def job_post_params
     params.require(:job_post).permit(
       :job_title, :job_description, :job_url, :job_salary_min, 
-      :job_salary_max, :job_posted, :job_updated, :job_active, 
+      :job_salary_max, :job_salary_currency_id,  
+      :job_posted, :job_updated, :job_active, 
       :department_id, :country_id, :team_id, :job_role_id, 
       :job_commitment_id, :job_setting_id, :company_id
     )
   end
+  
 
 end

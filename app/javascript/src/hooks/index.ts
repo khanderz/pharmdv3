@@ -10,6 +10,7 @@ import { useJobRoles } from './get_job_roles';
 import { useJobCommitments } from './get_job_commitments';
 import { useJobSettings } from './get_job_settings';
 import { useCompanySizes } from './get_company_sizes';
+import { getCurrencies } from './get_currencies';
 
 export {
   useHealthcareDomains,
@@ -24,4 +25,5 @@ export {
   useJobCommitments,
   useJobSettings,
   useCompanySizes,
+  getCurrencies
 };

@@ -11,7 +11,7 @@ import {
   CompanySpecialty,
   HealthcareDomain,
 } from '@customtypes/company';
-import { JobSetting, JobCommitment, JobPost } from '@customtypes/job_post';
+import { JobSetting, JobCommitment, JobPost, JobSalaryCurrency } from '@customtypes/job_post';
 import { Department, JobRole } from '@customtypes/job_role';
 import {
   useJobPosts,
@@ -24,6 +24,7 @@ import {
   useStates,
   useCountries,
   useCompanySizes,
+  getCurrencies
 } from '@javascript/hooks';
 import dayjs from 'dayjs';
 
@@ -45,7 +46,11 @@ interface FiltersContextProps {
   selectedDatePosted: string | null;
   setSelectedDatePosted: (datePosted: string) => void;
   selectedCompanySize: CompanySize['id'][];
-  setSelectedCompanySize: (size: CompanySize['id'][]) => void; // check type assertion
+  setSelectedCompanySize: (size: CompanySize['id'][]) => void; 
+  selectedSalaryCurrency: JobSalaryCurrency['key'] | null;
+  setSelectedSalaryCurrency: (currencyId: JobSalaryCurrency['key'] | null) => void;
+  selectedSalaryRange: [number, number] | null;
+  setSelectedSalaryRange: (range: [number, number] | null) => void;
   errors: string | null;
   currentlyLoading: boolean;
   uniqueCompanies: Company[];
@@ -63,6 +68,9 @@ interface FiltersContextProps {
   companySizes: CompanySize[];
   companySizesLoading: boolean;
   companySizesError: string | null;
+  currencies: JobSalaryCurrency[];
+  currenciesLoading: boolean;
+  currenciesError: string | null;
   filteredJobPosts: JobPost[];
   resetFilters: () => void;
   noMatchingResults: boolean;
@@ -88,6 +96,10 @@ export const FiltersContext = createContext<FiltersContextProps>({
   setSelectedDatePosted: () => {},
   selectedCompanySize: [],
   setSelectedCompanySize: () => {},
+  selectedSalaryCurrency: null,
+  setSelectedSalaryCurrency: () => {},
+  selectedSalaryRange: null,
+  setSelectedSalaryRange: () => {},
   errors: null,
   currentlyLoading: false,
   uniqueCompanies: [],
@@ -105,6 +117,9 @@ export const FiltersContext = createContext<FiltersContextProps>({
   companySizes: [],
   companySizesLoading: false,
   companySizesError: null,
+  currencies: [],
+  currenciesLoading: false,
+  currenciesError: null,
   filteredJobPosts: [],
   resetFilters: () => {},
   noMatchingResults: false,
@@ -116,9 +131,7 @@ interface FiltersProviderProps {
 }
 
 export function FiltersProvider({ children }: FiltersProviderProps) {
-  const [selectedDomains, setSelectedDomains] = useState<HealthcareDomain[]>(
-    []
-  );
+  const [selectedDomains, setSelectedDomains] = useState<HealthcareDomain[]>([]);
 
   const domainIds = useMemo(() => {
     return selectedDomains.length > 0
@@ -127,7 +140,6 @@ export function FiltersProvider({ children }: FiltersProviderProps) {
   }, [selectedDomains]);
 
   /* --------------------- Hooks --------------------- */
-
   const { jobPosts, filteredJobPosts, setFilteredJobPosts, loading, error } =
     useJobPosts(domainIds);
 
@@ -162,27 +174,20 @@ export function FiltersProvider({ children }: FiltersProviderProps) {
   } = useJobSettings();
 
   const { companySizes: companySizeObjects, loading: companySizesLoading, error: companySizesError } = useCompanySizes();
+  const { currencies: allCurrencies, loading: currenciesLoading, error: currenciesError } = getCurrencies();
 
   /* --------------------- States --------------------- */
 
   const [selectedCompanies, setSelectedCompanies] = useState<Company[]>([]);
-  const [selectedSpecialties, setSelectedSpecialties] = useState<
-    CompanySpecialty[]
-  >([]);
-  const [selectedDepartments, setSelectedDepartments] = useState<Department[]>(
-    []
-  );
+  const [selectedSpecialties, setSelectedSpecialties] = useState<CompanySpecialty[]>([]);
+  const [selectedDepartments, setSelectedDepartments] = useState<Department[]>([]);
   const [selectedJobRoles, setSelectedJobRoles] = useState<JobRole[]>([]);
-  const [selectedJobSettings, setSelectedJobSettings] = useState<JobSetting[]>(
-    []
-  );
-  const [selectedJobCommitments, setSelectedJobCommitments] = useState<
-    JobCommitment[]
-  >([]);
-  const [selectedDatePosted, setSelectedDatePosted] = useState<string | null>(
-    null
-  );
+  const [selectedJobSettings, setSelectedJobSettings] = useState<JobSetting[]>([]);
+  const [selectedJobCommitments, setSelectedJobCommitments] = useState<JobCommitment[]>([]);
+  const [selectedDatePosted, setSelectedDatePosted] = useState<string | null>(null);
   const [selectedCompanySize, setSelectedCompanySize] = useState<CompanySize['id'][]>([]);
+  const [selectedSalaryCurrency, setSelectedSalaryCurrency] = useState<JobSalaryCurrency['key'] | null>(null);
+  const [selectedSalaryRange, setSelectedSalaryRange] = useState<[number, number] | null>(null);
 
   /* --------------------- Constants --------------------- */
 
@@ -195,7 +200,8 @@ export function FiltersProvider({ children }: FiltersProviderProps) {
     jobRolesLoading ||
     jobCommitmentsLoading ||
     jobSettingsLoading ||
-    companySizesLoading;
+    companySizesLoading ||
+    currenciesLoading;
 
   const errors =
     error ||
@@ -204,7 +210,8 @@ export function FiltersProvider({ children }: FiltersProviderProps) {
     jobRolesError ||
     jobCommitmentsError ||
     jobSettingsError || 
-    companySizesError;
+    companySizesError ||
+    currenciesError;
 
   const uniqueCompanies: Company[] = Array.from(
     new Map(
@@ -223,9 +230,7 @@ export function FiltersProvider({ children }: FiltersProviderProps) {
   const uniqueJobRoles: JobRole[] = Array.from(
     jobPosts
       .reduce((map, jobPost) => {
-        const jobRole = jobRoles.find(
-          (role) => role.id === jobPost.job_role_id
-        );
+        const jobRole = jobRoles.find((role) => role.id === jobPost.job_role_id);
         if (jobRole && !map.has(jobRole.id)) {
           map.set(jobRole.id, jobRole);
         }
@@ -247,9 +252,7 @@ export function FiltersProvider({ children }: FiltersProviderProps) {
     if (selectedSpecialties.length > 0) {
       filtered = filtered.filter((jobPost) =>
         jobPost.company.company_specialties?.some((spec) =>
-          selectedSpecialties.some(
-            (selectedSpec) => selectedSpec.id === spec.id
-          )
+          selectedSpecialties.some((selectedSpec) => selectedSpec.id === spec.id)
         )
       );
     }
@@ -257,9 +260,7 @@ export function FiltersProvider({ children }: FiltersProviderProps) {
     if (selectedDomains.length > 0) {
       filtered = filtered.filter((jobPost) =>
         jobPost.company.company_domains?.some((dom) =>
-          selectedDomains.some(
-            (selectedDomain) => selectedDomain.id === dom.healthcare_domain_id
-          )
+          selectedDomains.some((selectedDomain) => selectedDomain.id === dom.healthcare_domain_id)
         )
       );
     }
@@ -278,17 +279,13 @@ export function FiltersProvider({ children }: FiltersProviderProps) {
 
     if (selectedJobSettings.length > 0) {
       filtered = filtered.filter((jobPost) =>
-        selectedJobSettings.some(
-          (setting) => jobPost.job_setting_id === setting.id
-        )
+        selectedJobSettings.some((setting) => jobPost.job_setting_id === setting.id)
       );
     }
 
     if (selectedJobCommitments.length > 0) {
       filtered = filtered.filter((jobPost) =>
-        selectedJobCommitments.some(
-          (commitment) => jobPost.job_commitment_id === commitment.id
-        )
+        selectedJobCommitments.some((commitment) => jobPost.job_commitment_id === commitment.id)
       );
     }
 
@@ -321,6 +318,23 @@ export function FiltersProvider({ children }: FiltersProviderProps) {
       );
     }
 
+    // Filter by salary range
+    if (selectedSalaryRange) {
+      const [min, max] = selectedSalaryRange;
+      filtered = filtered.filter(
+        (jobPost) =>
+          jobPost.job_salary_min >= min &&
+          jobPost.job_salary_max <= max
+      );
+    }
+
+    // Filter by salary currency
+    if (selectedSalaryCurrency) {
+      filtered = filtered.filter(
+        (jobPost) => jobPost.job_salary_currency_id === selectedSalaryCurrency
+      );
+    }
+
     setFilteredJobPosts(filtered);
   };
 
@@ -334,6 +348,8 @@ export function FiltersProvider({ children }: FiltersProviderProps) {
     setSelectedJobCommitments([]);
     setSelectedCompanySize([]);
     setSelectedDatePosted(null);
+    setSelectedSalaryCurrency(null);
+    setSelectedSalaryRange(null);
   };
 
   const getNoResultsMessage = () => {
@@ -388,10 +404,21 @@ export function FiltersProvider({ children }: FiltersProviderProps) {
     if (selectedCompanySize.length > 0) {
       const selectedSizeNames = selectedCompanySize
         .map((sizeId) => companySizeObjects.find((size) => size.id === sizeId)?.size_range)
-        .filter((name): name is string => name !== undefined); // Filter out undefined values
+        .filter((name): name is string => name !== undefined); 
     
       if (selectedSizeNames.length > 0) {
         filters.push(`for company size ${selectedSizeNames.join(', ')}`);
+      }
+    }
+
+    if (selectedSalaryRange) {
+      filters.push(`with salary range between ${selectedSalaryRange[0]} and ${selectedSalaryRange[1]}`);
+    }
+
+    if (selectedSalaryCurrency) {
+      const currency = allCurrencies.find(c => c.key === selectedSalaryCurrency);
+      if (currency) {
+        filters.push(`with currency ${currency.label}`);
       }
     }
 
@@ -403,8 +430,6 @@ export function FiltersProvider({ children }: FiltersProviderProps) {
 
     return message;
   };
-console.log({filteredJobPosts})
-  /* --------------------- Lifecycle methods --------------------- */
 
   useEffect(() => {
     if (jobPosts.length > 0) {
@@ -420,6 +445,8 @@ console.log({filteredJobPosts})
     selectedJobCommitments,
     selectedDatePosted,
     selectedCompanySize,
+    selectedSalaryCurrency,
+    selectedSalaryRange,
     jobPosts,
   ]);
 
@@ -443,6 +470,10 @@ console.log({filteredJobPosts})
       setSelectedDatePosted,
       selectedCompanySize,
       setSelectedCompanySize,
+      selectedSalaryCurrency,
+      setSelectedSalaryCurrency,
+      selectedSalaryRange,
+      setSelectedSalaryRange,
       errors,
       currentlyLoading,
       uniqueCompanies,
@@ -460,6 +491,9 @@ console.log({filteredJobPosts})
       companySizes: companySizeObjects,
       companySizesLoading,
       companySizesError,
+      currencies: allCurrencies,
+      currenciesLoading,
+      currenciesError,
       filteredJobPosts,
       resetFilters,
       noMatchingResults,
@@ -475,6 +509,8 @@ console.log({filteredJobPosts})
     selectedJobCommitments,
     selectedDatePosted,
     selectedCompanySize,
+    selectedSalaryCurrency,
+    selectedSalaryRange,
     errors,
     currentlyLoading,
     uniqueCompanies,
@@ -492,9 +528,13 @@ console.log({filteredJobPosts})
     companySizeObjects,
     companySizesLoading,
     companySizesError,
+    allCurrencies,
+    currenciesLoading,
+    currenciesError,
     filteredJobPosts,
     noMatchingResults,
   ]);
+
   return (
     <FiltersContext.Provider value={value}>{children}</FiltersContext.Provider>
   );

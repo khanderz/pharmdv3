@@ -1,25 +1,28 @@
+import { useState, useEffect } from 'react';
 import { Adjudicated } from '../adjudication.types';
+import {getCurrencies} from '@javascript/hooks';
 
-export enum JobSalaryCurrencyEnum {
-  AUD = 'AUD', // Australian Dollar
-  BRL = 'BRL', // Brazilian Real
-  CAD = 'CAD', // Canadian Dollar
-  CHF = 'CHF', // Swiss Franc
-  CNY = 'CNY', // Chinese Yuan
-  EUR = 'EUR', // Euro
-  GBP = 'GBP', // British Pound Sterling
-  INR = 'INR', // Indian Rupee
-  JPY = 'JPY', // Japanese Yen
-  KRW = 'KRW', // South Korean Won
-  NZD = 'NZD', // New Zealand Dollar
-  SEK = 'SEK', // Swedish Krona
-  SGD = 'SGD', // Singapore Dollar
-  USD = 'USD', // US Dollar
-  ZAR = 'ZAR', // South African Rand
-}
+const [currencies, setCurrencies] = useState<
+  {
+    key: number;
+    label: string;
+    error_details: Adjudicated['error_details'];
+    reference_id: Adjudicated['reference_id'];
+    resolved: Adjudicated['resolved'];
+  }[]
+>([]);
+
+const { currencies: allCurrencies } = getCurrencies();
+
+useEffect(() => {
+  if (allCurrencies) {
+    setCurrencies(allCurrencies);
+  }
+}, [allCurrencies]);
+
+export type JobSalaryCurrencies = (typeof currencies)[number];
 
 export interface JobSalaryCurrency extends Adjudicated {
-  job_salary_currency_id: number;
-  job_salary_currency_key: keyof typeof JobSalaryCurrencyEnum;
-  currrency_code: (typeof JobSalaryCurrencyEnum)[keyof typeof JobSalaryCurrencyEnum];
+  key: number;
+  label: JobSalaryCurrencies['label'];
 }

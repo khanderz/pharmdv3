@@ -17,7 +17,8 @@ Rails.application.routes.draw do
   resources :job_settings, defaults: { format: :json }
   resources :job_commitments, defaults: { format: :json }
   resources :company_sizes, only: [:index]
-
+  resources :job_salary_currencies, only: [:index]
+  
   # Health status
   get "up" => "rails/health#show", as: :rails_health_check
 
