@@ -16,11 +16,11 @@ export interface Company extends Adjudicated {
   year_founded: number;
   acquired_by: string;
 
-  company_size?: CompanySize;
-  funding_type?: FundingType;
-  city?: City;
-  state?: State;
-  country: Country;
+  company_size_id?: CompanySize['id'];
+  funding_type_id?: FundingType['id'];
+  city_id?: City['id'];
+  state_id?: State['id'];
+  country_id: Country['id'];
 
   ats_id: string;
   ats_type: AtsType;

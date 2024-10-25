@@ -2,35 +2,38 @@ import React from 'react';
 import { Autocomplete } from '@components/atoms';
 import { useFiltersContext } from '@javascript/providers/FiltersProvider';
 import { AutocompleteOption } from '@components/atoms/Autocomplete';
-import { CompanySizeEnum } from '@customtypes/company/company_size.types';
+import { CompanySize } from '@customtypes/company';
 
 export const CompanySizeFilter = () => {
-  const { selectedCompanySize, setSelectedCompanySize } = useFiltersContext();
+  const { selectedCompanySize, setSelectedCompanySize, companySizesLoading, companySizes } = useFiltersContext();
 
-  const options: AutocompleteOption[] = [
-    { key: 1, value: CompanySizeEnum.SMALL_1_10 },
-    { key: 2, value: CompanySizeEnum.SMALL_11_50 },
-    { key: 3, value: CompanySizeEnum.MEDIUM_51_200 },
-    { key: 4, value: CompanySizeEnum.MEDIUM_201_500 },
-    { key: 5, value: CompanySizeEnum.LARGE_501_1000 },
-    { key: 6, value: CompanySizeEnum.LARGE_1001_5000 },
-    { key: 7, value: CompanySizeEnum.ENTERPRISE_5001_10000 },
-    { key: 8, value: CompanySizeEnum.ENTERPRISE_10001_PLUS },
-  ];
+  const options: AutocompleteOption[] = companySizes.map((size) => ({
+    key: size.id,
+    value: size.id, 
+    label: size.size_range, 
+  }));
 
-  const selectedOption =
-    options.find((option) => option.value === selectedCompanySize) || null;
+  const selectedOptions = options.filter((option) =>
+    selectedCompanySize.includes(option.value as CompanySize['id'])
+  );
 
   return (
     <Autocomplete
       inputLabel="Company Size"
       options={options}
-      value={selectedOption}
+      value={selectedOptions}
+      multiple
       onChange={(event, newValue) => {
-        const selectedValue = (newValue as AutocompleteOption)?.value || '';
-        setSelectedCompanySize(selectedValue as string);
+        const selectedIds = (newValue as AutocompleteOption[]).map(
+          (option) => option.value as CompanySize['id']
+        );
+        setSelectedCompanySize(selectedIds);
       }}
       id="company-size-autocomplete"
+      loading={companySizesLoading}
+      getOptionLabel={(option) => {
+        return options.find((o) => o.value === option.value)?.label || ''
+      }}
     />
   );
 };

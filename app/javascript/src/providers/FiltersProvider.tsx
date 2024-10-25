@@ -7,6 +7,7 @@ import React, {
 } from 'react';
 import {
   Company,
+  CompanySize,
   CompanySpecialty,
   HealthcareDomain,
 } from '@customtypes/company';
@@ -22,6 +23,7 @@ import {
   useCities,
   useStates,
   useCountries,
+  useCompanySizes,
 } from '@javascript/hooks';
 import dayjs from 'dayjs';
 
@@ -42,8 +44,8 @@ interface FiltersContextProps {
   setSelectedJobCommitments: (jobCommitments: JobCommitment[]) => void;
   selectedDatePosted: string | null;
   setSelectedDatePosted: (datePosted: string) => void;
-  selectedCompanySize: string | null;
-  setSelectedCompanySize: (size: string) => void; // double check type
+  selectedCompanySize: CompanySize['id'][];
+  setSelectedCompanySize: (size: CompanySize['id'][]) => void; // check type assertion
   errors: string | null;
   currentlyLoading: boolean;
   uniqueCompanies: Company[];
@@ -58,6 +60,9 @@ interface FiltersContextProps {
   jobSettingsLoading: boolean;
   jobCommitments: JobCommitment[];
   jobCommitmentsLoading: boolean;
+  companySizes: CompanySize[];
+  companySizesLoading: boolean;
+  companySizesError: string | null;
   filteredJobPosts: JobPost[];
   resetFilters: () => void;
   noMatchingResults: boolean;
@@ -81,7 +86,7 @@ export const FiltersContext = createContext<FiltersContextProps>({
   setSelectedJobCommitments: () => {},
   selectedDatePosted: '',
   setSelectedDatePosted: () => {},
-  selectedCompanySize: null,
+  selectedCompanySize: [],
   setSelectedCompanySize: () => {},
   errors: null,
   currentlyLoading: false,
@@ -97,6 +102,9 @@ export const FiltersContext = createContext<FiltersContextProps>({
   jobSettingsLoading: false,
   jobCommitments: [],
   jobCommitmentsLoading: false,
+  companySizes: [],
+  companySizesLoading: false,
+  companySizesError: null,
   filteredJobPosts: [],
   resetFilters: () => {},
   noMatchingResults: false,
@@ -146,11 +154,14 @@ export function FiltersProvider({ children }: FiltersProviderProps) {
     loading: jobCommitmentsLoading,
     error: jobCommitmentsError,
   } = useJobCommitments();
+
   const {
     jobSettings,
     loading: jobSettingsLoading,
     error: jobSettingsError,
   } = useJobSettings();
+
+  const { companySizes: companySizeObjects, loading: companySizesLoading, error: companySizesError } = useCompanySizes();
 
   /* --------------------- States --------------------- */
 
@@ -171,7 +182,7 @@ export function FiltersProvider({ children }: FiltersProviderProps) {
   const [selectedDatePosted, setSelectedDatePosted] = useState<string | null>(
     null
   );
-  const [selectedCompanySize, setSelectedCompanySize] = useState<string | null>(null);
+  const [selectedCompanySize, setSelectedCompanySize] = useState<CompanySize['id'][]>([]);
 
   /* --------------------- Constants --------------------- */
 
@@ -183,7 +194,8 @@ export function FiltersProvider({ children }: FiltersProviderProps) {
     departmentsLoading ||
     jobRolesLoading ||
     jobCommitmentsLoading ||
-    jobSettingsLoading;
+    jobSettingsLoading ||
+    companySizesLoading;
 
   const errors =
     error ||
@@ -191,7 +203,8 @@ export function FiltersProvider({ children }: FiltersProviderProps) {
     departmentsError ||
     jobRolesError ||
     jobCommitmentsError ||
-    jobSettingsError;
+    jobSettingsError || 
+    companySizesError;
 
   const uniqueCompanies: Company[] = Array.from(
     new Map(
@@ -300,11 +313,13 @@ export function FiltersProvider({ children }: FiltersProviderProps) {
       });
     }
 
-    if (selectedCompanySize) {
+    if (selectedCompanySize.length > 0) {
       filtered = filtered.filter(
-        (jobPost) => jobPost.company.company_size?.size_range_name === selectedCompanySize
+        (jobPost) =>
+          jobPost.company.company_size_id !== undefined &&
+          selectedCompanySize.includes(jobPost.company.company_size_id)
       );
-    }    
+    }
 
     setFilteredJobPosts(filtered);
   };
@@ -317,6 +332,7 @@ export function FiltersProvider({ children }: FiltersProviderProps) {
     setSelectedJobRoles([]);
     setSelectedJobSettings([]);
     setSelectedJobCommitments([]);
+    setSelectedCompanySize([]);
     setSelectedDatePosted(null);
   };
 
@@ -369,6 +385,16 @@ export function FiltersProvider({ children }: FiltersProviderProps) {
       filters.push(`posted in ${selectedDatePosted}`);
     }
 
+    if (selectedCompanySize.length > 0) {
+      const selectedSizeNames = selectedCompanySize
+        .map((sizeId) => companySizeObjects.find((size) => size.id === sizeId)?.size_range)
+        .filter((name): name is string => name !== undefined); // Filter out undefined values
+    
+      if (selectedSizeNames.length > 0) {
+        filters.push(`for company size ${selectedSizeNames.join(', ')}`);
+      }
+    }
+
     let message = 'No matching job posts';
 
     if (filters.length > 0) {
@@ -377,7 +403,7 @@ export function FiltersProvider({ children }: FiltersProviderProps) {
 
     return message;
   };
-
+console.log({filteredJobPosts})
   /* --------------------- Lifecycle methods --------------------- */
 
   useEffect(() => {
@@ -393,6 +419,7 @@ export function FiltersProvider({ children }: FiltersProviderProps) {
     selectedJobSettings,
     selectedJobCommitments,
     selectedDatePosted,
+    selectedCompanySize,
     jobPosts,
   ]);
 
@@ -430,6 +457,9 @@ export function FiltersProvider({ children }: FiltersProviderProps) {
       jobSettingsLoading,
       jobCommitments,
       jobCommitmentsLoading,
+      companySizes: companySizeObjects,
+      companySizesLoading,
+      companySizesError,
       filteredJobPosts,
       resetFilters,
       noMatchingResults,
@@ -459,6 +489,9 @@ export function FiltersProvider({ children }: FiltersProviderProps) {
     jobSettingsLoading,
     jobCommitments,
     jobCommitmentsLoading,
+    companySizeObjects,
+    companySizesLoading,
+    companySizesError,
     filteredJobPosts,
     noMatchingResults,
   ]);

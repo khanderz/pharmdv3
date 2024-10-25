@@ -9,6 +9,7 @@ import {
 export interface AutocompleteOption {
   key: string | number;
   value: string | number;
+  label?: string;
 }
 
 export type AutocompleteProps = {
@@ -24,6 +25,7 @@ export type AutocompleteProps = {
     value: AutocompleteOption | AutocompleteOption[] | null
   ) => void;
   sx?: Record<string, any>;
+  getOptionLabel?: (option: AutocompleteOption) => string;
 };
 
 export const Autocomplete = ({
@@ -36,6 +38,7 @@ export const Autocomplete = ({
   disableClearable = false,
   onChange,
   sx,
+  getOptionLabel
 }: AutocompleteProps) => {
   const valueProp = value ?? (multiple ? [] : null);
 
@@ -70,8 +73,8 @@ export const Autocomplete = ({
           ...sx,
         }}
         getOptionLabel={(option) =>
-          option.value ? option.value.toString() : ''
-        } // <- Safely handling null/undefined values
+          getOptionLabel ? getOptionLabel(option) : option.value.toString()
+        }
         renderInput={(params) => (
           <MuiTextField
             {...params}
