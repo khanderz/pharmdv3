@@ -5,15 +5,15 @@ import { JobCommitmentFilter } from './JobCommitmentFilter';
 import { JobRoleFilter } from './JobRoleFilter';
 import { JobSettingFilter } from './JobSettingFilter';
 import { SpecialtyFilter } from './SpecialtyFilter';
-// import { TeamFilter, TeamFilterProps } from './TeamFilter';
+import {CompanySizeFilter} from './CompanySizeFilter';
 
 export {
   CompanyFilter,
   DomainFilter,
   DepartmentFilter,
-  // TeamFilter,
   SpecialtyFilter,
   JobRoleFilter,
   JobSettingFilter,
   JobCommitmentFilter,
+  CompanySizeFilter
 };

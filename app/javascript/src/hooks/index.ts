@@ -9,6 +9,7 @@ import { useStates } from './get_states';
 import { useJobRoles } from './get_job_roles';
 import { useJobCommitments } from './get_job_commitments';
 import { useJobSettings } from './get_job_settings';
+import { useCompanySizes } from './get_company_sizes';
 
 export {
   useHealthcareDomains,
@@ -22,4 +23,5 @@ export {
   useJobRoles,
   useJobCommitments,
   useJobSettings,
+  useCompanySizes,
 };

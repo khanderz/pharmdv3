@@ -42,6 +42,8 @@ interface FiltersContextProps {
   setSelectedJobCommitments: (jobCommitments: JobCommitment[]) => void;
   selectedDatePosted: string | null;
   setSelectedDatePosted: (datePosted: string) => void;
+  selectedCompanySize: string | null;
+  setSelectedCompanySize: (size: string) => void; // double check type
   errors: string | null;
   currentlyLoading: boolean;
   uniqueCompanies: Company[];
@@ -79,6 +81,8 @@ export const FiltersContext = createContext<FiltersContextProps>({
   setSelectedJobCommitments: () => {},
   selectedDatePosted: '',
   setSelectedDatePosted: () => {},
+  selectedCompanySize: null,
+  setSelectedCompanySize: () => {},
   errors: null,
   currentlyLoading: false,
   uniqueCompanies: [],
@@ -167,6 +171,7 @@ export function FiltersProvider({ children }: FiltersProviderProps) {
   const [selectedDatePosted, setSelectedDatePosted] = useState<string | null>(
     null
   );
+  const [selectedCompanySize, setSelectedCompanySize] = useState<string | null>(null);
 
   /* --------------------- Constants --------------------- */
 
@@ -295,6 +300,12 @@ export function FiltersProvider({ children }: FiltersProviderProps) {
       });
     }
 
+    if (selectedCompanySize) {
+      filtered = filtered.filter(
+        (jobPost) => jobPost.company.company_size?.size_range_name === selectedCompanySize
+      );
+    }    
+
     setFilteredJobPosts(filtered);
   };
 
@@ -403,6 +414,8 @@ export function FiltersProvider({ children }: FiltersProviderProps) {
       setSelectedJobCommitments,
       selectedDatePosted,
       setSelectedDatePosted,
+      selectedCompanySize,
+      setSelectedCompanySize,
       errors,
       currentlyLoading,
       uniqueCompanies,
@@ -431,6 +444,7 @@ export function FiltersProvider({ children }: FiltersProviderProps) {
     selectedJobSettings,
     selectedJobCommitments,
     selectedDatePosted,
+    selectedCompanySize,
     errors,
     currentlyLoading,
     uniqueCompanies,

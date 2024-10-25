@@ -8,7 +8,7 @@ const path = require('path');
 const aliasPaths = {
   '@javascript': path.resolve(__dirname, '../../app/javascript/src/'),
   '@components': path.resolve(__dirname, '../../app/javascript/src/components'),
-  '@types': path.resolve(__dirname, '../../app/javascript/src/types'),
+  '@customtypes': path.resolve(__dirname, '../../app/javascript/src/types'),
   // Add more aliases as needed
 };
 

@@ -10,7 +10,7 @@ export enum CompanySizeEnum {
 }
 
 export interface CompanySize {
-    company_size_id: number;
+    id: number;
     size_range_code: keyof typeof CompanySizeEnum;
     size_range_name: typeof CompanySizeEnum[keyof typeof CompanySizeEnum];
 }
