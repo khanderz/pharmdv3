@@ -1,6 +1,6 @@
 import React from 'react';
 import ReactOnRails from 'react-on-rails';
-import NavBar from '../bundles/NavBar/NavBarServer'; // Client-side version
+import NavBar from '../bundles/NavBar/NavBarServer'// Client-side version
 import SearchPage from '../bundles/SearchPageBundle'; // Client-side version
 import { createRoot } from 'react-dom/client';
 import { ThemeProvider } from '@mui/material/styles';

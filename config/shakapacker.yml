@@ -36,23 +36,12 @@ development:
 
   # Reference: https://webpack.js.org/configuration/dev-server/
   dev_server:
-    https: false
     host: localhost
     port: 3035
-    # Hot Module Replacement updates modules while the application is running without a full reload
-    hmr: true
     client:
-      # Should we show a full-screen overlay in the browser when there are compiler errors or warnings?
       overlay: true
-      # May also be a string
-      # webSocketURL:
-      #  hostname: "0.0.0.0"
-      #  pathname: "/ws"
-      #  port: 8080
     compress: true
-    # Note that apps that do not check the host are vulnerable to DNS rebinding attacks
     allowed_hosts: ['localhost']
-    pretty: true
     headers:
       'Access-Control-Allow-Origin': '*'
     static:
@@ -72,5 +61,6 @@ production:
   # Production depends on precompilation of packs prior to booting for performance.
   compile: false
 
-  # Cache manifest.json for performance
-  cache_manifest: true
+  production:
+  <<: *default
+  useContentHash: true

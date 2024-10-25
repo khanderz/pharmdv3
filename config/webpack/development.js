@@ -1,40 +1,51 @@
-// The source code including full typescript support is available at:
-// https://github.com/shakacode/react_on_rails_demo_ssr_hmr/blob/master/config/webpack/development.js
-
 const { devServer, inliningCss } = require('shakapacker');
-const webpackConfig = require('./webpackConfig');
+const webpackConfig = require('./webpack.config');
+const ReactRefreshWebpackPlugin = require('@pmmmwh/react-refresh-webpack-plugin');
 
-const developmentEnvOnly = (clientWebpackConfig, _serverWebpackConfig) => {
-  // Enable HMR if it's not already set
+const developmentEnvOnly = (clientWebpackConfig) => {
   clientWebpackConfig.devServer = {
     ...clientWebpackConfig.devServer,
-    hot: true,   // Enable Hot Module Replacement
+    hot: true,
     liveReload: true,
-    port: devServer.port || 3035, // Set port
+    port: devServer.port || 3035,
     client: {
-      overlay: true,  // Show full-screen overlay for errors (moved under client)
+      overlay: {
+        errors: true, // Show full-screen overlay for errors
+        warnings: false, // Optionally disable warnings overlay
+      },
+    },
+    server: {
+      type: 'https',
+      options: {
+        key: '/etc/ssl/certs/server.key', 
+        cert: '/etc/ssl/certs/server.crt',
+      },
+    },
+    headers: {
+      'Access-Control-Allow-Origin': '*', // Enables CORS
+    },
+    static: {
+      watch: true,
     },
   };
 
-  // plugins
-  if (inliningCss) {
-    const ReactRefreshWebpackPlugin = require('@pmmmwh/react-refresh-webpack-plugin');
-    clientWebpackConfig.plugins.push(
-      new ReactRefreshWebpackPlugin({
-        overlay: {
-          sockPort: devServer.port,
-        },
-      })
-    );
-  }
+  // Add React Refresh Plugin
+  clientWebpackConfig.plugins.push(
+    new ReactRefreshWebpackPlugin({
+      overlay: {
+        sockPort: devServer.port,
+      },
+    })
+  );
 
-  // Ensure Babel is using react-refresh plugin during development
+  // Exclude node_modules in babel-loader
   clientWebpackConfig.module.rules.forEach((rule) => {
     if (rule.use && rule.use.loader === 'babel-loader') {
+      rule.exclude = /node_modules/;
       rule.use.options.plugins = [
         ...(rule.use.options.plugins || []),
-        require.resolve('react-refresh/babel'), // Add react-refresh plugin
-      ];
+        isDevelopmentEnv && require.resolve('react-refresh/babel')
+      ].filter(Boolean);
     }
   });
 };
