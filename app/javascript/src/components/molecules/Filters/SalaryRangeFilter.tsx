@@ -9,28 +9,32 @@ import {
 import { CurrencyFilter } from './CurrencyFilter';
 import { Box } from '@components/atoms';
 
-const currencyOptions = [
-  { label: 'All currencies', value: '' },
-  { label: 'United States Dollars ($)', value: 'USD' },
-  { label: 'Euro (€)', value: 'EUR' },
-  { label: 'British Pounds (£)', value: 'GBP' },
-  { label: 'Canadian Dollars ($)', value: 'CAD' },
-  { label: 'Japanese Yen (¥)', value: 'JPY' },
-  { label: 'Chinese Renminbi Yuan (¥)', value: 'CNY' },
-  { label: 'Singaporean Dollars (S$)', value: 'SGD' },
-  { label: 'Indian Rupees (₹)', value: 'INR' },
-];
+const currencySymbols: { [key: string]: string } = {
+  USD: '$',
+  EUR: '€',
+  GBP: '£',
+  CAD: '$',
+  JPY: '¥',
+  CNY: '¥',
+  SGD: 'S$',
+  INR: '₹',
+  AUD: 'A$',
+  BRL: 'R$',
+  CHF: 'CHF',
+  KRW: '₩',
+  NZD: 'NZ$',
+  SEK: 'kr',
+  ZAR: 'R',
+};
 
 export const SalaryRangeFilter = () => {
   const {
     selectedSalaryRange,
     setSelectedSalaryRange,
     selectedSalaryCurrency,
-    setSelectedSalaryCurrency,
   } = useFiltersContext();
 
   const handleSalaryChange = (event: Event, newValue: number | number[]) => {
-    console.log({ newValue });
     setSelectedSalaryRange(newValue as [number, number]);
   };
 
@@ -38,9 +42,11 @@ export const SalaryRangeFilter = () => {
     setSelectedSalaryRange([MIN_SALARY, MAX_SALARY]);
   };
 
+  const selectedCurrency = selectedSalaryCurrency?.label || 'USD';
+  const currencySymbol = currencySymbols[selectedCurrency] || '$';
   const min = selectedSalaryRange ? selectedSalaryRange[0] : MIN_SALARY;
   const max = selectedSalaryRange ? selectedSalaryRange[1] : MAX_SALARY;
-  console.log({ selectedSalaryRange });
+
   return (
     <Box
       sx={{
@@ -60,7 +66,9 @@ export const SalaryRangeFilter = () => {
         </IconButton>
       </MuiBox>
       <Typography variant="subtitle2">
-        ${min} - ${max}
+        {currencySymbol}
+        {min} - {currencySymbol}
+        {max}
       </Typography>
       <Slider
         value={selectedSalaryRange || [MIN_SALARY, MAX_SALARY]}
