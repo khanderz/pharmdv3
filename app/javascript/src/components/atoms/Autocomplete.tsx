@@ -38,7 +38,7 @@ export const Autocomplete = ({
   disableClearable = false,
   onChange,
   sx,
-  getOptionLabel
+  getOptionLabel,
 }: AutocompleteProps) => {
   const valueProp = value ?? (multiple ? [] : null);
 
@@ -47,6 +47,7 @@ export const Autocomplete = ({
       data-testid={`${inputLabel}-autocomplete-box`}
       sx={{
         mt: 2,
+        ...sx,
       }}
     >
       <MuiAutocomplete
@@ -57,12 +58,14 @@ export const Autocomplete = ({
         id={id}
         options={options}
         onChange={(e, newValue) => {
+          console.log({ newValue });
           onChange(e, newValue ?? (multiple ? [] : null));
         }}
         isOptionEqualToValue={(
           option: AutocompleteOption,
           value: AutocompleteOption
         ) => {
+          console.log({ option, value });
           return option.key === value.key;
         }}
         loadingText="Loading..."
@@ -70,26 +73,29 @@ export const Autocomplete = ({
         disableClearable={disableClearable}
         sx={{
           mt: '2em',
-          ...sx,
         }}
-        getOptionLabel={(option) =>
-          getOptionLabel ? getOptionLabel(option) : option.value.toString()
-        }
+        getOptionLabel={(option) => {
+          console.log({ option });
+          return getOptionLabel
+            ? getOptionLabel(option)
+            : option.value.toString();
+        }}
         renderInput={(params) => (
           <MuiTextField
             {...params}
             label={inputLabel}
             variant="outlined"
             placeholder={inputLabel}
-            InputLabelProps={{ shrink: true }}
-            InputProps={{
-              ...params.InputProps,
-              endAdornment: (
-                <>
-                  {loading && <Typography>Loading...</Typography>}
-                  {params.InputProps.endAdornment}
-                </>
-              ),
+            slotProps={{
+              inputLabel: { shrink: true },
+              input: {
+                endAdornment: (
+                  <>
+                    {loading && <Typography>Loading...</Typography>}
+                    {params.InputProps.endAdornment}
+                  </>
+                ),
+              },
             }}
           />
         )}

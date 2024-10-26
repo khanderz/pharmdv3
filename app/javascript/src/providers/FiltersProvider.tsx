@@ -11,7 +11,12 @@ import {
   CompanySpecialty,
   HealthcareDomain,
 } from '@customtypes/company';
-import { JobSetting, JobCommitment, JobPost, JobSalaryCurrency } from '@customtypes/job_post';
+import {
+  JobSetting,
+  JobCommitment,
+  JobPost,
+  JobSalaryCurrency,
+} from '@customtypes/job_post';
 import { Department, JobRole } from '@customtypes/job_role';
 import {
   useJobPosts,
@@ -24,7 +29,7 @@ import {
   useStates,
   useCountries,
   useCompanySizes,
-  getCurrencies
+  getCurrencies,
 } from '@javascript/hooks';
 import dayjs from 'dayjs';
 
@@ -46,9 +51,11 @@ interface FiltersContextProps {
   selectedDatePosted: string | null;
   setSelectedDatePosted: (datePosted: string) => void;
   selectedCompanySize: CompanySize['id'][];
-  setSelectedCompanySize: (size: CompanySize['id'][]) => void; 
+  setSelectedCompanySize: (size: CompanySize['id'][]) => void;
   selectedSalaryCurrency: JobSalaryCurrency['key'] | null;
-  setSelectedSalaryCurrency: (currencyId: JobSalaryCurrency['key'] | null) => void;
+  setSelectedSalaryCurrency: (
+    currencyId: JobSalaryCurrency['key'] | null
+  ) => void;
   selectedSalaryRange: [number, number] | null;
   setSelectedSalaryRange: (range: [number, number] | null) => void;
   errors: string | null;
@@ -131,7 +138,9 @@ interface FiltersProviderProps {
 }
 
 export function FiltersProvider({ children }: FiltersProviderProps) {
-  const [selectedDomains, setSelectedDomains] = useState<HealthcareDomain[]>([]);
+  const [selectedDomains, setSelectedDomains] = useState<HealthcareDomain[]>(
+    []
+  );
 
   const domainIds = useMemo(() => {
     return selectedDomains.length > 0
@@ -173,21 +182,45 @@ export function FiltersProvider({ children }: FiltersProviderProps) {
     error: jobSettingsError,
   } = useJobSettings();
 
-  const { companySizes: companySizeObjects, loading: companySizesLoading, error: companySizesError } = useCompanySizes();
-  const { currencies: allCurrencies, loading: currenciesLoading, error: currenciesError } = getCurrencies();
+  const {
+    companySizes: companySizeObjects,
+    loading: companySizesLoading,
+    error: companySizesError,
+  } = useCompanySizes();
+  const {
+    currencies: allCurrencies,
+    loading: currenciesLoading,
+    error: currenciesError,
+  } = getCurrencies();
 
   /* --------------------- States --------------------- */
 
   const [selectedCompanies, setSelectedCompanies] = useState<Company[]>([]);
-  const [selectedSpecialties, setSelectedSpecialties] = useState<CompanySpecialty[]>([]);
-  const [selectedDepartments, setSelectedDepartments] = useState<Department[]>([]);
+  const [selectedSpecialties, setSelectedSpecialties] = useState<
+    CompanySpecialty[]
+  >([]);
+  const [selectedDepartments, setSelectedDepartments] = useState<Department[]>(
+    []
+  );
   const [selectedJobRoles, setSelectedJobRoles] = useState<JobRole[]>([]);
-  const [selectedJobSettings, setSelectedJobSettings] = useState<JobSetting[]>([]);
-  const [selectedJobCommitments, setSelectedJobCommitments] = useState<JobCommitment[]>([]);
-  const [selectedDatePosted, setSelectedDatePosted] = useState<string | null>(null);
-  const [selectedCompanySize, setSelectedCompanySize] = useState<CompanySize['id'][]>([]);
-  const [selectedSalaryCurrency, setSelectedSalaryCurrency] = useState<JobSalaryCurrency['key'] | null>(null);
-  const [selectedSalaryRange, setSelectedSalaryRange] = useState<[number, number] | null>(null);
+  const [selectedJobSettings, setSelectedJobSettings] = useState<JobSetting[]>(
+    []
+  );
+  const [selectedJobCommitments, setSelectedJobCommitments] = useState<
+    JobCommitment[]
+  >([]);
+  const [selectedDatePosted, setSelectedDatePosted] = useState<string | null>(
+    null
+  );
+  const [selectedCompanySize, setSelectedCompanySize] = useState<
+    CompanySize['id'][]
+  >([]);
+  const [selectedSalaryCurrency, setSelectedSalaryCurrency] = useState<
+    JobSalaryCurrency['key'] | null
+  >(null);
+  const [selectedSalaryRange, setSelectedSalaryRange] = useState<
+    [number, number] | null
+  >(null);
 
   /* --------------------- Constants --------------------- */
 
@@ -209,7 +242,7 @@ export function FiltersProvider({ children }: FiltersProviderProps) {
     departmentsError ||
     jobRolesError ||
     jobCommitmentsError ||
-    jobSettingsError || 
+    jobSettingsError ||
     companySizesError ||
     currenciesError;
 
@@ -230,7 +263,9 @@ export function FiltersProvider({ children }: FiltersProviderProps) {
   const uniqueJobRoles: JobRole[] = Array.from(
     jobPosts
       .reduce((map, jobPost) => {
-        const jobRole = jobRoles.find((role) => role.id === jobPost.job_role_id);
+        const jobRole = jobRoles.find(
+          (role) => role.id === jobPost.job_role_id
+        );
         if (jobRole && !map.has(jobRole.id)) {
           map.set(jobRole.id, jobRole);
         }
@@ -252,7 +287,9 @@ export function FiltersProvider({ children }: FiltersProviderProps) {
     if (selectedSpecialties.length > 0) {
       filtered = filtered.filter((jobPost) =>
         jobPost.company.company_specialties?.some((spec) =>
-          selectedSpecialties.some((selectedSpec) => selectedSpec.id === spec.id)
+          selectedSpecialties.some(
+            (selectedSpec) => selectedSpec.id === spec.id
+          )
         )
       );
     }
@@ -260,7 +297,9 @@ export function FiltersProvider({ children }: FiltersProviderProps) {
     if (selectedDomains.length > 0) {
       filtered = filtered.filter((jobPost) =>
         jobPost.company.company_domains?.some((dom) =>
-          selectedDomains.some((selectedDomain) => selectedDomain.id === dom.healthcare_domain_id)
+          selectedDomains.some(
+            (selectedDomain) => selectedDomain.id === dom.healthcare_domain_id
+          )
         )
       );
     }
@@ -279,13 +318,17 @@ export function FiltersProvider({ children }: FiltersProviderProps) {
 
     if (selectedJobSettings.length > 0) {
       filtered = filtered.filter((jobPost) =>
-        selectedJobSettings.some((setting) => jobPost.job_setting_id === setting.id)
+        selectedJobSettings.some(
+          (setting) => jobPost.job_setting_id === setting.id
+        )
       );
     }
 
     if (selectedJobCommitments.length > 0) {
       filtered = filtered.filter((jobPost) =>
-        selectedJobCommitments.some((commitment) => jobPost.job_commitment_id === commitment.id)
+        selectedJobCommitments.some(
+          (commitment) => jobPost.job_commitment_id === commitment.id
+        )
       );
     }
 
@@ -323,8 +366,7 @@ export function FiltersProvider({ children }: FiltersProviderProps) {
       const [min, max] = selectedSalaryRange;
       filtered = filtered.filter(
         (jobPost) =>
-          jobPost.job_salary_min >= min &&
-          jobPost.job_salary_max <= max
+          jobPost.job_salary_min >= min && jobPost.job_salary_max <= max
       );
     }
 
@@ -336,6 +378,7 @@ export function FiltersProvider({ children }: FiltersProviderProps) {
     }
 
     setFilteredJobPosts(filtered);
+    console.log({ jobPosts, filtered });
   };
 
   const resetFilters = () => {
@@ -403,20 +446,27 @@ export function FiltersProvider({ children }: FiltersProviderProps) {
 
     if (selectedCompanySize.length > 0) {
       const selectedSizeNames = selectedCompanySize
-        .map((sizeId) => companySizeObjects.find((size) => size.id === sizeId)?.size_range)
-        .filter((name): name is string => name !== undefined); 
-    
+        .map(
+          (sizeId) =>
+            companySizeObjects.find((size) => size.id === sizeId)?.size_range
+        )
+        .filter((name): name is string => name !== undefined);
+
       if (selectedSizeNames.length > 0) {
         filters.push(`for company size ${selectedSizeNames.join(', ')}`);
       }
     }
 
     if (selectedSalaryRange) {
-      filters.push(`with salary range between ${selectedSalaryRange[0]} and ${selectedSalaryRange[1]}`);
+      filters.push(
+        `with salary range between ${selectedSalaryRange[0]} and ${selectedSalaryRange[1]}`
+      );
     }
 
     if (selectedSalaryCurrency) {
-      const currency = allCurrencies.find(c => c.key === selectedSalaryCurrency);
+      const currency = allCurrencies.find(
+        (c) => c.key === selectedSalaryCurrency
+      );
       if (currency) {
         filters.push(`with currency ${currency.label}`);
       }
