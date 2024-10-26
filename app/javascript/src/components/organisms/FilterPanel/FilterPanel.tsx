@@ -7,7 +7,7 @@ import {
   Grid,
   IconButton,
 } from '@mui/material';
-import { FilterList } from '@mui/icons-material';
+import { FilterList, Sort } from '@mui/icons-material';
 import {
   CompanyFilter,
   DomainFilter,
@@ -17,7 +17,7 @@ import {
   JobSettingFilter,
   JobCommitmentFilter,
   CompanySizeFilter,
-  CurrencyFilter
+  CurrencyFilter,
 } from '@components/molecules/Filters';
 import { SearchPanel } from '@components/molecules/SearchPanel/SearchPanel';
 import { Accordion } from '@components/atoms/Accordion';
@@ -26,13 +26,23 @@ import { DateFilter } from '@components/molecules/Filters/DateFilter';
 
 interface FilterPanelProps {
   resetFilters: () => void;
+  onSortByDate: (isAscending: boolean) => void;
 }
 
-export const FilterPanel = ({ resetFilters }: FilterPanelProps) => {
+export const FilterPanel = ({
+  resetFilters,
+  onSortByDate,
+}: FilterPanelProps) => {
   const [isExpanded, setExpanded] = useState(true);
+  const [isAscending, setIsAscending] = useState(true);
 
   const toggleAccordion = () => {
     setExpanded(!isExpanded);
+  };
+
+  const toggleSortOrder = () => {
+    setIsAscending(!isAscending);
+    onSortByDate(!isAscending);
   };
 
   return (
@@ -76,6 +86,16 @@ export const FilterPanel = ({ resetFilters }: FilterPanelProps) => {
                 alignItems: 'center',
               }}
             >
+              <IconButton
+                onClick={toggleSortOrder}
+                sx={{ color: 'primary.main' }}
+              >
+                <Sort
+                  sx={{
+                    transform: isAscending ? 'rotate(0deg)' : 'rotate(180deg)',
+                  }}
+                />
+              </IconButton>
               <Button
                 data-testid={`filter-panel-reset-button`}
                 variant="contained"
@@ -128,7 +148,7 @@ export const FilterPanel = ({ resetFilters }: FilterPanelProps) => {
               <DepartmentFilter />
 
               <JobRoleFilter />
-              <CurrencyFilter/>
+              <CurrencyFilter />
             </Grid>
             <Grid container item xs={6} direction="column">
               <JobCommitmentFilter />

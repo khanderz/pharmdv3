@@ -80,6 +80,7 @@ interface FiltersContextProps {
   resetFilters: () => void;
   noMatchingResults: boolean;
   getNoResultsMessage?: () => string;
+  setFilteredJobPosts: (jobPosts: JobPost[]) => void;
 }
 
 export const FiltersContext = createContext<FiltersContextProps>({
@@ -129,6 +130,7 @@ export const FiltersContext = createContext<FiltersContextProps>({
   resetFilters: () => {},
   noMatchingResults: false,
   getNoResultsMessage: () => '',
+  setFilteredJobPosts: () => {},
 } as FiltersContextProps);
 
 interface FiltersProviderProps {
@@ -552,6 +554,7 @@ export function FiltersProvider({ children }: FiltersProviderProps) {
       resetFilters,
       noMatchingResults,
       getNoResultsMessage,
+      setFilteredJobPosts,
     };
   }, [
     selectedCompanies,

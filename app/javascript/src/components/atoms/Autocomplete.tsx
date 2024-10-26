@@ -3,7 +3,6 @@ import {
   Autocomplete as MuiAutocomplete,
   TextField as MuiTextField,
   Box,
-  Typography,
 } from '@mui/material';
 
 export interface AutocompleteOption {
@@ -53,7 +52,6 @@ export const Autocomplete = ({
         id={id}
         options={options}
         onChange={(e, newValue) => {
-          console.log({ newValue });
           onChange(e, newValue ?? (multiple ? [] : null));
         }}
         loadingText="Loading..."

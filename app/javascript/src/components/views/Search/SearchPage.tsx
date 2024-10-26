@@ -30,6 +30,7 @@ export const SearchPage = () => {
     jobCommitments,
     noMatchingResults,
     getNoResultsMessage,
+    onSortByDate,
   } = useSearchPageLogic();
 
   return (
@@ -57,7 +58,10 @@ export const SearchPage = () => {
 
           <Grid container spacing={4} data-testid="search-page-container">
             <Grid item xs={12} data-testid="filter-panel-grid">
-              <FilterPanel resetFilters={resetAndHandlePageChange} />
+              <FilterPanel
+                resetFilters={resetAndHandlePageChange}
+                onSortByDate={onSortByDate}
+              />
             </Grid>
 
             <Grid item xs={12} data-testid="job-post-grid">

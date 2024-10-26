@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useFiltersContext } from '@javascript/providers/FiltersProvider';
+import dayjs from 'dayjs';
 
 const POSTS_PER_PAGE = 10;
 
@@ -14,6 +15,7 @@ export const useSearchPageLogic = () => {
     getNoResultsMessage,
     filteredJobPosts,
     resetFilters,
+    setFilteredJobPosts,
   } = useFiltersContext();
 
   /* --------------------- States --------------------- */
@@ -42,6 +44,17 @@ export const useSearchPageLogic = () => {
     setCurrentPage(1);
   };
 
+  const onSortByDate = (isAscending: boolean) => {
+    const sortedPosts = [...filteredJobPosts].sort((a, b) => {
+      const dateA = dayjs(a.job_posted);
+      const dateB = dayjs(b.job_posted);
+      return isAscending ? dateA.diff(dateB) : dateB.diff(dateA);
+    });
+
+    setFilteredJobPosts(sortedPosts);
+    setCurrentPage(1);
+  };
+
   return {
     resetAndHandlePageChange,
     paginatedJobPosts,
@@ -56,5 +69,6 @@ export const useSearchPageLogic = () => {
     getNoResultsMessage,
     filteredJobPosts,
     resetFilters,
+    onSortByDate,
   };
 };
