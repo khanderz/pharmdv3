@@ -1,25 +1,37 @@
 import React from 'react';
 import { Autocomplete } from '@components/atoms/index';
 import { useFiltersContext } from '@javascript/providers/FiltersProvider';
+import { AutocompleteOption } from '@components/atoms/Autocomplete';
 
 export const DomainFilter = () => {
   const { selectedDomains, setSelectedDomains, allDomains, domainsLoading } =
     useFiltersContext();
 
+  const options = allDomains.map((domain) => ({
+    key: domain.id,
+    value: domain.value,
+  }));
+
+  const selectedOptions = (selectedDomains ?? []).map((selected) => {
+    const domain = options.find((option) => option.value === selected.value);
+
+    return {
+      key: domain?.key ?? '',
+      value: domain?.value ?? '',
+    };
+  });
+
   return (
     <Autocomplete
       multiple
       inputLabel="Domains"
-      options={allDomains.map((domain) => ({
-        key: domain.id,
-        value: domain.value,
-      }))}
-      value={(selectedDomains ?? []).map((d) => d.value)}
+      options={options}
+      value={selectedOptions}
       onChange={(e, value) => {
-        const selectedValues = (value as string[]).filter(Boolean);
+        const selectedValues = (value as AutocompleteOption[]).filter(Boolean);
 
         const selected = allDomains.filter((domain) =>
-          selectedValues.includes(domain.value)
+          selectedValues.some((el) => el.value === domain.value)
         );
 
         setSelectedDomains(selected);
