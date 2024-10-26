@@ -1,6 +1,7 @@
 import React from 'react';
 import { Autocomplete } from '@components/atoms/index';
 import { useFiltersContext } from '@javascript/providers/FiltersProvider';
+import { AutocompleteOption } from '@components/atoms/Autocomplete';
 
 export const DepartmentFilter = () => {
   const {
@@ -10,20 +11,34 @@ export const DepartmentFilter = () => {
     departmentsLoading,
   } = useFiltersContext();
 
+  const options = departments.map((department) => ({
+    key: department.id,
+    value: department.dept_name,
+  }));
+
+  const selectedOptions = selectedDepartments.map((selected) => {
+    const department = options.find(
+      (option) => option.value === selected.dept_name
+    );
+
+    return {
+      key: department?.key ?? '',
+      value: department?.value ?? '',
+    };
+  });
+
   return (
     <Autocomplete
+      id={'department-autocomplete'}
       multiple
       inputLabel="Departments"
-      options={departments.map((department) => ({
-        key: department.id,
-        value: department.dept_name,
-      }))}
-      value={(selectedDepartments ?? []).map((d) => d.dept_name)}
+      options={options}
+      value={selectedOptions}
       onChange={(e, value) => {
-        const selectedValues = (value as string[]).filter(Boolean);
+        const selectedValues = (value as AutocompleteOption[]).filter(Boolean);
 
         const selected = departments.filter((department) =>
-          selectedValues.includes(department.dept_name)
+          selectedValues.some((el) => el.value === department.dept_name)
         );
 
         setSelectedDepartments(selected);
