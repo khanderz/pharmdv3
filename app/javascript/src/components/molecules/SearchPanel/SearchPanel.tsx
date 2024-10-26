@@ -1,9 +1,15 @@
 import React from 'react';
-import { TextField, Box } from '@mui/material';
+import { TextField } from '@mui/material';
+import { Box } from '@components/atoms';
+import { useFiltersContext } from '@javascript/providers/FiltersProvider';
 
-interface SearchPanelProps {}
+export const SearchPanel = () => {
+  const { searchQuery, setSearchQuery } = useFiltersContext();
 
-export const SearchPanel = ({}: SearchPanelProps) => {
+  const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchQuery(event.target.value);
+  };
+
   return (
     <Box
       sx={{
@@ -17,6 +23,8 @@ export const SearchPanel = ({}: SearchPanelProps) => {
         fullWidth
         variant="outlined"
         placeholder="Search for jobs or companies..."
+        value={searchQuery}
+        onChange={handleSearchChange}
       />
     </Box>
   );

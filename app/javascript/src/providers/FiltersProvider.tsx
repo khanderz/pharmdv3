@@ -89,6 +89,8 @@ interface FiltersContextProps {
   noMatchingResults: boolean;
   getNoResultsMessage?: () => string;
   setFilteredJobPosts: (jobPosts: JobPost[]) => void;
+  searchQuery: string;
+  setSearchQuery: (query: string) => void;
 }
 
 export const FiltersContext = createContext<FiltersContextProps>({
@@ -141,6 +143,8 @@ export const FiltersContext = createContext<FiltersContextProps>({
   noMatchingResults: false,
   getNoResultsMessage: () => '',
   setFilteredJobPosts: () => {},
+  searchQuery: '',
+  setSearchQuery: () => {},
 } as FiltersContextProps);
 
 interface FiltersProviderProps {
@@ -238,6 +242,7 @@ export function FiltersProvider({ children }: FiltersProviderProps) {
   >(null);
   const [selectedLocation, setSelectedLocation] =
     useState<AutocompleteOption | null>(null);
+  const [searchQuery, setSearchQuery] = useState<string>('');
 
   /* --------------------- Constants --------------------- */
 
@@ -426,6 +431,25 @@ export function FiltersProvider({ children }: FiltersProviderProps) {
       });
     }
 
+    if (searchQuery) {
+      const lowerQuery = searchQuery.toLowerCase();
+      filtered = filtered.filter((jobPost) => {
+        const fieldsToSearch = [
+          jobPost.job_title,
+          jobPost.job_description,
+          jobPost.job_additional,
+          jobPost.company.company_name,
+          ...(Array.isArray(jobPost.job_locations)
+            ? jobPost.job_locations
+            : [jobPost.job_locations]),
+        ];
+
+        return fieldsToSearch.some(
+          (field) => field && field.toLowerCase().includes(lowerQuery)
+        );
+      });
+    }
+
     setFilteredJobPosts(filtered);
   };
 
@@ -442,6 +466,7 @@ export function FiltersProvider({ children }: FiltersProviderProps) {
     setSelectedSalaryCurrency(null);
     setSelectedSalaryRange(null);
     setSelectedLocation(null);
+    setSearchQuery('');
   };
 
   const getNoResultsMessage = () => {
@@ -518,6 +543,10 @@ export function FiltersProvider({ children }: FiltersProviderProps) {
       filters.push(`in location ${selectedLocation}`);
     }
 
+    if (searchQuery) {
+      filters.push(`with search query ${searchQuery}`);
+    }
+
     let message = 'No matching job posts';
 
     if (filters.length > 0) {
@@ -544,6 +573,7 @@ export function FiltersProvider({ children }: FiltersProviderProps) {
     selectedSalaryCurrency,
     selectedSalaryRange,
     selectedLocation,
+    searchQuery,
     jobPosts,
   ]);
 
@@ -598,6 +628,8 @@ export function FiltersProvider({ children }: FiltersProviderProps) {
       noMatchingResults,
       getNoResultsMessage,
       setFilteredJobPosts,
+      searchQuery,
+      setSearchQuery,
     };
   }, [
     selectedCompanies,
