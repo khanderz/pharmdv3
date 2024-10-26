@@ -5,8 +5,9 @@ import { JobCommitmentFilter } from './JobCommitmentFilter';
 import { JobRoleFilter } from './JobRoleFilter';
 import { JobSettingFilter } from './JobSettingFilter';
 import { SpecialtyFilter } from './SpecialtyFilter';
-import {CompanySizeFilter} from './CompanySizeFilter';
-import {CurrencyFilter} from './CurrencyFilter';
+import { CompanySizeFilter } from './CompanySizeFilter';
+import { CurrencyFilter } from './CurrencyFilter';
+import { SalaryRangeFilter } from './SalaryRangeFilter';
 
 export {
   CompanyFilter,
@@ -17,5 +18,6 @@ export {
   JobSettingFilter,
   JobCommitmentFilter,
   CompanySizeFilter,
-  CurrencyFilter
+  CurrencyFilter,
+  SalaryRangeFilter,
 };

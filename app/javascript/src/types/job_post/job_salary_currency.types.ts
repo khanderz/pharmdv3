@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Adjudicated } from '../adjudication.types';
-import {getCurrencies} from '@javascript/hooks';
+import { getCurrencies } from '@javascript/hooks';
 
 const [currencies, setCurrencies] = useState<
   {
@@ -23,6 +23,6 @@ useEffect(() => {
 export type JobSalaryCurrencies = (typeof currencies)[number];
 
 export interface JobSalaryCurrency extends Adjudicated {
-  key: number;
+  key: JobSalaryCurrencies['key'];
   label: JobSalaryCurrencies['label'];
 }

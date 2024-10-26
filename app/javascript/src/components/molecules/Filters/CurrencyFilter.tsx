@@ -17,30 +17,26 @@ export const CurrencyFilter = () => {
     value: currency.label,
   }));
 
-  const selectedOptions = selectedSalaryCurrency?.map((selected) => {
-    const currency = options.find((option) => option.value === selected.label);
+  const selectedOption = options.find(
+    (option) => option.key === selectedSalaryCurrency?.key
+  );
 
-    return {
-      key: currency?.key ?? '',
-      value: currency?.value ?? '',
-    };
-  });
-
+  console.log({ options, selectedOption, selectedSalaryCurrency });
   return (
     <Autocomplete
       id="currency-autocomplete"
       inputLabel="Currency"
       options={options}
-      value={selectedOptions}
-      multiple
+      value={selectedOption || { key: 14, value: 'USD' }}
       onChange={(event, newValue) => {
-        const selectedValues = (newValue as AutocompleteOption[]).filter(
-          Boolean
-        );
-        const selected = currencies.filter((currency) =>
-          selectedValues.some((el) => el.value === currency.label)
-        );
-        setSelectedSalaryCurrency(selected);
+        const selected = options.find(
+          (currency) => currency.key === (newValue as AutocompleteOption).key
+        ) || { key: 14, value: 'USD' };
+
+        setSelectedSalaryCurrency({
+          key: selected.key,
+          label: selected.value,
+        } as JobSalaryCurrency);
       }}
       loading={currenciesLoading}
     />

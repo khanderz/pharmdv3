@@ -52,8 +52,16 @@ interface FiltersContextProps {
   setSelectedDatePosted: (datePosted: string) => void;
   selectedCompanySize: CompanySize[];
   setSelectedCompanySize: (size: CompanySize[]) => void;
-  selectedSalaryCurrency: JobSalaryCurrency[];
-  setSelectedSalaryCurrency: (currencyId: JobSalaryCurrency[]) => void;
+  selectedSalaryCurrency: Omit<
+    JobSalaryCurrency,
+    'error_details' | 'reference_id' | 'resolved'
+  >;
+  setSelectedSalaryCurrency: (
+    currency: Omit<
+      JobSalaryCurrency,
+      'error_details' | 'reference_id' | 'resolved'
+    >
+  ) => void;
   selectedSalaryRange: [number, number] | null;
   setSelectedSalaryRange: (range: [number, number] | null) => void;
   errors: string | null;
@@ -102,7 +110,10 @@ export const FiltersContext = createContext<FiltersContextProps>({
   setSelectedDatePosted: () => {},
   selectedCompanySize: [],
   setSelectedCompanySize: () => {},
-  selectedSalaryCurrency: [],
+  selectedSalaryCurrency: {
+    key: 14,
+    label: 'USD',
+  },
   setSelectedSalaryCurrency: () => {},
   selectedSalaryRange: null,
   setSelectedSalaryRange: () => {},
@@ -136,6 +147,9 @@ export const FiltersContext = createContext<FiltersContextProps>({
 interface FiltersProviderProps {
   children: React.ReactNode;
 }
+
+export const MIN_SALARY = 0;
+export const MAX_SALARY = 300000;
 
 export function FiltersProvider({ children }: FiltersProviderProps) {
   const [selectedDomains, setSelectedDomains] = useState<HealthcareDomain[]>(
@@ -217,8 +231,11 @@ export function FiltersProvider({ children }: FiltersProviderProps) {
     []
   );
   const [selectedSalaryCurrency, setSelectedSalaryCurrency] = useState<
-    JobSalaryCurrency[]
-  >([]);
+    Omit<JobSalaryCurrency, 'error_details' | 'reference_id' | 'resolved'>
+  >({
+    key: 14,
+    label: 'USD',
+  });
   const [selectedSalaryRange, setSelectedSalaryRange] = useState<
     [number, number] | null
   >(null);
@@ -378,12 +395,25 @@ export function FiltersProvider({ children }: FiltersProviderProps) {
       );
     }
 
-    if (selectedSalaryCurrency.length > 0) {
-      filtered = filtered.filter((jobPost) =>
-        selectedSalaryCurrency.some(
-          (currency) => jobPost.job_salary_currency_id === currency.key
-        )
+    if (selectedSalaryCurrency) {
+      filtered = filtered.filter(
+        (jobPost) =>
+          jobPost.job_salary_currency_id === selectedSalaryCurrency.key
       );
+    }
+
+    if (selectedSalaryRange) {
+      const [minSalary, maxSalary] = selectedSalaryRange;
+      filtered = filtered.filter((jobPost) => {
+        const salaryMin = jobPost.job_salary_min || MIN_SALARY;
+        const salaryMax = jobPost.job_salary_max || MAX_SALARY;
+        return (
+          salaryMin >= minSalary &&
+          salaryMax <= maxSalary &&
+          (!selectedSalaryCurrency ||
+            jobPost.job_salary_currency_id === selectedSalaryCurrency.key)
+        );
+      });
     }
 
     setFilteredJobPosts(filtered);
@@ -400,7 +430,10 @@ export function FiltersProvider({ children }: FiltersProviderProps) {
     setSelectedJobCommitments([]);
     setSelectedCompanySize([]);
     setSelectedDatePosted(null);
-    setSelectedSalaryCurrency([]);
+    setSelectedSalaryCurrency({
+      key: 14,
+      label: 'USD',
+    });
     setSelectedSalaryRange(null);
   };
 
@@ -470,12 +503,8 @@ export function FiltersProvider({ children }: FiltersProviderProps) {
       );
     }
 
-    if (selectedSalaryCurrency.length > 0) {
-      filters.push(
-        `with salary currency ${selectedSalaryCurrency
-          .map((c) => c.label)
-          .join(', ')}`
-      );
+    if (selectedSalaryCurrency) {
+      filters.push(`with salary currency ${selectedSalaryCurrency.label}`);
     }
 
     let message = 'No matching job posts';

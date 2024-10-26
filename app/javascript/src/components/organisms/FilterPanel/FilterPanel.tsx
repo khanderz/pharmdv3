@@ -17,7 +17,7 @@ import {
   JobSettingFilter,
   JobCommitmentFilter,
   CompanySizeFilter,
-  CurrencyFilter,
+  SalaryRangeFilter,
 } from '@components/molecules/Filters';
 import { SearchPanel } from '@components/molecules/SearchPanel/SearchPanel';
 import { Accordion } from '@components/atoms/Accordion';
@@ -148,7 +148,8 @@ export const FilterPanel = ({
               <DepartmentFilter />
 
               <JobRoleFilter />
-              <CurrencyFilter />
+
+              <SalaryRangeFilter />
             </Grid>
             <Grid container item xs={6} direction="column">
               <JobCommitmentFilter />
