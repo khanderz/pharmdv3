@@ -65,7 +65,8 @@ gem "dotenv-rails", "~> 3.1", groups: [:development, :test]
 
 gem 'csv'
 
-#  versioning and history tracking for ActiveRecord
 gem 'paper_trail', '~> 15.0'
 
 gem 'ostruct'
+
+gem 'pycall', '~> 1.5.2'
