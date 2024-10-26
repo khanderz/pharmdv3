@@ -36,7 +36,7 @@ export const Autocomplete = ({
   sx,
 }: AutocompleteProps) => {
   const valueProp = value ?? (multiple ? [] : null);
-  console.log({ inputLabel, options, value, valueProp });
+
   return (
     <Box
       data-testid={`${inputLabel}-autocomplete-box`}
@@ -62,7 +62,6 @@ export const Autocomplete = ({
           mt: '2em',
         }}
         getOptionLabel={(option) => {
-          console.log({ option });
           return option?.value?.toString();
         }}
         renderInput={(params) => (

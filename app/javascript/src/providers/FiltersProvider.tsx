@@ -185,6 +185,7 @@ export function FiltersProvider({ children }: FiltersProviderProps) {
     loading: companySizesLoading,
     error: companySizesError,
   } = useCompanySizes();
+
   const {
     currencies: allCurrencies,
     loading: currenciesLoading,
@@ -336,6 +337,11 @@ export function FiltersProvider({ children }: FiltersProviderProps) {
       filtered = filtered.filter((jobPost) => {
         const postDate = dayjs(jobPost.job_posted);
 
+        if (!postDate.isValid()) {
+          console.warn('Invalid job_posted date:', jobPost.job_posted);
+          return false;
+        }
+
         switch (selectedDatePosted) {
           case 'Past 24 hours':
             return now.diff(postDate, 'hour') <= 24;
@@ -370,7 +376,6 @@ export function FiltersProvider({ children }: FiltersProviderProps) {
       );
     }
 
-    // Filter by salary currency
     if (selectedSalaryCurrency.length > 0) {
       filtered = filtered.filter((jobPost) =>
         selectedSalaryCurrency.some(

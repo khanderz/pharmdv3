@@ -17,6 +17,7 @@ export const DateFilter = () => {
 
   return (
     <Autocomplete
+      id="date-posted-autocomplete"
       inputLabel="Date Posted"
       options={options}
       value={selectedOption}
@@ -24,7 +25,6 @@ export const DateFilter = () => {
         const selectedValue = (newValue as AutocompleteOption)?.value || '';
         setSelectedDatePosted(selectedValue as string);
       }}
-      id="date-posted-autocomplete"
     />
   );
 };
