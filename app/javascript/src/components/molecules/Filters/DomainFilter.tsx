@@ -24,7 +24,7 @@ export const DomainFilter = () => {
   return (
     <Autocomplete
       multiple
-      inputLabel="Domains"
+      inputLabel="Healthcare Domains"
       options={options}
       value={selectedOptions}
       onChange={(e, value) => {

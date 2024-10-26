@@ -34,7 +34,7 @@ export const FilterPanel = ({
   resetFilters,
   onSortByDate,
 }: FilterPanelProps) => {
-  const [isExpanded, setExpanded] = useState(true);
+  const [isExpanded, setExpanded] = useState(false);
   const [isAscending, setIsAscending] = useState(true);
 
   const toggleAccordion = () => {
@@ -97,6 +97,12 @@ export const FilterPanel = ({
                   }}
                 />
               </IconButton>
+              <IconButton
+                onClick={toggleAccordion}
+                sx={{ color: 'primary.main' }}
+              >
+                <FilterList />
+              </IconButton>
               <Button
                 data-testid={`filter-panel-reset-button`}
                 variant="contained"
@@ -104,17 +110,11 @@ export const FilterPanel = ({
                 sx={{ m: 2, float: 'right' }}
                 onClick={() => {
                   resetFilters();
-                  // setExpanded(false);
+                  setExpanded(false);
                 }}
               >
                 Reset
               </Button>
-              <IconButton
-                onClick={toggleAccordion}
-                sx={{ color: 'primary.main' }}
-              >
-                <FilterList />
-              </IconButton>
             </Box>
           </Box>
 
