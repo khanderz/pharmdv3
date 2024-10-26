@@ -1,5 +1,4 @@
 import React from 'react';
-import { Company } from '@customtypes/company';
 import { Autocomplete } from '@components/atoms/index';
 import { useFiltersContext } from '@javascript/providers/FiltersProvider';
 import { AutocompleteOption } from '@components/atoms/Autocomplete';
@@ -7,10 +6,11 @@ import { AutocompleteOption } from '@components/atoms/Autocomplete';
 export const CompanyFilter = () => {
   const { selectedCompanies, setSelectedCompanies, uniqueCompanies } =
     useFiltersContext();
-  console.log({ uniqueCompanies, selectedCompanies });
+
   return (
     <Autocomplete
       multiple
+      id={'company-autocomplete'}
       inputLabel="Companies"
       options={uniqueCompanies.map((company) => ({
         key: company.id,

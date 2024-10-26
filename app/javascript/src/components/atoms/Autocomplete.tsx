@@ -67,13 +67,6 @@ export const Autocomplete = ({
           console.log({ newValue });
           onChange(e, newValue ?? (multiple ? [] : null));
         }}
-        // isOptionEqualToValue={(
-        //   option: AutocompleteOption,
-        //   value: AutocompleteOption
-        // ) => {
-        //   console.log({ option, value });
-        //   return option.key === value.key;
-        // }}
         loadingText="Loading..."
         loading={loading}
         disableClearable={disableClearable}
@@ -81,10 +74,7 @@ export const Autocomplete = ({
           mt: '2em',
         }}
         getOptionLabel={(option) => {
-          //  option = {key: 30, value: 'Fate Therapeutics'}
-          return getOptionLabel
-            ? getOptionLabel(option)
-            : option.value.toString();
+          return option.value.toString();
         }}
         renderInput={(params) => (
           <MuiTextField

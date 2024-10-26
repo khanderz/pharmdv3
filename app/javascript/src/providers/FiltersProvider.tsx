@@ -50,8 +50,8 @@ interface FiltersContextProps {
   setSelectedJobCommitments: (jobCommitments: JobCommitment[]) => void;
   selectedDatePosted: string | null;
   setSelectedDatePosted: (datePosted: string) => void;
-  selectedCompanySize: CompanySize['id'][];
-  setSelectedCompanySize: (size: CompanySize['id'][]) => void;
+  selectedCompanySize: CompanySize[];
+  setSelectedCompanySize: (size: CompanySize[]) => void;
   selectedSalaryCurrency: JobSalaryCurrency['key'] | null;
   setSelectedSalaryCurrency: (
     currencyId: JobSalaryCurrency['key'] | null
@@ -212,9 +212,9 @@ export function FiltersProvider({ children }: FiltersProviderProps) {
   const [selectedDatePosted, setSelectedDatePosted] = useState<string | null>(
     null
   );
-  const [selectedCompanySize, setSelectedCompanySize] = useState<
-    CompanySize['id'][]
-  >([]);
+  const [selectedCompanySize, setSelectedCompanySize] = useState<CompanySize[]>(
+    []
+  );
   const [selectedSalaryCurrency, setSelectedSalaryCurrency] = useState<
     JobSalaryCurrency['key'] | null
   >(null);
@@ -357,7 +357,9 @@ export function FiltersProvider({ children }: FiltersProviderProps) {
       filtered = filtered.filter(
         (jobPost) =>
           jobPost.company.company_size_id !== undefined &&
-          selectedCompanySize.includes(jobPost.company.company_size_id)
+          selectedCompanySize
+            .map((size) => size.id)
+            .includes(jobPost.company.company_size_id)
       );
     }
 
@@ -445,12 +447,10 @@ export function FiltersProvider({ children }: FiltersProviderProps) {
     }
 
     if (selectedCompanySize.length > 0) {
-      const selectedSizeNames = selectedCompanySize
-        .map(
-          (sizeId) =>
-            companySizeObjects.find((size) => size.id === sizeId)?.size_range
-        )
-        .filter((name): name is string => name !== undefined);
+      const selectedSizeNames = selectedCompanySize.map(
+        (size) =>
+          companySizeObjects.find((s) => s.id === size.id)?.size_range ?? ''
+      );
 
       if (selectedSizeNames.length > 0) {
         filters.push(`for company size ${selectedSizeNames.join(', ')}`);
