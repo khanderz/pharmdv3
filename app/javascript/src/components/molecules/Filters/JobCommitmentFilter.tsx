@@ -29,7 +29,6 @@ export const JobCommitmentFilter = () => {
         setSelectedJobCommitments(selected);
       }}
       loading={jobCommitmentsLoading}
-      disableClearable={false}
     />
   );
 };

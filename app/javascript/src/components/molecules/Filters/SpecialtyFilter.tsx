@@ -25,7 +25,6 @@ export const SpecialtyFilter = () => {
         setSelectedSpecialties(selected);
       }}
       loading={false}
-      disableClearable={false}
     />
   );
 };

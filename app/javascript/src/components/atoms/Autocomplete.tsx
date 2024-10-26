@@ -18,13 +18,11 @@ export type AutocompleteProps = {
   multiple?: boolean;
   id?: string;
   loading?: boolean;
-  disableClearable?: boolean;
   onChange: (
     event: React.SyntheticEvent<Element, Event>,
     value: AutocompleteOption | AutocompleteOption[] | null
   ) => void;
   sx?: Record<string, any>;
-  getOptionLabel?: (option: AutocompleteOption) => string;
 };
 
 export const Autocomplete = ({
@@ -34,20 +32,11 @@ export const Autocomplete = ({
   multiple = false,
   id,
   loading = false,
-  disableClearable = false,
   onChange,
   sx,
-  getOptionLabel,
 }: AutocompleteProps) => {
   const valueProp = value ?? (multiple ? [] : null);
-  // console.log({
-  //   inputLabel,
-  //   options,
-  //   value,
-  //   multiple,
-  //   valueProp,
-  //   getOptionLabel,
-  // });
+  console.log({ inputLabel, options, value, valueProp });
   return (
     <Box
       data-testid={`${inputLabel}-autocomplete-box`}
@@ -69,12 +58,12 @@ export const Autocomplete = ({
         }}
         loadingText="Loading..."
         loading={loading}
-        disableClearable={disableClearable}
         sx={{
           mt: '2em',
         }}
         getOptionLabel={(option) => {
-          return option.value.toString();
+          console.log({ option });
+          return option?.value?.toString();
         }}
         renderInput={(params) => (
           <MuiTextField

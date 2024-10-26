@@ -32,7 +32,6 @@ export const CompanyFilter = () => {
         setSelectedCompanies(selected);
       }}
       loading={false}
-      disableClearable={false}
     />
   );
 };

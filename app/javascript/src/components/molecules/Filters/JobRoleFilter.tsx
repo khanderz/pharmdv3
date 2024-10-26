@@ -29,7 +29,6 @@ export const JobRoleFilter = () => {
         setSelectedJobRoles(selected);
       }}
       loading={jobRolesLoading}
-      disableClearable={false}
     />
   );
 };

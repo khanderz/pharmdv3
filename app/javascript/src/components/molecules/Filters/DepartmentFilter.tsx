@@ -29,7 +29,6 @@ export const DepartmentFilter = () => {
         setSelectedDepartments(selected);
       }}
       loading={departmentsLoading}
-      disableClearable={false}
     />
   );
 };

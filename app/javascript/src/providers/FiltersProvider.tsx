@@ -52,10 +52,8 @@ interface FiltersContextProps {
   setSelectedDatePosted: (datePosted: string) => void;
   selectedCompanySize: CompanySize[];
   setSelectedCompanySize: (size: CompanySize[]) => void;
-  selectedSalaryCurrency: JobSalaryCurrency['key'] | null;
-  setSelectedSalaryCurrency: (
-    currencyId: JobSalaryCurrency['key'] | null
-  ) => void;
+  selectedSalaryCurrency: JobSalaryCurrency[];
+  setSelectedSalaryCurrency: (currencyId: JobSalaryCurrency[]) => void;
   selectedSalaryRange: [number, number] | null;
   setSelectedSalaryRange: (range: [number, number] | null) => void;
   errors: string | null;
@@ -103,7 +101,7 @@ export const FiltersContext = createContext<FiltersContextProps>({
   setSelectedDatePosted: () => {},
   selectedCompanySize: [],
   setSelectedCompanySize: () => {},
-  selectedSalaryCurrency: null,
+  selectedSalaryCurrency: [],
   setSelectedSalaryCurrency: () => {},
   selectedSalaryRange: null,
   setSelectedSalaryRange: () => {},
@@ -216,8 +214,8 @@ export function FiltersProvider({ children }: FiltersProviderProps) {
     []
   );
   const [selectedSalaryCurrency, setSelectedSalaryCurrency] = useState<
-    JobSalaryCurrency['key'] | null
-  >(null);
+    JobSalaryCurrency[]
+  >([]);
   const [selectedSalaryRange, setSelectedSalaryRange] = useState<
     [number, number] | null
   >(null);
@@ -373,9 +371,11 @@ export function FiltersProvider({ children }: FiltersProviderProps) {
     }
 
     // Filter by salary currency
-    if (selectedSalaryCurrency) {
-      filtered = filtered.filter(
-        (jobPost) => jobPost.job_salary_currency_id === selectedSalaryCurrency
+    if (selectedSalaryCurrency.length > 0) {
+      filtered = filtered.filter((jobPost) =>
+        selectedSalaryCurrency.some(
+          (currency) => jobPost.job_salary_currency_id === currency.key
+        )
       );
     }
 
@@ -393,7 +393,7 @@ export function FiltersProvider({ children }: FiltersProviderProps) {
     setSelectedJobCommitments([]);
     setSelectedCompanySize([]);
     setSelectedDatePosted(null);
-    setSelectedSalaryCurrency(null);
+    setSelectedSalaryCurrency([]);
     setSelectedSalaryRange(null);
   };
 
@@ -463,13 +463,12 @@ export function FiltersProvider({ children }: FiltersProviderProps) {
       );
     }
 
-    if (selectedSalaryCurrency) {
-      const currency = allCurrencies.find(
-        (c) => c.key === selectedSalaryCurrency
+    if (selectedSalaryCurrency.length > 0) {
+      filters.push(
+        `with salary currency ${selectedSalaryCurrency
+          .map((c) => c.label)
+          .join(', ')}`
       );
-      if (currency) {
-        filters.push(`with currency ${currency.label}`);
-      }
     }
 
     let message = 'No matching job posts';

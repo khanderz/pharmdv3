@@ -25,7 +25,6 @@ export const DomainFilter = () => {
         setSelectedDomains(selected);
       }}
       loading={domainsLoading}
-      disableClearable={false}
     />
   );
 };
