@@ -18,6 +18,7 @@ import {
   JobCommitmentFilter,
   CompanySizeFilter,
   SalaryRangeFilter,
+  LocationFilter,
 } from '@components/molecules/Filters';
 import { SearchPanel } from '@components/molecules/SearchPanel/SearchPanel';
 import { Accordion } from '@components/atoms/Accordion';
@@ -157,6 +158,7 @@ export const FilterPanel = ({
               <DateFilter />
 
               <CompanySizeFilter />
+              <LocationFilter />
             </Grid>
           </Grid>
         </AccordionDetails>

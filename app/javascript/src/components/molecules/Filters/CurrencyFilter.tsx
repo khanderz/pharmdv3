@@ -21,13 +21,12 @@ export const CurrencyFilter = () => {
     (option) => option.key === selectedSalaryCurrency?.key
   );
 
-  console.log({ options, selectedOption, selectedSalaryCurrency });
   return (
     <Autocomplete
       id="currency-autocomplete"
       inputLabel="Currency"
       options={options}
-      value={selectedOption || { key: 14, value: 'USD' }}
+      value={selectedOption || null}
       onChange={(event, newValue) => {
         const selected = options.find(
           (currency) => currency.key === (newValue as AutocompleteOption).key

@@ -22,6 +22,8 @@ export type AutocompleteProps = {
     value: AutocompleteOption | AutocompleteOption[] | null
   ) => void;
   sx?: Record<string, any>;
+  inputValue?: string;
+  onInputChange?: (event: React.ChangeEvent<{}>, value: string) => void;
 };
 
 export const Autocomplete = ({
@@ -33,6 +35,8 @@ export const Autocomplete = ({
   loading = false,
   onChange,
   sx,
+  inputValue,
+  onInputChange,
 }: AutocompleteProps) => {
   const valueProp = value ?? (multiple ? [] : null);
 
@@ -62,6 +66,8 @@ export const Autocomplete = ({
         getOptionLabel={(option) => {
           return option?.value?.toString();
         }}
+        inputValue={inputValue}
+        onInputChange={onInputChange}
         renderInput={(params) => (
           <MuiTextField
             {...params}

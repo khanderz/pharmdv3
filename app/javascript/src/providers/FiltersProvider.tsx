@@ -25,13 +25,11 @@ import {
   useJobRoles,
   useJobCommitments,
   useJobSettings,
-  useCities,
-  useStates,
-  useCountries,
   useCompanySizes,
   getCurrencies,
 } from '@javascript/hooks';
 import dayjs from 'dayjs';
+import { AutocompleteOption } from '@components/atoms/Autocomplete';
 
 interface FiltersContextProps {
   selectedCompanies: Company[];
@@ -55,7 +53,7 @@ interface FiltersContextProps {
   selectedSalaryCurrency: Omit<
     JobSalaryCurrency,
     'error_details' | 'reference_id' | 'resolved'
-  >;
+  > | null;
   setSelectedSalaryCurrency: (
     currency: Omit<
       JobSalaryCurrency,
@@ -64,6 +62,8 @@ interface FiltersContextProps {
   ) => void;
   selectedSalaryRange: [number, number] | null;
   setSelectedSalaryRange: (range: [number, number] | null) => void;
+  selectedLocation: AutocompleteOption | null;
+  setSelectedLocation: (location: AutocompleteOption | null) => void;
   errors: string | null;
   currentlyLoading: boolean;
   uniqueCompanies: Company[];
@@ -110,13 +110,12 @@ export const FiltersContext = createContext<FiltersContextProps>({
   setSelectedDatePosted: () => {},
   selectedCompanySize: [],
   setSelectedCompanySize: () => {},
-  selectedSalaryCurrency: {
-    key: 14,
-    label: 'USD',
-  },
+  selectedSalaryCurrency: null,
   setSelectedSalaryCurrency: () => {},
   selectedSalaryRange: null,
   setSelectedSalaryRange: () => {},
+  selectedLocation: null,
+  setSelectedLocation: () => {},
   errors: null,
   currentlyLoading: false,
   uniqueCompanies: [],
@@ -230,15 +229,15 @@ export function FiltersProvider({ children }: FiltersProviderProps) {
   const [selectedCompanySize, setSelectedCompanySize] = useState<CompanySize[]>(
     []
   );
-  const [selectedSalaryCurrency, setSelectedSalaryCurrency] = useState<
-    Omit<JobSalaryCurrency, 'error_details' | 'reference_id' | 'resolved'>
-  >({
-    key: 14,
-    label: 'USD',
-  });
+  const [selectedSalaryCurrency, setSelectedSalaryCurrency] = useState<Omit<
+    JobSalaryCurrency,
+    'error_details' | 'reference_id' | 'resolved'
+  > | null>(null);
   const [selectedSalaryRange, setSelectedSalaryRange] = useState<
     [number, number] | null
   >(null);
+  const [selectedLocation, setSelectedLocation] =
+    useState<AutocompleteOption | null>(null);
 
   /* --------------------- Constants --------------------- */
 
@@ -386,7 +385,6 @@ export function FiltersProvider({ children }: FiltersProviderProps) {
       );
     }
 
-    // Filter by salary range
     if (selectedSalaryRange) {
       const [min, max] = selectedSalaryRange;
       filtered = filtered.filter(
@@ -416,8 +414,19 @@ export function FiltersProvider({ children }: FiltersProviderProps) {
       });
     }
 
+    if (selectedLocation) {
+      filtered = filtered.filter((jobPost) => {
+        const locationValue = (selectedLocation as AutocompleteOption).value;
+
+        if (Array.isArray(jobPost.job_locations)) {
+          return jobPost.job_locations.includes(locationValue as string);
+        }
+
+        return jobPost.job_locations === locationValue;
+      });
+    }
+
     setFilteredJobPosts(filtered);
-    console.log({ jobPosts, filtered });
   };
 
   const resetFilters = () => {
@@ -430,11 +439,9 @@ export function FiltersProvider({ children }: FiltersProviderProps) {
     setSelectedJobCommitments([]);
     setSelectedCompanySize([]);
     setSelectedDatePosted(null);
-    setSelectedSalaryCurrency({
-      key: 14,
-      label: 'USD',
-    });
+    setSelectedSalaryCurrency(null);
     setSelectedSalaryRange(null);
+    setSelectedLocation(null);
   };
 
   const getNoResultsMessage = () => {
@@ -507,6 +514,10 @@ export function FiltersProvider({ children }: FiltersProviderProps) {
       filters.push(`with salary currency ${selectedSalaryCurrency.label}`);
     }
 
+    if (selectedLocation) {
+      filters.push(`in location ${selectedLocation}`);
+    }
+
     let message = 'No matching job posts';
 
     if (filters.length > 0) {
@@ -532,6 +543,7 @@ export function FiltersProvider({ children }: FiltersProviderProps) {
     selectedCompanySize,
     selectedSalaryCurrency,
     selectedSalaryRange,
+    selectedLocation,
     jobPosts,
   ]);
 
@@ -559,6 +571,8 @@ export function FiltersProvider({ children }: FiltersProviderProps) {
       setSelectedSalaryCurrency,
       selectedSalaryRange,
       setSelectedSalaryRange,
+      selectedLocation,
+      setSelectedLocation,
       errors,
       currentlyLoading,
       uniqueCompanies,

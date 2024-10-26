@@ -8,6 +8,7 @@ import { SpecialtyFilter } from './SpecialtyFilter';
 import { CompanySizeFilter } from './CompanySizeFilter';
 import { CurrencyFilter } from './CurrencyFilter';
 import { SalaryRangeFilter } from './SalaryRangeFilter';
+import { LocationFilter } from './LocationFilter';
 
 export {
   CompanyFilter,
@@ -20,4 +21,5 @@ export {
   CompanySizeFilter,
   CurrencyFilter,
   SalaryRangeFilter,
+  LocationFilter,
 };
