@@ -3,7 +3,9 @@
 one:
   key: MyString
   value: MyString
+  aliases: MyString
 
 two:
   key: MyString
   value: MyString
+  aliases: MyString
