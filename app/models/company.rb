@@ -19,7 +19,7 @@ class Company < ApplicationRecord
   has_many :job_posts, dependent: :destroy
   has_many :company_specializations
   has_many :company_specialties, through: :company_specializations
-  
+
   validates :company_name, presence: true, uniqueness: true
   validates :linkedin_url, uniqueness: true, allow_blank: true
 
@@ -133,4 +133,15 @@ class Company < ApplicationRecord
     end
     changes_made
   end
+
+
+  def populate_missing_data
+    data = { name: self.name, industry: self.industry }  # Set up the data to process
+    processed_data = DataProcessingService.process(data)  # Call the processing service
+    
+    # Use `processed_data` to fill in missing fields, e.g., `self.size`
+    self.size = processed_data[:predicted_size] if self.size.nil?
+    self.save
+  end
+  
 end
