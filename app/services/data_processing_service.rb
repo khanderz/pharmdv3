@@ -6,7 +6,7 @@ include PyCall::Import
 pyimport :data_processing, as: :dp
 
 class DataProcessingService
-  def self.process(data)
-    dp.process_data(data)
+  def self.predict_company_attributes(data)
+    dp.predict_company_attributes(data)
   end
 end

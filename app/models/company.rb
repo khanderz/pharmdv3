@@ -134,13 +134,22 @@ class Company < ApplicationRecord
     changes_made
   end
 
-
   def populate_missing_data
-    data = { name: self.name, industry: self.industry }  # Set up the data to process
-    processed_data = DataProcessingService.process(data)  # Call the processing service
-    
-    # Use `processed_data` to fill in missing fields, e.g., `self.size`
-    self.size = processed_data[:predicted_size] if self.size.nil?
+    data = {
+      company_name: self.company_name,
+      operating_status: self.operating_status,
+      industry: self.healthcare_domains.map(&:key).join(','),
+      company_ats_type: self.ats_type&.ats_type_code,
+      company_size: self.company_size&.size_range,
+      healthcare_domain: self.healthcare_domains.present? ? self.healthcare_domains.map(&:key).join(',') : nil,
+      company_specialty: self.company_specialties.present? ? self.company_specialties.map(&:key).join(',') : nil
+    }
+
+    processed_data = DataProcessingService.predict_company_attributes(data)
+
+    self.company_size ||= processed_data[:predicted_size]
+    self.healthcare_domains << HealthcareDomain.find_by(key: processed_data[:predicted_healthcare_domain]) if self.healthcare_domains.empty?
+    self.company_specialties << CompanySpecialty.find_by(key: processed_data[:predicted_company_specialty]) if self.company_specialties.empty?
     self.save
   end
   
