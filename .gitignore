@@ -61,4 +61,5 @@ __pycache__/
 .env.local
 
 /lib/seeds
+/db/seeds
 /config/credentials
