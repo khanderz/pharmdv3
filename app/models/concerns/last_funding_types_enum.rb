@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # module LastFundingTypesEnum
 #   extend ActiveSupport::Concern
 
@@ -37,4 +39,3 @@
 #     validates :last_funding_type, inclusion: { in: Company.lastFundingTypes.keys }
 #   end
 # end
-

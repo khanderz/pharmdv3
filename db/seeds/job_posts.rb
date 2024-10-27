@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 companies = Company.all
 
 companies.each do |company|

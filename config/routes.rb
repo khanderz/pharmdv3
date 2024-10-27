@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 Rails.application.routes.draw do
   root to: 'home#index'
 
@@ -18,9 +20,9 @@ Rails.application.routes.draw do
   resources :job_commitments, defaults: { format: :json }
   resources :company_sizes, only: [:index]
   resources :job_salary_currencies, only: [:index]
-  
+
   # Health status
-  get "up" => "rails/health#show", as: :rails_health_check
+  get 'up' => 'rails/health#show', as: :rails_health_check
 
   namespace :api do
     namespace :v1 do

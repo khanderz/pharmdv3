@@ -1,7 +1,9 @@
-require_relative "boot"
+# frozen_string_literal: true
 
-require "rails/all"
-require "dotenv/load"
+require_relative 'boot'
+
+require 'rails/all'
+require 'dotenv/load'
 
 # Require the gems listed in Gemfile, including any gems
 # you've limited to :test, :development, or :production.
@@ -13,15 +15,12 @@ module Pharmdv3
     config.load_defaults 7.1
 
     # Add the `lib` folder to autoload paths, ignoring specific subdirectories
-    config.autoload_lib(ignore: %w(assets tasks))
+    config.autoload_lib(ignore: %w[assets tasks])
 
     # Ensure the `lib` folder is eager loaded in production
     config.eager_load_paths << Rails.root.join('lib')
 
     # Load .env file in development and test environments
-    if Rails.env.development? || Rails.env.test?
-      Dotenv::Rails.load
-    end
+    Dotenv::Rails.load if Rails.env.development? || Rails.env.test?
   end
 end
-

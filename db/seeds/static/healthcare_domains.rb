@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # Seeding common healthcare domains
 healthcare_domains = [
   { key: 'BEHAVIORAL_HEALTH', value: 'Behavioral Health' },
@@ -30,24 +32,22 @@ healthcare_domains = [
 
 seeded_count = 0
 existing_count = 0
-total_domains = HealthcareDomain.count
+HealthcareDomain.count
 
 healthcare_domains.each do |domain|
-  begin
-    domain_record = HealthcareDomain.find_or_initialize_by(key: domain[:key])
-    
-    if domain_record.persisted?
-      existing_count += 1
-      puts "Domain #{domain[:key]} already exists."
-    else
-      domain_record.value = domain[:value]
-      domain_record.save!
-      seeded_count += 1
-      puts "Seeded new domain: #{domain[:key]} - #{domain[:value]}"
-    end
-  rescue StandardError => e
-    puts "Error seeding healthcare domain: #{domain[:key]} - #{e.message}"
+  domain_record = HealthcareDomain.find_or_initialize_by(key: domain[:key])
+
+  if domain_record.persisted?
+    existing_count += 1
+    puts "Domain #{domain[:key]} already exists."
+  else
+    domain_record.value = domain[:value]
+    domain_record.save!
+    seeded_count += 1
+    puts "Seeded new domain: #{domain[:key]} - #{domain[:value]}"
   end
+rescue StandardError => e
+  puts "Error seeding healthcare domain: #{domain[:key]} - #{e.message}"
 end
 
 total_domains_after = HealthcareDomain.count

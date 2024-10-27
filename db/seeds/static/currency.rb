@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # Seeding common job salary currencies
 job_salary_currencies = [
   { currency_code: 'AUD' }, # Australian Dollar
@@ -14,26 +16,24 @@ job_salary_currencies = [
   { currency_code: 'SEK' }, # Swedish Krona
   { currency_code: 'SGD' }, # Singapore Dollar
   { currency_code: 'USD' }, # US Dollar
-  { currency_code: 'ZAR' }, # South African Rand
+  { currency_code: 'ZAR' } # South African Rand
 ]
 
 seeded_count = 0
 existing_count = 0
-total_currencies = JobSalaryCurrency.count
+JobSalaryCurrency.count
 
 job_salary_currencies.each do |currency|
-  begin
-    currency_record = JobSalaryCurrency.find_or_initialize_by(currency_code: currency[:currency_code])
-    
-    if currency_record.persisted?
-      existing_count += 1
-    else
-      currency_record.save!
-      seeded_count += 1
-    end
-  rescue StandardError => e
-    puts "Error seeding job salary currency: #{currency[:currency_code]} - #{e.message}"
+  currency_record = JobSalaryCurrency.find_or_initialize_by(currency_code: currency[:currency_code])
+
+  if currency_record.persisted?
+    existing_count += 1
+  else
+    currency_record.save!
+    seeded_count += 1
   end
+rescue StandardError => e
+  puts "Error seeding job salary currency: #{currency[:currency_code]} - #{e.message}"
 end
 
 total_currencies_after = JobSalaryCurrency.count

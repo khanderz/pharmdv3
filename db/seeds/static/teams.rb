@@ -1,53 +1,56 @@
+# frozen_string_literal: true
+
 teams = [
-  { team_name: 'Business Development', aliases: ['Sales', 'Sales Team', 'Business Development Team', "Product/S&O"] },  
+  { team_name: 'Business Development', aliases: ['Sales', 'Sales Team', 'Business Development Team', 'Product/S&O'] },
   { team_name: 'Business Intelligence', aliases: ['BI Team', 'BI', 'Data Analytics'] },
   { team_name: 'Care Operations', aliases: ['Care Team', 'Operations Team', 'Operations', 'Member Care'] },
-  { team_name: 'Client Services', aliases: ['Customer Success', 'Customer Support', 'Strategic Alliances', 'Customer Operations'] },
-  { team_name: 'Clinical Team', aliases: ['Healthcare Team', 'Medical Team', 'Therapy', 'Psychiatry', 'Clinical Strategy and Services', 'Pharmacy'] },
+  { team_name: 'Client Services',
+    aliases: ['Customer Success', 'Customer Support', 'Strategic Alliances', 'Customer Operations'] },
+  { team_name: 'Clinical Team',
+    aliases: ['Healthcare Team', 'Medical Team', 'Therapy', 'Psychiatry', 'Clinical Strategy and Services',
+              'Pharmacy'] },
   { team_name: 'Data Science', aliases: ['Data Team', 'Data Analytics', 'Data Engineering'] },
   { team_name: 'DevOps', aliases: ['Infrastructure', 'Site Reliability', 'Cloud Engineering'] },
   { team_name: 'Finance', aliases: ['Accounting', 'Financial Planning', 'FP&A', 'Finance Team'] },
   { team_name: 'Human Resources', aliases: ['HR', 'People Operations', 'Talent Acquisition'] },
   { team_name: 'Information Security', aliases: ['Cybersecurity', 'Security Team', 'Information Technology'] },
-  { team_name: "Internship", aliases: ['Interns', 'Internship Team', 'Internship Program', "fellowship", 'graduate'] },
-  { team_name: 'Legal', aliases: ['Corporate Law', 'Compliance', 'Legal Affairs'] },  
+  { team_name: 'Internship', aliases: ['Interns', 'Internship Team', 'Internship Program', 'fellowship', 'graduate'] },
+  { team_name: 'Legal', aliases: ['Corporate Law', 'Compliance', 'Legal Affairs'] },
   { team_name: 'Marketing', aliases: ['Digital Marketing', 'Branding Team'] },
-  { team_name: 'Product', aliases: ['Product Development', 'Product Team', 'Design', "Product/S&O"] },
-  { team_name: "Operations", aliases: ['Ops', 'Operations Team', 'Operations and Strategy'] },
+  { team_name: 'Product', aliases: ['Product Development', 'Product Team', 'Design', 'Product/S&O'] },
+  { team_name: 'Operations', aliases: ['Ops', 'Operations Team', 'Operations and Strategy'] },
   { team_name: 'Product Management', aliases: ['PM Team', 'Product Team'] },
   { team_name: 'Sales', aliases: ['Business Development', 'Sales Team'] },
   { team_name: 'Software Engineering', aliases: ['Development Team', 'Engineering Team', 'Engineering'] },
-  { team_name: 'Technical Support', aliases: ['Tech Support', 'Help Desk', 'IT Support'] },
+  { team_name: 'Technical Support', aliases: ['Tech Support', 'Help Desk', 'IT Support'] }
 ]
 
 seeded_count = 0
 updated_count = 0
 existing_count = 0
-total_teams = Team.count
+Team.count
 
 teams.each do |team|
-  begin
-    team_record = Team.find_or_initialize_by(team_name: team[:team_name])
+  team_record = Team.find_or_initialize_by(team_name: team[:team_name])
 
-    if team_record.persisted?
-      # Check if the aliases need to be updated
-      if team_record.aliases.sort != team[:aliases].sort
-        team_record.aliases = team[:aliases]
-        team_record.save!
-        updated_count += 1
-        puts "Updated aliases for team: #{team[:team_name]}"
-      else
-        existing_count += 1
-      end
-    else
+  if team_record.persisted?
+    # Check if the aliases need to be updated
+    if team_record.aliases.sort != team[:aliases].sort
       team_record.aliases = team[:aliases]
       team_record.save!
-      seeded_count += 1
-      puts "Created new team: #{team[:team_name]}"
+      updated_count += 1
+      puts "Updated aliases for team: #{team[:team_name]}"
+    else
+      existing_count += 1
     end
-  rescue StandardError => e
-    puts "Error seeding team: #{team[:team_name]} - #{e.message}"
+  else
+    team_record.aliases = team[:aliases]
+    team_record.save!
+    seeded_count += 1
+    puts "Created new team: #{team[:team_name]}"
   end
+rescue StandardError => e
+  puts "Error seeding team: #{team[:team_name]} - #{e.message}"
 end
 
 total_teams_after = Team.count

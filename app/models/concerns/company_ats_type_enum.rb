@@ -1,8 +1,10 @@
+# frozen_string_literal: true
+
 # module company_ats_type_enum
 #   extend ActiveSupport::Concern
 
 #   included do
-#     enum company_ats_type: {    
+#     enum company_ats_type: {
 #       GREENHOUSE: 'Greenhouse',
 #       LEVER: 'Lever',
 #       BAMBOOHR: 'BambooHR',

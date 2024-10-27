@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class Team < ApplicationRecord
   has_and_belongs_to_many :job_roles, join_table: :job_roles_teams
   has_many :job_posts
@@ -7,9 +9,9 @@ class Team < ApplicationRecord
   def self.find_team(team_name, adjudicatable_type, relation = nil)
     # Clean the team name using the TitleCleaner utility
     cleaned_team_name = Utils::TitleCleaner.clean_title(team_name)
-    
+
     # Look for the team by its name or aliases (case-insensitive)
-    team = Team.find_by('LOWER(team_name) = ? OR LOWER(?) = ANY (SELECT LOWER(unnest(aliases)))', 
+    team = Team.find_by('LOWER(team_name) = ? OR LOWER(?) = ANY (SELECT LOWER(unnest(aliases)))',
                         cleaned_team_name.downcase, cleaned_team_name.downcase)
 
     if team

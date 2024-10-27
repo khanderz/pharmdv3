@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # Seeding most popular countries for business and startups
 countries = [
   { country_code: 'AU', country_name: 'Australia' },
@@ -38,21 +40,20 @@ countries = [
 
 seeded_count = 0
 existing_count = 0
-total_countries = Country.count
+Country.count
 
 countries.each do |country|
-  begin
-    country_record = Country.find_or_initialize_by(country_code: country[:country_code], country_name: country[:country_name])
-    
-    if country_record.persisted?
-      existing_count += 1
-    else
-      country_record.save!
-      seeded_count += 1
-    end
-  rescue StandardError => e
-    puts "Error seeding country: #{country[:country_name]} - #{e.message}"
+  country_record = Country.find_or_initialize_by(country_code: country[:country_code],
+                                                 country_name: country[:country_name])
+
+  if country_record.persisted?
+    existing_count += 1
+  else
+    country_record.save!
+    seeded_count += 1
   end
+rescue StandardError => e
+  puts "Error seeding country: #{country[:country_name]} - #{e.message}"
 end
 
 total_countries_after = Country.count

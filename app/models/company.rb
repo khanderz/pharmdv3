@@ -1,20 +1,25 @@
+# frozen_string_literal: true
+
 class Company < ApplicationRecord
   has_paper_trail ignore: [:updated_at]
+
   belongs_to :ats_type
   belongs_to :company_size, optional: true
   belongs_to :funding_type, optional: true
   belongs_to :city, optional: true
   belongs_to :state, optional: true
   belongs_to :country
+
   has_many :company_domains
   has_many :healthcare_domains, through: :company_domains
   has_many :adjudications, as: :adjudicatable, dependent: :destroy
   has_many :job_posts, foreign_key: :company_id, dependent: :destroy
   has_many :company_specializations
   has_many :company_specialties, through: :company_specializations
+
   validates :company_name, presence: true, uniqueness: true
   validates :linkedin_url, uniqueness: true, allow_blank: true
-  
+
   def self.seed_existing_companies(company, row, ats_type, country)
     changes_made = false
     if company.operating_status != ActiveModel::Type::Boolean.new.cast(row['operating_status'])
@@ -33,7 +38,7 @@ class Company < ApplicationRecord
       company.year_founded = row['year_founded'].to_i
       changes_made = true
     end
-    
+
     if company.acquired_by != row['acquired_by']
       company.acquired_by = row['acquired_by']
       changes_made = true
@@ -82,6 +87,7 @@ class Company < ApplicationRecord
         puts "City '#{row['company_city']}' not found for company #{row['company_name']}. Logged to adjudications."
       end
     end
+
     # Optional attributes
     if row['company_size'].present?
       company_size = CompanySize.find_by(size_range: row['company_size'])
@@ -97,6 +103,7 @@ class Company < ApplicationRecord
         changes_made = true
       end
     end
+
     # Handling multiple healthcare domains
     if row['healthcare_domains'].present?
       healthcare_domains = row['healthcare_domains'].split(',').map(&:strip)
@@ -110,6 +117,7 @@ class Company < ApplicationRecord
     else
       puts "No healthcare domains found for company: #{row['company_name']}"
     end
+
     # Company specialties based on the found healthcare domains
     if row['company_specialty'].present? && domains.present?
       specialties = row['company_specialty'].split(',').map do |specialty_key|
@@ -124,4 +132,18 @@ class Company < ApplicationRecord
     end
     changes_made
   end
+
+  # crunchbase api mapping to company csv
+  def populate_missing_data
+    data = { name: name, industry: industry } # Set up the data to process
+    processed_data = DataProcessingService.process(data) # Call the processing service
+
+    # Use `processed_data` to fill in missing fields, e.g., `self.size`
+    self.size = processed_data[:predicted_size] if size.nil?
+    save
+  end
+
+  # updated company csv to hubspot csv
+
+  # AI model to fill in holes in company csv
 end

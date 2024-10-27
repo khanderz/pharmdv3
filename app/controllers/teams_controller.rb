@@ -1,7 +1,8 @@
+# frozen_string_literal: true
+
 class TeamsController < ApplicationController
-    def index
-      @teams = Team.all
-      render json: @teams
-    end
+  def index
+    @teams = Team.all
+    render json: @teams
   end
-  
+end

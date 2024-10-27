@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # Seeding all states in the United States
 states = [
   { state_code: 'AL', state_name: 'Alabama' },
@@ -54,21 +56,19 @@ states = [
 
 seeded_count = 0
 existing_count = 0
-total_states = State.count
+State.count
 
 states.each do |state|
-  begin
-    state_record = State.find_or_initialize_by(state_code: state[:state_code], state_name: state[:state_name])
-    
-    if state_record.persisted?
-      existing_count += 1
-    else
-      state_record.save!
-      seeded_count += 1
-    end
-  rescue StandardError => e
-    puts "Error seeding state: #{state[:state_name]} - #{e.message}"
+  state_record = State.find_or_initialize_by(state_code: state[:state_code], state_name: state[:state_name])
+
+  if state_record.persisted?
+    existing_count += 1
+  else
+    state_record.save!
+    seeded_count += 1
   end
+rescue StandardError => e
+  puts "Error seeding state: #{state[:state_name]} - #{e.message}"
 end
 
 total_states_after = State.count

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # module CompanyTypesEnum
 #   extend ActiveSupport::Concern
 
@@ -49,7 +51,7 @@
 #         HEALTH_MEDIA: 'Health Media'
 #       }
 #     }
-    
+
 #     validates :company_type, inclusion: { in: Company.company_types.keys }
 #   end
 # end

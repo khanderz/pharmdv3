@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'csv' unless defined?(::CSV)
 
 begin
@@ -12,7 +14,7 @@ begin
       ats_type = AtsType.find_by(ats_type_code: row['company_ats_type'])
       country = Country.find_by(country_code: row['company_country']) ||
                 Country.find_by(country_name: row['company_country']) ||
-                Country.where('? = ANY(aliases)', row['company_country']).first  
+                Country.where('? = ANY(aliases)', row['company_country']).first
 
       if company
         puts "-----UPDATING #{row['company_name']}"
@@ -72,9 +74,10 @@ begin
             puts "State not found for company: #{row['company_name']} or name/code: #{row['company_state']}"
           end
         end
-puts "new_company: #{new_company.inspect}"
+        puts "new_company: #{new_company.inspect}"
         if row['company_city'].present?
-          city = City.find_by(city_name: row['company_city']) || City.where('? = ANY (aliases)', row['company_city']).first
+          city = City.find_by(city_name: row['company_city']) || City.where('? = ANY (aliases)',
+                                                                            row['company_city']).first
 
           if city
             new_company.city = city
@@ -119,9 +122,7 @@ puts "new_company: #{new_company.inspect}"
         healthcare_domains = row['healthcare_domains'].split(',').map(&:strip)
         domains = healthcare_domains.map do |domain_key|
           domain = HealthcareDomain.find_by(key: domain_key)
-          if domain.nil?
-            puts "Healthcare domain not found for company: #{row['company_name']} or key: #{domain_key}"
-          end
+          puts "Healthcare domain not found for company: #{row['company_name']} or key: #{domain_key}" if domain.nil?
           domain
         end.compact
 
@@ -150,7 +151,6 @@ puts "new_company: #{new_company.inspect}"
 
     puts "There are now #{Company.count} rows in the companies table."
   end
-
 rescue StandardError => e
   puts "Error: #{e.message}"
   raise ActiveRecord::Rollback

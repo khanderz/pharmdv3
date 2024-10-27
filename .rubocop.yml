@@ -1,0 +1,5 @@
+Layout/ParameterAlignment:
+  Enabled: true
+
+Layout/HashAlignment:
+  Enabled: true

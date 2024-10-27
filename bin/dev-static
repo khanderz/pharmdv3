@@ -17,10 +17,10 @@ rescue Errno::ENOENT
   exit!
 end
 
-if installed? "overmind"
-  run "overmind"
-elsif installed? "foreman"
-  run "foreman"
+if installed? 'overmind'
+  run 'overmind'
+elsif installed? 'foreman'
+  run 'foreman'
 else
   warn <<~MSG
     NOTICE:

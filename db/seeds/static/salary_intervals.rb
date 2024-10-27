@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # Seeding common job salary intervals
 job_salary_intervals = [
   { interval: 'Annually' },
@@ -11,21 +13,19 @@ job_salary_intervals = [
 
 seeded_count = 0
 existing_count = 0
-total_intervals = JobSalaryInterval.count
+JobSalaryInterval.count
 
 job_salary_intervals.each do |interval|
-  begin
-    job_salary_interval = JobSalaryInterval.find_or_initialize_by(interval: interval[:interval])
-    
-    if job_salary_interval.persisted?
-      existing_count += 1
-    else
-      job_salary_interval.save!
-      seeded_count += 1
-    end
-  rescue StandardError => e
-    puts "Error seeding job salary interval: #{interval[:interval]} - #{e.message}"
+  job_salary_interval = JobSalaryInterval.find_or_initialize_by(interval: interval[:interval])
+
+  if job_salary_interval.persisted?
+    existing_count += 1
+  else
+    job_salary_interval.save!
+    seeded_count += 1
   end
+rescue StandardError => e
+  puts "Error seeding job salary interval: #{interval[:interval]} - #{e.message}"
 end
 
 total_intervals_after = JobSalaryInterval.count

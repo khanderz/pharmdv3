@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # Fetch the HealthcareDomain records to associate with the CompanySpecialties
 domains = {
   behavioral_health: HealthcareDomain.find_by(key: 'BEHAVIORAL_HEALTH'),
@@ -28,9 +30,9 @@ domains = {
 }
 
 # Log missing domains for better feedback during seeding
-missing_domains = domains.select { |key, domain| domain.nil? }
+missing_domains = domains.select { |_key, domain| domain.nil? }
 if missing_domains.any?
-  missing_domains.each { |key, _| puts "Warning: Healthcare domain '#{key}' not found in database." }
+  missing_domains.each_key { |key| puts "Warning: Healthcare domain '#{key}' not found in database." }
 end
 
 # Define the specialties for different healthcare domains
@@ -84,12 +86,12 @@ specialties = {
     { key: 'HEART_SURGERY', value: 'Heart Surgery' }
   ],
   research: [
-    { key: 'BIOTECHNOLOGY', value: 'Biotechnology' },
+    { key: 'BIOTECHNOLOGY', value: 'Biotechnology' }
   ]
 }
 
 seeded_count = 0
-total_specialties = CompanySpecialty.count
+CompanySpecialty.count
 
 specialties.each do |domain_key, domain_specialties|
   domain = domains[domain_key]
@@ -104,11 +106,11 @@ specialties.each do |domain_key, domain_specialties|
       key: specialty[:key]
     )
 
-    unless specialty_record.persisted?
-      specialty_record.update(value: specialty[:value])
-      seeded_count += 1
-      puts "Seeded specialty: #{specialty[:value]} for domain: #{domain_key}"
-    end
+    next if specialty_record.persisted?
+
+    specialty_record.update(value: specialty[:value])
+    seeded_count += 1
+    puts "Seeded specialty: #{specialty[:value]} for domain: #{domain_key}"
   end
 end
 

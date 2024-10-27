@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # Seeding common company sizes
 company_sizes = [
   { size_range: '1-10' },
@@ -11,7 +13,7 @@ company_sizes = [
 ]
 
 seeded_count = 0
-existing_count = CompanySize.count
+CompanySize.count
 
 company_sizes.each do |size|
   company_size_record = CompanySize.find_or_initialize_by(size_range: size[:size_range])

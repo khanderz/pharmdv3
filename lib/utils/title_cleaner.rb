@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # lib/utils/title_cleaner.rb
 module Utils
   class TitleCleaner
@@ -14,7 +16,8 @@ module Utils
       cleaned_title.gsub!(state_pattern, '')
 
       # List of common employment terms to remove
-      employment_terms = ['Contract', 'Full Time', 'Part Time', 'Temporary', 'Intern', 'Per Diem', 'Locum', 'Locum Tenens']
+      employment_terms = ['Contract', 'Full Time', 'Part Time', 'Temporary', 'Intern', 'Per Diem', 'Locum',
+                          'Locum Tenens']
 
       # Create a pattern with employment terms
       employment_pattern = /\b(#{employment_terms.join('|')})\b/i
@@ -24,30 +27,30 @@ module Utils
 
       # List of seniority or job level terms to remove
       seniority_terms = [
-        'Senior', 
-        'Sr.', 
+        'Senior',
+        'Sr.',
         'sr',
-        'I', 
-        'II', 
-        'III', 
-        'Lead', 
-        'Staff', 
-        'junior', 
-        'jr.', 
-        'midlevel', 
-        'mid-level', 
-        'mid level', 
-        'entry level', 
-        'entry-level', 
-        'principal', 
-        'local', 
+        'I',
+        'II',
+        'III',
+        'Lead',
+        'Staff',
+        'junior',
+        'jr.',
+        'midlevel',
+        'mid-level',
+        'mid level',
+        'entry level',
+        'entry-level',
+        'principal',
+        'local',
         'associate',
-       'collections',
-      'team',
-    'supervisor', 
-  'team leader',
-  "Mid-Market"
-]
+        'collections',
+        'team',
+        'supervisor',
+        'team leader',
+        'Mid-Market'
+      ]
 
       # Create a pattern for seniority or job level terms
       seniority_pattern = /\b(#{seniority_terms.join('|')})\b/i

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class CreateHealthcareDomains < ActiveRecord::Migration[7.1]
   def change
     create_table :healthcare_domains do |t|
