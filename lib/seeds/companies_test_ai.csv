@@ -1,0 +1,11 @@
+company_name,operating_status,healthcare_domain,company_specialty,company_ats_type,company_size,last_funding_type,linkedin_url,company_url,is_public,year_founded,company_cities,company_states,company_countries,acquired_by,ats_id,company_description
+Included Health,TRUE,DIGITAL_HEALTH,VIRTUAL_CARE,LEVER,501-1000,SERIES_A,https://www.linkedin.com/company/includedhealth/,https://includedhealth.com,TRUE,2013,San Francisco,CA,US,AcquirerX,includedhealth, 
+Noom,,,,,,,,,,,,,,,, 
+Cohere Health,,,,,,,,,,,,,,,,,
+Evolution IQ,TRUE,DIGITAL_HEALTH,,GREENHOUSE,,,https://www.linkedin.com/company/evolution-iq/,,TRUE,,San Francisco,,US,AcquirerY,evolutioniq,
+Alto Pharmacy,TRUE,,,,501-1000,,https://www.linkedin.com/company/altopharmacy/,https://alto.com,TRUE,2015,,CA,US,,,alto,
+Capsule,TRUE,PHARMA,,,,SEED,,,TRUE,2017,New York City,NY,US,,capsulecares, 
+10X Genomics,TRUE,DIGITAL_HEALTH,GENETICS,,501-1000,SERIES_A,,,TRUE,2012,,CA,US,,,10xgenomics, 
+1upHealth,TRUE,,,GREENHOUSE,501-1000,,,https://www.linkedin.com/company/1uphealth,,FALSE,,Boston,,US,,1uphealth,
+98point6,TRUE,DIGITAL_HEALTH,VIRTUAL_CARE,PINPOINTHQ,501-1000,SEED,https://www.linkedin.com/company/98point6-inc.,https://98point6.com,FALSE,2015,Seattle,,US,axq,, 
+Thyme Care,TRUE,DIGITAL_HEALTH,CARE_COORDINATION_COLLABORATION,,,PRIVATE_EQUITY,https://www.linkedin.com/company/thymecare/,,FALSE,2000,Nashville,,US,AcquirerZ,,
