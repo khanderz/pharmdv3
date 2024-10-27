@@ -24,7 +24,7 @@ module Pharmdv3
     Dotenv::Rails.load if Rails.env.development? || Rails.env.test?
 
     # Set the Google Sheets credentials path as an environment variable
-    ENV["GOOGLE_CREDENTIALS_PATH"] ||= Rails.root.join(
+    ENV['GOOGLE_CREDENTIALS_PATH'] ||= Rails.root.join(
       Rails.application.credentials.dig(:google_sheets, :credentials_path)
     ).to_s
   end

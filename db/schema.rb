@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # This file is auto-generated from the current state of the database. Instead
 # of editing this file, please use the migrations feature of Active Record to
 # incrementally modify your database, and then regenerate this schema definition.
@@ -10,34 +12,33 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_10_27_223556) do
+ActiveRecord::Schema[7.1].define(version: 20_241_027_223_556) do
   # These are extensions that must be enabled in order to support this database
-  enable_extension "plpgsql"
+  enable_extension 'plpgsql'
 
-  create_table "company_specialties", force: :cascade do |t|
-    t.string "key"
-    t.string "value"
-    t.string "aliases", default: [], array: true
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+  create_table 'company_specialties', force: :cascade do |t|
+    t.string 'key'
+    t.string 'value'
+    t.string 'aliases', default: [], array: true
+    t.datetime 'created_at', null: false
+    t.datetime 'updated_at', null: false
   end
 
-  create_table "healthcare_domains", force: :cascade do |t|
-    t.string "key"
-    t.string "value"
-    t.string "aliases", default: [], array: true
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+  create_table 'healthcare_domains', force: :cascade do |t|
+    t.string 'key'
+    t.string 'value'
+    t.string 'aliases', default: [], array: true
+    t.datetime 'created_at', null: false
+    t.datetime 'updated_at', null: false
   end
 
-  create_table "versions", force: :cascade do |t|
-    t.string "whodunnit"
-    t.datetime "created_at"
-    t.bigint "item_id", null: false
-    t.string "item_type", null: false
-    t.string "event", null: false
-    t.text "object"
-    t.index ["item_type", "item_id"], name: "index_versions_on_item_type_and_item_id"
+  create_table 'versions', force: :cascade do |t|
+    t.string 'whodunnit'
+    t.datetime 'created_at'
+    t.bigint 'item_id', null: false
+    t.string 'item_type', null: false
+    t.string 'event', null: false
+    t.text 'object'
+    t.index %w[item_type item_id], name: 'index_versions_on_item_type_and_item_id'
   end
-
 end

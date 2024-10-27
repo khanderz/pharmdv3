@@ -23,7 +23,6 @@ Rails.application.routes.draw do
 
   get 'api/ats_types', to: 'ats_types#index'
 
-
   # Health status
   get 'up' => 'rails/health#show', as: :rails_health_check
 
