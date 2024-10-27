@@ -3,7 +3,7 @@ import pandas as pd
 
 def predict_company_attributes(data):
     """
-    Function to predict and fill missing company attributes.
+    Predicts and fills missing company attributes.
     Expected data format:
     {
         "company_name": str,
@@ -17,14 +17,20 @@ def predict_company_attributes(data):
     """
     processed_result = {}
 
-    # Placeholder logic for attribute prediction
+    # Apply basic predictions based on TensorFlow model or placeholder logic
     if data.get("company_size") is None:
-        processed_result["predicted_size"] = "medium"
+        # Example: Predicting company size based on industry patterns or other indicators
+        # Placeholder model-based logic:
+        processed_result["predicted_size"] = "medium"  # replace with model output, e.g., size_prediction(data)
 
     if data.get("healthcare_domain") is None:
-        processed_result["predicted_healthcare_domain"] = "DIGITAL_HEALTH"
+        # Example: Predicting healthcare domain based on ATS type or industry context
+        # Placeholder model-based logic:
+        processed_result["predicted_healthcare_domain"] = "DIGITAL_HEALTH"  # replace with model output, e.g., domain_prediction(data)
 
     if data.get("company_specialty") is None:
-        processed_result["predicted_company_specialty"] = "VIRTUAL_CARE"
+        # Example: Predicting specialty based on healthcare domain
+        # Placeholder model-based logic:
+        processed_result["predicted_company_specialty"] = "VIRTUAL_CARE"  # replace with model output, e.g., specialty_prediction(data)
 
     return processed_result
