@@ -72,4 +72,6 @@ gem 'paper_trail', '~> 15.0'
 gem 'ostruct'
 
 gem 'pycall', '~> 1.5.2'
-gem 'rubocop', '~> 1.67', require: 'require'
+gem 'rubocop', '~> 1.67'
+
+gem 'bcrypt', '~> 3.1.7'

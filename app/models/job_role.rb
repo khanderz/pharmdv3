@@ -9,7 +9,6 @@ class JobRole < ApplicationRecord
   # Case-insensitive search and create method
   def self.find_or_create_with_department_and_team(job_title, department_names, team_names)
     cleaned_job_title = Utils::TitleCleaner.clean_title(job_title)
-
     department_names = Array(department_names)
     team_names = Array(team_names)
 

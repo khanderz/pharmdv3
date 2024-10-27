@@ -12,15 +12,15 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 20_241_019_203_237) do
+ActiveRecord::Schema[7.1].define(version: 20_241_027_185_517) do
   # These are extensions that must be enabled in order to support this database
   enable_extension 'plpgsql'
 
   create_table 'adjudications', force: :cascade do |t|
-    t.string 'adjudicatable_type'
-    t.bigint 'adjudicatable_id'
+    t.string 'adjudicatable_type', null: false
+    t.bigint 'adjudicatable_id', null: false
     t.text 'error_details'
-    t.boolean 'resolved', default: false
+    t.boolean 'resolved'
     t.datetime 'created_at', null: false
     t.datetime 'updated_at', null: false
     t.index %w[adjudicatable_type adjudicatable_id], name: 'index_adjudications_on_adjudicatable'
@@ -52,11 +52,9 @@ ActiveRecord::Schema[7.1].define(version: 20_241_019_203_237) do
     t.bigint 'company_size_id'
     t.bigint 'funding_type_id'
     t.string 'linkedin_url'
+    t.string 'company_url'
     t.boolean 'is_public'
     t.integer 'year_founded'
-    t.bigint 'city_id'
-    t.bigint 'state_id'
-    t.bigint 'country_id', null: false
     t.string 'acquired_by'
     t.text 'company_description'
     t.string 'ats_id'
@@ -66,13 +64,29 @@ ActiveRecord::Schema[7.1].define(version: 20_241_019_203_237) do
     t.datetime 'created_at', null: false
     t.datetime 'updated_at', null: false
     t.index ['ats_type_id'], name: 'index_companies_on_ats_type_id'
-    t.index ['city_id'], name: 'index_companies_on_city_id'
     t.index ['company_name'], name: 'index_companies_on_company_name', unique: true
     t.index ['company_size_id'], name: 'index_companies_on_company_size_id'
-    t.index ['country_id'], name: 'index_companies_on_country_id'
+    t.index ['company_url'], name: 'index_companies_on_company_url', unique: true
     t.index ['funding_type_id'], name: 'index_companies_on_funding_type_id'
     t.index ['linkedin_url'], name: 'index_companies_on_linkedin_url', unique: true
-    t.index ['state_id'], name: 'index_companies_on_state_id'
+  end
+
+  create_table 'company_cities', force: :cascade do |t|
+    t.bigint 'company_id', null: false
+    t.bigint 'city_id', null: false
+    t.datetime 'created_at', null: false
+    t.datetime 'updated_at', null: false
+    t.index ['city_id'], name: 'index_company_cities_on_city_id'
+    t.index ['company_id'], name: 'index_company_cities_on_company_id'
+  end
+
+  create_table 'company_countries', force: :cascade do |t|
+    t.bigint 'company_id', null: false
+    t.bigint 'country_id', null: false
+    t.datetime 'created_at', null: false
+    t.datetime 'updated_at', null: false
+    t.index ['company_id'], name: 'index_company_countries_on_company_id'
+    t.index ['country_id'], name: 'index_company_countries_on_country_id'
   end
 
   create_table 'company_domains', force: :cascade do |t|
@@ -105,6 +119,15 @@ ActiveRecord::Schema[7.1].define(version: 20_241_019_203_237) do
     t.string 'value'
     t.datetime 'created_at', null: false
     t.datetime 'updated_at', null: false
+  end
+
+  create_table 'company_states', force: :cascade do |t|
+    t.bigint 'company_id', null: false
+    t.bigint 'state_id', null: false
+    t.datetime 'created_at', null: false
+    t.datetime 'updated_at', null: false
+    t.index ['company_id'], name: 'index_company_states_on_company_id'
+    t.index ['state_id'], name: 'index_company_states_on_state_id'
   end
 
   create_table 'countries', force: :cascade do |t|
@@ -151,10 +174,47 @@ ActiveRecord::Schema[7.1].define(version: 20_241_019_203_237) do
     t.index ['commitment_name'], name: 'index_job_commitments_on_commitment_name', unique: true
   end
 
+  create_table 'job_post_cities', force: :cascade do |t|
+    t.bigint 'job_post_id', null: false
+    t.bigint 'city_id'
+    t.datetime 'created_at', null: false
+    t.datetime 'updated_at', null: false
+    t.index ['city_id'], name: 'index_job_post_cities_on_city_id'
+    t.index ['job_post_id'], name: 'index_job_post_cities_on_job_post_id'
+  end
+
+  create_table 'job_post_countries', force: :cascade do |t|
+    t.bigint 'job_post_id', null: false
+    t.bigint 'country_id'
+    t.datetime 'created_at', null: false
+    t.datetime 'updated_at', null: false
+    t.index ['country_id'], name: 'index_job_post_countries_on_country_id'
+    t.index ['job_post_id'], name: 'index_job_post_countries_on_job_post_id'
+  end
+
+  create_table 'job_post_skills', force: :cascade do |t|
+    t.bigint 'job_post_id', null: false
+    t.bigint 'skill_id', null: false
+    t.string 'skill_category'
+    t.datetime 'created_at', null: false
+    t.datetime 'updated_at', null: false
+    t.index ['job_post_id'], name: 'index_job_post_skills_on_job_post_id'
+    t.index ['skill_category'], name: 'index_job_post_skills_on_skill_category'
+    t.index ['skill_id'], name: 'index_job_post_skills_on_skill_id'
+  end
+
+  create_table 'job_post_states', force: :cascade do |t|
+    t.bigint 'job_post_id', null: false
+    t.bigint 'state_id'
+    t.datetime 'created_at', null: false
+    t.datetime 'updated_at', null: false
+    t.index ['job_post_id'], name: 'index_job_post_states_on_job_post_id'
+    t.index ['state_id'], name: 'index_job_post_states_on_state_id'
+  end
+
   create_table 'job_posts', force: :cascade do |t|
     t.bigint 'job_commitment_id'
-    t.bigint 'job_setting_id', null: false
-    t.bigint 'country_id'
+    t.json 'job_setting'
     t.bigint 'department_id', null: false
     t.bigint 'team_id', null: false
     t.bigint 'company_id', null: false
@@ -183,7 +243,6 @@ ActiveRecord::Schema[7.1].define(version: 20_241_019_203_237) do
     t.datetime 'created_at', null: false
     t.datetime 'updated_at', null: false
     t.index ['company_id'], name: 'index_job_posts_on_company_id'
-    t.index ['country_id'], name: 'index_job_posts_on_country_id'
     t.index ['department_id'], name: 'index_job_posts_on_department_id'
     t.index ['job_active'], name: 'index_job_posts_on_job_active'
     t.index ['job_commitment_id'], name: 'index_job_posts_on_job_commitment_id'
@@ -191,7 +250,6 @@ ActiveRecord::Schema[7.1].define(version: 20_241_019_203_237) do
     t.index ['job_role_id'], name: 'index_job_posts_on_job_role_id'
     t.index ['job_salary_currency_id'], name: 'index_job_posts_on_job_salary_currency_id'
     t.index ['job_salary_interval_id'], name: 'index_job_posts_on_job_salary_interval_id'
-    t.index ['job_setting_id'], name: 'index_job_posts_on_job_setting_id'
     t.index ['job_url'], name: 'index_job_posts_on_job_url', unique: true
     t.index ['team_id'], name: 'index_job_posts_on_team_id'
   end
@@ -227,6 +285,7 @@ ActiveRecord::Schema[7.1].define(version: 20_241_019_203_237) do
 
   create_table 'job_salary_currencies', force: :cascade do |t|
     t.string 'currency_code'
+    t.string 'currency_sign'
     t.text 'error_details'
     t.bigint 'reference_id'
     t.boolean 'resolved'
@@ -250,6 +309,54 @@ ActiveRecord::Schema[7.1].define(version: 20_241_019_203_237) do
     t.index ['setting_name'], name: 'index_job_settings_on_setting_name', unique: true
   end
 
+  create_table 'resources', force: :cascade do |t|
+    t.string 'name'
+    t.string 'resource_type'
+    t.string 'url'
+    t.text 'description'
+    t.string 'aliases', default: [], array: true
+    t.datetime 'created_at', null: false
+    t.datetime 'updated_at', null: false
+    t.index ['resource_type'], name: 'index_resources_on_resource_type'
+  end
+
+  create_table 'saved_companies', force: :cascade do |t|
+    t.bigint 'user_id', null: false
+    t.bigint 'company_id', null: false
+    t.datetime 'created_at', null: false
+    t.datetime 'updated_at', null: false
+    t.index ['company_id'], name: 'index_saved_companies_on_company_id'
+    t.index ['user_id'], name: 'index_saved_companies_on_user_id'
+  end
+
+  create_table 'saved_job_posts', force: :cascade do |t|
+    t.bigint 'user_id', null: false
+    t.bigint 'job_post_id', null: false
+    t.datetime 'created_at', null: false
+    t.datetime 'updated_at', null: false
+    t.index ['job_post_id'], name: 'index_saved_job_posts_on_job_post_id'
+    t.index ['user_id'], name: 'index_saved_job_posts_on_user_id'
+  end
+
+  create_table 'skill_resources', force: :cascade do |t|
+    t.bigint 'skill_id', null: false
+    t.bigint 'resource_id', null: false
+    t.datetime 'created_at', null: false
+    t.datetime 'updated_at', null: false
+    t.index ['resource_id'], name: 'index_skill_resources_on_resource_id'
+    t.index ['skill_id'], name: 'index_skill_resources_on_skill_id'
+  end
+
+  create_table 'skills', force: :cascade do |t|
+    t.string 'name'
+    t.string 'skill_type'
+    t.string 'aliases', default: [], array: true
+    t.datetime 'created_at', null: false
+    t.datetime 'updated_at', null: false
+    t.index ['name'], name: 'index_skills_on_name', unique: true
+    t.index ['skill_type'], name: 'index_skills_on_skill_type'
+  end
+
   create_table 'states', force: :cascade do |t|
     t.string 'state_code'
     t.string 'state_name'
@@ -269,6 +376,63 @@ ActiveRecord::Schema[7.1].define(version: 20_241_019_203_237) do
     t.index ['team_name'], name: 'index_teams_on_team_name', unique: true
   end
 
+  create_table 'user_company_specialties', force: :cascade do |t|
+    t.bigint 'user_id', null: false
+    t.bigint 'company_specialty_id', null: false
+    t.datetime 'created_at', null: false
+    t.datetime 'updated_at', null: false
+    t.index ['company_specialty_id'], name: 'index_user_company_specialties_on_company_specialty_id'
+    t.index ['user_id'], name: 'index_user_company_specialties_on_user_id'
+  end
+
+  create_table 'user_healthcare_domains', force: :cascade do |t|
+    t.bigint 'user_id', null: false
+    t.bigint 'healthcare_domain_id', null: false
+    t.datetime 'created_at', null: false
+    t.datetime 'updated_at', null: false
+    t.index ['healthcare_domain_id'], name: 'index_user_healthcare_domains_on_healthcare_domain_id'
+    t.index ['user_id'], name: 'index_user_healthcare_domains_on_user_id'
+  end
+
+  create_table 'user_resources', force: :cascade do |t|
+    t.bigint 'user_id', null: false
+    t.bigint 'resource_id', null: false
+    t.datetime 'created_at', null: false
+    t.datetime 'updated_at', null: false
+    t.index ['resource_id'], name: 'index_user_resources_on_resource_id'
+    t.index ['user_id'], name: 'index_user_resources_on_user_id'
+  end
+
+  create_table 'user_skills', force: :cascade do |t|
+    t.bigint 'user_id', null: false
+    t.bigint 'skill_id', null: false
+    t.datetime 'created_at', null: false
+    t.datetime 'updated_at', null: false
+    t.index ['skill_id'], name: 'index_user_skills_on_skill_id'
+    t.index ['user_id'], name: 'index_user_skills_on_user_id'
+  end
+
+  create_table 'users', force: :cascade do |t|
+    t.string 'first_name'
+    t.string 'last_name'
+    t.string 'email'
+    t.string 'credential'
+    t.json 'resume'
+    t.string 'photo'
+    t.datetime 'last_login'
+    t.string 'password_digest'
+    t.string 'salt'
+    t.string 'reset_password_token'
+    t.datetime 'reset_password_sent_at'
+    t.string 'provider'
+    t.string 'uid'
+    t.string 'access_token'
+    t.datetime 'created_at', null: false
+    t.datetime 'updated_at', null: false
+    t.index ['email'], name: 'index_users_on_email', unique: true
+    t.index ['uid'], name: 'index_users_on_uid'
+  end
+
   create_table 'versions', force: :cascade do |t|
     t.string 'whodunnit'
     t.datetime 'created_at'
@@ -280,26 +444,49 @@ ActiveRecord::Schema[7.1].define(version: 20_241_019_203_237) do
   end
 
   add_foreign_key 'companies', 'ats_types'
-  add_foreign_key 'companies', 'cities'
   add_foreign_key 'companies', 'company_sizes'
-  add_foreign_key 'companies', 'countries'
   add_foreign_key 'companies', 'funding_types'
-  add_foreign_key 'companies', 'states'
+  add_foreign_key 'company_cities', 'cities'
+  add_foreign_key 'company_cities', 'companies'
+  add_foreign_key 'company_countries', 'companies'
+  add_foreign_key 'company_countries', 'countries'
   add_foreign_key 'company_domains', 'companies'
   add_foreign_key 'company_domains', 'healthcare_domains'
   add_foreign_key 'company_specializations', 'companies'
   add_foreign_key 'company_specializations', 'company_specialties'
+  add_foreign_key 'company_states', 'companies'
+  add_foreign_key 'company_states', 'states'
+  add_foreign_key 'job_post_cities', 'cities'
+  add_foreign_key 'job_post_cities', 'job_posts'
+  add_foreign_key 'job_post_countries', 'countries'
+  add_foreign_key 'job_post_countries', 'job_posts'
+  add_foreign_key 'job_post_skills', 'job_posts'
+  add_foreign_key 'job_post_skills', 'skills'
+  add_foreign_key 'job_post_states', 'job_posts'
+  add_foreign_key 'job_post_states', 'states'
   add_foreign_key 'job_posts', 'companies'
-  add_foreign_key 'job_posts', 'countries'
   add_foreign_key 'job_posts', 'departments'
   add_foreign_key 'job_posts', 'job_commitments'
   add_foreign_key 'job_posts', 'job_roles'
   add_foreign_key 'job_posts', 'job_salary_currencies'
   add_foreign_key 'job_posts', 'job_salary_intervals'
-  add_foreign_key 'job_posts', 'job_settings'
   add_foreign_key 'job_posts', 'teams'
   add_foreign_key 'job_roles_departments', 'departments'
   add_foreign_key 'job_roles_departments', 'job_roles'
   add_foreign_key 'job_roles_teams', 'job_roles'
   add_foreign_key 'job_roles_teams', 'teams'
+  add_foreign_key 'saved_companies', 'companies'
+  add_foreign_key 'saved_companies', 'users'
+  add_foreign_key 'saved_job_posts', 'job_posts'
+  add_foreign_key 'saved_job_posts', 'users'
+  add_foreign_key 'skill_resources', 'resources'
+  add_foreign_key 'skill_resources', 'skills'
+  add_foreign_key 'user_company_specialties', 'company_specialties'
+  add_foreign_key 'user_company_specialties', 'users'
+  add_foreign_key 'user_healthcare_domains', 'healthcare_domains'
+  add_foreign_key 'user_healthcare_domains', 'users'
+  add_foreign_key 'user_resources', 'resources'
+  add_foreign_key 'user_resources', 'users'
+  add_foreign_key 'user_skills', 'skills'
+  add_foreign_key 'user_skills', 'users'
 end

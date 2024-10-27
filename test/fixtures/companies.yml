@@ -7,11 +7,9 @@ one:
   company_size: one
   funding_type: one
   linkedin_url: MyString
+  company_url: MyString
   is_public: false
   year_founded: 1
-  city: one
-  state: one
-  country: one
   acquired_by: MyString
   company_description: MyText
   ats_id: MyString
@@ -26,11 +24,9 @@ two:
   company_size: two
   funding_type: two
   linkedin_url: MyString
+  company_url: MyString
   is_public: false
   year_founded: 1
-  city: two
-  state: two
-  country: two
   acquired_by: MyString
   company_description: MyText
   ats_id: MyString

@@ -2,8 +2,7 @@
 
 one:
   job_commitment: one
-  job_setting: one
-  country: one
+  job_setting: 
   department: one
   team: one
   company: one
@@ -13,8 +12,8 @@ one:
   job_title: MyString
   job_description: MyText
   job_url: MyString
-  job_posted: 2024-10-19 15:32:30
-  job_updated: 2024-10-19 15:32:30
+  job_posted: 2024-10-27 13:54:06
+  job_updated: 2024-10-27 13:54:06
   job_active: false
   job_internal_id: 
   job_url_id: 
@@ -32,8 +31,7 @@ one:
 
 two:
   job_commitment: two
-  job_setting: two
-  country: two
+  job_setting: 
   department: two
   team: two
   company: two
@@ -43,8 +41,8 @@ two:
   job_title: MyString
   job_description: MyText
   job_url: MyString
-  job_posted: 2024-10-19 15:32:30
-  job_updated: 2024-10-19 15:32:30
+  job_posted: 2024-10-27 13:54:06
+  job_updated: 2024-10-27 13:54:06
   job_active: false
   job_internal_id: 
   job_url_id: 
