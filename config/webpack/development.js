@@ -8,11 +8,11 @@ const developmentEnvOnly = (clientWebpackConfig, _serverWebpackConfig) => {
   // Enable HMR if it's not already set
   clientWebpackConfig.devServer = {
     ...clientWebpackConfig.devServer,
-    hot: true,   // Enable Hot Module Replacement
+    hot: true, // Enable Hot Module Replacement
     liveReload: true,
     port: devServer.port || 3035, // Set port
     client: {
-      overlay: true,  // Show full-screen overlay for errors (moved under client)
+      overlay: true, // Show full-screen overlay for errors (moved under client)
     },
   };
 

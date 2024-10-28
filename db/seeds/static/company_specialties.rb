@@ -45,13 +45,15 @@ domains = {
 specialties = {
   allergy_immunology: [
     { key: 'ALLERGY_TREATMENT', value: 'Allergy Treatment', aliases: ['allergy care', 'immunotherapy'] },
-    { key: 'IMMUNE_DISORDER_MANAGEMENT', value: 'Immune Disorder Management', aliases: ['autoimmune care', 'immune system health'] }
+    { key: 'IMMUNE_DISORDER_MANAGEMENT', value: 'Immune Disorder Management',
+      aliases: ['autoimmune care', 'immune system health'] }
   ],
   cardiology: [
     { key: 'CARDIAC_REHABILITATION', value: 'Cardiac Rehabilitation', aliases: ['heart rehab', 'cardiac recovery'] },
     { key: 'ELECTROPHYSIOLOGY', value: 'Electrophysiology', aliases: ['heart rhythm', 'arrhythmia treatment'] },
     { key: 'HEART_SURGERY', value: 'Heart Surgery', aliases: ['cardiac surgery', 'heart operation'] },
-    { key: 'INTERVENTIONAL_CARDIOLOGY', value: 'Interventional Cardiology', aliases: ['catheterization', 'cardiac intervention'] }
+    { key: 'INTERVENTIONAL_CARDIOLOGY', value: 'Interventional Cardiology',
+      aliases: ['catheterization', 'cardiac intervention'] }
   ],
   dental: [
     { key: 'COSMETIC_DENTISTRY', value: 'Cosmetic Dentistry', aliases: ['teeth whitening', 'dental aesthetics'] },
@@ -62,26 +64,35 @@ specialties = {
   ],
   dermatology: [
     { key: 'ACNE_TREATMENT', value: 'Acne Treatment', aliases: ['pimple care', 'skin blemish treatment'] },
-    { key: 'COSMETIC_DERMATOLOGY', value: 'Cosmetic Dermatology', aliases: ['skin aesthetics', 'dermatological aesthetics'] },
-],
+    { key: 'COSMETIC_DERMATOLOGY', value: 'Cosmetic Dermatology',
+      aliases: ['skin aesthetics', 'dermatological aesthetics'] }
+  ],
   digital_health: [
     { key: 'APP_DEPLOYMENT', value: 'App Deployment', aliases: ['digital app deployment', 'health app'] },
     { key: 'BILLING_AND_PAYMENTS', value: 'Billing & Payments', aliases: ['billing services', 'health payments'] },
-    { key: 'CARE_COORDINATION_COLLABORATION', value: 'Care Coordination & Collaboration', aliases: ['care teamwork', 'patient coordination'] },
+    { key: 'CARE_COORDINATION_COLLABORATION', value: 'Care Coordination & Collaboration',
+      aliases: ['care teamwork', 'patient coordination'] },
     { key: 'CLINICAL_INTELLIGENCE', value: 'Clinical Intelligence', aliases: ['AI in health', 'clinical AI'] },
     { key: 'COMPUTER_AIDED_IMAGING', value: 'Computer-Aided Imaging', aliases: ['image analysis', 'AI imaging'] },
-    { key: 'DATA_INTEGRATION_ANALYTICS', value: 'Data Integration & Analytics', aliases: ['health analytics', 'data insights'] },
-    { key: 'DIGITAL_THERAPEUTICS', value: 'Digital Therapeutics', aliases: ['digital treatment', 'online therapeutics'] },
+    { key: 'DATA_INTEGRATION_ANALYTICS', value: 'Data Integration & Analytics',
+      aliases: ['health analytics', 'data insights'] },
+    { key: 'DIGITAL_THERAPEUTICS', value: 'Digital Therapeutics',
+      aliases: ['digital treatment', 'online therapeutics'] },
     { key: 'HOME_HEALTH_TECH', value: 'Home Health Tech', aliases: ['home care tech', 'health tech'] },
-    { key: 'HYBRID_VIRTUAL_INPERSON_CARE', value: 'Hybrid Virtual In-Person Care', aliases: ['hybrid care', 'mixed virtual in-person'] },
+    { key: 'HYBRID_VIRTUAL_INPERSON_CARE', value: 'Hybrid Virtual In-Person Care',
+      aliases: ['hybrid care', 'mixed virtual in-person'] },
     { key: 'MEDIA', value: 'Media', aliases: ['health media', 'medical media'] },
     { key: 'PATIENT_ENGAGEMENT', value: 'Patient Engagement', aliases: ['patient interaction', 'patient comms'] },
-    { key: 'PROVIDER_DIRECTORIES_AND_CARE_NAVIGATION', value: 'Provider Directories & Care Navigation', aliases: ['provider search', 'care directory'] },
-    { key: 'REMOTE_PATIENT_MONITORING', value: 'Remote Patient Monitoring', aliases: ['RPM', 'patient monitoring tech'] },
+    { key: 'PROVIDER_DIRECTORIES_AND_CARE_NAVIGATION', value: 'Provider Directories & Care Navigation',
+      aliases: ['provider search', 'care directory'] },
+    { key: 'REMOTE_PATIENT_MONITORING', value: 'Remote Patient Monitoring',
+      aliases: ['RPM', 'patient monitoring tech'] },
     { key: 'REVENUE_CYCLE_MGMT', value: 'Revenue Cycle Management', aliases: ['revenue mgmt', 'financial health'] },
-    { key: 'SCREENING_MONITORING_DIAGNOSTICS', value: 'Screening, Monitoring, Diagnostics', aliases: ['health diagnostics', 'screening tests'] },
+    { key: 'SCREENING_MONITORING_DIAGNOSTICS', value: 'Screening, Monitoring, Diagnostics',
+      aliases: ['health diagnostics', 'screening tests'] },
     { key: 'VIRTUAL_CARE', value: 'Virtual Care', aliases: ['telehealth', 'remote care'] },
-    { key: 'WORKFLOW_DIGITIZATION_AND_AUTOMATION', value: 'Workflow Digitization & Automation', aliases: ['digital workflow', 'health automation'] }
+    { key: 'WORKFLOW_DIGITIZATION_AND_AUTOMATION', value: 'Workflow Digitization & Automation',
+      aliases: ['digital workflow', 'health automation'] }
   ],
   emergency_medicine: [
     { key: 'EMERGENCY_CARE', value: 'Emergency Care', aliases: ['urgent care', 'ER services'] },
@@ -100,8 +111,10 @@ specialties = {
     { key: 'PUBLIC_HEALTH', value: 'Public Health', aliases: ['community health', 'health education'] }
   ],
   environmental_health: [
-    { key: 'CLIMATE_CHANGE_HEALTH', value: 'Climate Change Health', aliases: ['climate health', 'environmental health'] },
-    { key: 'ENVIRONMENTAL_MEDICINE', value: 'Environmental Medicine', aliases: ['environmental health', 'environmental science'] },
+    { key: 'CLIMATE_CHANGE_HEALTH', value: 'Climate Change Health',
+      aliases: ['climate health', 'environmental health'] },
+    { key: 'ENVIRONMENTAL_MEDICINE', value: 'Environmental Medicine',
+      aliases: ['environmental health', 'environmental science'] },
     { key: 'TOXICOLOGY', value: 'Toxicology', aliases: ['toxin study', 'poison control'] }
   ],
   gastroenterology: [
@@ -114,7 +127,8 @@ specialties = {
   ],
   geriatrics: [
     { key: 'ELDERLY_CARE', value: 'Elderly Care', aliases: ['senior care', 'aging health'] },
-    { key: 'GERIATRIC_REHABILITATION', value: 'Geriatric Rehabilitation', aliases: ['senior rehab', 'elderly recovery'] }
+    { key: 'GERIATRIC_REHABILITATION', value: 'Geriatric Rehabilitation',
+      aliases: ['senior rehab', 'elderly recovery'] }
   ],
   hematology: [
     { key: 'ANEMIA_TREATMENT', value: 'Anemia Treatment', aliases: ['blood disorder care', 'anemia care'] },
@@ -126,18 +140,22 @@ specialties = {
   ],
   nephrology: [
     { key: 'DIALYSIS_SERVICES', value: 'Dialysis Services', aliases: ['kidney dialysis', 'renal dialysis'] },
-    { key: 'KIDNEY_TRANSPLANT_SERVICES ', value: 'Kidney Transplant Services', aliases: ['renal transplant', 'kidney surgery'] }
+    { key: 'KIDNEY_TRANSPLANT_SERVICES ', value: 'Kidney Transplant Services',
+      aliases: ['renal transplant', 'kidney surgery'] }
   ],
   neurology: [
-    { key: 'NEURODEGENERATIVE_DISORDER_CARE', value: 'Neurodegenerative Disorder Care', aliases: ['dementia care', 'Parkinson’s treatment'] },
+    { key: 'NEURODEGENERATIVE_DISORDER_CARE', value: 'Neurodegenerative Disorder Care',
+      aliases: ['dementia care', 'Parkinson’s treatment'] },
     { key: 'NEUROREHABILITATION', value: 'Neurorehabilitation', aliases: ['brain injury rehab', 'neuro recovery'] }
   ],
   nursing: [
-    { key: 'CRITICAL_CARE_NURSING', value: 'Critical Care Nursing', aliases: ['ICU nursing', 'intensive care nursing'] },
+    { key: 'CRITICAL_CARE_NURSING', value: 'Critical Care Nursing',
+      aliases: ['ICU nursing', 'intensive care nursing'] },
     { key: 'GERIATRIC_NURSING', value: 'Geriatric Nursing', aliases: ['senior nursing', 'elderly care'] },
     { key: 'HOME_HEALTHCARE', value: 'Home Healthcare', aliases: ['home nursing', 'in-home care'] },
     { key: 'PEDIATRIC_NURSING', value: 'Pediatric Nursing', aliases: ['child nursing', 'kids nursing'] },
-    { key: 'PSYCHIATRIC_NURSING', value: 'Psychiatric Nursing', aliases: ['mental health nursing', 'behavioral health nursing'] }
+    { key: 'PSYCHIATRIC_NURSING', value: 'Psychiatric Nursing',
+      aliases: ['mental health nursing', 'behavioral health nursing'] }
   ],
   obstetrics: [
     { key: 'BIRTH_SERVICES', value: 'Birth Services', aliases: ['labor and delivery', 'childbirth services'] },
@@ -160,37 +178,49 @@ specialties = {
   pathology: [
     { key: 'CLINICAL_PATHOLOGY', value: 'Clinical Pathology', aliases: ['laboratory medicine', 'clinical labs'] },
     { key: 'FORENSIC_PATHOLOGY', value: 'Forensic Pathology', aliases: ['medical examiner', 'autopsy'] },
-    { key: 'MOLECULAR_PATHOLOGY', value: 'Molecular Pathology', aliases: ['genomic pathology', 'molecular diagnostics'] }
+    { key: 'MOLECULAR_PATHOLOGY', value: 'Molecular Pathology',
+      aliases: ['genomic pathology', 'molecular diagnostics'] }
   ],
   pediatrics: [
-    { key: 'CHILD_DEVELOPMENT_SERVICES', value: 'Child Development Services', aliases: ['developmental care', 'child growth'] },
-    { key: 'PEDIATRIC_EMERGENCY_CARE', value: 'Pediatric Emergency Care', aliases: ['child emergency care', 'pediatric ER'] }
+    { key: 'CHILD_DEVELOPMENT_SERVICES', value: 'Child Development Services',
+      aliases: ['developmental care', 'child growth'] },
+    { key: 'PEDIATRIC_EMERGENCY_CARE', value: 'Pediatric Emergency Care',
+      aliases: ['child emergency care', 'pediatric ER'] }
   ],
   pharma: [
-    { key: "AVIATION MEDICINE", value: "Aviation Medicine", aliases: ["pilot health", "flight medicine", 'space medicine', 'aerospace medicine'] },
+    { key: 'AVIATION MEDICINE', value: 'Aviation Medicine',
+      aliases: ['pilot health', 'flight medicine', 'space medicine', 'aerospace medicine'] },
     { key: 'BIOPHARMACEUTICALS', value: 'Biopharmaceuticals', aliases: ['biologics', 'biotech drugs'] },
     { key: 'BRANDED_PHARMA', value: 'Branded Pharma', aliases: ['brand-name drugs', 'patented drugs'] },
-    { key: 'CANNABIS_THERAPEUTICS', value: 'Cannabis Therapeutics', aliases: ['medical marijuana', 'cannabinoid therapy'] },
-    { key: 'CHRONIC_DISEASE_MGMT', value: 'Chronic Disease Management', aliases: ['chronic care', 'disease management'] },
-    { key: 'CHRONIC_PAIN_THERAPY', value: 'Chronic Pain Therapy', aliases: ['long-term pain relief', 'chronic pain care', 'opioid therapy', 'pain meds'] },
+    { key: 'CANNABIS_THERAPEUTICS', value: 'Cannabis Therapeutics',
+      aliases: ['medical marijuana', 'cannabinoid therapy'] },
+    { key: 'CHRONIC_DISEASE_MGMT', value: 'Chronic Disease Management',
+      aliases: ['chronic care', 'disease management'] },
+    { key: 'CHRONIC_PAIN_THERAPY', value: 'Chronic Pain Therapy',
+      aliases: ['long-term pain relief', 'chronic pain care', 'opioid therapy', 'pain meds'] },
     { key: 'CLINICAL_TRIALS', value: 'Clinical Trials', aliases: ['trials', 'clinical research'] },
     { key: 'DIGITAL_THERAPEUTICS', value: 'Digital Therapeutics', aliases: ['e-therapy', 'digital health treatments'] },
     { key: 'DTC_PHARMACY_SERVICES', value: 'DTC Pharmacy Services', aliases: ['direct pharmacy', 'dtc services'] },
-    { key: 'HOME_LAB_TESTING_MONITORING', value: 'Home Lab Testing & Monitoring', aliases: ['at-home lab', 'home testing'] },
+    { key: 'HOME_LAB_TESTING_MONITORING', value: 'Home Lab Testing & Monitoring',
+      aliases: ['at-home lab', 'home testing'] },
     { key: 'HOSPITAL_PHARMACY', value: 'Hospital Pharmacy', aliases: ['inpatient pharmacy', 'hospital meds'] },
     { key: 'NOVEL_PHARMA', value: 'Novel Pharma', aliases: ['new drug development', 'novel drugs'] },
-    { key: 'PERSONALIZED_PHARMACY_SERVICES', value: 'Personalized Pharmacy Services', aliases: ['custom pharmacy', 'personalized meds'] },
-    { key: 'PHARM_SERVICES_WORKFLOW_EXPANSION', value: 'Pharm Services Workflow Expansion', aliases: ['pharmacy workflow', 'services expansion'] },
+    { key: 'PERSONALIZED_PHARMACY_SERVICES', value: 'Personalized Pharmacy Services',
+      aliases: ['custom pharmacy', 'personalized meds'] },
+    { key: 'PHARM_SERVICES_WORKFLOW_EXPANSION', value: 'Pharm Services Workflow Expansion',
+      aliases: ['pharmacy workflow', 'services expansion'] },
     { key: 'PHARMACOGENOMICS', value: 'Pharmacogenomics', aliases: ['gene-based drug', 'genetic therapy'] },
     { key: 'PHARMACY_MEDIA', value: 'Pharmacy Media', aliases: ['pharma advertising', 'pharma marketing'] },
     { key: 'VIRTUAL_PHARMACY', value: 'Virtual Pharmacy', aliases: ['e-pharmacy', 'online pharmacy'] },
-    { key: 'VITAMINS_SUPPLEMENTS', value: 'Vitamins & Supplements', aliases: ['supplements', 'nutraceuticals'] },
-    { key: 'VACCINE_DEVELOPMENT', value: 'Vaccine Development', aliases: ['vaccine research', 'immunization'] },
+    { key: 'VITAMINS_SUPPLEMENTS', value: 'Vitamins & Supplements', aliases: %w[supplements nutraceuticals] },
+    { key: 'VACCINE_DEVELOPMENT', value: 'Vaccine Development', aliases: ['vaccine research', 'immunization'] }
   ],
   physical_therapy: [
     { key: 'AQUATIC_THERAPY', value: 'Aquatic Therapy', aliases: ['water therapy', 'pool therapy'] },
-    { key: 'NEUROLOGICAL_REHABILITATION', value: 'Neurological Rehabilitation', aliases: ['brain injury rehab', 'neuro recovery'] },
-    { key: 'PHYSICAL_REHABILITATION', value: 'Physical Rehabilitation', aliases: ['physical therapy', 'rehab therapy'] },
+    { key: 'NEUROLOGICAL_REHABILITATION', value: 'Neurological Rehabilitation',
+      aliases: ['brain injury rehab', 'neuro recovery'] },
+    { key: 'PHYSICAL_REHABILITATION', value: 'Physical Rehabilitation',
+      aliases: ['physical therapy', 'rehab therapy'] },
     { key: 'OCCUPATIONAL_THERAPY', value: 'Occupational Therapy', aliases: ['OT', 'skill rehab'] }
   ],
   podiatry: [
@@ -203,12 +233,15 @@ specialties = {
   ],
   psychiatry: [
     { key: 'MENTAL_HEALTH_APPS', value: 'Mental Health Apps', aliases: ['mhealth', 'wellness app'] },
-    { key: 'PSYCHOTHERAPY', value: 'Psychotherapy', aliases: ['talk therapy', 'counseling', 'psychotherapy', 'Mental Health Counseling'] },
+    { key: 'PSYCHOTHERAPY', value: 'Psychotherapy',
+      aliases: ['talk therapy', 'counseling', 'psychotherapy', 'Mental Health Counseling'] },
     { key: 'ADDICTION_TREATMENT', value: 'Addiction Treatment', aliases: ['substance abuse', 'rehab'] },
-    { key: 'Neurodiversity', value: 'Neurodiversity', aliases: ['neurodiversity', 'neurodivergent', 'neurodivergent care'] }
+    { key: 'Neurodiversity', value: 'Neurodiversity',
+      aliases: ['neurodiversity', 'neurodivergent', 'neurodivergent care'] }
   ],
   public_health: [
-    { key: 'COMMUNITY_HEALTH_PROGRAMS', value: 'Community Health Programs', aliases: ['health outreach', 'public health services'] },
+    { key: 'COMMUNITY_HEALTH_PROGRAMS', value: 'Community Health Programs',
+      aliases: ['health outreach', 'public health services'] },
     { key: 'EPIDEMIOLOGY', value: 'Epidemiology', aliases: ['disease study', 'public health research'] }
   ],
   pulmonology: [
@@ -233,8 +266,10 @@ specialties = {
     { key: 'GENOMIC_RESEARCH', value: 'Genomic Research', aliases: ['genetic research', 'DNA study'] }
   ],
   rheumatology: [
-    { key: 'ARTHRITIS_MANAGEMENT', value: 'Arthritis Management', aliases: ['arthritis care', 'joint inflammation treatment'] },
-    { key: 'AUTOIMMUNE_DISORDER_TREATMENT', value: 'Autoimmune Disorder Treatment', aliases: ['autoimmune care', 'immune disorder treatment'] }
+    { key: 'ARTHRITIS_MANAGEMENT', value: 'Arthritis Management',
+      aliases: ['arthritis care', 'joint inflammation treatment'] },
+    { key: 'AUTOIMMUNE_DISORDER_TREATMENT', value: 'Autoimmune Disorder Treatment',
+      aliases: ['autoimmune care', 'immune disorder treatment'] }
   ],
   sleep_health: [
     { key: 'INSOMNIA_TREATMENT', value: 'Insomnia Treatment', aliases: ['sleep disorder care', 'sleep therapy'] },
@@ -245,7 +280,8 @@ specialties = {
     { key: 'LANGUAGE_DEVELOPMENT', value: 'Language Development', aliases: ['language skills', 'communication skills'] }
   ],
   surgery: [
-    { key: 'MINIMALLY_INVASIVE_SURGERY', value: 'Minimally Invasive Surgery', aliases: ['laparoscopic surgery', 'keyhole surgery'] },
+    { key: 'MINIMALLY_INVASIVE_SURGERY', value: 'Minimally Invasive Surgery',
+      aliases: ['laparoscopic surgery', 'keyhole surgery'] },
     { key: 'PLASTIC_SURGERY', value: 'Plastic Surgery', aliases: ['cosmetic surgery', 'reconstructive surgery'] }
   ],
   urology: [
@@ -274,7 +310,9 @@ specialties.each do |domain_key, domain_specialties|
     end
 
     specialty_record.update(value: specialty[:value], aliases: specialty[:aliases])
-   
+
     total_specialties_after = CompanySpecialty.count
 
     puts "************** Seeded #{seeded_count} specialties. Total specialties in the table: #{total_specialties_after}."
+  end
+end

@@ -1,12 +1,15 @@
 {
-    "prettier.configPath": ".prettierrc",
-    "[javascript]": {
+  "prettier.configPath": ".prettierrc",
+  "[javascript]": {
     "editor.defaultFormatter": "esbenp.prettier-vscode"
-    },
-    "[typescript]": {
+  },
+  "[typescript]": {
     "editor.defaultFormatter": "esbenp.prettier-vscode"
-    },
-    "[json]": {
+  },
+  "[json]": {
     "editor.defaultFormatter": "esbenp.prettier-vscode"
-    }
+  },
+  "[ruby]": {
+    "editor.defaultFormatter": "rubocop.vscode-rubocop"
+  }
 }

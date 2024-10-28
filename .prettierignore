@@ -1,0 +1,2 @@
+*.rb
+db/seeds/static/*.rb

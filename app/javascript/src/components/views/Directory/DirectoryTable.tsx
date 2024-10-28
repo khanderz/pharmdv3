@@ -1,11 +1,11 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect } from 'react';
 import {
   DataGridPremium,
   GridRowParams,
   MuiEvent,
   useGridApiRef,
-  DataGridPremiumProps
-} from '@mui/x-data-grid-premium'
+  DataGridPremiumProps,
+} from '@mui/x-data-grid-premium';
 import {
   Box,
   Table,
@@ -14,11 +14,11 @@ import {
   TableContainer,
   TableHead,
   TableRow,
-  Typography
-} from '@mui/material'
-import { TableProps } from './DirectoryTable.types'
-import { CompanyRowProps, getTableData } from '../../../hooks/get_table_data'
-import { dataHeaders } from '../../../hooks/get_table_headers'
+  Typography,
+} from '@mui/material';
+import { TableProps } from './DirectoryTable.types';
+import { CompanyRowProps, getTableData } from '../../../hooks/get_table_data';
+import { dataHeaders } from '../../../hooks/get_table_headers';
 // import {
 //   Jobs,
 //   TABLEHEADERS,
@@ -32,28 +32,28 @@ import { dataHeaders } from '../../../hooks/get_table_headers'
 
 export const DirectoryTable = ({
   data,
-  rows
+  rows,
 }: TableProps): React.JSX.Element => {
-  const [open, setOpen] = useState(false)
-  const apiRef = useGridApiRef()
+  const [open, setOpen] = useState(false);
+  const apiRef = useGridApiRef();
 
-  const renderDataHeaders = dataHeaders({ open })
-  const dataAccessors = renderDataHeaders.map((key: any) => key['field'])
-  const tableData = getTableData({ data, dataAccessors })
+  const renderDataHeaders = dataHeaders({ open });
+  const dataAccessors = renderDataHeaders.map((key: any) => key['field']);
+  const tableData = getTableData({ data, dataAccessors });
 
   const handleUpdateRow = (
     params: GridRowParams,
     event: MuiEvent<React.MouseEvent>
   ) => {
-    setOpen(!open)
-  }
+    setOpen(!open);
+  };
 
   //   const getDetailPanelContent = React.useCallback<
   //     NonNullable<DataGridPremiumProps['getDetailPanelContent']>
   //   >(({ id, row, columns }) => <JobsTable companyId={id} />, [])
 
-  const getDetailPanelHeight = React.useCallback(() => 400, [])
-  console.log({ tableData })
+  const getDetailPanelHeight = React.useCallback(() => 400, []);
+  console.log({ tableData });
   return (
     <Box sx={{ height: 400, width: '100%' }}>
       <DataGridPremium
@@ -69,5 +69,5 @@ export const DirectoryTable = ({
         getDetailPanelHeight={getDetailPanelHeight}
       />
     </Box>
-  )
-}
+  );
+};

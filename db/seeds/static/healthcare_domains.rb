@@ -30,7 +30,7 @@ healthcare_domains = [
   { key: 'ORTHOPEDICS', value: 'Orthopedics', aliases: ['bone health', 'musculoskeletal care', 'orthopedic services'] },
   { key: 'PATHOLOGY', value: 'Pathology', aliases: ['disease diagnosis', 'laboratory testing', 'clinical pathology'] },
   { key: 'PEDIATRICS', value: 'Pediatrics', aliases: ['child health', 'pediatric care', 'childcare services'] },
-  { key: 'PHARMA', value: 'Pharmaceuticals', aliases: ['pharmacy', 'medication', 'drug development', 'pharmacology'] },
+  { key: 'PHARMA', value: 'Pharmaceuticals', aliases: ['pharmacy', 'medication', 'drug development', 'pharmacology', "medicinal chemistry"] },
   { key: 'PHYSICAL_THERAPY', value: 'Physical Therapy',
     aliases: ['physiotherapy', 'rehabilitation therapy', 'movement therapy', 'recovery services', 'rehab', 'post-surgery therapy', 'rehabilitation'] },
   { key: 'PODIATRY', value: 'Podiatry', aliases: ['foot care', 'podiatric services', 'foot health'] },

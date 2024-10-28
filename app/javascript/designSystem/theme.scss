@@ -1,6 +1,5 @@
 // app/javascript/design-system/colors.scss
 
-
 $mui-palette-primary-main: #fb0000;
 $mui-palette-secondary-main: #226f54;
 $turquoise: #72e1d1;
@@ -11,13 +10,12 @@ $font-family: 'Open Sans', sans-serif;
 
 // Export to :root for use in JS
 :root {
-    --mui-palette-primary-main: #fb0000;
-    --mui-palette-secondary-main: #226f54;
-    --turquoise: #72e1d1;
-    --lavender-blush: #f9eeee;
-    --penn-red: #9a0000;
-    --font-family: 'Open Sans', sans-serif;
-
+  --mui-palette-primary-main: #fb0000;
+  --mui-palette-secondary-main: #226f54;
+  --turquoise: #72e1d1;
+  --lavender-blush: #f9eeee;
+  --penn-red: #9a0000;
+  --font-family: 'Open Sans', sans-serif;
 }
 
 // example usage in sass file:

@@ -10,8 +10,5 @@
   "proseWrap": "preserve",
   "jsxBracketSameLine": false,
   "endOfLine": "lf",
-  "useTabs": false,
-  "plugins": ["@prettier/plugin-ruby"],
-  "rubySingleQuote": false,
-  "rubyHashLabel": true
+  "useTabs": false
 }

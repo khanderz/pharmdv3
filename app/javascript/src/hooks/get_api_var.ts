@@ -11,7 +11,7 @@ export const useApiKey = () => {
     const fetchApiKey = async () => {
       try {
         const response = await fetch('/api/v1/fetch_data'); // Rails backend endpoint
-       
+
         if (!response.ok) {
           throw new Error(`Error fetching API key: ${response.statusText}`);
         }

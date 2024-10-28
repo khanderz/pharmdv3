@@ -1,9 +1,9 @@
-import { GridCellParams, GridColDef } from '@mui/x-data-grid'
-import React from 'react'
-import { KeyboardArrowUp, KeyboardArrowDown } from '@mui/icons-material'
+import { GridCellParams, GridColDef } from '@mui/x-data-grid';
+import React from 'react';
+import { KeyboardArrowUp, KeyboardArrowDown } from '@mui/icons-material';
 
 interface TableHeaderProps {
-  open: boolean
+  open: boolean;
 }
 export const dataHeaders = ({ open }: TableHeaderProps): GridColDef[] => {
   type GridNativeColTypes =
@@ -12,9 +12,9 @@ export const dataHeaders = ({ open }: TableHeaderProps): GridColDef[] => {
     | 'date'
     | 'dateTime'
     | 'boolean'
-    | 'singleSelect'
+    | 'singleSelect';
 
-  type GridAlignment = 'left' | 'right' | 'center'
+  type GridAlignment = 'left' | 'right' | 'center';
 
   return [
     {
@@ -25,7 +25,7 @@ export const dataHeaders = ({ open }: TableHeaderProps): GridColDef[] => {
       headerAlign: 'center' as GridAlignment,
       align: 'center',
       renderCell: (params: GridCellParams) =>
-        open ? <KeyboardArrowUp /> : <KeyboardArrowDown />
+        open ? <KeyboardArrowUp /> : <KeyboardArrowDown />,
       // valueGetter: (params: GridValueGetterParams) =>
       // `${params.row.firstName || ""} ${params.row.lastName || ""}`,
     },
@@ -35,7 +35,7 @@ export const dataHeaders = ({ open }: TableHeaderProps): GridColDef[] => {
       flex: 1,
       type: 'string',
       headerAlign: 'center' as GridAlignment,
-      align: 'center'
+      align: 'center',
     },
     {
       headerName: 'Company Type',
@@ -43,7 +43,7 @@ export const dataHeaders = ({ open }: TableHeaderProps): GridColDef[] => {
       flex: 1,
       type: 'string',
       headerAlign: 'center' as GridAlignment,
-      align: 'center'
+      align: 'center',
     },
     {
       headerName: 'Company ATS Type',
@@ -51,7 +51,7 @@ export const dataHeaders = ({ open }: TableHeaderProps): GridColDef[] => {
       flex: 1,
       type: 'string',
       headerAlign: 'center' as GridAlignment,
-      align: 'center'
+      align: 'center',
     },
     {
       headerName: 'Company Size',
@@ -59,7 +59,7 @@ export const dataHeaders = ({ open }: TableHeaderProps): GridColDef[] => {
       flex: 1,
       type: 'number',
       headerAlign: 'center' as GridAlignment,
-      align: 'center'
+      align: 'center',
     },
     {
       headerName: 'Company Active',
@@ -67,7 +67,7 @@ export const dataHeaders = ({ open }: TableHeaderProps): GridColDef[] => {
       flex: 1,
       type: 'boolean',
       headerAlign: 'center' as GridAlignment,
-      align: 'center'
-    }
-  ]
-}
+      align: 'center',
+    },
+  ];
+};

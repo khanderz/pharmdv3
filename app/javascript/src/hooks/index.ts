@@ -25,5 +25,5 @@ export {
   useJobCommitments,
   useJobSettings,
   useCompanySizes,
-  getCurrencies
+  getCurrencies,
 };

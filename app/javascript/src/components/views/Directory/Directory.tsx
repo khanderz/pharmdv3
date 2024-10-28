@@ -1,15 +1,14 @@
-import React, { useState, useEffect, useMemo } from 'react'
-import { Box, Container, Grid, Tab, Typography } from '@mui/material'
-import { TabList, TabContext } from '@mui/lab'
-import { TABNAMES } from './DirectoryTable.types'
-import { DirectoryTable } from './DirectoryTable'
-import { LicenseInfo } from '@mui/x-license-pro'
-import { Company } from './Directory.types'
-import { useApiKey } from '../../../hooks/get_api_var'
+import React, { useState, useEffect, useMemo } from 'react';
+import { Box, Container, Grid, Tab, Typography } from '@mui/material';
+import { TabList, TabContext } from '@mui/lab';
+import { TABNAMES } from './DirectoryTable.types';
+import { DirectoryTable } from './DirectoryTable';
+import { LicenseInfo } from '@mui/x-license-pro';
+import { Company } from './Directory.types';
+import { useApiKey } from '../../../hooks/get_api_var';
 
 export const Directory = () => {
-  const { key, } = useApiKey();
-
+  const { key } = useApiKey();
 
   useEffect(() => {
     if (key) {
@@ -17,9 +16,9 @@ export const Directory = () => {
     }
   }, [key]);
 
-  const [state, setState] = useState<JSX.Element | null>(null)
+  const [state, setState] = useState<JSX.Element | null>(null);
 
-  const [items, setItems] = useState<Company[]>([])
+  const [items, setItems] = useState<Company[]>([]);
 
   // const fetchItems = async () => {
   //   const response = await fetch('/companies')
@@ -56,8 +55,6 @@ export const Directory = () => {
   //   return () => clearInterval(interval)
   // }, [items])
 
-
-
   const [companies, setCompanies] = useState([]);
 
   // useEffect(() => {
@@ -74,7 +71,7 @@ export const Directory = () => {
   //   fetchCompanies();
   // }, []);
 
-  const loadingState = <Typography> Loading... </Typography>
+  const loadingState = <Typography> Loading... </Typography>;
 
   return (
     <Box>
@@ -97,4 +94,4 @@ export const Directory = () => {
       </Container>
     </Box>
   );
-}
+};
