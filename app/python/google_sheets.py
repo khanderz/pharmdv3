@@ -84,10 +84,11 @@ def remove_duplicates(data):
     print(f"Removed {initial_count - final_count} duplicate rows.")
     return data
 
-# Example usage
 if __name__ == "__main__":
     master_sheet_id = os.getenv("MASTER_SHEET_ID")
     master_range_name = os.getenv("MASTER_RANGE_NAME")
     master_data = load_sheet_data(master_sheet_id, master_range_name)
-
+    
+    master_data = remove_duplicates(master_data)
+    
     update_google_sheet(master_sheet_id, master_range_name, master_data)
