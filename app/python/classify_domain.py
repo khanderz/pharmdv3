@@ -3,7 +3,7 @@ from dotenv import load_dotenv
 import requests
 import pandas as pd
 from bs4 import BeautifulSoup
-from google_sheets import load_sheet_data, update_google_sheet
+from google_sheets_updater import load_sheet_data, update_google_sheet
 import re
 
 load_dotenv()

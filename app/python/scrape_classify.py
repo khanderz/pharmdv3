@@ -2,7 +2,7 @@
 import requests
 from bs4 import BeautifulSoup
 import pandas as pd
-from google_sheets import load_sheet_data, update_google_sheet
+from app.python.google_sheets_updater import load_sheet_data, update_google_sheet
 from urllib.parse import urljoin
 
 ATS_TYPES_URL = "http://localhost:3000/api/ats_types"  
@@ -18,7 +18,6 @@ def fetch_specialty_keywords():
         response.raise_for_status()
         specialties_data = response.json()
 
-        # Build dictionary: specialty name as key, keywords as list
         specialties_keywords = {
             specialty['value']: specialty['keywords'] for specialty in specialties_data if 'keywords' in specialty
     }
@@ -66,12 +65,10 @@ def classify_healthcare_domain_specialty(about_us_content):
     identified_domains = []
     identified_specialties = []
     
-    # Match domains
     for domain, keywords in healthcare_domains_keywords.items():
         if any(keyword.lower() in about_us_content.lower() for keyword in keywords):
             identified_domains.append(domain)
     
-    # Match specialties within identified domains
     for domain in identified_domains:
         if domain in specialty_keywords:
             for specialty, keywords in specialty_keywords[domain].items():
@@ -115,17 +112,12 @@ def update_with_ai_info(filled_master_data):
 
     return filled_master_data
 
-# Example usage
 if __name__ == "__main__":
-    # Define your sheet ID and range name
     master_sheet_id = 'your_master_sheet_id'
     master_range_name = 'master!A:R'
 
-    # Load data from Google Sheets
     filled_master_data = load_sheet_data(master_sheet_id, master_range_name)
 
-    # Update data with AI information
     filled_master_data = update_with_ai_info(filled_master_data)
 
-    # Update the Google Sheets with filled data
     update_google_sheet(master_sheet_id, master_range_name, filled_master_data)

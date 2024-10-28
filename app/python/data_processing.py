@@ -17,20 +17,16 @@ def predict_company_attributes(data):
     """
     processed_result = {}
 
-    # Apply basic predictions based on TensorFlow model or placeholder logic
     if data.get("company_size") is None:
-        # Example: Predicting company size based on industry patterns or other indicators
-        # Placeholder model-based logic:
-        processed_result["predicted_size"] = "medium"  # replace with model output, e.g., size_prediction(data)
+
+        processed_result["predicted_size"] = "medium" 
 
     if data.get("healthcare_domain") is None:
-        # Example: Predicting healthcare domain based on ATS type or industry context
-        # Placeholder model-based logic:
-        processed_result["predicted_healthcare_domain"] = "DIGITAL_HEALTH"  # replace with model output, e.g., domain_prediction(data)
+
+        processed_result["predicted_healthcare_domain"] = "DIGITAL_HEALTH"  
 
     if data.get("company_specialty") is None:
-        # Example: Predicting specialty based on healthcare domain
-        # Placeholder model-based logic:
-        processed_result["predicted_company_specialty"] = "VIRTUAL_CARE"  # replace with model output, e.g., specialty_prediction(data)
+
+        processed_result["predicted_company_specialty"] = "VIRTUAL_CARE" 
 
     return processed_result
