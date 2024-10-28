@@ -35,21 +35,34 @@ funding_types = [
 
 seeded_count = 0
 existing_count = 0
-FundingType.count
+updated_count = 0
 
 funding_types.each do |funding_type|
   funding_type_record = FundingType.find_or_initialize_by(funding_type_name: funding_type[:funding_type_name])
 
   if funding_type_record.persisted?
     existing_count += 1
+    updates_made = false
+
+    # Placeholder for any additional fields if needed
+    # Example: if there's a description or code field, compare and update here
+
+    if updates_made
+      funding_type_record.save!
+      updated_count += 1
+      puts "Updated funding type #{funding_type[:funding_type_name]} in the database."
+    else
+      puts "Funding type #{funding_type[:funding_type_name]} is already up-to-date."
+    end
   else
+    # New record to seed
     funding_type_record.save!
     seeded_count += 1
+    puts "Seeded new funding type: #{funding_type[:funding_type_name]}"
   end
 rescue StandardError => e
   puts "Error seeding funding type: #{funding_type[:funding_type_name]} - #{e.message}"
 end
 
 total_funding_types_after = FundingType.count
-
-puts "*********Seeded #{seeded_count} new funding types. #{existing_count} funding types already existed. Total funding types in the table: #{total_funding_types_after}."
+puts "********* Seeded #{seeded_count} new funding types. #{existing_count} funding types already existed. #{updated_count} funding types updated. Total funding types in the table: #{total_funding_types_after}."

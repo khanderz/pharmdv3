@@ -14,21 +14,34 @@ job_commitments = [
 
 seeded_count = 0
 existing_count = 0
-JobCommitment.count
+updated_count = 0
 
 job_commitments.each do |commitment|
   job_commitment = JobCommitment.find_or_initialize_by(commitment_name: commitment[:commitment_name])
 
   if job_commitment.persisted?
     existing_count += 1
+    updates_made = false
+
+    # Placeholder for any additional fields if needed
+    # Example: if there's a description or code field, compare and update here
+
+    if updates_made
+      job_commitment.save!
+      updated_count += 1
+      puts "Updated job commitment #{commitment[:commitment_name]} in the database."
+    else
+      puts "Job commitment #{commitment[:commitment_name]} is already up-to-date."
+    end
   else
+    # New record to seed
     job_commitment.save!
     seeded_count += 1
+    puts "Seeded new job commitment: #{commitment[:commitment_name]}"
   end
 rescue StandardError => e
   puts "Error seeding job commitment: #{commitment[:commitment_name]} - #{e.message}"
 end
 
 total_commitments_after = JobCommitment.count
-
-puts "*******Seeded #{seeded_count} new job commitments. #{existing_count} commitments already existed. Total job commitments in the table: #{total_commitments_after}."
+puts "******* Seeded #{seeded_count} new job commitments. #{existing_count} commitments already existed. #{updated_count} commitments updated. Total job commitments in the table: #{total_commitments_after}."

@@ -26,9 +26,20 @@ def update_google_sheet(sheet_id, range_name, data):
     creds = service_account.Credentials.from_service_account_file(credentials_path)
     service = build('sheets', 'v4', credentials=creds)
     
+    # Load current data from Google Sheets to compare with new data
+    current_data = load_sheet_data(sheet_id, range_name)
+    
+    # Truncate `data` to match Google Sheets column limits if necessary
     data = data.iloc[:, :18]  
     values = [data.columns.tolist()] + data.values.tolist()
     
+    # `current_data` is already a DataFrame, so use it directly for comparison
+    if current_data.equals(data):
+        unchanged_cells = data.size
+        print(f"No changes detected. {unchanged_cells} cells are unchanged.")
+        return  # Exit the function if no changes are detected
+
+    # Proceed with update if there are changes
     body = {'values': values}
     sheet = service.spreadsheets()
     
@@ -39,6 +50,7 @@ def update_google_sheet(sheet_id, range_name, data):
         print(f"{result.get('updatedCells')} cells updated.")
     except Exception as e:
         print(f"An error occurred during update: {e}")
+
 
 def rename_hubspot_columns(hubspot_data):
     return hubspot_data.rename(columns={

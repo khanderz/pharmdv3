@@ -25,19 +25,31 @@ ats_types = [
 ]
 
 seeded_count = 0
-AtsType.count
+existing_count = 0
+updated_count = 0
 
 ats_types.each do |ats_type|
   ats_type_record = AtsType.find_or_initialize_by(ats_type_code: ats_type[:ats_type_code])
 
-  # Only seed new ATS types
-  next if ats_type_record.persisted?
-
-  ats_type_record.ats_type_name = ats_type[:ats_type_name]
-  ats_type_record.save!
-  seeded_count += 1
+  if ats_type_record.persisted?
+    existing_count += 1
+    # Check if `ats_type_name` needs updating
+    if ats_type_record.ats_type_name != ats_type[:ats_type_name]
+      ats_type_record.ats_type_name = ats_type[:ats_type_name]
+      ats_type_record.save!
+      updated_count += 1
+      puts "Updated ATS type name for #{ats_type[:ats_type_code]} to #{ats_type[:ats_type_name]}."
+    else
+      puts "ATS type #{ats_type[:ats_type_code]} is already up-to-date."
+    end
+  else
+    # New record to seed
+    ats_type_record.ats_type_name = ats_type[:ats_type_name]
+    ats_type_record.save!
+    seeded_count += 1
+    puts "Seeded new ATS type: #{ats_type[:ats_type_code]} - #{ats_type[:ats_type_name]}"
+  end
 end
 
 total_ats_types = AtsType.count
-
-puts "*********** Seeded #{seeded_count} ATS types. Total ATS types in the table: #{total_ats_types}."
+puts "*********** Seeded #{seeded_count} new ATS types. #{existing_count} ATS types already existed. #{updated_count} ATS types updated. Total ATS types in the table: #{total_ats_types}."

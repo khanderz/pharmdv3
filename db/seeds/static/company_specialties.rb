@@ -291,6 +291,9 @@ specialties = {
 }
 
 seeded_count = 0
+existing_count = 0
+updated_count = 0
+
 specialties.each do |domain_key, domain_specialties|
   domain = domains[domain_key]
 
@@ -300,19 +303,44 @@ specialties.each do |domain_key, domain_specialties|
   end
 
   domain_specialties.each do |specialty|
-    specialty_record = CompanySpecialty.find_or_initialize_by(
-      key: specialty[:key]
-    )
+    specialty_record = CompanySpecialty.find_or_initialize_by(key: specialty[:key])
 
     if specialty_record.persisted?
-      puts "Specialty #{specialty[:value]} already exists for #{domain_key}"
-      next
+      existing_count += 1
+      updates_made = false
+
+      # Check if `value` or `aliases` need updating
+      if specialty_record.value != specialty[:value]
+        specialty_record.value = specialty[:value]
+        updates_made = true
+        puts "Updated value for specialty #{specialty[:key]} in domain #{domain_key}."
+      end
+
+      if specialty_record.aliases != specialty[:aliases]
+        specialty_record.aliases = specialty[:aliases]
+        updates_made = true
+        puts "Updated aliases for specialty #{specialty[:key]} in domain #{domain_key}."
+      end
+
+      if updates_made
+        specialty_record.save!
+        updated_count += 1
+        puts "Specialty #{specialty[:key]} updated in database."
+      else
+        puts "Specialty #{specialty[:key]} already up-to-date."
+      end
+    else
+      # New record to seed
+      specialty_record.value = specialty[:value]
+      specialty_record.aliases = specialty[:aliases]
+      specialty_record.save!
+      seeded_count += 1
+      puts "Seeded new specialty: #{specialty[:key]} - #{specialty[:value]} with aliases: #{specialty[:aliases]}"
     end
-
-    specialty_record.update(value: specialty[:value], aliases: specialty[:aliases])
-
-    total_specialties_after = CompanySpecialty.count
-
-    puts "************** Seeded #{seeded_count} specialties. Total specialties in the table: #{total_specialties_after}."
+  rescue StandardError => e
+    puts "Error seeding specialty #{specialty[:key]} for domain #{domain_key}: #{e.message}"
   end
 end
+
+total_specialties_after = CompanySpecialty.count
+puts "************** Seeded #{seeded_count} new specialties. #{existing_count} specialties already existed. #{updated_count} specialties updated. Total specialties in the table: #{total_specialties_after}."

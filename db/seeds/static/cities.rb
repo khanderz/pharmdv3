@@ -60,19 +60,32 @@ cities = [
 ]
 
 seeded_count = 0
-City.count
+existing_count = 0
+updated_count = 0
 
 cities.each do |city|
   city_record = City.find_or_initialize_by(city_name: city[:city_name])
 
-  # Only seed new cities
-  next if city_record.persisted?
-
-  city_record.aliases = city[:aliases] if city[:aliases]
-  city_record.save!
-  seeded_count += 1
+  if city_record.persisted?
+    existing_count += 1
+    # Check if `aliases` need updating
+    if city[:aliases] && city_record.aliases != city[:aliases]
+      city_record.aliases = city[:aliases]
+      city_record.save!
+      updated_count += 1
+      puts "Updated aliases for city #{city[:city_name]}."
+    else
+      puts "City #{city[:city_name]} is already up-to-date."
+    end
+  else
+    # New record to seed
+    city_record.aliases = city[:aliases] if city[:aliases]
+    city_record.save!
+    seeded_count += 1
+    puts "Seeded new city: #{city[:city_name]} with aliases: #{city[:aliases]}"
+  end
 end
 
 total_cities = City.count
-
-puts "*********** Seeded #{seeded_count} cities. Total cities in the table: #{total_cities}."
+puts "*********** Seeded #{seeded_count} new cities. #{existing_count} cities already existed. #{updated_count} cities updated. Total cities in the table: #{total_cities}."
+Explanation of Key Changes:

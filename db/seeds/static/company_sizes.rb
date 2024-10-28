@@ -13,18 +13,44 @@ company_sizes = [
 ]
 
 seeded_count = 0
-CompanySize.count
+existing_count = 0
+updated_count = 0
 
 company_sizes.each do |size|
   company_size_record = CompanySize.find_or_initialize_by(size_range: size[:size_range])
 
-  # Only seed new company sizes
-  unless company_size_record.persisted?
+  if company_size_record.persisted?
+    existing_count += 1
+    updates_made = false
+
+    # Check for updates in each field
+    if company_size_record.some_field != size[:some_field]
+      company_size_record.some_field = size[:some_field]
+      updates_made = true
+      puts "Updated some_field for company size #{size[:size_range]}."
+    end
+
+    # Add checks for other fields as needed
+    # if company_size_record.other_field != size[:other_field]
+    #   company_size_record.other_field = size[:other_field]
+    #   updates_made = true
+    #   puts "Updated other_field for company size #{size[:size_range]}."
+    # end
+
+    if updates_made
+      company_size_record.save!
+      updated_count += 1
+      puts "Company size #{size[:size_range]} updated in database."
+    else
+      puts "Company size #{size[:size_range]} is already up-to-date."
+    end
+  else
+    # New record to seed
     company_size_record.save!
     seeded_count += 1
+    puts "Seeded new company size: #{size[:size_range]}"
   end
 end
 
 total_company_sizes = CompanySize.count
-
-puts "*********** Seeded #{seeded_count} company sizes. Total company sizes in the table: #{total_company_sizes}."
+puts "*********** Seeded #{seeded_count} new company sizes. #{existing_count} company sizes already existed. #{updated_count} company sizes updated. Total company sizes in the table: #{total_company_sizes}."

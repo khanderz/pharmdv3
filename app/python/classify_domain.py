@@ -1,10 +1,8 @@
-# classify_domain.py
 import os
 from dotenv import load_dotenv
 import requests
-from bs4 import BeautifulSoup
 import pandas as pd
-from urllib.parse import urljoin
+from urllib.parse import urlparse
 from google_sheets import load_sheet_data, update_google_sheet
 
 load_dotenv()
@@ -24,77 +22,67 @@ def fetch_healthcare_domains_keywords():
         for domain in domains_data
     }
     print("Successfully fetched healthcare domains keywords.")
+    print("Healthcare Domains Keywords:")
+    for domain, keywords in healthcare_domains_keywords.items():
+        print(f"Domain: {domain.title()}, Keywords: {keywords}")
     return healthcare_domains_keywords
 
-def scrape_overview_section(about_url):
+def get_domain_from_url(company_url):
     """
-    Scrapes the 'Overview' section of the LinkedIn about page.
+    Extracts the main domain from the company URL.
     """
-    print(f"Scraping the LinkedIn about page at: {about_url}")
-    try:
-        response = requests.get(about_url, timeout=10)
-        response.raise_for_status()
-        soup = BeautifulSoup(response.text, 'html.parser')
-        
-        overview_section = soup.find('section', {'id': 'about'})  
-        if overview_section:
-            overview_text = overview_section.get_text(separator=' ', strip=True)
-            print("Successfully scraped Overview section.")
-            return overview_text
-        else:
-            print(f"No overview section found for {about_url}")
-            return ""
-    except requests.RequestException as e:
-        print(f"Error accessing {about_url}: {e}")
-        return ""
+    print(f"Extracting domain from URL: {company_url}")
+    parsed_url = urlparse(company_url)
+    domain = parsed_url.netloc.lower().replace("www.", "")
+    print(f"Extracted domain: {domain}")
+    return domain
 
-def classify_healthcare_domain_specialty(content, healthcare_domains_keywords):
+def classify_healthcare_domain_specialty(healthcare_domains_keywords, company_url=None):
     """
-    Classifies the content into relevant healthcare domains using keywords (case-insensitive).
+    Classifies the company URL into relevant healthcare domains using keywords.
     """
     identified_domains = []
-    content_lower = content.lower() 
-
-    print("Classifying healthcare domains based on content...")
-    for domain, keywords in healthcare_domains_keywords.items():
-        if any(keyword in content_lower for keyword in keywords):
-            identified_domains.append(domain.title())  
-            print(f"Matched domain: {domain.title()}")
     
+    if company_url:
+        print("Classifying healthcare domains based on company URL...")
+        for domain, keywords in healthcare_domains_keywords.items():
+            print(f"\nChecking domain '{domain.title()}' with keywords: {keywords}")
+            for keyword in keywords:
+                if keyword in company_url:
+                    identified_domains.append(domain.title())
+                    print(f"Matched domain '{domain.title()}' with keyword '{keyword}' in URL.")
+                    break  # Exit loop after the first match within the domain keywords
+
     if not identified_domains:
-        print("No healthcare domains matched for this content.")
-    return identified_domains
+        print("No healthcare domains matched for this URL.")
+    return list(set(identified_domains))
 
 def update_google_sheet_with_domains(sheet_id, range_name):
     """
-    Updates Google Sheets with classified healthcare domains based on LinkedIn 'About' pages.
+    Updates Google Sheets with classified healthcare domains based on company URL.
     Processes only the first 5 rows for testing purposes.
     """
     print("Loading master data from Google Sheets...")
-
     master_data = load_sheet_data(sheet_id, range_name)
     healthcare_domains_keywords = fetch_healthcare_domains_keywords()
     print("Successfully loaded master data.")
 
     for index, row in master_data.head(5).iterrows(): 
-        linkedin_url = row.get('linkedin_url')
-        if not pd.isna(linkedin_url):
-   
-            about_url = urljoin(linkedin_url + '/', 'about')
-            print(f"\nProcessing company: {row['company_name']} with LinkedIn URL: {linkedin_url}")
-            overview_content = scrape_overview_section(about_url)
-            domains = classify_healthcare_domain_specialty(overview_content, healthcare_domains_keywords)
-            
-            matched_domains = ', '.join(domains)
-            master_data.at[index, 'healthcare_domain'] = matched_domains
-            print(f"Updated {row['company_name']} with matched domains: {matched_domains}")
-        else:
-            print(f"No LinkedIn URL found for {row['company_name']}. Skipping.")
+        company_url = row.get('company_url')
+        
+        print(f"\nProcessing company: {row['company_name']}")
+        
+        # Use company URL for classification
+        domain = get_domain_from_url(company_url) if not pd.isna(company_url) else None
+        domains = classify_healthcare_domain_specialty(healthcare_domains_keywords, domain)
+        
+        matched_domains = ', '.join(domains)
+        master_data.at[index, 'healthcare_domain'] = matched_domains
+        print(f"Updated {row['company_name']} with matched domains: {matched_domains}")
 
     print("\nUpdating Google Sheets with the classified domains for the first 5 rows...")
     update_google_sheet(sheet_id, range_name, master_data)
     print("Google Sheets update complete.")
-
 
 if __name__ == "__main__":
     update_google_sheet_with_domains(MASTER_SHEET_ID, MASTER_RANGE_NAME)

@@ -123,12 +123,10 @@ updated_count = 0
 existing_count = 0
 
 job_roles.each do |role|
-  # Find or create the job role itself
   role_record = JobRole.find_or_initialize_by(role_name: role[:role_name])
 
   changes_made = false
 
-  # Update aliases if different
   if role_record.aliases.sort != role[:aliases].sort
     role_record.aliases = role[:aliases]
     changes_made = true
@@ -145,7 +143,6 @@ job_roles.each do |role|
     puts changes_made ? "Updated job role: #{role_record.role_name}." : "No changes for job role: #{role_record.role_name}."
   end
 
-  # Associate with departments
   role[:department_names].each do |dept_name|
     department = Department.find_by('LOWER(dept_name) = ? OR LOWER(?) = ANY (SELECT LOWER(unnest(aliases)))',
                                     dept_name.downcase, dept_name.downcase)
@@ -159,7 +156,6 @@ job_roles.each do |role|
     end
   end
 
-  # Associate with teams
   role[:team_names].each do |team_name|
     team = Team.find_by('LOWER(team_name) = ? OR LOWER(?) = ANY (SELECT LOWER(unnest(aliases)))',
                         team_name.downcase, team_name.downcase)

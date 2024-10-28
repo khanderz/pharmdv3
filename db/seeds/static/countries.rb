@@ -40,22 +40,46 @@ countries = [
 
 seeded_count = 0
 existing_count = 0
-Country.count
+updated_count = 0
 
 countries.each do |country|
-  country_record = Country.find_or_initialize_by(country_code: country[:country_code],
-                                                 country_name: country[:country_name])
+  country_record = Country.find_or_initialize_by(country_code: country[:country_code])
 
   if country_record.persisted?
     existing_count += 1
+    updates_made = false
+
+    # Check if `country_name` needs updating
+    if country_record.country_name != country[:country_name]
+      country_record.country_name = country[:country_name]
+      updates_made = true
+      puts "Updated country name for #{country[:country_code]} to #{country[:country_name]}."
+    end
+
+    # Add other field checks if necessary, e.g.,
+    # if country_record.some_field != country[:some_field]
+    #   country_record.some_field = country[:some_field]
+    #   updates_made = true
+    #   puts "Updated some_field for country #{country[:country_name]}."
+    # end
+
+    if updates_made
+      country_record.save!
+      updated_count += 1
+      puts "Country #{country[:country_name]} updated in the database."
+    else
+      puts "Country #{country[:country_name]} is already up-to-date."
+    end
   else
+    # New record to seed
+    country_record.country_name = country[:country_name]
     country_record.save!
     seeded_count += 1
+    puts "Seeded new country: #{country[:country_name]}"
   end
 rescue StandardError => e
   puts "Error seeding country: #{country[:country_name]} - #{e.message}"
 end
 
 total_countries_after = Country.count
-
-puts "***********Seeded #{seeded_count} new countries. #{existing_count} countries already existed. Total countries in the table: #{total_countries_after}."
+puts "*********** Seeded #{seeded_count} new countries. #{existing_count} countries already existed. #{updated_count} countries updated. Total countries in the table: #{total_countries_after}."
