@@ -3,10 +3,9 @@ import requests
 from bs4 import BeautifulSoup
 import pandas as pd
 from google_sheets import load_sheet_data, update_google_sheet
+from urllib.parse import urljoin
 
 ATS_TYPES_URL = "http://localhost:3000/api/ats_types"  
-
-DOMAIN_KEYWORDS_URL = "http://localhost:3000/healthcare_domains.json"  
 
 SPECIALTY_KEYWORDS_URL = "http://localhost:3000/company_specialties.json"
 
@@ -22,23 +21,12 @@ def fetch_specialty_keywords():
         # Build dictionary: specialty name as key, keywords as list
         specialties_keywords = {
             specialty['value']: specialty['keywords'] for specialty in specialties_data if 'keywords' in specialty
-        }
+    }
         return specialties_keywords
     except requests.RequestException as e:
         print(f"Error fetching specialties: {e}")
         return {}
 
-def fetch_healthcare_domains_keywords():
-    response = requests.get(DOMAIN_KEYWORDS_URL)
-    response.raise_for_status()
-    domains_data = response.json()
-
-    # Map domain value to aliases list
-    healthcare_domains_keywords = {
-        domain['value']: domain['aliases'].split(', ') if 'aliases' in domain else []
-        for domain in domains_data
-    }
-    return healthcare_domains_keywords
 
 def fetch_ats_keywords():
     """
