@@ -3,3 +3,16 @@ Layout/ParameterAlignment:
 
 Layout/HashAlignment:
   Enabled: true
+
+Style/TrailingCommaInArrayLiteral:
+  Enabled: false
+
+Style/TrailingCommaInHashLiteral:
+  Enabled: false
+
+Style/TrailingCommaInLiteral:
+  Enabled: false
+
+Layout/LineLength:
+  Max: 100
+  AutoCorrect: true
