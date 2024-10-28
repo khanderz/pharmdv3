@@ -12,13 +12,58 @@ begin
     companies.each do |row|
       company = Company.find_by(company_name: row['company_name'])
       ats_type = AtsType.find_by(ats_type_code: row['company_ats_type'])
-      country = Country.find_by(country_code: row['company_country']) ||
-                Country.find_by(country_name: row['company_country']) ||
-                Country.where('? = ANY(aliases)', row['company_country']).first
+
+      country_names = row['company_country'].split(',').map(&:strip)
+      countries = country_names.map do |country_name|
+        Country.find_by(country_code: country_name) ||
+          Country.find_by(country_name: country_name) ||
+          Country.where('? = ANY(aliases)', country_name).first ||
+          Country.create!(
+            country_code: country_name,
+            country_name: country_name,
+            error_details: "Country '#{country_name}' not found for Company #{row['company_name']}",
+            resolved: false
+          ).tap do |new_country|
+            Adjudication.create!(
+              adjudicatable_type: 'Company',
+              adjudicatable_id: new_country.id,
+              error_details: "Country '#{country_name}' not found for Company #{row['company_name']}",
+              resolved: false
+            )
+            puts "Country not found for company: #{row['company_name']} or country code/name: #{country_name}. Logged to adjudications."
+          end
+      end.compact
+
+      states = []
+      if row['company_state'].present?
+        state_names = row['company_state'].split(',').map(&:strip)
+        states = state_names.map do |state_name|
+          State.find_by(state_name: state_name) || State.find_by(state_code: state_name) ||
+            puts("State not found for company: #{row['company_name']} or name/code: #{state_name}")
+        end.compact
+      end
+
+      city_names = row['company_city']&.split(',')&.map(&:strip) || []
+      cities = city_names.map do |city_name|
+        City.find_by(city_name: city_name) || City.where('? = ANY(aliases)', city_name).first ||
+          City.create!(
+            city_name: city_name,
+            error_details: "City '#{city_name}' not found for Company #{row['company_name']}",
+            resolved: false
+          ).tap do |new_city|
+            Adjudication.create!(
+              adjudicatable_type: 'Company',
+              adjudicatable_id: new_city.id,
+              error_details: "City '#{city_name}' not found for Company #{row['company_name']}",
+              resolved: false
+            )
+            puts "City not found for company: #{row['company_name']} or name/alias: #{city_name}. Logged to adjudications."
+          end
+      end.compact
 
       if company
         puts "-----UPDATING #{row['company_name']}"
-        changes_made = Company.seed_existing_companies(company, row, ats_type, country)
+        changes_made = Company.seed_existing_companies(company, row, ats_type, countries)
 
         if changes_made
           company.save!
@@ -39,64 +84,15 @@ begin
           company_description: row['company_description'],
           ats_id: row['ats_id']
         )
+          
+          new_company.countries = countries
+          new_company.states = states if states.present?
+          new_company.cities = cities if cities.present?
 
         if ats_type
           new_company.ats_type = ats_type
         else
           puts "ATS type not found for company: #{row['company_name']} or type code: #{row['company_ats_type']}"
-        end
-
-        if country
-          new_company.country = country
-        else
-          new_country = Country.create!(
-            country_code: row['company_country'],
-            country_name: row['company_country'],
-            error_details: "Country '#{row['company_country']}' not found for Company #{row['company_name']}",
-            resolved: false
-          )
-
-          Adjudication.create!(
-            adjudicatable_type: 'Company',
-            adjudicatable_id: new_country.id,
-            error_details: "Country '#{row['company_country']}' not found for Company #{row['company_name']}",
-            resolved: false
-          )
-
-          puts "Country not found for company: #{row['company_name']} or country code/name: #{row['company_country']}. Logged to adjudications."
-        end
-
-        if row['company_state'].present?
-          state = State.find_by(state_name: row['company_state']) || State.find_by(state_code: row['company_state'])
-          if state
-            new_company.state = state
-          else
-            puts "State not found for company: #{row['company_name']} or name/code: #{row['company_state']}"
-          end
-        end
-        puts "new_company: #{new_company.inspect}"
-        if row['company_city'].present?
-          city = City.find_by(city_name: row['company_city']) || City.where('? = ANY (aliases)',
-                                                                            row['company_city']).first
-
-          if city
-            new_company.city = city
-          else
-            new_city = City.create!(
-              city_name: row['company_city'],
-              error_details: "City '#{row['company_city']}' not found for Company #{row['company_name']}",
-              resolved: false
-            )
-
-            Adjudication.create!(
-              adjudicatable_type: 'Company',
-              adjudicatable_id: new_city.id,
-              error_details: "City '#{row['company_city']}' not found for Company #{row['company_name']}",
-              resolved: false
-            )
-
-            puts "City not found for company: #{row['company_name']} or name/alias: #{row['company_city']}. Logged to adjudications."
-          end
         end
 
         # Optional attributes
@@ -116,6 +112,14 @@ begin
           else
             puts "Funding type not found for company: #{row['company_name']} or type: #{row['last_funding_type']}"
           end
+        end
+
+        if row['logo_url'].present?
+          new_company.logo_url = row['logo_url']
+        end
+
+        if row['company_url'].present?
+          new_company.company_url = row['company_url']
         end
 
         # Handle multiple healthcare domains

@@ -24,18 +24,11 @@ company_sizes.each do |size|
     updates_made = false
 
     # Check for updates in each field
-    if company_size_record.some_field != size[:some_field]
-      company_size_record.some_field = size[:some_field]
+    if company_size_record.size_range != size[:size_range]
+      company_size_record.size_range = size[:size_range]
       updates_made = true
       puts "Updated some_field for company size #{size[:size_range]}."
     end
-
-    # Add checks for other fields as needed
-    # if company_size_record.other_field != size[:other_field]
-    #   company_size_record.other_field = size[:other_field]
-    #   updates_made = true
-    #   puts "Updated other_field for company size #{size[:size_range]}."
-    # end
 
     if updates_made
       company_size_record.save!

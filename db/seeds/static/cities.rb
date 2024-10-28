@@ -88,4 +88,3 @@ end
 
 total_cities = City.count
 puts "*********** Seeded #{seeded_count} new cities. #{existing_count} cities already existed. #{updated_count} cities updated. Total cities in the table: #{total_cities}."
-Explanation of Key Changes:

@@ -29,7 +29,7 @@ def load_sheet_data(sheet_id, range_name):
 
 def update_google_sheet(sheet_id, range_name, data):
     data = data.fillna('').astype(str)
-    data = data.iloc[:, :17]  
+    data = data.iloc[:, :18]  
     values = [data.columns.tolist()] + data.values.tolist()
     
     body = {'values': values}

@@ -1,6 +1,5 @@
 # frozen_string_literal: true
 
-# Seeding most popular countries for business and startups
 countries = [
   { country_code: 'AU', country_name: 'Australia' },
   { country_code: 'BD', country_name: 'Bangladesh' },
@@ -49,19 +48,12 @@ countries.each do |country|
     existing_count += 1
     updates_made = false
 
-    # Check if `country_name` needs updating
     if country_record.country_name != country[:country_name]
       country_record.country_name = country[:country_name]
       updates_made = true
       puts "Updated country name for #{country[:country_code]} to #{country[:country_name]}."
     end
 
-    # Add other field checks if necessary, e.g.,
-    # if country_record.some_field != country[:some_field]
-    #   country_record.some_field = country[:some_field]
-    #   updates_made = true
-    #   puts "Updated some_field for country #{country[:country_name]}."
-    # end
 
     if updates_made
       country_record.save!
@@ -71,7 +63,6 @@ countries.each do |country|
       puts "Country #{country[:country_name]} is already up-to-date."
     end
   else
-    # New record to seed
     country_record.country_name = country[:country_name]
     country_record.save!
     seeded_count += 1
