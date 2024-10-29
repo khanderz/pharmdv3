@@ -4,13 +4,10 @@ Layout/ParameterAlignment:
 Layout/HashAlignment:
   Enabled: true
 
-Style/TrailingCommaInArrayLiteral:
-  Enabled: false
-
 Style/TrailingCommaInHashLiteral:
   Enabled: false
 
-Style/TrailingCommaInLiteral:
+Style/TrailingCommaInArrayLiteral:
   Enabled: false
 
 Layout/LineLength:

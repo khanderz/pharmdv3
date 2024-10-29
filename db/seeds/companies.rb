@@ -63,7 +63,8 @@ begin
 
       if company
         puts "-----UPDATING #{row['company_name']}"
-        changes_made = Company.seed_existing_companies(company, row, ats_type, countries)
+        changes_made = Company.seed_existing_companies(company, row, ats_type, countries, states,
+                                                       cities)
 
         if changes_made
           company.save!
@@ -84,10 +85,10 @@ begin
           company_description: row['company_description'],
           ats_id: row['ats_id']
         )
-          
-          new_company.countries = countries
-          new_company.states = states if states.present?
-          new_company.cities = cities if cities.present?
+
+        new_company.countries = countries
+        new_company.states = states if states.present?
+        new_company.cities = cities if cities.present?
 
         if ats_type
           new_company.ats_type = ats_type
@@ -114,19 +115,17 @@ begin
           end
         end
 
-        if row['logo_url'].present?
-          new_company.logo_url = row['logo_url']
-        end
+        new_company.logo_url = row['logo_url'] if row['logo_url'].present?
 
-        if row['company_url'].present?
-          new_company.company_url = row['company_url']
-        end
+        new_company.company_url = row['company_url'] if row['company_url'].present?
 
         # Handle multiple healthcare domains
         healthcare_domains = row['healthcare_domains'].split(',').map(&:strip)
         domains = healthcare_domains.map do |domain_key|
           domain = HealthcareDomain.find_by(key: domain_key)
-          puts "Healthcare domain not found for company: #{row['company_name']} or key: #{domain_key}" if domain.nil?
+          if domain.nil?
+            puts "Healthcare domain not found for company: #{row['company_name']} or key: #{domain_key}"
+          end
           domain
         end.compact
 

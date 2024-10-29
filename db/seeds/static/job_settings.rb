@@ -2,7 +2,8 @@
 
 job_settings = [
   { setting_name: 'Field-based', aliases: ['Travel Required', 'Field Work'] },
-  { setting_name: 'Flexible', aliases: ['Flexible Location', 'Flexible Hours', 'Work from Anywhere'] },
+  { setting_name: 'Flexible',
+    aliases: ['Flexible Location', 'Flexible Hours', 'Work from Anywhere'] },
   { setting_name: 'Hybrid', aliases: ['Part-time Remote', 'Mixed Remote and On-site'] },
   { setting_name: 'On-site', aliases: %w[In-office Office-based onsite] },
   { setting_name: 'Remote', aliases: ['Work from Home', 'Telecommute', 'WFH'] }
