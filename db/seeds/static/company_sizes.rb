@@ -23,7 +23,6 @@ company_sizes.each do |size|
     existing_count += 1
     updates_made = false
 
-    # Check for updates in each field
     if company_size_record.size_range != size[:size_range]
       company_size_record.size_range = size[:size_range]
       updates_made = true
@@ -38,7 +37,6 @@ company_sizes.each do |size|
       puts "Company size #{size[:size_range]} is already up-to-date."
     end
   else
-    # New record to seed
     company_size_record.save!
     seeded_count += 1
     puts "Seeded new company size: #{size[:size_range]}"

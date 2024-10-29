@@ -1,6 +1,5 @@
 # frozen_string_literal: true
 
-# Seeding common job salary intervals
 job_salary_intervals = [
   { interval: 'Annually' },
   { interval: 'Bi-weekly' },

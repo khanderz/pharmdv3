@@ -44,9 +44,6 @@ funding_types.each do |funding_type|
     existing_count += 1
     updates_made = false
 
-    # Placeholder for any additional fields if needed
-    # Example: if there's a description or code field, compare and update here
-
     if updates_made
       funding_type_record.save!
       updated_count += 1
@@ -55,7 +52,6 @@ funding_types.each do |funding_type|
       puts "Funding type #{funding_type[:funding_type_name]} is already up-to-date."
     end
   else
-    # New record to seed
     funding_type_record.save!
     seeded_count += 1
     puts "Seeded new funding type: #{funding_type[:funding_type_name]}"

@@ -23,9 +23,6 @@ job_commitments.each do |commitment|
     existing_count += 1
     updates_made = false
 
-    # Placeholder for any additional fields if needed
-    # Example: if there's a description or code field, compare and update here
-
     if updates_made
       job_commitment.save!
       updated_count += 1
@@ -34,7 +31,6 @@ job_commitments.each do |commitment|
       puts "Job commitment #{commitment[:commitment_name]} is already up-to-date."
     end
   else
-    # New record to seed
     job_commitment.save!
     seeded_count += 1
     puts "Seeded new job commitment: #{commitment[:commitment_name]}"

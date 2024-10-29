@@ -2,18 +2,22 @@
 
 cities = [
   { city_name: 'Atlanta' },
-  { city_name: 'Austin', aliases: ['Downtown', 'East Austin', 'South Congress', 'Zilker', 'Hyde Park'] },
+  { city_name: 'Austin',
+    aliases: ['Downtown', 'East Austin', 'South Congress', 'Zilker', 'Hyde Park'] },
   { city_name: 'Boston', aliases: ['Back Bay', 'South End', 'Fenway', 'Beacon Hill', 'Seaport'] },
   { city_name: 'Charlotte' },
-  { city_name: 'Chicago', aliases: ['Loop', 'River North', 'Lincoln Park', 'Wicker Park', 'South Loop'] },
+  { city_name: 'Chicago',
+    aliases: ['Loop', 'River North', 'Lincoln Park', 'Wicker Park', 'South Loop'] },
   { city_name: 'Dallas' },
   { city_name: 'Denver', aliases: ['LoDo', 'Capitol Hill', 'Cherry Creek', 'Highlands', 'RiNo'] },
   { city_name: 'Detroit' },
   { city_name: 'Houston' },
   { city_name: 'Las Vegas' },
   { city_name: 'Los Angeles',
-    aliases: ['Hollywood', 'Santa Monica', 'Beverly Hills', 'Venice', 'Downtown LA', 'Westwood', 'Silver Lake'] },
-  { city_name: 'Miami', aliases: ['Brickell', 'Wynwood', 'Little Havana', 'Coconut Grove', 'South Beach'] },
+    aliases: ['Hollywood', 'Santa Monica', 'Beverly Hills', 'Venice', 'Downtown LA', 'Westwood',
+              'Silver Lake'] },
+  { city_name: 'Miami',
+    aliases: ['Brickell', 'Wynwood', 'Little Havana', 'Coconut Grove', 'South Beach'] },
   { city_name: 'Minneapolis' },
   { city_name: 'Nashville' },
   { city_name: 'New York',
@@ -27,12 +31,14 @@ cities = [
   { city_name: 'Salt Lake City' },
   { city_name: 'San Diego' },
   { city_name: 'San Francisco',
-    aliases: ['SOMA', 'Mission District', 'Financial District', 'Nob Hill', 'Castro', 'Pacific Heights'] },
+    aliases: ['SOMA', 'Mission District', 'Financial District', 'Nob Hill', 'Castro',
+              'Pacific Heights'] },
   { city_name: 'San Jose' },
   { city_name: 'Seattle',
     aliases: ['Capitol Hill', 'Belltown', 'Ballard', 'Fremont', 'Queen Anne', 'South Lake Union'] },
   { city_name: 'Washington',
-    aliases: ['Georgetown', 'Dupont Circle', 'Capitol Hill', 'Foggy Bottom', 'Adams Morgan', 'Columbia Heights'] },
+    aliases: ['Georgetown', 'Dupont Circle', 'Capitol Hill', 'Foggy Bottom', 'Adams Morgan',
+              'Columbia Heights'] },
 
   { city_name: 'Amsterdam' }, # Netherlands
   { city_name: 'Beijing' }, # China
@@ -68,7 +74,7 @@ cities.each do |city|
 
   if city_record.persisted?
     existing_count += 1
-    # Check if `aliases` need updating
+
     if city[:aliases] && city_record.aliases != city[:aliases]
       city_record.aliases = city[:aliases]
       city_record.save!
@@ -78,7 +84,6 @@ cities.each do |city|
       puts "City #{city[:city_name]} is already up-to-date."
     end
   else
-    # New record to seed
     city_record.aliases = city[:aliases] if city[:aliases]
     city_record.save!
     seeded_count += 1

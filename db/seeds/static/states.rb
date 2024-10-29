@@ -1,6 +1,5 @@
 # frozen_string_literal: true
 
-# Seeding all states in the United States
 states = [
   { state_code: 'AL', state_name: 'Alabama' },
   { state_code: 'AK', state_name: 'Alaska' },
@@ -59,7 +58,8 @@ existing_count = 0
 State.count
 
 states.each do |state|
-  state_record = State.find_or_initialize_by(state_code: state[:state_code], state_name: state[:state_name])
+  state_record = State.find_or_initialize_by(state_code: state[:state_code],
+                                             state_name: state[:state_name])
 
   if state_record.persisted?
     existing_count += 1

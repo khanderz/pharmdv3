@@ -18,7 +18,6 @@ job_settings.each do |setting|
   job_setting = JobSetting.find_or_initialize_by(setting_name: setting[:setting_name])
 
   if job_setting.persisted?
-    # Check if the aliases need to be updated
     if job_setting.aliases.sort != setting[:aliases].sort
       job_setting.aliases = setting[:aliases]
       job_setting.save!

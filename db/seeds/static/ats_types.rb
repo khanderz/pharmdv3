@@ -33,7 +33,7 @@ ats_types.each do |ats_type|
 
   if ats_type_record.persisted?
     existing_count += 1
-    # Check if `ats_type_name` needs updating
+
     if ats_type_record.ats_type_name != ats_type[:ats_type_name]
       ats_type_record.ats_type_name = ats_type[:ats_type_name]
       ats_type_record.save!
@@ -43,7 +43,6 @@ ats_types.each do |ats_type|
       puts "ATS type #{ats_type[:ats_type_code]} is already up-to-date."
     end
   else
-    # New record to seed
     ats_type_record.ats_type_name = ats_type[:ats_type_name]
     ats_type_record.save!
     seeded_count += 1

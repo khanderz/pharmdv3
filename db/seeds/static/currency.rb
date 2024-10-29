@@ -1,6 +1,5 @@
 # frozen_string_literal: true
 
-# Seeding common job salary currencies
 job_salary_currencies = [
   { currency_code: 'AUD' }, # Australian Dollar
   { currency_code: 'BRL' }, # Brazilian Real
@@ -30,9 +29,6 @@ job_salary_currencies.each do |currency|
     existing_count += 1
     updates_made = false
 
-    # Placeholder for any additional fields if needed
-    # Example: if there's a name or description field, compare and update here
-
     if updates_made
       currency_record.save!
       updated_count += 1
@@ -41,7 +37,6 @@ job_salary_currencies.each do |currency|
       puts "Currency #{currency[:currency_code]} is already up-to-date."
     end
   else
-    # New record to seed
     currency_record.save!
     seeded_count += 1
     puts "Seeded new job salary currency: #{currency[:currency_code]}"

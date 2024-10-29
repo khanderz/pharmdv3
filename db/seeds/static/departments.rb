@@ -12,12 +12,16 @@ departments = [
   { dept_name: 'Design', aliases: ['UI/UX Design', 'Graphic Design', 'Product & Design'] },
   { dept_name: 'Engineering',
     aliases: ['Development', 'Software Engineering', 'Tech', 'Information Technology', 'DevOps'] },
-  { dept_name: 'Internship', aliases: ['Interns', 'Internship Team', 'Internship Program', 'fellowship', 'graduate'] },
-  { dept_name: 'IT', aliases: ['Information Technology', 'Tech Support', 'Ops/Member Care', 'it operations'] },
+  { dept_name: 'Internship',
+    aliases: ['Interns', 'Internship Team', 'Internship Program', 'fellowship', 'graduate'] },
+  { dept_name: 'IT',
+    aliases: ['Information Technology', 'Tech Support', 'Ops/Member Care', 'it operations'] },
   { dept_name: 'Finance', aliases: ['Accounting', 'Financial Planning', 'FP&A'] },
-  { dept_name: 'Human Resources', aliases: ['HR', 'Talent Acquisition', 'People Operations', 'Talent & Organization'] },
+  { dept_name: 'Human Resources',
+    aliases: ['HR', 'Talent Acquisition', 'People Operations', 'Talent & Organization'] },
   { dept_name: 'Legal', aliases: ['Corporate Law', 'Compliance', 'Legal Affairs', 'Sales'] },
-  { dept_name: 'Marketing', aliases: ['Digital Marketing', 'Content Marketing', 'Branding', 'Brand'] },
+  { dept_name: 'Marketing',
+    aliases: ['Digital Marketing', 'Content Marketing', 'Branding', 'Brand'] },
   { dept_name: 'Operations',
     aliases: ['Strategy & Operations', 'Business Operations', 'Logistics', 'Supply Chain', 'Growth & Business Excellence',
               'worker operations', 'People Operations'] },
@@ -34,7 +38,6 @@ departments.each do |dept|
   department_record = Department.find_or_initialize_by(dept_name: dept[:dept_name])
 
   if department_record.persisted?
-    # Check if the aliases need to be updated
     if department_record.aliases.sort != dept[:aliases].sort
       department_record.aliases = dept[:aliases]
       department_record.save!
