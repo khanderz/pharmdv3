@@ -96,6 +96,8 @@ if __name__ == "__main__":
 
     currency_map = parse_currency_data(currency_data)
 
+    print(f"Currency Map: {currency_map}, text: {text}, interval_data: {interval_data}, currency data: {currency_data}")
+
     result = extract_salary_from_text(text, currency_map, interval_data)
 
     if result:

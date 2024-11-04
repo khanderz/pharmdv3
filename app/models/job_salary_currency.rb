@@ -12,13 +12,11 @@ class JobSalaryCurrency < ApplicationRecord
     currency = find_by(currency_code: currency_code)
     return currency if currency
 
-    # Fallback to JobPostService to try extracting currency code if job_post provided
     if job_post && (extracted_currency_code = JobPostService.extract_currency_from_text(job_post))
       currency = find_by(currency_code: extracted_currency_code)
       return currency if currency
     end
 
-    # If currency still not found, create an adjudication entry
     new_currency = create!(
       currency_code: currency_code,
       error_details: "Currency #{currency_code} not found and needs adjudication.",
