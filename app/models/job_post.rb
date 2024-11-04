@@ -49,8 +49,8 @@ class JobPost < ApplicationRecord
       if new_job_post.save
         puts "#{company.company_name} job post added"
         update_job_locations(new_job_post, locations)
-        if existing_job.job_salary_min.nil? && existing_job.job_salary_max.nil?
-          JobPostService.process_job_post_with_salary_extraction(existing_job)
+        if new_job_post.job_salary_min.nil? && new_job_post.job_salary_max.nil?
+          JobPostService.process_job_post_with_salary_extraction(new_job_post)
         end
         new_job_post.id
       else
@@ -222,7 +222,6 @@ class JobPost < ApplicationRecord
     end
 
     def map_ats_data_return(ats, job, company)
-      # print("---------------------map_ats_data_return Job: #{job}, Company: #{company}\n")
       job_setting_data = find_setting_by_name(job['workplaceType'])
       job_responsibilities = if job['lists']
                                job['lists'].find do |list|
@@ -240,7 +239,7 @@ class JobPost < ApplicationRecord
       location_info = parse_location(job['categories']&.dig('location') || job['categories']&.dig('allLocations') || '')
 
       if ats == 'LEVER'
-        {
+        data = {
           job_title: job['text'],
           department_id: Department.find_department(job['categories']['department'], 'JobPost',
                                                     job['hostedUrl']).id,
@@ -257,17 +256,24 @@ class JobPost < ApplicationRecord
           job_internal_id_string: job['id'],
           job_applyUrl: job['applyUrl'],
           job_salary_max: job['salaryRange'] ? job['salaryRange']['max'] : nil,
-          job_salary_min: job['salaryRange'] ? job['salaryRange']['min'] : nil,
-          job_salary_currency_id: handle_currency_record(job['salaryRange']&.dig('currency'),
-                                                         company.id, job['hostedUrl'], job),
-          job_salary_interval_id: find_interval_id_by_name(job['salaryRange']&.dig('interval'))
+          job_salary_min: job['salaryRange'] ? job['salaryRange']['min'] : nil
         }
+
+        if data[:job_salary_min].present? || data[:job_salary_max].present?
+          data[:job_salary_currency_id] =
+            handle_currency_record(job['salaryRange']&.dig('currency'), company.id,
+                                   job['hostedUrl'], job)
+          data[:job_salary_interval_id] =
+            find_interval_id_by_name(job['salaryRange']&.dig('interval'))
+        end
+
+        data
       elsif ats == 'GREENHOUSE'
         location_info = parse_location(job['location']['name'])
 
         job_setting_data = find_job_setting_by_location(location_info[:location],
                                                         location_info[:is_remote])
-        {
+        data = {
           job_title: job['title'],
           department_id: Department.find_department(job['departments'][0]['name'], 'JobPost',
                                                     job['absolute_url']).id,
@@ -276,25 +282,6 @@ class JobPost < ApplicationRecord
           job_description: job['content'],
           job_url: job['absolute_url'],
           job_applyUrl: job['absolute_url'],
-          # "offices": [
-          #   {
-          #     "id": 4026018004,
-          #     "name": "New York (HQ)",
-          #     "location": "New York, New York, United States",
-          #     "child_ids": [],
-          #     "parent_id": null
-          #   },
-          #   {
-          #     "id": 4027213004,
-          #     "name": "Remote",
-          #     "location": null,
-          #     "child_ids": [],
-          #     "parent_id": null
-          #   }
-          # ]
-          #  OR "location": {
-          #   "name": "New York, NY or Remote"
-          # },
           job_locations: {
             countries: location_info[:countries],
             states: location_info[:states],
@@ -306,10 +293,19 @@ class JobPost < ApplicationRecord
           job_internal_id: job['internal_job_id'],
           job_url_id: job['id'],
           job_internal_id_string: job.is_a?(Hash) && job.key?('internal_job_id') ? job['internal_job_id'].to_s : nil,
-          job_salary_currency_id: handle_currency_record(job['salaryRange']&.dig('currency'),
-                                                         company.id, job['absolute_url'], job),
-          job_salary_interval_id: find_interval_id_by_name(job['salaryRange']&.dig('interval'))
+          job_salary_max: job['salaryRange'] ? job['salaryRange']['max'] : nil,
+          job_salary_min: job['salaryRange'] ? job['salaryRange']['min'] : nil
         }
+
+        if data[:job_salary_min].present? || data[:job_salary_max].present?
+          data[:job_salary_currency_id] =
+            handle_currency_record(job['salaryRange']&.dig('currency'), company.id,
+                                   job['absolute_url'], job)
+          data[:job_salary_interval_id] =
+            find_interval_id_by_name(job['salaryRange']&.dig('interval'))
+        end
+
+        data
       end
     end
 
