@@ -58,7 +58,7 @@ healthcare_domains = [
   { key: 'PRIMARY_CARE', value: 'Primary Care',
     aliases: ['general health', 'family', 'primary health', 'wellness', 'preventative', 'vaccinations'] },
   { key: 'PSYCHIATRY', value: 'Psychiatry',
-    aliases: ['mental health', 'behavioral health', 'psychotherapy', 'behavioral therapy', 'psychiatric', 'mental health treatment', 'therapy', 'ptsd', 'neurofeedback', 'mental wellness', 'depression', 'anxiety', 'bipolar disorder'] },
+    aliases: ['mental health', 'behavioral health', 'psychotherapy', 'behavioral therapy', 'psychiatric', 'mental health treatment', 'ptsd', 'neurofeedback', 'mental wellness', 'depression', 'anxiety', 'bipolar disorder'] },
   { key: 'PULMONOLOGY', value: 'Pulmonology',
     aliases: ['lung', 'lungs', 'breathe', 'air', 'air pollution', 'respiratory', 'COPD', 'pulmonary', 'respiratory', 'asthma', 'bronchitis', 'emphysema'] },
   { key: 'RADIOLOGY', value: 'Radiology',

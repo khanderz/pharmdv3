@@ -13,3 +13,27 @@ Style/TrailingCommaInArrayLiteral:
 Layout/LineLength:
   Max: 100
   AutoCorrect: true
+
+Metrics/AbcSize:
+  Max: 100
+
+Metrics/CyclomaticComplexity:
+  Max: 20
+
+Metrics/MethodLength:
+  Max: 100
+
+Metrics/PerceivedComplexity:
+  Max: 40
+
+Metrics/BlockLength:
+  Max: 100
+
+Metrics/ClassLength:
+  Max: 300
+
+Lint/UselessAssignment:
+  Enabled: false
+
+Style/SafeNavigation:
+  Enabled: false

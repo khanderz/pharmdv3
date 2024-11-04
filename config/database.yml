@@ -23,14 +23,13 @@ production:
   database: pharmdv3_production
   username: pharmdv3
   password: <%= ENV["PHARMDV3_DATABASE_PASSWORD"] %>
-
-remote:
-  adapter: postgresql
-  database: <%= ENV['RDS_DATABASE'] %>
-  username: <%= ENV['RDS_USERNAME'] %>
-  password: <%= ENV['RDS_PASSWORD'] %>
-  host: <%= ENV['RDS_HOST'] %>
-  port: 5432
-  pool: 5
-  timeout: 5000
-  locale: en_US.UTF8
+# remote:
+#   adapter: postgresql
+#   database: <%= ENV['RDS_DATABASE'] %>
+#   username: <%= ENV['RDS_USERNAME'] %>
+#   password: <%= ENV['RDS_PASSWORD'] %>
+#   host: <%= ENV['RDS_HOST'] %>
+#   port: 5432
+#   pool: 5
+#   timeout: 5000
+#   locale: en_US.UTF8
