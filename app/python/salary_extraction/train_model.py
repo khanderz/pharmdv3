@@ -1,6 +1,7 @@
 #  app/python/salary_extraction/train_model.py
 import spacy
 import random
+from app.python.salary_extraction.entity_processing import process_extracted_entities
 
 nlp = spacy.blank("en")
 
@@ -43,5 +44,12 @@ def train_ner_model():
     nlp.to_disk(output_dir)
     print(f"Model saved to {output_dir}")
 
+def test_model():
+    text = "The salary is $100,000 per year."
+    doc = nlp(text)
+    result = process_extracted_entities(doc)
+    print("Test Output:", result)
+
 if __name__ == "__main__":
     train_ner_model()
+    test_model() 
