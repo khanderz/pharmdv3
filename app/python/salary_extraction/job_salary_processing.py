@@ -1,4 +1,4 @@
-# app/python/job_post_processing.py
+# app/python/job_salary_processing.py
 import sys
 import json
 import base64

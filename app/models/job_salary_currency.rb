@@ -1,3 +1,4 @@
+# app/models/job_salary_currency.rb
 class JobSalaryCurrency < ApplicationRecord
   has_many :job_posts
   has_many :adjudications, as: :adjudicatable, dependent: :destroy

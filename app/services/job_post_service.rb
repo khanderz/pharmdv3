@@ -9,12 +9,13 @@ class JobPostService
     job_additional = job_post.job_additional.to_s
     combined_text = "#{job_description} #{job_additional}"
 
+    puts "combined text for salary extraction: #{combined_text}"
     return if combined_text.empty?
 
     json_data = { text: combined_text }.to_json
     encoded_data = Base64.strict_encode64(json_data)
 
-    command = "python3 app/python/salary_extraction/job_post_processing.py '#{encoded_data}'"
+    command = "python3 app/python/salary_extraction/job_salary_processing.py '#{encoded_data}'"
     stdout, stderr, status = Open3.capture3(command)
 
     if status.success? && !stdout.strip.empty?
