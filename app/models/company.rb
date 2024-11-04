@@ -1,5 +1,5 @@
-
 # frozen_string_literal: true
+
 class Company < ApplicationRecord
   has_paper_trail ignore: [:updated_at]
 
@@ -22,7 +22,7 @@ class Company < ApplicationRecord
 
   validates :company_name, presence: true, uniqueness: true
   validates :linkedin_url, uniqueness: true, allow_blank: true
-   
+
   def self.seed_existing_companies(company, row, ats_type, countries, states, cities)
     changes_made = false
     if company.operating_status != ActiveModel::Type::Boolean.new.cast(row['operating_status'])
@@ -132,22 +132,26 @@ class Company < ApplicationRecord
     end
     changes_made
   end
-  
+
   def populate_missing_data
     data = {
-      company_name: self.company_name,
-      operating_status: self.operating_status,
-      industry: self.healthcare_domains.map(&:key).join(','),
-      company_ats_type: self.ats_type&.ats_type_code,
-      company_size: self.company_size&.size_range,
-      healthcare_domain: self.healthcare_domains.present? ? self.healthcare_domains.map(&:key).join(',') : nil,
-      company_specialty: self.company_specialties.present? ? self.company_specialties.map(&:key).join(',') : nil
+      company_name: company_name,
+      operating_status: operating_status,
+      industry: healthcare_domains.map(&:key).join(','),
+      company_ats_type: ats_type&.ats_type_code,
+      company_size: company_size&.size_range,
+      healthcare_domain: healthcare_domains.present? ? healthcare_domains.map(&:key).join(',') : nil,
+      company_specialty: company_specialties.present? ? company_specialties.map(&:key).join(',') : nil
     }
+
     processed_data = DataProcessingService.predict_company_attributes(data)
     self.company_size ||= processed_data[:predicted_size]
-    self.healthcare_domains << HealthcareDomain.find_by(key: processed_data[:predicted_healthcare_domain]) if self.healthcare_domains.empty?
-    self.company_specialties << CompanySpecialty.find_by(key: processed_data[:predicted_company_specialty]) if self.company_specialties.empty?
-    self.save
+    if healthcare_domains.empty?
+      healthcare_domains << HealthcareDomain.find_by(key: processed_data[:predicted_healthcare_domain])
+    end
+    if company_specialties.empty?
+      company_specialties << CompanySpecialty.find_by(key: processed_data[:predicted_company_specialty])
+    end
+    save
   end
-  
 end
