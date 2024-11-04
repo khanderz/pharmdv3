@@ -38,9 +38,7 @@ class JobPost < ApplicationRecord
       else
         existing_job.update(job_post_data)
         update_job_locations(existing_job, locations)
-        if existing_job.job_salary_min.nil? && existing_job.job_salary_max.nil?
-          JobPostService.process_job_post_with_salary_extraction(existing_job)
-        end
+        # process_job_post_with_salary_extraction(existing_job)
         puts "Updated job post for URL: #{job_url}"
       end
       existing_job.id
@@ -49,9 +47,7 @@ class JobPost < ApplicationRecord
       if new_job_post.save
         puts "#{company.company_name} job post added"
         update_job_locations(new_job_post, locations)
-        if new_job_post.job_salary_min.nil? && new_job_post.job_salary_max.nil?
-          JobPostService.process_job_post_with_salary_extraction(new_job_post)
-        end
+        # process_job_post_with_salary_extraction(new_job_post)
         new_job_post.id
       else
         Adjudication.create!(
@@ -72,10 +68,6 @@ class JobPost < ApplicationRecord
     job_post.countries = Country.where(country_name: locations[:countries]) if locations[:countries]
     job_post.states = State.where(state_name: locations[:states]) if locations[:states]
     job_post.cities = City.where(city_name: locations[:cities]) if locations[:cities]
-  end
-
-  def salary_needs_extraction?
-    job_salary_min.nil? && job_salary_max.nil?
   end
 
   def self.get_job_url(ats_code, job)
@@ -239,7 +231,7 @@ class JobPost < ApplicationRecord
       location_info = parse_location(job['categories']&.dig('location') || job['categories']&.dig('allLocations') || '')
 
       if ats == 'LEVER'
-        data = {
+        {
           job_title: job['text'],
           department_id: Department.find_department(job['categories']['department'], 'JobPost',
                                                     job['hostedUrl']).id,
@@ -256,24 +248,17 @@ class JobPost < ApplicationRecord
           job_internal_id_string: job['id'],
           job_applyUrl: job['applyUrl'],
           job_salary_max: job['salaryRange'] ? job['salaryRange']['max'] : nil,
-          job_salary_min: job['salaryRange'] ? job['salaryRange']['min'] : nil
+          job_salary_min: job['salaryRange'] ? job['salaryRange']['min'] : nil,
+          job_salary_currency_id: handle_currency_record(job['salaryRange']&.dig('currency'),
+                                                         company.id, job['hostedUrl']),
+          job_salary_interval_id: find_interval_id_by_name(job['salaryRange']&.dig('interval'))
         }
-
-        if data[:job_salary_min].present? || data[:job_salary_max].present?
-          data[:job_salary_currency_id] =
-            handle_currency_record(job['salaryRange']&.dig('currency'), company.id,
-                                   job['hostedUrl'], job)
-          data[:job_salary_interval_id] =
-            find_interval_id_by_name(job['salaryRange']&.dig('interval'))
-        end
-
-        data
       elsif ats == 'GREENHOUSE'
         location_info = parse_location(job['location']['name'])
 
         job_setting_data = find_job_setting_by_location(location_info[:location],
                                                         location_info[:is_remote])
-        data = {
+        {
           job_title: job['title'],
           department_id: Department.find_department(job['departments'][0]['name'], 'JobPost',
                                                     job['absolute_url']).id,
@@ -293,19 +278,10 @@ class JobPost < ApplicationRecord
           job_internal_id: job['internal_job_id'],
           job_url_id: job['id'],
           job_internal_id_string: job.is_a?(Hash) && job.key?('internal_job_id') ? job['internal_job_id'].to_s : nil,
-          job_salary_max: job['salaryRange'] ? job['salaryRange']['max'] : nil,
-          job_salary_min: job['salaryRange'] ? job['salaryRange']['min'] : nil
+          job_salary_currency_id: handle_currency_record(job['salaryRange']&.dig('currency'),
+                                                         company.id, job['absolute_url']),
+          job_salary_interval_id: find_interval_id_by_name(job['salaryRange']&.dig('interval'))
         }
-
-        if data[:job_salary_min].present? || data[:job_salary_max].present?
-          data[:job_salary_currency_id] =
-            handle_currency_record(job['salaryRange']&.dig('currency'), company.id,
-                                   job['absolute_url'], job)
-          data[:job_salary_interval_id] =
-            find_interval_id_by_name(job['salaryRange']&.dig('interval'))
-        end
-
-        data
       end
     end
 
@@ -323,8 +299,6 @@ class JobPost < ApplicationRecord
     end
 
     def parse_location(location_name)
-      # print("parse_location/Location Name: #{location_name}\n")
-
       states = State.pluck(:state_code, :state_name).to_h
       cities = City.pluck(:city_name, :aliases).flatten
       countries = Country.pluck(:country_code, :country_name, :aliases).map do |code, name, aliases|
@@ -361,7 +335,6 @@ class JobPost < ApplicationRecord
     end
 
     def find_setting_by_name(setting_name)
-      # print("find_setting_id_by_name/Setting Name: #{setting_name}\n")
       return nil if setting_name.nil?
 
       job_setting = JobSetting.where('LOWER(setting_name) = ? OR ? = ANY (aliases)',
@@ -373,9 +346,8 @@ class JobPost < ApplicationRecord
       JobCommitment.find_by(commitment_name: commitment_name)&.id
     end
 
-    def handle_currency_record(currency_code, company_id, job_url, job_post = nil)
-      JobSalaryCurrency.find_or_adjudicate_currency(currency_code, company_id, job_url,
-                                                    job_post)&.id
+    def handle_currency_record(currency_code, company_id, job_url)
+      JobSalaryCurrency.find_or_adjudicate_currency(currency_code, company_id, job_url)&.id
     end
 
     def find_interval_id_by_name(interval_name)
