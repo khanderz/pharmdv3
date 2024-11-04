@@ -38,6 +38,9 @@ class JobPost < ApplicationRecord
       else
         existing_job.update(job_post_data)
         update_job_locations(existing_job, locations)
+        if existing_job.job_salary_min.nil? && existing_job.job_salary_max.nil?
+          JobPostService.process_job_post_with_salary_extraction(existing_job)
+        end
         puts "Updated job post for URL: #{job_url}"
       end
       existing_job.id
@@ -46,6 +49,9 @@ class JobPost < ApplicationRecord
       if new_job_post.save
         puts "#{company.company_name} job post added"
         update_job_locations(new_job_post, locations)
+        if existing_job.job_salary_min.nil? && existing_job.job_salary_max.nil?
+          JobPostService.process_job_post_with_salary_extraction(existing_job)
+        end
         new_job_post.id
       else
         Adjudication.create!(
@@ -61,15 +67,15 @@ class JobPost < ApplicationRecord
   end
 
   def self.update_job_locations(job_post, locations)
-    print("update_job_locations/Job Post: #{job_post}, Locations: #{locations}\n")
+    # print("update_job_locations/Job Post: #{job_post}, Locations: #{locations}\n")
 
     job_post.countries = Country.where(country_name: locations[:countries]) if locations[:countries]
-
     job_post.states = State.where(state_name: locations[:states]) if locations[:states]
+    job_post.cities = City.where(city_name: locations[:cities]) if locations[:cities]
+  end
 
-    return unless locations[:cities]
-
-    job_post.cities = City.where(city_name: locations[:cities])
+  def salary_needs_extraction?
+    job_salary_min.nil? && job_salary_max.nil?
   end
 
   def self.get_job_url(ats_code, job)
@@ -108,8 +114,13 @@ class JobPost < ApplicationRecord
 
     def get_jobs(company)
       if company.ats_type.ats_type_code == 'LEVER'
-        company_name = company.company_name.gsub(' ', '').downcase
-        url = "https://api.lever.co/v0/postings/#{company_name}"
+        identifier = if company.ats_id.present?
+                       company.ats_id
+                     else
+                       company.company_name.gsub(' ',
+                                                 '').downcase
+                     end
+        url = "https://api.lever.co/v0/postings/#{identifier}"
         uri = URI(url)
 
         begin
@@ -128,7 +139,7 @@ class JobPost < ApplicationRecord
             error_details: "failed to fetch Lever jobs for #{company.company_name}",
             resolved: false
           )
-          puts "Error: #{jobs['message']}, cannot get Lever jobs. Logged to adjudications."
+          puts "Error message: #{jobs['message']},  cannot get Lever jobs for company #{company.company_name}. Logged to adjudications."
 
           nil
         rescue StandardError => e
@@ -168,7 +179,7 @@ class JobPost < ApplicationRecord
 
         nil
       else
-        puts "ATS type #{company.ats_type.ats_type_code} not supported for company: #{company.company_name}"
+        puts "ATS type #{ats_code} not supported for company: #{company.company_name}"
       end
     end
 
@@ -211,6 +222,7 @@ class JobPost < ApplicationRecord
     end
 
     def map_ats_data_return(ats, job, company)
+      # print("---------------------map_ats_data_return Job: #{job}, Company: #{company}\n")
       job_setting_data = find_setting_by_name(job['workplaceType'])
       job_responsibilities = if job['lists']
                                job['lists'].find do |list|
@@ -247,7 +259,7 @@ class JobPost < ApplicationRecord
           job_salary_max: job['salaryRange'] ? job['salaryRange']['max'] : nil,
           job_salary_min: job['salaryRange'] ? job['salaryRange']['min'] : nil,
           job_salary_currency_id: handle_currency_record(job['salaryRange']&.dig('currency'),
-                                                         company.id, job['hostedUrl']),
+                                                         company.id, job['hostedUrl'], job),
           job_salary_interval_id: find_interval_id_by_name(job['salaryRange']&.dig('interval'))
         }
       elsif ats == 'GREENHOUSE'
@@ -264,6 +276,25 @@ class JobPost < ApplicationRecord
           job_description: job['content'],
           job_url: job['absolute_url'],
           job_applyUrl: job['absolute_url'],
+          # "offices": [
+          #   {
+          #     "id": 4026018004,
+          #     "name": "New York (HQ)",
+          #     "location": "New York, New York, United States",
+          #     "child_ids": [],
+          #     "parent_id": null
+          #   },
+          #   {
+          #     "id": 4027213004,
+          #     "name": "Remote",
+          #     "location": null,
+          #     "child_ids": [],
+          #     "parent_id": null
+          #   }
+          # ]
+          #  OR "location": {
+          #   "name": "New York, NY or Remote"
+          # },
           job_locations: {
             countries: location_info[:countries],
             states: location_info[:states],
@@ -275,10 +306,8 @@ class JobPost < ApplicationRecord
           job_internal_id: job['internal_job_id'],
           job_url_id: job['id'],
           job_internal_id_string: job.is_a?(Hash) && job.key?('internal_job_id') ? job['internal_job_id'].to_s : nil,
-          job_salary_max: job['salaryRange'] ? job['salaryRange']['max'] : nil,
-          job_salary_min: job['salaryRange'] ? job['salaryRange']['min'] : nil,
           job_salary_currency_id: handle_currency_record(job['salaryRange']&.dig('currency'),
-                                                         company.id, job['absolute_url']),
+                                                         company.id, job['absolute_url'], job),
           job_salary_interval_id: find_interval_id_by_name(job['salaryRange']&.dig('interval'))
         }
       end
@@ -292,13 +321,13 @@ class JobPost < ApplicationRecord
                  })
     end
 
-    # Helper methods
+    # Helper methods -----------------------------------------------------------
     def handle_country_record(country_code, country_name, company_id, job_url)
       Country.find_or_adjudicate_country(country_code, country_name, company_id, job_url)
     end
 
     def parse_location(location_name)
-      print("parse_location/Location Name: #{location_name}\n")
+      # print("parse_location/Location Name: #{location_name}\n")
 
       states = State.pluck(:state_code, :state_name).to_h
       cities = City.pluck(:city_name, :aliases).flatten
@@ -327,7 +356,7 @@ class JobPost < ApplicationRecord
     end
 
     def find_job_setting_by_location(location, is_remote)
-      print("find_job_setting_by_location/Location: #{location}, is_remote: #{is_remote}\n")
+      # print("find_job_setting_by_location/Location: #{location}, is_remote: #{is_remote}\n")
       if is_remote
         find_setting_by_name('Remote')
       elsif location.present?
@@ -336,7 +365,7 @@ class JobPost < ApplicationRecord
     end
 
     def find_setting_by_name(setting_name)
-      print("find_setting_id_by_name/Setting Name: #{setting_name}\n")
+      # print("find_setting_id_by_name/Setting Name: #{setting_name}\n")
       return nil if setting_name.nil?
 
       job_setting = JobSetting.where('LOWER(setting_name) = ? OR ? = ANY (aliases)',
@@ -348,9 +377,9 @@ class JobPost < ApplicationRecord
       JobCommitment.find_by(commitment_name: commitment_name)&.id
     end
 
-    def handle_currency_record(currency_code, company_id, job_url)
-      # print("handle_currency_record/Currency Code: #{currency_code}, Company ID: #{company_id}, Job URL: #{job_url}\n")
-      JobSalaryCurrency.find_or_adjudicate_currency(currency_code, company_id, job_url)&.id
+    def handle_currency_record(currency_code, company_id, job_url, job_post = nil)
+      JobSalaryCurrency.find_or_adjudicate_currency(currency_code, company_id, job_url,
+                                                    job_post)&.id
     end
 
     def find_interval_id_by_name(interval_name)
