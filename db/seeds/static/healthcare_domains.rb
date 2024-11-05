@@ -2,7 +2,7 @@
 
 healthcare_domains = [
   { key: 'ALLERGY_IMMUNOLOGY', value: 'Allergy and Immunology',
-    aliases: ['allergy', 'autoimmune', 'immunodeficiency', 'adaptive immunity', 'innate immunity' + 'immunodeficient', 'immunodeficiencies', 'antibodies', 'immune system', 'immunotherapy', 'asthma', 'hay fever', 'eczema', 'anaphylaxis'] },
+    aliases: ['allergy', 'autoimmune', 'immunodeficiency', 'adaptive immunity', 'innate immunityimmunodeficient', 'immunodeficiencies', 'antibodies', 'immune system', 'immunotherapy', 'asthma', 'hay fever', 'eczema', 'anaphylaxis'] },
   { key: 'CARDIOLOGY', value: 'Cardiology',
     aliases: ['heart', 'cardiac', 'cardiovascular', 'hypertension', 'heart disease', 'arrhythmia', 'heart attack'] },
   { key: 'DENTAL', value: 'Dental',

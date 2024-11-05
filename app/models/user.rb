@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class User < ApplicationRecord
   has_many :saved_job_posts, dependent: :destroy
   has_many :saved_companies, dependent: :destroy

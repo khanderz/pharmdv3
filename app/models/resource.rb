@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class Resource < ApplicationRecord
   has_many :skill_resources, dependent: :destroy
   has_many :skills, through: :skill_resources

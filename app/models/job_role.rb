@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class JobRole < ApplicationRecord
   has_and_belongs_to_many :departments, join_table: :job_roles_departments
   has_and_belongs_to_many :teams, join_table: :job_roles_teams

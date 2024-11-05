@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class AtsType < ApplicationRecord
   has_many :companies
 

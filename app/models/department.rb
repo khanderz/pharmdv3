@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class Department < ApplicationRecord
   has_many :job_posts
   has_and_belongs_to_many :job_roles, join_table: :job_roles_departments
@@ -11,7 +13,6 @@ class Department < ApplicationRecord
 
     if department
       # If the department is found, return it
-      department
     else
       # If the department is not found, create a new one and log the adjudication
       department = Department.create!(
@@ -29,7 +30,7 @@ class Department < ApplicationRecord
 
       puts "Department #{department_name} created and logged to adjudications with adjudicatable_type #{adjudicatable_type}."
 
-      department
     end
+    department
   end
 end

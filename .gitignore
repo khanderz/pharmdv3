@@ -63,3 +63,12 @@ __pycache__/
 /lib/seeds
 /db/seeds
 /config/credentials
+
+# AI
+app/python/salary_extraction/model/salary_ner_model/tf_model.h5
+app/python/salary_extraction/model/salary_ner_model/tokenizer/
+app/python/salary_extraction/model/salary_ner_model/vocab/
+app/python/salary_extraction/model/salary_ner_model/config.json
+app/python/salary_extraction/model/salary_ner_model/meta.json
+
+app/python/salary_extraction/data/train_data.json

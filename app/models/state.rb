@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class State < ApplicationRecord
   has_many :company_states, dependent: :destroy
   has_many :companies, through: :company_states

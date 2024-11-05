@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class Country < ApplicationRecord
   has_many :company_countries, dependent: :destroy
   has_many :companies, through: :company_countries

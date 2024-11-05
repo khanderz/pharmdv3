@@ -8,14 +8,22 @@ class JobPostsController < ApplicationController
       domain_ids = params[:domain_ids]
       @job_posts = JobPost.joins(company: :healthcare_domains)
                           .where('healthcare_domains.id IN (?)', domain_ids)
-                          .includes(company: { company_specialties: [], company_domains: :healthcare_domain })
+                          .includes(company: { company_specialties: [],
+                                               company_domains: :healthcare_domain })
 
     else
-      @job_posts = JobPost.includes(company: { company_specialties: [], company_domains: :healthcare_domain }).all
+      @job_posts = JobPost.includes(company: { company_specialties: [],
+                                               company_domains: :healthcare_domain }).all
     end
 
-    @job_posts = @job_posts.where('job_salary_min >= ?', params[:salary_min]) if params[:salary_min].present?
-    @job_posts = @job_posts.where('job_salary_max <= ?', params[:salary_max]) if params[:salary_max].present?
+    if params[:salary_min].present?
+      @job_posts = @job_posts.where('job_salary_min >= ?',
+                                    params[:salary_min])
+    end
+    if params[:salary_max].present?
+      @job_posts = @job_posts.where('job_salary_max <= ?',
+                                    params[:salary_max])
+    end
 
     if params[:job_salary_currency_id].present?
       @job_posts = @job_posts.where(job_salary_currency_id: params[:job_salary_currency_id])

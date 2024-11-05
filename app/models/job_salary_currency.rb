@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # app/models/job_salary_currency.rb
 class JobSalaryCurrency < ApplicationRecord
   has_many :job_posts

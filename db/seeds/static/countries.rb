@@ -32,7 +32,8 @@ countries = [
   { country_code: 'TH', country_name: 'Thailand' },
   { country_code: 'TR', country_name: 'Turkey' },
   { country_code: 'AE', country_name: 'United Arab Emirates' },
-  { country_code: 'US', country_name: 'United States', aliases: ['USA', 'United States of America'] },
+  { country_code: 'US', country_name: 'United States',
+    aliases: ['USA', 'United States of America'] },
   { country_code: 'VN', country_name: 'Vietnam' },
   { country_code: 'ZA', country_name: 'South Africa' }
 ]
@@ -53,7 +54,6 @@ countries.each do |country|
       updates_made = true
       puts "Updated country name for #{country[:country_code]} to #{country[:country_name]}."
     end
-
 
     if updates_made
       country_record.save!

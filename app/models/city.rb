@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class City < ApplicationRecord
   has_many :company_cities, dependent: :destroy
   has_many :companies, through: :company_cities

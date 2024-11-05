@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # app/services/job_post_service.rb
 require 'open3'
 require 'json'
