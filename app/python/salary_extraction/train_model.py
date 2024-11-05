@@ -1,24 +1,31 @@
 # app/python/salary_extraction/train_model.py
 import os
 import tensorflow as tf
+import logging
+import warnings
 from transformers import create_optimizer
 from app.python.salary_extraction.data_loader import load_data, create_tokenized_dataset
 from app.python.salary_extraction.utils.model_utils import load_model, save_model
 from app.python.salary_extraction.utils.tokenizer_utils import tokenizer
-from app.python.salary_extraction.utils.label_mapping import get_id_to_label
+from app.python.salary_extraction.utils.label_mapping import get_id_to_label, get_label_list
 from app.python.salary_extraction.utils.validation_utils import check_token_label_length, check_token_label_alignment
+
+warnings.filterwarnings("ignore", category=FutureWarning)
+
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 script_dir = os.path.dirname(os.path.abspath(__file__))
 train_data_path = os.path.join(script_dir, "data", "train_data.json")
 model_save_path = "app/python/salary_extraction/model/salary_ner_model"
 
-# Load data
+logger.info("Loading training data...")
 TRAIN_DATA = load_data(train_data_path)
 tokenized_dataset = create_tokenized_dataset(TRAIN_DATA)
 
 # Load model
-model = load_model(model_save_path)
-
+num_labels = len(get_label_list())
+model = load_model(model_save_path, model_name="bert-base-cased", num_labels=num_labels)
 id_to_label = get_id_to_label()
 
 # Convert dataset to TensorFlow Dataset
@@ -42,7 +49,7 @@ batch_size = 8
 num_epochs = 5
 num_train_steps = len(train_dataset) * num_epochs
 num_warmup_steps = int(0.1 * num_train_steps)
-init_lr = 1e-5 
+init_lr = 1e-5
 
 # Define optimizer and loss
 optimizer, schedule = create_optimizer(
@@ -62,10 +69,15 @@ def masked_sparse_categorical_crossentropy(y_true, y_pred):
 # Compile model
 model.compile(optimizer=optimizer, loss=masked_sparse_categorical_crossentropy)
 
-# Train model
-model.fit(train_dataset, epochs=num_epochs)
-save_model(model, model_save_path)
-        
+# Train and save model with logging
+try:
+    logger.info("----------------------Starting model training...")
+    model.fit(train_dataset, epochs=num_epochs)
+    logger.info("---------------------------Model training complete.")
+    save_model(model, model_save_path)
+except Exception as e:
+    logger.error("An error occurred during training: %s", e)
+
 def test_model():
     test_text = "The salary is $100,000 annually."
     tokens = tokenizer(test_text, return_tensors="tf", padding=True, truncation=True)
@@ -76,15 +88,14 @@ def test_model():
 
     predicted_labels = [id_to_label.get(pred, "O") for pred in predictions[0].numpy()]
     confidences = [softmax[0, i, pred].numpy() for i, pred in enumerate(predictions[0].numpy())]
-    
+
     print("Tokens:", tokenizer.tokenize(test_text))
     print("Predicted Labels:", predicted_labels)
     print("Confidences:", confidences)
-    
+
 
 if __name__ == "__main__":
-    # test_model()
-
-    check_token_label_length(TRAIN_DATA,tokenized_dataset)  
+    check_token_label_length(TRAIN_DATA, tokenized_dataset, id_to_label)
+ 
+     # test_model()
     # check_token_label_alignment(TRAIN_DATA, tokenizer)
-    
