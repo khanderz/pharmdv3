@@ -7,19 +7,22 @@ Rails.application.routes.draw do
   get 'mui', to: 'companies#mui'
 
   resources :companies
-  resources :job_posts, defaults: { format: :json }
-  resources :departments, defaults: { format: :json }
-  resources :teams, defaults: { format: :json }
-  resources :job_roles, defaults: { format: :json }
+  resources :healthcare_domains, defaults: { format: :json }
+  resources :company_specialties, defaults: { format: :json }
   resources :cities, defaults: { format: :json }
   resources :countries, defaults: { format: :json }
   resources :states, defaults: { format: :json }
-  resources :healthcare_domains, defaults: { format: :json }
-  resources :company_specialties, defaults: { format: :json }
+  resources :company_sizes, only: [:index]
+
+  resources :job_posts, defaults: { format: :json }
+  resources :job_salary_currencies, only: [:index]
+  resources :job_salary_intervals, only: :index
   resources :job_settings, defaults: { format: :json }
   resources :job_commitments, defaults: { format: :json }
-  resources :company_sizes, only: [:index]
-  resources :job_salary_currencies, only: [:index]
+
+  resources :departments, defaults: { format: :json }
+  resources :teams, defaults: { format: :json }
+  resources :job_roles, defaults: { format: :json }
 
   get 'api/ats_types', to: 'ats_types#index'
 

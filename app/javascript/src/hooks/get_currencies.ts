@@ -1,3 +1,5 @@
+// app/javascript/src/hooks/get_currencies.ts
+
 import { JobSalaryCurrency } from '@customtypes/job_post';
 import { useState, useEffect } from 'react';
 
