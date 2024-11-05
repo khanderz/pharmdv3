@@ -1,83 +1,25 @@
 # app/python/salary_extraction/train_model.py
 import os
-import json
 import tensorflow as tf
-from transformers import AutoTokenizer, TFAutoModelForTokenClassification, create_optimizer
-from datasets import Dataset
-from app.python.salary_extraction.label_mapping import get_label_to_id, get_id_to_label, get_label_list
+from transformers import create_optimizer
+from app.python.salary_extraction.data_loader import load_data, create_tokenized_dataset
+from app.python.salary_extraction.utils.model_utils import load_model, save_model
+from app.python.salary_extraction.utils.tokenizer_utils import tokenizer
+from app.python.salary_extraction.utils.label_mapping import get_id_to_label
+from app.python.salary_extraction.utils.validation_utils import check_token_label_length, check_token_label_alignment
 
 script_dir = os.path.dirname(os.path.abspath(__file__))
 train_data_path = os.path.join(script_dir, "data", "train_data.json")
 model_save_path = "app/python/salary_extraction/model/salary_ner_model"
 
-with open(train_data_path, "r") as f:
-    TRAIN_DATA = json.load(f)
+# Load data
+TRAIN_DATA = load_data(train_data_path)
+tokenized_dataset = create_tokenized_dataset(TRAIN_DATA)
 
-# Initialize tokenizer and model
-model_name = "bert-base-cased"
-tokenizer = AutoTokenizer.from_pretrained(model_name)
+# Load model
+model = load_model(model_save_path)
 
-# Check if a saved model exists to continue training
-if os.path.exists(model_save_path):
-    print("-------------Loading model from checkpoint...")
-    model = TFAutoModelForTokenClassification.from_pretrained(model_save_path)
-else:
-    print("-------------Initializing a new model...")
-    model = TFAutoModelForTokenClassification.from_pretrained(
-        model_name, num_labels=len(get_label_list())
-    )
-
-label_to_id = get_label_to_id()
 id_to_label = get_id_to_label()
-
-texts = [item["text"] for item in TRAIN_DATA]
-labels = [item["labels"] for item in TRAIN_DATA]
-dataset = Dataset.from_dict({"text": texts, "labels": labels})
-
-# Tokenize and align labels with tokens
-def tokenize_and_align_labels(examples):
-    tokenized_inputs = tokenizer(examples["text"], padding=True, truncation=True)
-    all_labels = []
-    for i, label in enumerate(examples["labels"]):
-        word_ids = tokenized_inputs.word_ids(batch_index=i)
-        label_ids = []
-        previous_word_idx = None
-        for word_idx in word_ids:
-            if word_idx is None:
-                label_ids.append(-100)
-            elif word_idx != previous_word_idx:
-                if word_idx < len(label):
-                    label_ids.append(label_to_id.get(label[word_idx], -100))
-                else:
-                    label_ids.append(-100)
-            else:
-                label_ids.append(-100)
-            previous_word_idx = word_idx
-        all_labels.append(label_ids)
-
-    tokenized_inputs["labels"] = all_labels
-    return tokenized_inputs
-
-# Apply tokenization and alignment
-tokenized_dataset = dataset.map(tokenize_and_align_labels, batched=True)
-
-for example in TRAIN_DATA:
-    text = example["text"]
-    labels = example["labels"]
-    
-    # Tokenize the text
-    tokenized = tokenizer(text, padding=True, truncation=True)
-    tokens = tokenized.tokens()
-    token_count = len(tokens)
-    label_count = len(labels)
-    
-    # Output results
-    print(f"Text: {text}")
-    print(f"-----------Token Count: {token_count}")
-    print(f"---------------Label Count: {label_count}")
-    print(f"Tokens: {tokens}")
-    print(f"Labels: {labels}")
-    print("-" * 50)
 
 # Convert dataset to TensorFlow Dataset
 def encode_example(example):
@@ -122,39 +64,8 @@ model.compile(optimizer=optimizer, loss=masked_sparse_categorical_crossentropy)
 
 # Train model
 model.fit(train_dataset, epochs=num_epochs)
-
-# Save the model after training
-model.save_pretrained(model_save_path)
-print("Model saved successfully.")
-
-# Function to verify token and label alignment
-def check_token_label_alignment(train_data, tokenizer):
-    for example in train_data:
-        text = example["text"]
-        labels = example["labels"]
-        tokenized_inputs = tokenizer(
-            text, truncation=True, padding=True, return_offsets_mapping=True
-        )
-        tokens = tokenizer.convert_ids_to_tokens(tokenized_inputs["input_ids"])
-        word_ids = tokenized_inputs.word_ids()
-        aligned_labels = []
-
-        for word_idx in word_ids:
-            if word_idx is None:
-                aligned_labels.append("PAD")
-            elif word_idx < len(labels):
-                aligned_labels.append(labels[word_idx])
-            else:
-                aligned_labels.append("O")
-
-        print(f"Text: {text}")
-        print(f"Tokens: {tokens}")
-        print(f"Labels: {aligned_labels}")
-        print("-" * 50)
-
+save_model(model, model_save_path)
         
-
-# Test function for single example
 def test_model():
     test_text = "The salary is $100,000 annually."
     tokens = tokenizer(test_text, return_tensors="tf", padding=True, truncation=True)
@@ -172,6 +83,8 @@ def test_model():
     
 
 if __name__ == "__main__":
-    test_model()
+    # test_model()
 
+    check_token_label_length(TRAIN_DATA,tokenized_dataset)  
     # check_token_label_alignment(TRAIN_DATA, tokenizer)
+    
