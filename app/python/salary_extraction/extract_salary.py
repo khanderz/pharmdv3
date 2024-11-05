@@ -8,6 +8,7 @@ from app.python.salary_extraction.entity_processing import process_extracted_ent
 MODEL_PATH = "app/python/salary_extraction/model/salary_ner_model"
 nlp = spacy.load(MODEL_PATH)
 
+
 def extract_salary_from_text(text):
     doc = nlp(text)
     # process_extracted_entities(doc)
@@ -15,7 +16,12 @@ def extract_salary_from_text(text):
     min_salary, max_salary, interval, currency = None, None, None, None
 
     for ent in doc.ents:
-        print(ent.text, ent.label_, getattr(ent._, "currency_type", None), getattr(ent._, "interval_type", None))
+        print(
+            ent.text,
+            ent.label_,
+            getattr(ent._, "currency_type", None),
+            getattr(ent._, "interval_type", None),
+        )
 
         if ent.label_ == "SALARY":
             salary_text = ent.text
@@ -26,8 +32,9 @@ def extract_salary_from_text(text):
         "min_salary": min_salary,
         "max_salary": max_salary,
         "interval": interval,
-        "currency": currency
+        "currency": currency,
     }
+
 
 if __name__ == "__main__":
     encoded_data = sys.argv[1]
@@ -35,5 +42,5 @@ if __name__ == "__main__":
     text = data.get("text", "")
 
     result = extract_salary_from_text(text)
-    
+
     print(json.dumps(result))

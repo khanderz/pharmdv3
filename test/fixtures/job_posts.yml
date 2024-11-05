@@ -2,7 +2,7 @@
 
 one:
   job_commitment: one
-  job_setting: 
+  job_setting:
   department: one
   team: one
   company: one
@@ -15,8 +15,8 @@ one:
   job_posted: 2024-10-28 18:32:58
   job_updated: 2024-10-28 18:32:58
   job_active: false
-  job_internal_id: 
-  job_url_id: 
+  job_internal_id:
+  job_url_id:
   job_internal_id_string: MyString
   job_salary_min: 1
   job_salary_max: 1
@@ -24,14 +24,14 @@ one:
   job_responsibilities: MyText
   job_qualifications: MyText
   job_applyUrl: MyText
-  job_locations: 
+  job_locations:
   error_details: MyText
-  reference_id: 
+  reference_id:
   resolved: false
 
 two:
   job_commitment: two
-  job_setting: 
+  job_setting:
   department: two
   team: two
   company: two
@@ -44,8 +44,8 @@ two:
   job_posted: 2024-10-28 18:32:58
   job_updated: 2024-10-28 18:32:58
   job_active: false
-  job_internal_id: 
-  job_url_id: 
+  job_internal_id:
+  job_url_id:
   job_internal_id_string: MyString
   job_salary_min: 1
   job_salary_max: 1
@@ -53,7 +53,7 @@ two:
   job_responsibilities: MyText
   job_qualifications: MyText
   job_applyUrl: MyText
-  job_locations: 
+  job_locations:
   error_details: MyText
-  reference_id: 
+  reference_id:
   resolved: false

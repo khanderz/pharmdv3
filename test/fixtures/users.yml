@@ -5,7 +5,7 @@ one:
   last_name: MyString
   email: MyString
   credential: MyString
-  resume: 
+  resume:
   photo: MyString
   last_login: 2024-10-28 18:33:38
   password_digest: MyString
@@ -21,7 +21,7 @@ two:
   last_name: MyString
   email: MyString
   credential: MyString
-  resume: 
+  resume:
   photo: MyString
   last_login: 2024-10-28 18:33:38
   password_digest: MyString

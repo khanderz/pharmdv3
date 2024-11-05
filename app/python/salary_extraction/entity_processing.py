@@ -6,13 +6,13 @@ def get_currency_type(symbol):
 
 def get_interval_type(interval_text):
     interval_phrases = {
-        "Annually": ["annually", "annual", "per year", "yearly"],
-        "Monthly": ["monthly", "per month"],
-        "Weekly": ["weekly", "per week"],
-        "Daily": ["daily", "per day"],
-        "Hourly": ["hourly", "per hour"],
-        "Bi-weekly": ["bi-weekly", "biweekly", "every two weeks"],
-        "Quarterly": ["quarterly", "per quarter"]
+        "Annually": ["annually", "annual", "per year", "yearly", 'a year'],
+        "Monthly": ["monthly", "per month", 'a month'],
+        "Weekly": ["weekly", "per week", 'a week'],
+        "Daily": ["daily", "per day", 'a day'],
+        "Hourly": ["hourly", "per hour", 'an hour'],
+        "Bi-weekly": ["bi-weekly", "biweekly", "every two weeks", 'every 2 weeks', 'every other week', "twice a month", "two times per month"],
+        "Quarterly": ["quarterly", "per quarter", "every quarter", "every 3 months", "a quarter"],
     }
     
     interval_text = interval_text.lower()
@@ -32,11 +32,13 @@ def process_extracted_entities(doc):
 
     for ent in doc.ents:
         if ent.label_ == "SALARY":
-            salary = ent.text.replace(",", "").replace("$", "")
-            if "-" in salary:
-                salary_min, salary_max = salary.split("-")
+            salary_text = ent.text.replace(",", "").replace("$", "").strip()
+            if "-" in salary_text:
+                min_salary, max_salary = salary_text.split("-")
+                salary_min = min_salary.strip()
+                salary_max = max_salary.strip()
             else:
-                salary_min = salary_max = salary
+                salary_min = salary_max = salary_text
         elif ent.label_ == "CURRENCY":
             currency_type = get_currency_type(ent.text)
         elif ent.label_ == "INTERVAL":

@@ -3,6 +3,7 @@ annotated-types==0.7.0
 astunparse==1.6.3
 attrs==24.2.0
 beautifulsoup4==4.12.3
+black==24.10.0
 blis==1.0.1
 cachetools==5.5.0
 catalogue==2.0.10
@@ -42,6 +43,7 @@ MarkupSafe==3.0.2
 mdurl==0.1.2
 ml-dtypes==0.4.1
 murmurhash==1.0.10
+mypy-extensions==1.0.0
 namex==0.0.8
 numpy==2.0.2
 oauthlib==3.2.2
@@ -50,6 +52,8 @@ optree==0.13.0
 outcome==1.3.0.post0
 packaging==24.1
 pandas==2.2.3
+pathspec==0.12.1
+platformdirs==4.3.6
 preshed==3.0.9
 proto-plus==1.25.0
 protobuf==5.28.3
@@ -84,6 +88,7 @@ tensorflow==2.18.0
 tensorflow-io-gcs-filesystem==0.37.1
 termcolor==2.5.0
 thinc==8.3.2
+tomli==2.0.2
 tqdm==4.66.6
 trio==0.27.0
 trio-websocket==0.11.1
