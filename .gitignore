@@ -74,5 +74,4 @@ app/python/salary_extraction/model/salary_ner_model/meta.json
 app/python/salary_extraction/data/train_data.json
 
 /.vscode
-.vscode/settings.json
-/.vscode
+
