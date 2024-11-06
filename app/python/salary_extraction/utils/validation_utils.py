@@ -24,7 +24,7 @@ def check_token_label_length(data, tokenized_dataset, id_to_label):
         # print(f"-----------------Tokens ({token_count}): {tokens}")
         # print(f"Original Labels ({label_count}): {labels}")
         # print(f"--------------Aligned Labels ({aligned_label_count}): {aligned_label_names}")
-        token_count != aligned_label_count and print(f"Token count ({token_count}) does not match aligned label count ({aligned_label_count})")
+        token_count != aligned_label_count and print(f"---------------!!!!Token count ({token_count}) does not match aligned label count ({aligned_label_count})")
         print("-" * 50)
 
     # Print aligned labels in the tokenized dataset to verify alignment aka checks for PAD tokens
