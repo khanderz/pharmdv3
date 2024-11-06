@@ -7,7 +7,7 @@ from transformers import create_optimizer
 
 from app.python.salary_extraction.data_loader import load_data, create_tokenized_dataset
 from app.python.salary_extraction.utils.model_utils import load_model, save_model
-from app.python.salary_extraction.utils.tokenizer_utils import tokenizer, align_labels_with_tokens
+from app.python.salary_extraction.utils.tokenizer_utils import tokenizer, align_labels_with_tokens_fast
 from app.python.salary_extraction.utils.label_mapping import get_id_to_label, get_label_list
 from app.python.salary_extraction.utils.validation_utils import check_token_label_length, check_token_label_alignment
 
@@ -47,7 +47,7 @@ train_dataset = train_dataset.to_tf_dataset(
 
 # Define training parameters
 batch_size = 8
-num_epochs = 3
+num_epochs = 1
 num_train_steps = len(train_dataset) * num_epochs
 num_warmup_steps = int(0.1 * num_train_steps)
 init_lr = 1e-5
@@ -67,10 +67,10 @@ def masked_sparse_categorical_crossentropy(y_true, y_pred):
     y_pred = tf.boolean_mask(y_pred, mask)
     return tf.keras.losses.sparse_categorical_crossentropy(y_true, y_pred, from_logits=True)
 
-# Compile model
+# Compile
 model.compile(optimizer=optimizer, loss=masked_sparse_categorical_crossentropy)
 
-# Train and save model with logging
+# Train / save model
 try:
     logger.info("----------------------Starting model training...")
     model.fit(train_dataset, epochs=num_epochs)
@@ -81,8 +81,8 @@ except Exception as e:
 
 def test_model():
     test_text = "The salary is $100,000 annually."
-    # tokenized = [CLS] [The] [salary] [is] [$] [100] [,] [000] [annually] [.] [SEP]
-    expected_labels = ["O", "O", "O", "B-CURRENCY", "B-SALARY_SINGLE", "I-SALARY_SINGLE", "I-SALARY_SINGLE", "B-INTERVAL", "O"]
+    # tokenized =  [The] [salary] [is] [$] [100,000] [annually] [.] 
+    expected_labels = ["O", "O", "O", "B-CURRENCY", "B-SALARY_SINGLE", "B-INTERVAL", "O"]
 
     tokenized_inputs = tokenizer(test_text, return_tensors="tf", padding=True, truncation=True)
     word_ids = tokenized_inputs.word_ids()
@@ -93,25 +93,30 @@ def test_model():
 
     raw_predictions = predictions[0].numpy()
     predicted_labels = [id_to_label.get(pred, "O") for pred in raw_predictions]
+    aligned_predicted_labels = align_labels_with_tokens_fast(predicted_labels, word_ids)
+
     confidences = [softmax[0, idx, pred].numpy() for idx, pred in enumerate(raw_predictions)]
+    filtered_confidences = [conf for i, conf in enumerate(confidences) if word_ids[i] is not None]
     
     # Filter out [CLS] and [SEP] from tokens, labels, and confidences
     tokens = tokenizer.convert_ids_to_tokens(tokenized_inputs["input_ids"][0])
     filtered_tokens = [t for i, t in enumerate(tokens) if word_ids[i] is not None]
-    filtered_predicted_labels = [pred for i, pred in enumerate(predicted_labels) if word_ids[i] is not None]
-    filtered_confidences = [conf for i, conf in enumerate(confidences) if word_ids[i] is not None]
+    filtered_expected_labels = [expected_labels[i] if i < len(expected_labels) else "N/A" for i in range(len(filtered_tokens))]
+    filtered_aligned_predicted_labels = [aligned_predicted_labels[i] for i in range(len(filtered_tokens))]
 
-    print(f"{'Token':<15}{'Expected':<20}{'Predicted':<20}{'Confidence':<20}")
+
+    print(f"{'Token':<15}{'Expected':<20}{'Aligned Predicted':<20}{'Confidence':<20}")
     print("-" * 75)
     for i, token in enumerate(filtered_tokens):
-        expected_label = expected_labels[i] if i < len(expected_labels) else "N/A"
-        predicted_label = filtered_predicted_labels[i] if i < len(filtered_predicted_labels) else "N/A"
+        expected_label = filtered_expected_labels[i] if i < len(filtered_expected_labels) else "N/A"
+        predicted_label = filtered_aligned_predicted_labels[i] if i < len(filtered_aligned_predicted_labels) else "N/A"
         confidence = filtered_confidences[i] if i < len(filtered_confidences) else "N/A"
         print(f"{token:<15}{expected_label:<20}{predicted_label:<20}{confidence:<20}")
 
         
 if __name__ == "__main__":
+    #  test_model()
+
     # check_token_label_length(TRAIN_DATA, tokenized_dataset, id_to_label)
- 
-     test_model()
-    # check_token_label_alignment(TRAIN_DATA, tokenizer)
+
+    check_token_label_alignment(TRAIN_DATA, id_to_label)
