@@ -1,122 +1,193 @@
 # app/python/salary_extraction/train_model.py
+
 import os
-import tensorflow as tf
-import logging
-import warnings
-from transformers import create_optimizer
-
-from app.python.salary_extraction.data_loader import load_data, create_tokenized_dataset
-from app.python.salary_extraction.utils.model_utils import load_model, save_model
-from app.python.salary_extraction.utils.tokenizer_utils import tokenizer, align_labels_with_tokens_fast
-from app.python.salary_extraction.utils.label_mapping import get_id_to_label, get_label_list
-from app.python.salary_extraction.utils.validation_utils import check_token_label_length, check_token_label_alignment
-
-warnings.filterwarnings("ignore", category=FutureWarning)
-
-logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger(__name__)
+import spacy
+import json
+import random
+import spacy_transformers  
+from spacy.tokens import DocBin
+from spacy.training import Example
+from spacy.training.iob_utils import offsets_to_biluo_tags
 
 script_dir = os.path.dirname(os.path.abspath(__file__))
 train_data_path = os.path.join(script_dir, "data", "train_data.json")
-model_save_path = "app/python/salary_extraction/model/salary_ner_model"
+converted_data_path = os.path.join(script_dir, "data", "train_data_spacy.json")
+model_save_path = "app/python/salary_extraction/model/spacy_salary_ner_model"
 
-logger.info("Loading training data...")
-TRAIN_DATA = load_data(train_data_path)
-tokenized_dataset = create_tokenized_dataset(TRAIN_DATA)
-
-# Load model
-num_labels = len(get_label_list())
-model = load_model(model_save_path, model_name="bert-base-cased", num_labels=num_labels)
-id_to_label = get_id_to_label()
-
-# Convert dataset to TensorFlow Dataset
-def encode_example(example):
-    return {
-        "input_ids": example["input_ids"],
-        "attention_mask": example["attention_mask"],
-        "labels": example["labels"],
+# Load a blank spaCy model n' add transformer and NER pipeline
+nlp = spacy.blank("en")
+transformer_config = {
+    "model": {
+        "@architectures": "spacy-transformers.TransformerModel.v1",
+        "name": "roberta-base",
+        "get_spans": {
+            "@span_getters": "spacy-transformers.doc_spans.v1"
+        }
     }
+}
+transformer = nlp.add_pipe("transformer", config=transformer_config)
+ner = nlp.add_pipe("ner")
 
-train_dataset = tokenized_dataset.map(encode_example)
-train_dataset = train_dataset.to_tf_dataset(
-    columns=["input_ids", "attention_mask"],
-    label_cols=["labels"],
-    shuffle=True,
-    batch_size=8,
-)
+ENTITY_LABELS = ["SALARY_MIN", "SALARY_MAX", "SALARY_SINGLE", "CURRENCY", "INTERVAL", "COMMITMENT", "JOB_COUNTRY"]
+for label in ENTITY_LABELS:
+    ner.add_label(label)
 
-# Define training parameters
-batch_size = 8
-num_epochs = 1
-num_train_steps = len(train_dataset) * num_epochs
-num_warmup_steps = int(0.1 * num_train_steps)
-init_lr = 1e-5
+# Convert BIO data format to spaCy's character offset format
+def bio_to_offset(text, labels):
+    doc = nlp.make_doc(text)
+    tokens = [token.text for token in doc]
 
-# Define optimizer and loss
-optimizer, schedule = create_optimizer(
-    init_lr=init_lr,
-    num_train_steps=num_train_steps,
-    num_warmup_steps=num_warmup_steps,
-    weight_decay_rate=0.01,
-)
-
-# Custom loss function to ignore -100 labels
-def masked_sparse_categorical_crossentropy(y_true, y_pred):
-    mask = tf.not_equal(y_true, -100)
-    y_true = tf.boolean_mask(y_true, mask)
-    y_pred = tf.boolean_mask(y_pred, mask)
-    return tf.keras.losses.sparse_categorical_crossentropy(y_true, y_pred, from_logits=True)
-
-# Compile
-model.compile(optimizer=optimizer, loss=masked_sparse_categorical_crossentropy)
-
-# Train / save model
-try:
-    logger.info("----------------------Starting model training...")
-    model.fit(train_dataset, epochs=num_epochs)
-    logger.info("---------------------------Model training complete.")
-    save_model(model, model_save_path)
-except Exception as e:
-    logger.error("An error occurred during training: %s", e)
-
-def test_model():
-    test_text = "The salary is $100,000 annually."
-    # tokenized =  [The] [salary] [is] [$] [100,000] [annually] [.] 
-    expected_labels = ["O", "O", "O", "B-CURRENCY", "B-SALARY_SINGLE", "B-INTERVAL", "O"]
-
-    tokenized_inputs = tokenizer(test_text, return_tensors="tf", padding=True, truncation=True)
-    word_ids = tokenized_inputs.word_ids()
-    outputs = model(tokenized_inputs)
-    logits = outputs.logits
-    softmax = tf.nn.softmax(logits, axis=-1)
-    predictions = tf.argmax(logits, axis=-1)
-
-    raw_predictions = predictions[0].numpy()
-    predicted_labels = [id_to_label.get(pred, "O") for pred in raw_predictions]
-    aligned_predicted_labels = align_labels_with_tokens_fast(predicted_labels, word_ids)
-
-    confidences = [softmax[0, idx, pred].numpy() for idx, pred in enumerate(raw_predictions)]
-    filtered_confidences = [conf for i, conf in enumerate(confidences) if word_ids[i] is not None]
+    if len(tokens) != len(labels):
+        print(f"Warning: Length mismatch between tokens and labels in text: '{text}'")
+        print(f"Tokens: {tokens}")
+        print(f"Labels: {labels}")
+        return [] 
     
-    # Filter out [CLS] and [SEP] from tokens, labels, and confidences
-    tokens = tokenizer.convert_ids_to_tokens(tokenized_inputs["input_ids"][0])
-    filtered_tokens = [t for i, t in enumerate(tokens) if word_ids[i] is not None]
-    filtered_expected_labels = [expected_labels[i] if i < len(expected_labels) else "N/A" for i in range(len(filtered_tokens))]
-    filtered_aligned_predicted_labels = [aligned_predicted_labels[i] for i in range(len(filtered_tokens))]
+    entities = []
+    current_entity = None
+    current_start = None
+    current_label = None
+    char_offset = 0
 
+    for i, label in enumerate(labels):
+        word = tokens[i]
+        if label.startswith("B-"):
+            if current_entity:
+                entities.append((current_start, char_offset - 1, current_label))
+            current_entity = word
+            current_start = char_offset
+            current_label = label[2:]
+        elif label.startswith("I-") and current_label == label[2:]:
+            current_entity += " " + word
+        else:
+            if current_entity:
+                entities.append((current_start, char_offset - 1, current_label))
+            current_entity = None
+            current_label = None
+            current_start = None
+        char_offset += len(word) + 1  
 
-    print(f"{'Token':<15}{'Expected':<20}{'Aligned Predicted':<20}{'Confidence':<20}")
-    print("-" * 75)
-    for i, token in enumerate(filtered_tokens):
-        expected_label = filtered_expected_labels[i] if i < len(filtered_expected_labels) else "N/A"
-        predicted_label = filtered_aligned_predicted_labels[i] if i < len(filtered_aligned_predicted_labels) else "N/A"
-        confidence = filtered_confidences[i] if i < len(filtered_confidences) else "N/A"
-        print(f"{token:<15}{expected_label:<20}{predicted_label:<20}{confidence:<20}")
+    if current_entity:
+        entities.append((current_start, char_offset - 1, current_label))
+    
+    print(f"Entities detected for '{text}': {entities}")
+    
+    return [{"start": start, "end": end, "label": label} for start, end, label in entities]
 
+def convert_bio_to_spacy_format(input_file, output_file):
+    with open(input_file, 'r') as f:
+        data = json.load(f)
+    
+    converted_data = []
+    for item in data:
+        text = item["text"]
+        labels = item["labels"]
+        entities = bio_to_offset(text, labels)
         
-if __name__ == "__main__":
-    #  test_model()
+        converted_data.append({"text": text, "entities": entities})
 
-    # check_token_label_length(TRAIN_DATA, tokenized_dataset, id_to_label)
+    with open(output_file, 'w') as f:
+        json.dump(converted_data, f, indent=2)
+    print(f"Data converted and saved to {output_file}")
 
-    check_token_label_alignment(TRAIN_DATA, id_to_label)
+convert_bio_to_spacy_format(train_data_path, converted_data_path)
+
+# Load and convert training data to DocBin format
+def load_training_data(train_data_path):
+    with open(train_data_path, "r") as f:
+        train_data = json.load(f)
+    return train_data
+
+# Convert JSON data to spaCy format w/ BILUO alignment
+def convert_to_spacy_format(train_data):
+    db = DocBin()
+    nlp_blank = spacy.blank("en")
+    examples = []
+    
+    print("\nConverting training data to spaCy format...")
+    for index, entry in enumerate(train_data):  
+        text = entry["text"]
+        entities = entry.get("entities", [])
+        
+        doc = nlp_blank.make_doc(text)
+        spans = [(int(ent["start"]), int(ent["end"]), ent["label"]) for ent in entities]
+        
+        print(f"\nOriginal Text: '{text}'")
+        print(f"Tokenized Text: {[token.text for token in doc]}") 
+        
+        biluo_tags = offsets_to_biluo_tags(doc, spans)
+
+        if len(spans) > 0:
+            print(f"Entities (start, end, label): {spans[:3]}")  
+            print(f"BILUO Tags: {biluo_tags[:3]}") 
+            
+        example = Example.from_dict(doc, {"entities": spans})
+        doc._.set("index", index) 
+        db.add(example.reference)
+        examples.append(example)
+    
+    return db, examples
+
+# Register  extension for Doc to store indices
+spacy.tokens.Doc.set_extension("index", default=None)
+
+train_data = load_training_data(converted_data_path)
+doc_bin, examples = convert_to_spacy_format(train_data)
+doc_bin.to_disk("app/python/salary_extraction/data/train.spacy")
+
+def train_spacy_model():
+    print("\nStarting model training...")
+    optimizer = nlp.begin_training()
+    
+    for epoch in range(5):  
+        losses = {}
+        random.shuffle(examples)
+        
+        for example in examples:
+            text = example.reference.text
+            ents = example.reference.ents
+            
+            index = example.reference._.get("index")
+            
+            if index is not None and index % (len(examples) // 5) == 0:  
+                print(f"\nTraining with example text: '{text[:50]}...'")
+                print(f"Example annotations (sample): {[ent.text for ent in ents[:3]]}") 
+            
+            nlp.update([example], drop=0.2, losses=losses, sgd=optimizer)
+        
+        print(f"\nEpoch {epoch + 1}, Losses: {losses}")
+        print("----" * 10)
+
+    nlp.to_disk(model_save_path)
+    print(f"Model saved to {model_save_path}")
+
+
+train_spacy_model()
+
+nlp = spacy.load(model_save_path)
+
+def inspect_model_predictions(text):
+    doc = nlp(text)
+    print("\nOriginal Text:")
+    print(f"'{text}'\n")
+    print("Token Predictions:")
+    print(f"{'Token':<15}{'Predicted Label':<20}")
+    print("-" * 35)
+    for token in doc:
+        label = token.ent_type_ if token.ent_type_ else "O"
+        print(f"{token.text:<15}{label:<20}")
+
+print("\nExample Prediction:")
+inspect_model_predictions("The salary is expected to be $100,000 annually in USD.")
+
+test_texts = [
+    "The annual salary is expected to be $120,000 USD.",
+    "Compensation ranges from €50,000 to €70,000 annually.",
+    "Base pay in Canada is CAD 60,000 per year.",
+    "This position offers a minimum salary of £45,000.",
+    "Contractor role with hourly rate of 25 AUD."
+]
+
+for text in test_texts:
+    print(f"\nTesting text: '{text}'")
+    inspect_model_predictions(text)

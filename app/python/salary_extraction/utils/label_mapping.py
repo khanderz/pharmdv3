@@ -1,6 +1,5 @@
 # app/python/salary_extraction/label_mapping.py
 
-# Define the entity labels for BIO tagging
 ENTITY_LABELS = [
     "SALARY_MIN",
     "SALARY_MAX",
@@ -11,8 +10,7 @@ ENTITY_LABELS = [
     "JOB_COUNTRY",
 ]
 
-# Generate BIO tags
-label_list = ["O"]  # "Outside" tag
+label_list = ["O"] 
 for label in ENTITY_LABELS:
     label_list.extend([f"B-{label}", f"I-{label}"])
 
