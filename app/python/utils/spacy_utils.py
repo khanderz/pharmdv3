@@ -108,10 +108,3 @@ def convert_to_spacy_format(train_data, print_limit=3):
     
     return db, examples  
 
-def check_entity_alignment(nlp, text, entities):
-    doc = nlp.make_doc(text)
-    biluo_tags = offsets_to_biluo_tags(doc, entities)
-    print(f"CHECKING ALIGNMENT ----------------------------")
-    print(f"Original Text: {text}")
-    print("Tokens: ", [token.text for token in doc])
-    print("BILUO Tags: ", biluo_tags)
