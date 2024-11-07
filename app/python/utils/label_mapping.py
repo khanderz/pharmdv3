@@ -19,7 +19,7 @@ label_to_id = {label: i for i, label in enumerate(label_list)}
 id_to_label = {i: label for i, label in enumerate(label_list)}
 
 
-# Utility functions for accessing the mappings
+# Utils
 def get_label_list():
     return label_list
 
