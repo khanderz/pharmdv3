@@ -1,15 +1,16 @@
-#  app/python/utils/spacy_utils.py
+# app/python/utils/spacy_utils.py
+
 import json
-from app.python.utils.data_handler import load_data
 import spacy
 from spacy.tokens import DocBin
 from spacy.training import Example
 from spacy.training.iob_utils import offsets_to_biluo_tags
+from app.python.utils.data_handler import load_data
 
-#  -------------------- SpaCy Data Conversion --------------------
+# -------------------- SpaCy Data Conversion --------------------
 
-# Convert BIO data format to spaCy's character offset format
 def bio_to_offset(nlp, text, labels):
+    """Convert BIO data format to spaCy's character offset format."""
     doc = nlp.make_doc(text)
     tokens = [token.text for token in doc]
 
@@ -45,12 +46,11 @@ def bio_to_offset(nlp, text, labels):
 
     if current_entity:
         entities.append((current_start, char_offset - 1, current_label))
-    
-    print(f"Entities detected for '{text}': {entities}")
-    
+        
     return [{"start": start, "end": end, "label": label} for start, end, label in entities]
 
 def convert_bio_to_spacy_format(input_file, output_file, folder, nlp):
+    """Convert BIO formatted input data to spaCy format and save it."""
     data = load_data(input_file, folder)
 
     converted_data = []
@@ -65,15 +65,14 @@ def convert_bio_to_spacy_format(input_file, output_file, folder, nlp):
         json.dump(converted_data, f, indent=2)
     print(f"Data converted and saved to {output_file}")
 
-
-
-# Convert JSON data to spaCy format w/ BILUO alignment
 def convert_to_spacy_format(train_data):
+    """Convert training data to spaCy format with BILUO alignment."""
     db = DocBin()
     nlp_blank = spacy.blank("en")
-    examples = []
+    examples = []  # Initialize examples list
     
     print("\nConverting training data to spaCy format...")
+    
     for index, entry in enumerate(train_data):  
         text = entry["text"]
         entities = entry.get("entities", [])
@@ -81,30 +80,35 @@ def convert_to_spacy_format(train_data):
         doc = nlp_blank.make_doc(text)
         spans = [(int(ent["start"]), int(ent["end"]), ent["label"]) for ent in entities]
 
-        # Print the original text and tokenized text
         print(f"\n{'Original Text:':<20} '{text}'")
         print(f"{'Tokenized Text:':<20} {[token.text for token in doc]}")
         
         biluo_tags = offsets_to_biluo_tags(doc, spans)
 
-        if len(spans) > 0:
-            # Print headers for entities
+        if spans:
             print(f"\n{'Entities (start, end, label):':<35}")
             print(f"{'Start':<10}{'End':<10}{'Label':<20}")
             print("-" * 50)   
             for start, end, label in spans[:3]:   
                 print(f"{start:<10}{end:<10}{label:<20}")
                 
-            # Print headers for BILUO tags
             print(f"\n{'BILUO Tags:':<35}")
             print(f"{'Token':<15}{'BILUO Tag':<15}")
-            print("-" * 35)  # Divider line
+            print("-" * 50)  
             for token, tag in zip([token.text for token in doc], biluo_tags[:3]):  
                 print(f"{token:<15}{tag:<15}")
 
         example = Example.from_dict(doc, {"entities": spans})
         doc._.set("index", index) 
         db.add(example.reference)
-        examples.append(example)
+        examples.append(example)  
     
-    return db, examples
+    return db, examples  
+
+def check_entity_alignment(nlp, text, entities):
+    doc = nlp.make_doc(text)
+    biluo_tags = offsets_to_biluo_tags(doc, entities)
+    print(f"CHECKING ALIGNMENT ----------------------------")
+    print(f"Original Text: {text}")
+    print("Tokens: ", [token.text for token in doc])
+    print("BILUO Tags: ", biluo_tags)
