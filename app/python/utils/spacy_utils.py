@@ -1,11 +1,12 @@
 # app/python/utils/spacy_utils.py
 
 import json
+import os
 import spacy
 from spacy.tokens import DocBin
 from spacy.training import Example
 from spacy.training.iob_utils import offsets_to_biluo_tags
-from app.python.utils.data_handler import load_data
+from app.python.utils.data_handler import hash_train_data, load_data
 
 # -------------------- SpaCy Data Conversion --------------------
 
@@ -77,7 +78,7 @@ def bio_to_offset(nlp, text, labels):
     return [{"start": start, "end": end, "label": label} for start, end, label in entities]
 
 
-def convert_bio_to_spacy_format(input_file, output_file, folder, nlp):
+def convert_bio_to_spacy_format(input_file, output_file, folder, nlp, CONVERTED_FILE_PATH):
     """Convert BIO formatted input data to spaCy format and save it."""
     data = load_data(input_file, folder)
 
@@ -89,9 +90,12 @@ def convert_bio_to_spacy_format(input_file, output_file, folder, nlp):
         
         converted_data.append({"text": text, "entities": entities})
 
-    with open(output_file, 'w') as f:
+    with open(CONVERTED_FILE_PATH, 'w') as f:
         json.dump(converted_data, f, indent=2)
-    print(f"Data converted and saved to {output_file}")
+
+    # Print a message indicating the output file path and its location
+    print(f"Data converted and saved to: {CONVERTED_FILE_PATH} (Location: {CONVERTED_FILE_PATH})")
+
 
 def convert_to_spacy_format(train_data, print_limit=3):
     """Convert training data to spaCy format with BILUO alignment."""
@@ -136,3 +140,40 @@ def convert_to_spacy_format(train_data, print_limit=3):
     
     return db, examples  
 
+def handle_convert_to_spacy(SPACY_DATA_PATH, CONVERTED_FILE, FOLDER, TRAIN_DATA_FILE):
+    if os.path.exists(SPACY_DATA_PATH):
+        print("Converted data already exists. Checking for changes...")
+        
+        current_hash = hash_train_data(CONVERTED_FILE)
+        
+        try:
+            with open('last_train_data_hash.txt', 'r') as f:
+                last_hash = f.read()
+        except FileNotFoundError:
+            last_hash = None
+
+        if current_hash == last_hash:
+            print("Training data has not changed. Loading existing data...")
+            doc_bin = DocBin().from_disk(SPACY_DATA_PATH)
+            examples = []  # Load examples from doc_bin if necessary
+        else:
+            print("Training data has changed. Converting data now...")
+            train_data = load_data(CONVERTED_FILE, FOLDER)
+            doc_bin, examples = convert_to_spacy_format(train_data)
+            doc_bin.to_disk(SPACY_DATA_PATH)
+            if current_hash is not None:
+                with open('last_train_data_hash.txt', 'w') as f:
+                    f.write(current_hash)
+
+    else:
+        print("Converted data does not exist. Converting data now...")
+        train_data = load_data(CONVERTED_FILE, FOLDER)
+        doc_bin, examples = convert_to_spacy_format(train_data)
+        doc_bin.to_disk(SPACY_DATA_PATH)
+        # Save the hash for the first time
+        current_hash = hash_train_data(TRAIN_DATA_FILE)
+        if current_hash is not None:
+            with open('last_train_data_hash.txt', 'w') as f:
+                f.write(current_hash)
+        else:
+            print("Unable to save the hash since the training data file does not exist.")
