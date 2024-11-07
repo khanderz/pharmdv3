@@ -14,40 +14,68 @@ def bio_to_offset(nlp, text, labels):
     doc = nlp.make_doc(text)
     tokens = [token.text for token in doc]
 
+    # print(f"Original Text: '{text}'")
+    # print(f"Tokenized: {tokens}")
+    # print(f"Labels: {labels}")
+
     if len(tokens) != len(labels):
         print(f"Warning: Length mismatch between tokens and labels in text: '{text}'")
         print(f"Tokens: {tokens}")
         print(f"Labels: {labels}")
-        return [] 
-    
+        return []
+
     entities = []
     current_entity = None
     current_start = None
     current_label = None
     char_offset = 0
 
+
     for i, label in enumerate(labels):
         word = tokens[i]
+        word_start = char_offset  
+        word_end = char_offset + len(word)   
+
+
         if label.startswith("B-"):
             if current_entity:
-                entities.append((current_start, char_offset - 1, current_label))
+                entities.append((current_start, char_offset, current_label))
+                # print(f"--------Appended data 1: {current_start} | {char_offset} | {current_label}")
+                # print(f"Finalizing entity 1: '{current_entity}' | Start: {current_start} | End: {char_offset} | Label: {current_label}")
+
             current_entity = word
-            current_start = char_offset
-            current_label = label[2:]
+            current_start = word_start
+            current_label = label[2:]  # Get the entity label without the "B-" prefix
+            # print(f"Starting new entity 2: '{current_entity}' | Start: {current_start} | Label: {current_label}")
         elif label.startswith("I-") and current_label == label[2:]:
             current_entity += " " + word
+            # print(f"Extending entity 3: '{current_entity}'")
         else:
             if current_entity:
                 entities.append((current_start, char_offset - 1, current_label))
+                # print(f"--------Appended data 4: {current_start} | {char_offset - 1} | {current_label}")
+                # print(f"Finalizing entity 4: '{current_entity}' | Start: {current_start} | End: {word_end} | Label: {current_label}")
+
             current_entity = None
             current_label = None
             current_start = None
-        char_offset += len(word) + 1  
+
+        if i < len(labels) - 1:   # if an entity is next to another entity
+            next_label = labels[i + 1]
+            if current_entity and next_label.startswith("B-"):
+                char_offset += len(word)  
+                print(f"Adjacent entities found 5: '{current_entity}' | Next Label: '{next_label}'")
+            else:
+                char_offset += len(word) + 1  
+        # print(f"Processing Token 6: '{word}' | Start: {word_start} | End: {word_end} | Label: {label} | offset {char_offset}" )
 
     if current_entity:
-        entities.append((current_start, char_offset - 1, current_label))
-        
+        entities.append((current_start, char_offset, current_label))
+        # print(f"----------Appended last data 7: {current_start} | {char_offset} | {current_label}")
+        # print(f"Finalizing last entity 7: '{current_entity}' | Start: {current_start} | End: {char_offset} | Label: {current_label}")
+
     return [{"start": start, "end": end, "label": label} for start, end, label in entities]
+
 
 def convert_bio_to_spacy_format(input_file, output_file, folder, nlp):
     """Convert BIO formatted input data to spaCy format and save it."""
