@@ -15,6 +15,7 @@ from app.python.utils.spacy_utils import  convert_bio_to_spacy_format, convert_t
 from app.python.utils.validation_utils import check_entity_alignment
 
 def hash_train_data(file_path):
+    """Calculate a hash of the training data to check for changes."""
     if not os.path.exists(file_path):
         print(f"Warning: Training data file '{file_path}' does not exist.")
         return None   
@@ -23,11 +24,11 @@ def hash_train_data(file_path):
     
 # Set up constants for file paths
 FOLDER = "salary_extraction"
-TRAIN_DATA_PATH = "train_data.json"
+# TRAIN_DATA_PATH = "train_data.json"
 CONVERTED_DATA_PATH = generate_path("train_data_spacy.json", FOLDER)
 MODEL_SAVE_PATH = "app/python/salary_extraction/model/spacy_salary_ner_model"
 SPACY_DATA_PATH = "app/python/salary_extraction/data/train.spacy"
-
+print('CONVERTED_DATA_PATH', CONVERTED_DATA_PATH)
 # Suppress warnings
 warnings.filterwarnings("ignore", message="`resume_download` is deprecated")
 warnings.filterwarnings("ignore", message="Some weights of the model checkpoint at roberta-base were not used")
@@ -41,7 +42,8 @@ logging.getLogger("transformers").setLevel(logging.ERROR)
 logging.getLogger("torch").setLevel(logging.ERROR)
 
 # Load data
-data = load_data(TRAIN_DATA_PATH, FOLDER)
+# data = load_data(TRAIN_DATA_PATH, FOLDER)
+converted_data = load_data(CONVERTED_DATA_PATH, FOLDER)
 
 # Load and configure the spaCy model
 nlp = spacy.blank("en")
@@ -57,8 +59,8 @@ nlp.add_pipe("transformer", config={
 ner = nlp.add_pipe("ner")
 
 # Check if converted JSON file exists; if not, run conversion
-if not os.path.exists(CONVERTED_DATA_PATH):
-    convert_bio_to_spacy_format(TRAIN_DATA_PATH, CONVERTED_DATA_PATH, FOLDER, nlp)
+# if not os.path.exists(CONVERTED_DATA_PATH):
+#     convert_bio_to_spacy_format(TRAIN_DATA_PATH, CONVERTED_DATA_PATH, FOLDER, nlp)
 
 for label in get_label_list():
     ner.add_label(label)
@@ -66,45 +68,48 @@ for label in get_label_list():
 # Register extension for Doc to store indices
 spacy.tokens.Doc.set_extension("index", default=None)
 
-if os.path.exists(SPACY_DATA_PATH):
-    print("Converted data already exists. Checking for changes...")
+# if os.path.exists(SPACY_DATA_PATH):
+#     print("Converted data already exists. Checking for changes...")
     
-    # Check if train data file exists and get its hash
-    current_hash = hash_train_data('app/python/salary_extraction/data/train_data.json')
+#     # Check if train data file exists and get its hash
+#     current_hash = hash_train_data(CONVERTED_DATA_PATH)
     
-    # Compare with the previous hash saved in a separate file
-    try:
-        with open('last_train_data_hash.txt', 'r') as f:
-            last_hash = f.read()
-    except FileNotFoundError:
-        last_hash = None
+#     # Compare with the previous hash saved in a separate file
+#     try:
+#         with open('last_train_data_hash.txt', 'r') as f:
+#             last_hash = f.read()
+#     except FileNotFoundError:
+#         last_hash = None
 
-    if current_hash == last_hash:
-        print("Training data has not changed. Loading existing data...")
-        doc_bin = DocBin().from_disk(SPACY_DATA_PATH)
-        examples = []  # Load examples from doc_bin if necessary
-    else:
-        print("Training data has changed. Converting data now...")
-        train_data = load_data(CONVERTED_DATA_PATH, FOLDER)
-        doc_bin, examples = convert_to_spacy_format(train_data)
-        doc_bin.to_disk(SPACY_DATA_PATH)
-        # Save the new hash to track future changes
-        if current_hash is not None:
-            with open('last_train_data_hash.txt', 'w') as f:
-                f.write(current_hash)
+#     if current_hash == last_hash:
+#         print("Training data has not changed. Loading existing data...")
+#         doc_bin = DocBin().from_disk(SPACY_DATA_PATH)
+#         examples = []  # Load examples from doc_bin if necessary
+#     else:
+#         print("Training data has changed. Converting data now...")
+#         train_data = load_data(CONVERTED_DATA_PATH, FOLDER)
+#         doc_bin, examples = convert_to_spacy_format(train_data)
+#         doc_bin.to_disk(SPACY_DATA_PATH)
+#         # Save the new hash to track future changes
+#         if current_hash is not None:
+#             with open('last_train_data_hash.txt', 'w') as f:
+#                 f.write(current_hash)
 
-else:
-    print("Converted data does not exist. Converting data now...")
-    train_data = load_data(CONVERTED_DATA_PATH, FOLDER)
-    doc_bin, examples = convert_to_spacy_format(train_data)
-    doc_bin.to_disk(SPACY_DATA_PATH)
-    # Save the hash for the first time
-    current_hash = hash_train_data(TRAIN_DATA_PATH)
-    if current_hash is not None:
-        with open('last_train_data_hash.txt', 'w') as f:
-            f.write(current_hash)
-    else:
-        print("Unable to save the hash since the training data file does not exist.")
+# else:
+#     print("Converted data does not exist. Converting data now...")
+#     train_data = load_data(CONVERTED_DATA_PATH, FOLDER)
+#     doc_bin, examples = convert_to_spacy_format(train_data)
+#     doc_bin.to_disk(SPACY_DATA_PATH)
+#     # Save the hash for the first time
+#     current_hash = hash_train_data(TRAIN_DATA_PATH)
+#     if current_hash is not None:
+#         with open('last_train_data_hash.txt', 'w') as f:
+#             f.write(current_hash)
+#     else:
+#         print("Unable to save the hash since the training data file does not exist.")
+
+doc_bin, examples = convert_to_spacy_format(converted_data)
+doc_bin.to_disk("app/python/salary_extraction/data/train.spacy")
 
 def train_spacy_model():
     """Train the spaCy model with the given examples."""
@@ -129,12 +134,13 @@ def train_spacy_model():
     print(f"Model saved to {MODEL_SAVE_PATH}")
 
 # Check entity alignment for the training data
-for entry in load_data(CONVERTED_DATA_PATH, FOLDER):
+for entry in converted_data:
+    print('entry--------------------' , entry)
     text = entry["text"]
     entities = [(ent["start"], ent["end"], ent["label"]) for ent in entry.get("entities", [])]
     check_entity_alignment(nlp, text, entities)
 
-train_spacy_model()
+# train_spacy_model()
 
 # Load the trained model for predictions
 nlp = spacy.load(MODEL_SAVE_PATH)

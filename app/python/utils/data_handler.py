@@ -6,11 +6,11 @@ import os
 def generate_path(file_name, folder):
     """Generate a full path to a file in a specified folder."""
     project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-    return os.path.join(project_root, folder, file_name)
+    return os.path.join(project_root, folder, "data", file_name)
 
 def load_data(json_file, folder):
     """Load JSON data from a specified file in a given folder."""
-    train_data_path = generate_path(json_file, os.path.join(folder, "data"))
+    train_data_path = generate_path(json_file, os.path.join(folder))
 
     try:
         with open(train_data_path, "r") as f:

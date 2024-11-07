@@ -90,3 +90,6 @@ app/python/salary_extraction/model/spacy_salary_ner_model/transformer/cfg
 app/python/salary_extraction/model/spacy_salary_ner_model/ner/moves
 app/python/salary_extraction/model/spacy_salary_ner_model/ner/cfg
 app/python/salary_extraction/model/spacy_salary_ner_model/meta.json
+app/python/salary_extraction/data/train_data_spacy1.json
+app/python/salary_extraction/train_data_spacy.json
+app/python/salary_extraction/train_data_spacy.json
