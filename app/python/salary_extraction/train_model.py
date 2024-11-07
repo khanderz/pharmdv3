@@ -6,27 +6,33 @@ import spacy_transformers
 import os
 import warnings
 import logging
+from spacy.tokens import DocBin
 
 from app.python.utils.label_mapping import get_label_list
 from app.python.utils.data_handler import generate_path, load_data
 from app.python.utils.spacy_utils import check_entity_alignment, convert_bio_to_spacy_format, convert_to_spacy_format
 
+# Set up constants for file paths
+FOLDER = "salary_extraction"
+TRAIN_DATA_PATH = "train_data.json"
+CONVERTED_DATA_PATH = generate_path("train_data_spacy.json", FOLDER)
+MODEL_SAVE_PATH = "app/python/salary_extraction/model/spacy_salary_ner_model"
+SPACY_DATA_PATH = "app/python/salary_extraction/data/train.spacy"
+
+# Suppress warnings
 warnings.filterwarnings("ignore", message="`resume_download` is deprecated")
 warnings.filterwarnings("ignore", message="Some weights of the model checkpoint at roberta-base were not used")
 warnings.simplefilter(action='ignore', category=FutureWarning)
 warnings.filterwarnings("ignore", category=UserWarning) 
 
+# Set logging levels
 logging.getLogger("transformers").setLevel(logging.WARNING)
 logging.getLogger("torch").setLevel(logging.WARNING)
 logging.getLogger("transformers").setLevel(logging.ERROR)  
 logging.getLogger("torch").setLevel(logging.ERROR)
 
-folder = "salary_extraction"
-train_data_path = "train_data.json"
-converted_data_path = generate_path("train_data_spacy.json", folder)
-model_save_path = "app/python/salary_extraction/model/spacy_salary_ner_model"
-
-data = load_data(train_data_path, folder)
+# Load data
+data = load_data(TRAIN_DATA_PATH, FOLDER)
 
 # Load and configure the spaCy model
 nlp = spacy.blank("en")
@@ -42,8 +48,8 @@ nlp.add_pipe("transformer", config={
 ner = nlp.add_pipe("ner")
 
 # Check if converted JSON file exists; if not, run conversion
-if not os.path.exists(converted_data_path):
-    convert_bio_to_spacy_format(train_data_path, converted_data_path, folder, nlp)
+if not os.path.exists(CONVERTED_DATA_PATH):
+    convert_bio_to_spacy_format(TRAIN_DATA_PATH, CONVERTED_DATA_PATH, FOLDER, nlp)
 
 for label in get_label_list():
     ner.add_label(label)
@@ -51,9 +57,16 @@ for label in get_label_list():
 # Register extension for Doc to store indices
 spacy.tokens.Doc.set_extension("index", default=None)
 
-train_data = load_data(converted_data_path, folder)
-doc_bin, examples = convert_to_spacy_format(train_data)
-doc_bin.to_disk("app/python/salary_extraction/data/train.spacy")
+# Check if the .spacy file exists; if not, convert the training data
+if os.path.exists(SPACY_DATA_PATH):
+    print("Converted data already exists. Loading existing data...")
+    doc_bin = DocBin().from_disk(SPACY_DATA_PATH)
+    examples = []  # Load examples from doc_bin if necessary
+else:
+    print("Converted data does not exist. Converting data now...")
+    train_data = load_data(CONVERTED_DATA_PATH, FOLDER)
+    doc_bin, examples = convert_to_spacy_format(train_data)
+    doc_bin.to_disk(SPACY_DATA_PATH)
 
 def train_spacy_model():
     """Train the spaCy model with the given examples."""
@@ -74,10 +87,11 @@ def train_spacy_model():
         print(f"\nEpoch {epoch + 1}, Losses: {losses}")
         print("----" * 10)
 
-    nlp.to_disk(model_save_path)
-    print(f"Model saved to {model_save_path}")
+    nlp.to_disk(MODEL_SAVE_PATH)
+    print(f"Model saved to {MODEL_SAVE_PATH}")
 
-for entry in train_data:
+# Check entity alignment for the training data
+for entry in load_data(CONVERTED_DATA_PATH, FOLDER):
     text = entry["text"]
     entities = [(ent["start"], ent["end"], ent["label"]) for ent in entry.get("entities", [])]
     check_entity_alignment(nlp, text, entities)
@@ -85,7 +99,7 @@ for entry in train_data:
 train_spacy_model()
 
 # Load the trained model for predictions
-nlp = spacy.load(model_save_path)
+nlp = spacy.load(MODEL_SAVE_PATH)
 
 def inspect_model_predictions(text):
     """Inspect model predictions for the given text."""

@@ -65,11 +65,11 @@ def convert_bio_to_spacy_format(input_file, output_file, folder, nlp):
         json.dump(converted_data, f, indent=2)
     print(f"Data converted and saved to {output_file}")
 
-def convert_to_spacy_format(train_data):
+def convert_to_spacy_format(train_data, print_limit=3):
     """Convert training data to spaCy format with BILUO alignment."""
     db = DocBin()
     nlp_blank = spacy.blank("en")
-    examples = []  # Initialize examples list
+    examples = []  
     
     print("\nConverting training data to spaCy format...")
     
@@ -80,23 +80,26 @@ def convert_to_spacy_format(train_data):
         doc = nlp_blank.make_doc(text)
         spans = [(int(ent["start"]), int(ent["end"]), ent["label"]) for ent in entities]
 
-        print(f"\n{'Original Text:':<20} '{text}'")
-        print(f"{'Tokenized Text:':<20} {[token.text for token in doc]}")
-        
-        biluo_tags = offsets_to_biluo_tags(doc, spans)
+        if index < print_limit:
+            print(f"\n{'Original Text:':<20} '{text}'")
+            print(f"{'Tokenized Text:':<20} {[token.text for token in doc]}")
+            
+            biluo_tags = offsets_to_biluo_tags(doc, spans)
 
-        if spans:
-            print(f"\n{'Entities (start, end, label):':<35}")
-            print(f"{'Start':<10}{'End':<10}{'Label':<20}")
-            print("-" * 50)   
-            for start, end, label in spans[:3]:   
-                print(f"{start:<10}{end:<10}{label:<20}")
+            if spans:
+                print(f"\n{'Entities (start, end, label):':<35}")
+                print(f"{'Start':<10}{'End':<10}{'Label':<20}")
+                print("-" * 50)   
                 
-            print(f"\n{'BILUO Tags:':<35}")
-            print(f"{'Token':<15}{'BILUO Tag':<15}")
-            print("-" * 50)  
-            for token, tag in zip([token.text for token in doc], biluo_tags[:3]):  
-                print(f"{token:<15}{tag:<15}")
+                for start, end, label in spans[:3]:   
+                    print(f"{start:<10}{end:<10}{label:<20}")
+                    
+                print(f"\n{'BILUO Tags:':<35}")
+                print(f"{'Token':<15}{'BILUO Tag':<15}")
+                print("-" * 50)  
+
+                for token, tag in zip([token.text for token in doc], biluo_tags[:3]):  
+                    print(f"{token:<15}{tag:<15}")
 
         example = Example.from_dict(doc, {"entities": spans})
         doc._.set("index", index) 
