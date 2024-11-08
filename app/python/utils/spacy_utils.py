@@ -31,31 +31,32 @@ def bio_to_offset(nlp, text, labels):
     current_label = None
     char_offset = 0
 
-
     for i, label in enumerate(labels):
         word = tokens[i]
         word_start = char_offset  
         word_end = char_offset + len(word)   
-
+        # print(f"*******************i: {i} label: {label} word: {word}***********************")
 
         if label.startswith("B-"):
             if current_entity:
-                entities.append((current_start, char_offset, current_label))
-                # print(f"--------Appended data 1: {current_start} | {char_offset} | {current_label}")
-                # print(f"Finalizing entity 1: '{current_entity}' | Start: {current_start} | End: {char_offset} | Label: {current_label}")
+                entities.append((current_start, char_offset, current_label, current_entity))
+                # print(f"--------Appended data 1: {current_start} | {char_offset} | {current_label} ")
+                # print(f"Finalizing entity 1: '{current_entity}' | Start: {current_start} | End: {char_offset} | Label: {current_label} ")
 
             current_entity = word
             current_start = word_start
             current_label = label[2:]  # Get the entity label without the "B-" prefix
-            # print(f"Starting new entity 2: '{current_entity}' | Start: {current_start} | Label: {current_label}")
+
+            # print(f"Starting new entity 2: '{current_entity}' | Start: {current_start} | Label: {current_label} ")
         elif label.startswith("I-") and current_label == label[2:]:
             current_entity += " " + word
+
             # print(f"Extending entity 3: '{current_entity}'")
         else:
             if current_entity:
-                entities.append((current_start, char_offset - 1, current_label))
+                entities.append((current_start, char_offset - 1, current_label, current_entity))
                 # print(f"--------Appended data 4: {current_start} | {char_offset - 1} | {current_label}")
-                # print(f"Finalizing entity 4: '{current_entity}' | Start: {current_start} | End: {word_end} | Label: {current_label}")
+                # print(f"Finalizing entity 4: '{current_entity}' | Start: {current_start} | End: {word_end} | Label: {current_label} ")
 
             current_entity = None
             current_label = None
@@ -65,17 +66,19 @@ def bio_to_offset(nlp, text, labels):
             next_label = labels[i + 1]
             if current_entity and next_label.startswith("B-"):
                 char_offset += len(word)  
-                print(f"Adjacent entities found 5: '{current_entity}' | Next Label: '{next_label}'")
+
+                # print(f"Adjacent entities found 5: '{current_entity}' | Next Label: '{next_label}' ")
             else:
                 char_offset += len(word) + 1  
-        # print(f"Processing Token 6: '{word}' | Start: {word_start} | End: {word_end} | Label: {label} | offset {char_offset}" )
+
+        # print(f"Processing Token 6: '{word}' | Start: {word_start} | End: {word_end} | Label: {label} | offset {char_offset}  " )
 
     if current_entity:
-        entities.append((current_start, char_offset, current_label))
+        entities.append((current_start, char_offset, current_label, current_entity))
         # print(f"----------Appended last data 7: {current_start} | {char_offset} | {current_label}")
-        # print(f"Finalizing last entity 7: '{current_entity}' | Start: {current_start} | End: {char_offset} | Label: {current_label}")
+        # print(f"Finalizing last entity 7: '{current_entity}' | Start: {current_start} | End: {char_offset} | Label: {current_label} ")
 
-    return [{"start": start, "end": end, "label": label} for start, end, label in entities]
+    return [{"start": start, "end": end, "label": label, "token": token} for start, end, label, token in entities]
 
 
 def convert_bio_to_spacy_format(input_file, output_file, folder, nlp, CONVERTED_FILE_PATH):
@@ -97,7 +100,7 @@ def convert_bio_to_spacy_format(input_file, output_file, folder, nlp, CONVERTED_
     print(f"Data converted and saved to: {CONVERTED_FILE_PATH} (Location: {CONVERTED_FILE_PATH})")
 
 
-def convert_to_spacy_format(train_data, print_limit=3):
+def convert_to_spacy_format(train_data):
     """Convert training data to spaCy format with BILUO alignment."""
     db = DocBin()
     nlp_blank = spacy.blank("en")
@@ -111,34 +114,38 @@ def convert_to_spacy_format(train_data, print_limit=3):
         
         doc = nlp_blank.make_doc(text)
         spans = [(int(ent["start"]), int(ent["end"]), ent["label"]) for ent in entities]
+        print(f"doc {doc}, spans {spans}")
 
-        if index < print_limit:
-            print(f"\n{'Original Text:':<20} '{text}'")
-            print(f"{'Tokenized Text:':<20} {[token.text for token in doc]}")
+        print(f"\n{'Original Text:':<20} '{text}'")
+        print(f"{'Tokenized Text:':<20} {[token.text for token in doc]}")
+        
+        biluo_tags = offsets_to_biluo_tags(doc, spans)
+
+        if spans:
+            print(f"\n{'Entities (start, end, label, tokens):':<50}")
+            print(f"{'Start':<10}{'End':<10}{'Label':<20}{'Tokens':<20}")
+            print("-" * 70)   
             
-            biluo_tags = offsets_to_biluo_tags(doc, spans)
-
-            if spans:
-                print(f"\n{'Entities (start, end, label):':<35}")
-                print(f"{'Start':<10}{'End':<10}{'Label':<20}")
-                print("-" * 50)   
+            for start, end, label in spans:
+                # Extract the token text for the entity span
+                tokens = [token.text for token in doc[start:end]]
+                print(f"{tokens}----------")
+                print(f"{start:<10}{end:<10}{label:<20}{' '.join(tokens):<20}")
                 
-                for start, end, label in spans[:3]:   
-                    print(f"{start:<10}{end:<10}{label:<20}")
-                    
-                print(f"\n{'BILUO Tags:':<35}")
-                print(f"{'Token':<15}{'BILUO Tag':<15}")
-                print("-" * 50)  
+            print(f"\n{'BILUO Tags:':<35}")
+            print(f"{'Token':<15}{'BILUO Tag':<15}")
+            print("-" * 50)  
 
-                for token, tag in zip([token.text for token in doc], biluo_tags[:3]):  
-                    print(f"{token:<15}{tag:<15}")
+            for token, tag in zip([token.text for token in doc], biluo_tags):
+                print(f"{token:<15}{tag:<15}")
 
         example = Example.from_dict(doc, {"entities": spans})
         doc._.set("index", index) 
         db.add(example.reference)
         examples.append(example)  
     
-    return db, examples  
+    return db, examples
+
 
 def handle_convert_to_spacy(SPACY_DATA_PATH, CONVERTED_FILE, FOLDER, TRAIN_DATA_FILE):
     if os.path.exists(SPACY_DATA_PATH):
