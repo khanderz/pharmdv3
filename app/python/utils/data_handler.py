@@ -22,7 +22,7 @@ def load_data(json_file, folder):
 def hash_train_data(file_path):
     """Calculate a hash of the training data to check for changes."""
     if not os.path.exists(file_path):
-        print(f"Warning: Training data file '{file_path}' does not exist.")
+        print(f"Warning: Training data file '{file_path}' does not exist.") # TODO: fix
         return None   
     with open(file_path, 'r') as f:
         return hashlib.md5(f.read().encode()).hexdigest()

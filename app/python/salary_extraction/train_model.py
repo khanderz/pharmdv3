@@ -48,11 +48,11 @@ ner = nlp.add_pipe("ner")
 
 # Check if converted JSON file exists; if not, run conversion
 if not os.path.exists(generate_path(CONVERTED_FILE, FOLDER)):
-    convert_bio_to_spacy_format(TRAIN_DATA_FILE, CONVERTED_FILE, FOLDER, nlp, CONVERTED_FILE_PATH)
+    convert_bio_to_spacy_format(TRAIN_DATA_FILE, FOLDER, nlp, CONVERTED_FILE_PATH)
 
 # # Register extension for Doc to store indices
-# spacy.tokens.Doc.set_extension("index", default=None)
-# handle_convert_to_spacy(SPACY_DATA_PATH, CONVERTED_FILE, FOLDER, TRAIN_DATA_FILE)
+spacy.tokens.Doc.set_extension("index", default=None)
+handle_convert_to_spacy(SPACY_DATA_PATH, CONVERTED_FILE, FOLDER, TRAIN_DATA_FILE)
 
 # data = load_data(TRAIN_DATA_FILE, FOLDER)
 # converted_data = load_data(CONVERTED_FILE, FOLDER)

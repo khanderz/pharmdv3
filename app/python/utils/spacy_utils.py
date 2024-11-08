@@ -10,6 +10,7 @@ from app.python.utils.data_handler import hash_train_data, load_data
 
 # -------------------- SpaCy Data Conversion --------------------
 
+#  custom offsets to BILUO tags
 def bio_to_offset(nlp, text, labels):
     """Convert BIO data format to spaCy's character offset format."""
     doc = nlp.make_doc(text)
@@ -81,7 +82,7 @@ def bio_to_offset(nlp, text, labels):
     return [{"start": start, "end": end, "label": label, "token": token} for start, end, label, token in entities]
 
 
-def convert_bio_to_spacy_format(input_file, output_file, folder, nlp, CONVERTED_FILE_PATH):
+def convert_bio_to_spacy_format(input_file, folder, nlp, CONVERTED_FILE_PATH):
     """Convert BIO formatted input data to spaCy format and save it."""
     data = load_data(input_file, folder)
 
@@ -99,6 +100,34 @@ def convert_bio_to_spacy_format(input_file, output_file, folder, nlp, CONVERTED_
     # Print a message indicating the output file path and its location
     print(f"Data converted and saved to: {CONVERTED_FILE_PATH} (Location: {CONVERTED_FILE_PATH})")
 
+#  custom offsets to BILUO tags
+def custom_offsets_to_biluo_tags(doc, spans, text):
+    """Convert spans with additional properties into BILUO format."""
+    biluo_tags = ['O'] * len(text)
+
+    for start, end, label, token in spans:
+        word = None
+        print(f'text : {text}')
+
+
+        if start < len(text) and end <= len(text):
+            print(f"Start: {start} | End: {end} | Label: {label} | Token: {token}")
+
+            word = text[start:end]
+            biluo_tags[start] = f'U-{label}'  
+            print(f"word: {word}, label : {label}, start: {start}, end: {end}, text[start]: {text[start]}, text[end]: {text[end]} ")
+
+            
+        if len(word) > 1:
+            biluo_tags[start] = f'B-{label}'   
+            for i in range(start + 1, end - 1):   
+                biluo_tags[i] = f'I-{label}'
+            if end - 1 >= start:  
+                biluo_tags[end - 1] = f'L-{label}'
+                print(f" word: {word},label : {label},biluo_tags[i]: {biluo_tags[i]}")
+                
+    print(f"biluo_tags: {biluo_tags}")
+    return biluo_tags
 
 def convert_to_spacy_format(train_data):
     """Convert training data to spaCy format with BILUO alignment."""
@@ -113,33 +142,29 @@ def convert_to_spacy_format(train_data):
         entities = entry.get("entities", [])
         
         doc = nlp_blank.make_doc(text)
-        spans = [(int(ent["start"]), int(ent["end"]), ent["label"]) for ent in entities]
-        print(f"doc {doc}, spans {spans}")
+        spans = [(int(ent["start"]), int(ent["end"]), ent["label"], ent['token']) for ent in entities]
 
-        print(f"\n{'Original Text:':<20} '{text}'")
-        print(f"{'Tokenized Text:':<20} {[token.text for token in doc]}")
+        # print(f"\n{'Original Text:':<20} '{text}'")
         
-        biluo_tags = offsets_to_biluo_tags(doc, spans)
-
-        if spans:
-            print(f"\n{'Entities (start, end, label, tokens):':<50}")
-            print(f"{'Start':<10}{'End':<10}{'Label':<20}{'Tokens':<20}")
-            print("-" * 70)   
+        biluo_tags = custom_offsets_to_biluo_tags(doc, spans, text)
+        # print(f"************tags: {biluo_tags}")
+        # if spans:
+        #     print(f"\n{'Entities (start, end, label, token):':<50}")
+        #     print(f"{'Start':<10}{'End':<10}{'Label':<20}{'Token':<20}")
+        #     print("-" * 70)   
             
-            for start, end, label in spans:
-                # Extract the token text for the entity span
-                tokens = [token.text for token in doc[start:end]]
-                print(f"{tokens}----------")
-                print(f"{start:<10}{end:<10}{label:<20}{' '.join(tokens):<20}")
+        #     for start, end, label, token in spans:
+        #         print(f"{start:<10}{end:<10}{label:<20}{token:<20}")
                 
-            print(f"\n{'BILUO Tags:':<35}")
-            print(f"{'Token':<15}{'BILUO Tag':<15}")
-            print("-" * 50)  
+        #     print(f"\n{'BILUO Tags:':<35}")
+        #     print(f"{'Token':<15}{'BILUO Tag':<15}")
+        #     print("-" * 25)  
 
-            for token, tag in zip([token.text for token in doc], biluo_tags):
-                print(f"{token:<15}{tag:<15}")
+        #     for token, tag in zip([token.text for token in doc], biluo_tags):
+        #         print(f"{token:<15}{tag:<15}")
 
-        example = Example.from_dict(doc, {"entities": spans})
+        example_entities = [(start, end, label) for start, end, label, _ in spans]
+        example = Example.from_dict(doc, {"entities": example_entities})  
         doc._.set("index", index) 
         db.add(example.reference)
         examples.append(example)  
@@ -162,11 +187,12 @@ def handle_convert_to_spacy(SPACY_DATA_PATH, CONVERTED_FILE, FOLDER, TRAIN_DATA_
         if current_hash == last_hash:
             print("Training data has not changed. Loading existing data...")
             doc_bin = DocBin().from_disk(SPACY_DATA_PATH)
-            examples = []  # Load examples from doc_bin if necessary
+            examples = []
         else:
             print("Training data has changed. Converting data now...")
             train_data = load_data(CONVERTED_FILE, FOLDER)
             doc_bin, examples = convert_to_spacy_format(train_data)
+
             doc_bin.to_disk(SPACY_DATA_PATH)
             if current_hash is not None:
                 with open('last_train_data_hash.txt', 'w') as f:
@@ -176,8 +202,10 @@ def handle_convert_to_spacy(SPACY_DATA_PATH, CONVERTED_FILE, FOLDER, TRAIN_DATA_
         print("Converted data does not exist. Converting data now...")
         train_data = load_data(CONVERTED_FILE, FOLDER)
         doc_bin, examples = convert_to_spacy_format(train_data)
+
+
         doc_bin.to_disk(SPACY_DATA_PATH)
-        # Save the hash for the first time
+ 
         current_hash = hash_train_data(TRAIN_DATA_FILE)
         if current_hash is not None:
             with open('last_train_data_hash.txt', 'w') as f:
