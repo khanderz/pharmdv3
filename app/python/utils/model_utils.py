@@ -1,5 +1,5 @@
 # # app/python/salary_extraction/utils/model_utils.py
-# import logging 
+# import logging
 # import os
 # from transformers import TFAutoModelForTokenClassification
 # from app.python.salary_extraction.utils.label_mapping import get_label_list

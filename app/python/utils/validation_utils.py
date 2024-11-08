@@ -1,7 +1,6 @@
 #  app/python/utils/validation_utils.py
 
 
-
 def check_entity_alignment(nlp, text, entities):
     doc = nlp.make_doc(text)
     for start, end, label in entities:

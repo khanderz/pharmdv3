@@ -10,7 +10,7 @@ ENTITY_LABELS = [
     "JOB_COUNTRY",
 ]
 
-label_list = ["O"] 
+label_list = ["O"]
 for label in ENTITY_LABELS:
     label_list.extend([f"B-{label}", f"I-{label}"])
 

@@ -2,7 +2,7 @@
 
 import spacy
 import random
-import spacy_transformers  
+import spacy_transformers
 import os
 import warnings
 import logging
@@ -10,7 +10,11 @@ from spacy.tokens import DocBin
 
 from app.python.utils.label_mapping import get_label_list
 from app.python.utils.data_handler import generate_path, load_data, hash_train_data
-from app.python.utils.spacy_utils import  convert_bio_to_spacy_format, convert_to_spacy_format, handle_convert_to_spacy
+from app.python.utils.spacy_utils import (
+    convert_bio_to_spacy_format,
+    convert_to_spacy_format,
+    handle_convert_to_spacy,
+)
 from app.python.utils.validation_utils import check_entity_alignment
 
 FOLDER = "salary_extraction"
@@ -23,27 +27,31 @@ MODEL_SAVE_PATH = os.path.join(BASE_DIR, "model", "spacy_salary_ner_model")
 SPACY_DATA_PATH = os.path.join(BASE_DIR, "data", "train.spacy")
 
 warnings.filterwarnings("ignore", message="`resume_download` is deprecated")
-warnings.filterwarnings("ignore", message="Some weights of the model checkpoint at roberta-base were not used")
-warnings.simplefilter(action='ignore', category=FutureWarning)
-warnings.filterwarnings("ignore", category=UserWarning) 
+warnings.filterwarnings(
+    "ignore",
+    message="Some weights of the model checkpoint at roberta-base were not used",
+)
+warnings.simplefilter(action="ignore", category=FutureWarning)
+warnings.filterwarnings("ignore", category=UserWarning)
 
 logging.getLogger("transformers").setLevel(logging.WARNING)
 logging.getLogger("torch").setLevel(logging.WARNING)
-logging.getLogger("transformers").setLevel(logging.ERROR)  
+logging.getLogger("transformers").setLevel(logging.ERROR)
 logging.getLogger("torch").setLevel(logging.ERROR)
 
 
 # Load and configure the spaCy model
 nlp = spacy.blank("en")
-nlp.add_pipe("transformer", config={
-    "model": {
-        "@architectures": "spacy-transformers.TransformerModel.v1",
-        "name": "roberta-base",
-        "get_spans": {
-            "@span_getters": "spacy-transformers.doc_spans.v1"
+nlp.add_pipe(
+    "transformer",
+    config={
+        "model": {
+            "@architectures": "spacy-transformers.TransformerModel.v1",
+            "name": "roberta-base",
+            "get_spans": {"@span_getters": "spacy-transformers.doc_spans.v1"},
         }
-    }
-})
+    },
+)
 ner = nlp.add_pipe("ner")
 
 # Check if converted JSON file exists; if not, run conversion
@@ -62,7 +70,6 @@ handle_convert_to_spacy(SPACY_DATA_PATH, CONVERTED_FILE, FOLDER, TRAIN_DATA_FILE
 #     ner.add_label(label)
 
 
-
 # doc_bin, examples = convert_to_spacy_format(converted_data)
 # doc_bin.to_disk("app/python/salary_extraction/data/train.spacy")
 
@@ -70,18 +77,18 @@ handle_convert_to_spacy(SPACY_DATA_PATH, CONVERTED_FILE, FOLDER, TRAIN_DATA_FILE
 #     """Train the spaCy model with the given examples."""
 #     print("\nStarting model training...")
 #     optimizer = nlp.begin_training()
-    
-#     for epoch in range(5):  
+
+#     for epoch in range(5):
 #         random.shuffle(examples)
 #         losses = {}
-        
+
 #         for example in examples:
 #             index = example.reference._.get("index")
 #             if index is not None and index % (len(examples) // 5) == 0:
 #                 print(f"\nTraining example: '{example.reference.text[:50]}...'")
-            
+
 #             nlp.update([example], drop=0.2, losses=losses, sgd=optimizer)
-        
+
 #         print(f"\nEpoch {epoch + 1}, Losses: {losses}")
 #         print("----" * 10)
 

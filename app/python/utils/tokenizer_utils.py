@@ -7,7 +7,7 @@
 # label_to_id = get_label_to_id()
 # id_to_label = get_id_to_label()
 
-# # Initialize 
+# # Initialize
 # tokenizer = AutoTokenizer.from_pretrained("bert-base-cased", use_fast=True)
 
 # # Custom helper function to align labels with tokens
@@ -33,16 +33,16 @@
 #             else:
 #                 # No "B-" label, propagate the last label directly
 #                 aligned_labels.append(last_label_id)
-        
+
 #         previous_word_idx = word_idx
-    
+
 #     return aligned_labels
 
 # # Tokenize and align labels with tokens
 # def tokenize_and_align_labels(examples):
 #     tokenized_inputs = tokenizer(examples["text"], padding=True, truncation=True)
 #     all_labels = []
-    
+
 #     for i, label in enumerate(examples["labels"]):
 #         word_ids = tokenized_inputs.word_ids(batch_index=i)
 #         aligned_labels = align_labels_with_tokens_fast(label, word_ids)
