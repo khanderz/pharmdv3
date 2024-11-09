@@ -16,7 +16,7 @@ def bio_to_offset(nlp, text, labels):
     """Convert BIO data format (len(text)) to spaCy's character offset format (len(doc))."""
     doc = nlp.make_doc(text)
     tokens = [token.text for token in doc]
-    
+
     if len(tokens) != len(labels):
         print(f"Warning: Length mismatch between tokens and labels in text: '{text}'")
         print(f"Tokens: {tokens}")
@@ -72,6 +72,7 @@ def bio_to_offset(nlp, text, labels):
         for start, end, label, token in entities
     ]
 
+
 def convert_bio_to_spacy_format(input_file, folder, nlp, CONVERTED_FILE_PATH):
     """Convert BIO formatted input data to spaCy format and save it."""
     data = load_data(input_file, folder)
@@ -85,10 +86,11 @@ def convert_bio_to_spacy_format(input_file, folder, nlp, CONVERTED_FILE_PATH):
 
     with open(CONVERTED_FILE_PATH, "w") as f:
         json.dump(converted_data, f, indent=2)
-    
+
     print(
         f"Data converted and saved to: {CONVERTED_FILE_PATH} (Location: {CONVERTED_FILE_PATH})"
     )
+
 
 #  custom offsets BILUO tags from doc to text
 def custom_offsets_to_biluo_tags(spans, text):
@@ -112,38 +114,37 @@ def custom_offsets_to_biluo_tags(spans, text):
 
     return biluo_tags
 
+
 def convert_tokens_to_whole_word(doc, biluo_tags, spans, text):
     """Convert BILUO tags(len(text)) to whole word tokens(len(doc))"""
     biluo_tokens = ["O"] * len(doc)
     char_to_token_index = []
     current_token_index = 0
     text = text.strip()
- 
+
     for token in doc:
         token_length = len(token.text)
- 
         for _ in range(token_length):
             char_to_token_index.append(current_token_index)
         current_token_index += 1
-    
-    
-    space_token_index = -1   
+
+    space_token_index = -1
     new_char_to_token_index = []
     for c in text:
-        if c == ' ':   
+        if c == " ":
             new_char_to_token_index.append(space_token_index)
         else:
             new_char_to_token_index.append(char_to_token_index.pop(0))
-    
-    print(f"new char to token index: {new_char_to_token_index}, len(new_char_to_token_index): {len(new_char_to_token_index)}")
 
     text_length = len(text)
-    assert len(new_char_to_token_index) == text_length, f"Length mismatch: {len(new_char_to_token_index)} != {text_length}"
+    assert (
+        len(new_char_to_token_index) == text_length
+    ), f"Length mismatch: {len(new_char_to_token_index)} != {text_length}"
 
     for i in range(len(biluo_tags)):
         if i < len(new_char_to_token_index):
             token_index = new_char_to_token_index[i]
- 
+
             if biluo_tags[i].startswith("B-"):
                 biluo_tokens[token_index] = f"B-{biluo_tags[i][2:]}"
             elif biluo_tags[i].startswith("U-"):
@@ -181,7 +182,7 @@ def convert_to_spacy_format(train_data):
     for index, entry in enumerate(train_data):
         text = entry["text"]
         entities = entry.get("entities", [])
- 
+
         doc = nlp_blank.make_doc(text)
         tokens = []
         spans = []
@@ -198,24 +199,24 @@ def convert_to_spacy_format(train_data):
         biluo_tags = custom_offsets_to_biluo_tags(spans, text)
         converted_tags = convert_tokens_to_whole_word(doc, biluo_tags, spans, text)
         # print(f"************tags: {biluo_tags}")
-        # print(f"tokens : {tokens}")
-        # print(f" doc: {doc}")
-        # print("-" * 25)
+        print(f"tokens : {tokens}")
+        print(f" doc: {doc}")
+        print("-" * 25)
 
-        # for token, tag in zip([token.text for token in doc], biluo_tags):
-        #         print(f"token: {token} tag: {tag}")
+        for token, tag in zip([token.text for token in doc], biluo_tags):
+            print(f"token: {token} tag: {tag}")
 
-        # if spans:
-        #     print(f"\n{'Entities (start, end, label, token):':<50}")
-        #     print(f"{'Start':<10}{'End':<10}{'Label':<20}{'Token':<20}")
-        #     print("-" * 70)
+        if spans:
+            print(f"\n{'Entities (start, end, label, token):':<50}")
+            print(f"{'Start':<10}{'End':<10}{'Label':<20}{'Token':<20}")
+            print("-" * 70)
 
-        #     for start, end, label, token in spans:
-        #         print(f"{start:<10}{end:<10}{label:<20}{token:<20}")
+            for start, end, label, token in spans:
+                print(f"{start:<10}{end:<10}{label:<20}{token:<20}")
 
-        #     print(f"\n{'BILUO Tags:':<35}")
-        #     print(f"{'Token':<15}{'BILUO Tag':<15}")
-        #     print("-" * 25)
+            print(f"\n{'BILUO Tags:':<35}")
+            print(f"{'Token':<15}{'BILUO Tag':<15}")
+            print("-" * 25)
 
         example_entities = [(start, end, label) for start, end, label, _ in spans]
         example = Example.from_dict(doc, {"entities": example_entities})
