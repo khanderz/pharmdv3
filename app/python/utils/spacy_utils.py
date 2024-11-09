@@ -16,7 +16,7 @@ def bio_to_offset(nlp, text, labels):
     """Convert BIO data format (len(text)) to spaCy's character offset format (len(doc))."""
     doc = nlp.make_doc(text)
     tokens = [token.text for token in doc]
-
+    
     if len(tokens) != len(labels):
         print(f"Warning: Length mismatch between tokens and labels in text: '{text}'")
         print(f"Tokens: {tokens}")
@@ -32,7 +32,6 @@ def bio_to_offset(nlp, text, labels):
     for i, label in enumerate(labels):
         word = tokens[i]
         word_start = char_offset
-        word_end = char_offset + len(word)
 
         if label.startswith("B-"):
             if current_entity:
@@ -73,7 +72,6 @@ def bio_to_offset(nlp, text, labels):
         for start, end, label, token in entities
     ]
 
-
 def convert_bio_to_spacy_format(input_file, folder, nlp, CONVERTED_FILE_PATH):
     """Convert BIO formatted input data to spaCy format and save it."""
     data = load_data(input_file, folder)
@@ -83,19 +81,17 @@ def convert_bio_to_spacy_format(input_file, folder, nlp, CONVERTED_FILE_PATH):
         text = item["text"]
         labels = item["labels"]
         entities = bio_to_offset(nlp, text, labels)
-
         converted_data.append({"text": text, "entities": entities})
 
     with open(CONVERTED_FILE_PATH, "w") as f:
         json.dump(converted_data, f, indent=2)
-
+    
     print(
         f"Data converted and saved to: {CONVERTED_FILE_PATH} (Location: {CONVERTED_FILE_PATH})"
     )
 
-
 #  custom offsets BILUO tags from doc to text
-def custom_offsets_to_biluo_tags(doc, spans, text):
+def custom_offsets_to_biluo_tags(spans, text):
     """Convert spans len(doc) into BILUO format len(text)."""
     biluo_tags = ["O"] * len(text)
 
@@ -116,37 +112,44 @@ def custom_offsets_to_biluo_tags(doc, spans, text):
 
     return biluo_tags
 
-
 def convert_tokens_to_whole_word(doc, biluo_tags, spans, text):
     """Convert BILUO tags(len(text)) to whole word tokens(len(doc))"""
-    biluo_tokens = ["O"] * len(doc)  # len = 11
+    biluo_tokens = ["O"] * len(doc)
     char_to_token_index = []
     current_token_index = 0
-    text = ' '.join([token.text for token in doc])
-
+    text = text.strip()
+ 
     for token in doc:
-        token_length = len(token)
-
+        token_length = len(token.text)
+ 
         for _ in range(token_length):
             char_to_token_index.append(current_token_index)
-        char_to_token_index.append(current_token_index)    
         current_token_index += 1
-
-    char_to_token_index.pop() # offset extra space at end
+    
+    
+    space_token_index = -1   
+    new_char_to_token_index = []
+    for c in text:
+        if c == ' ':   
+            new_char_to_token_index.append(space_token_index)
+        else:
+            new_char_to_token_index.append(char_to_token_index.pop(0))
+    
+    print(f"new char to token index: {new_char_to_token_index}, len(new_char_to_token_index): {len(new_char_to_token_index)}")
 
     text_length = len(text)
-    assert len(char_to_token_index) == text_length, f"Length mismatch: {len(char_to_token_index)} != {text_length}"
+    assert len(new_char_to_token_index) == text_length, f"Length mismatch: {len(new_char_to_token_index)} != {text_length}"
 
     for i in range(len(biluo_tags)):
-        if i < len(char_to_token_index):
-            token_index = char_to_token_index[i]
-            print(f"biluo_tags: {biluo_tags[i]} token_index: {token_index}, doc[index]: {doc[token_index]}")
+        if i < len(new_char_to_token_index):
+            token_index = new_char_to_token_index[i]
+ 
             if biluo_tags[i].startswith("B-"):
                 biluo_tokens[token_index] = f"B-{biluo_tags[i][2:]}"
             elif biluo_tags[i].startswith("U-"):
                 biluo_tokens[token_index] = f"U-{biluo_tags[i][2:]}"
 
-    """Validation check for the converted BILUO tags."""
+    # """Validation check for the converted BILUO tags."""
     span_labels = [label for _, _, label, _ in spans]
     span_tokens = ["$", "100,000", "$", "120,000", "year"]
 
@@ -178,7 +181,7 @@ def convert_to_spacy_format(train_data):
     for index, entry in enumerate(train_data):
         text = entry["text"]
         entities = entry.get("entities", [])
-
+ 
         doc = nlp_blank.make_doc(text)
         tokens = []
         spans = []
@@ -192,7 +195,7 @@ def convert_to_spacy_format(train_data):
 
         print(f"\n{'Original Text:':<20} '{text}'")
 
-        biluo_tags = custom_offsets_to_biluo_tags(doc, spans, text)
+        biluo_tags = custom_offsets_to_biluo_tags(spans, text)
         converted_tags = convert_tokens_to_whole_word(doc, biluo_tags, spans, text)
         # print(f"************tags: {biluo_tags}")
         # print(f"tokens : {tokens}")
