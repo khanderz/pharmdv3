@@ -39,7 +39,7 @@ def bio_to_offset(nlp, text, labels):
                 entities.append(
                     (current_start, char_offset, current_label, current_entity)
                 )
-   
+
             current_entity = word
             current_start = word_start
             current_label = label[2:]  # Get the entity label without the "B-" prefix
@@ -52,7 +52,7 @@ def bio_to_offset(nlp, text, labels):
                 entities.append(
                     (current_start, char_offset - 1, current_label, current_entity)
                 )
-           
+
             current_entity = None
             current_label = None
             current_start = None
@@ -65,7 +65,6 @@ def bio_to_offset(nlp, text, labels):
             else:
                 char_offset += len(word) + 1
 
-
     if current_entity:
         entities.append((current_start, char_offset, current_label, current_entity))
 
@@ -73,6 +72,7 @@ def bio_to_offset(nlp, text, labels):
         {"start": start, "end": end, "label": label, "token": token}
         for start, end, label, token in entities
     ]
+
 
 def convert_bio_to_spacy_format(input_file, folder, nlp, CONVERTED_FILE_PATH):
     """Convert BIO formatted input data to spaCy format and save it."""
@@ -92,6 +92,7 @@ def convert_bio_to_spacy_format(input_file, folder, nlp, CONVERTED_FILE_PATH):
     print(
         f"Data converted and saved to: {CONVERTED_FILE_PATH} (Location: {CONVERTED_FILE_PATH})"
     )
+
 
 #  custom offsets BILUO tags from doc to text
 def custom_offsets_to_biluo_tags(doc, spans, text):
@@ -115,42 +116,49 @@ def custom_offsets_to_biluo_tags(doc, spans, text):
 
     return biluo_tags
 
+
 def convert_tokens_to_whole_word(doc, biluo_tags, spans):
     """Convert BILUO tags(len(text)) to whole word tokens(len(doc))"""
-    biluo_tokens = ["O"] * len(doc) # len = 11
+    biluo_tokens = ["O"] * len(doc)  # len = 11
     char_to_token_index = []
     current_token_index = 0
 
     for token in doc:
-        token_length = len(token)  
+        token_length = len(token)
         for _ in range(token_length):
-            char_to_token_index.append(current_token_index) 
-        char_to_token_index.append(current_token_index) 
-        current_token_index += 1 
+            char_to_token_index.append(current_token_index)
+        char_to_token_index.append(current_token_index)
+        current_token_index += 1
 
     for i in range(len(biluo_tags)):
-        if i < len(char_to_token_index):  
-            token_index = char_to_token_index[i]  
+        if i < len(char_to_token_index):
+            token_index = char_to_token_index[i]
+            print(f"biluo_tags: {biluo_tags[i]} token_index: {token_index}")
             if biluo_tags[i].startswith("B-"):
-                biluo_tokens[token_index] = f'B-{biluo_tags[i][2:]}' 
+                biluo_tokens[token_index] = f"B-{biluo_tags[i][2:]}"
             elif biluo_tags[i].startswith("U-"):
-                biluo_tokens[token_index] = f'U-{biluo_tags[i][2:]}' 
+                biluo_tokens[token_index] = f"U-{biluo_tags[i][2:]}"
 
     """Validation check for the converted BILUO tags."""
     span_labels = [label for _, _, label, _ in spans]
-    span_tokens = ['$', '100,000', '$', '120,000', 'year']
+    span_tokens = ["$", "100,000", "$", "120,000", "year"]
 
     span_index = 0
     for idx, (token, actual_tag) in enumerate(zip(doc, biluo_tokens)):
         if actual_tag != "O":
             if span_labels[span_index] not in str(actual_tag):
-                print(f"VALIDATION FAIL: {span_tokens[span_index]} ->  Expected: {span_labels[span_index]}, Found: {actual_tag}")
+                print(
+                    f"VALIDATION FAIL: {span_tokens[span_index]} ->  Expected: {span_labels[span_index]}, Found: {actual_tag}"
+                )
                 span_index += 1
             else:
-                print(f"VALIDATION PASS: {span_tokens[span_index]} ->   {span_labels[span_index]} equals {actual_tag}")
+                print(
+                    f"VALIDATION PASS: {span_tokens[span_index]} ->   {span_labels[span_index]} equals {actual_tag}"
+                )
                 span_index += 1
 
     return biluo_tokens
+
 
 def convert_to_spacy_format(train_data):
     """Convert training data to spaCy format with BILUO alignment."""
@@ -198,8 +206,6 @@ def convert_to_spacy_format(train_data):
         #     print(f"\n{'BILUO Tags:':<35}")
         #     print(f"{'Token':<15}{'BILUO Tag':<15}")
         #     print("-" * 25)
-
-            
 
         example_entities = [(start, end, label) for start, end, label, _ in spans]
         example = Example.from_dict(doc, {"entities": example_entities})
