@@ -117,23 +117,30 @@ def custom_offsets_to_biluo_tags(doc, spans, text):
     return biluo_tags
 
 
-def convert_tokens_to_whole_word(doc, biluo_tags, spans):
+def convert_tokens_to_whole_word(doc, biluo_tags, spans, text):
     """Convert BILUO tags(len(text)) to whole word tokens(len(doc))"""
     biluo_tokens = ["O"] * len(doc)  # len = 11
     char_to_token_index = []
     current_token_index = 0
+    text = ' '.join([token.text for token in doc])
 
     for token in doc:
         token_length = len(token)
+
         for _ in range(token_length):
             char_to_token_index.append(current_token_index)
-        char_to_token_index.append(current_token_index)
+        char_to_token_index.append(current_token_index)    
         current_token_index += 1
+
+    char_to_token_index.pop() # offset extra space at end
+
+    text_length = len(text)
+    assert len(char_to_token_index) == text_length, f"Length mismatch: {len(char_to_token_index)} != {text_length}"
 
     for i in range(len(biluo_tags)):
         if i < len(char_to_token_index):
             token_index = char_to_token_index[i]
-            print(f"biluo_tags: {biluo_tags[i]} token_index: {token_index}")
+            print(f"biluo_tags: {biluo_tags[i]} token_index: {token_index}, doc[index]: {doc[token_index]}")
             if biluo_tags[i].startswith("B-"):
                 biluo_tokens[token_index] = f"B-{biluo_tags[i][2:]}"
             elif biluo_tags[i].startswith("U-"):
@@ -186,7 +193,7 @@ def convert_to_spacy_format(train_data):
         print(f"\n{'Original Text:':<20} '{text}'")
 
         biluo_tags = custom_offsets_to_biluo_tags(doc, spans, text)
-        converted_tags = convert_tokens_to_whole_word(doc, biluo_tags, spans)
+        converted_tags = convert_tokens_to_whole_word(doc, biluo_tags, spans, text)
         # print(f"************tags: {biluo_tags}")
         # print(f"tokens : {tokens}")
         # print(f" doc: {doc}")
