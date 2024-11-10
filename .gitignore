@@ -89,3 +89,6 @@ app/python/salary_extraction/model/spacy_salary_ner_model/ner/moves
 app/python/salary_extraction/model/spacy_salary_ner_model/ner/cfg
 app/python/salary_extraction/model/spacy_salary_ner_model/meta.json
 app/python/salary_extraction/data/*
+.DS_Store
+app/.DS_Store
+app/python/.DS_Store

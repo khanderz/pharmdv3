@@ -5,11 +5,9 @@ import os
 import spacy
 from spacy.tokens import DocBin
 from spacy.training import Example
-from spacy.training.iob_utils import offsets_to_biluo_tags
 from app.python.utils.data_handler import hash_train_data, load_data
 
 # -------------------- SpaCy Data Conversion --------------------
-
 
 #  custom offsets from BIO to BILUO tags
 def bio_to_offset(nlp, text, labels):
@@ -18,9 +16,7 @@ def bio_to_offset(nlp, text, labels):
     tokens = [token.text for token in doc]
 
     if len(tokens) != len(labels):
-        print(f"Warning: Length mismatch between tokens and labels in text: '{text}'")
-        print(f"Tokens: {tokens}")
-        print(f"Labels: {labels}")
+        print(f"Warning: Length mismatch between tokens and labels in text: '{text} for tokens: {len(tokens)}, labels : {len(labels)}'")
         return []
 
     entities = []
@@ -33,7 +29,7 @@ def bio_to_offset(nlp, text, labels):
         word = tokens[i]
         word_start = char_offset
 
-        if label.startswith("B-"):
+        if label.startswith("B-"):  
             if current_entity:
                 entities.append(
                     (current_start, char_offset, current_label, current_entity)
@@ -45,7 +41,6 @@ def bio_to_offset(nlp, text, labels):
 
         elif label.startswith("I-") and current_label == label[2:]:
             current_entity += " " + word
-
         else:
             if current_entity:
                 entities.append(
@@ -60,18 +55,17 @@ def bio_to_offset(nlp, text, labels):
             next_label = labels[i + 1]
             if current_entity and next_label.startswith("B-"):
                 char_offset += len(word)
-
             else:
                 char_offset += len(word) + 1
 
     if current_entity:
         entities.append((current_start, char_offset, current_label, current_entity))
 
+    print("-" * 15, "bio_to_offset", "-" * 15)
     return [
         {"start": start, "end": end, "label": label, "token": token}
         for start, end, label, token in entities
     ]
-
 
 def convert_bio_to_spacy_format(input_file, folder, nlp, CONVERTED_FILE_PATH):
     """Convert BIO formatted input data to spaCy format and save it."""
@@ -91,7 +85,6 @@ def convert_bio_to_spacy_format(input_file, folder, nlp, CONVERTED_FILE_PATH):
         f"Data converted and saved to: {CONVERTED_FILE_PATH} (Location: {CONVERTED_FILE_PATH})"
     )
 
-
 #  custom offsets BILUO tags from doc to text
 def custom_offsets_to_biluo_tags(spans, text):
     """Convert spans len(doc) into BILUO format len(text)."""
@@ -101,19 +94,19 @@ def custom_offsets_to_biluo_tags(spans, text):
         word = None
 
         if start < len(text) and end <= len(text):
-
             word = text[start:end]
             biluo_tags[start] = f"U-{label}"
 
-        if len(word) > 1:
-            biluo_tags[start] = f"B-{label}"
-            for i in range(start + 1, end - 1):
-                biluo_tags[i] = f"I-{label}"
-            if end - 1 >= start:
-                biluo_tags[end - 1] = f"L-{label}"
+        if word is not None :
+            if len(word) > 1 :
+                biluo_tags[start] = f"B-{label}"
+                for i in range(start + 1, end - 1):
+                    biluo_tags[i] = f"I-{label}"
+                if end - 1 >= start:
+                    biluo_tags[end - 1] = f"L-{label}"
 
+    print("-" * 15, "custom_offsets_to_biluo_tags", "-" * 15)
     return biluo_tags
-
 
 def convert_tokens_to_whole_word(doc, biluo_tags, spans, text):
     """Convert BILUO tags(len(text)) to whole word tokens(len(doc))"""
@@ -121,7 +114,7 @@ def convert_tokens_to_whole_word(doc, biluo_tags, spans, text):
     char_to_token_index = []
     current_token_index = 0
     text = text.strip()
-
+    
     for token in doc:
         token_length = len(token.text)
         for _ in range(token_length):
@@ -147,19 +140,23 @@ def convert_tokens_to_whole_word(doc, biluo_tags, spans, text):
 
             if biluo_tags[i].startswith("B-"):
                 biluo_tokens[token_index] = f"B-{biluo_tags[i][2:]}"
+            elif biluo_tags[i].startswith("I-"):
+                pass
             elif biluo_tags[i].startswith("U-"):
                 biluo_tokens[token_index] = f"U-{biluo_tags[i][2:]}"
+            elif biluo_tags[i].startswith("L-"):
+                pass
 
     # """Validation check for the converted BILUO tags."""
     span_labels = [label for _, _, label, _ in spans]
-    span_tokens = ["$", "100,000", "$", "120,000", "year"]
+    span_tokens = [token for _, _, _, token in spans]
 
     span_index = 0
     for idx, (token, actual_tag) in enumerate(zip(doc, biluo_tokens)):
         if actual_tag != "O":
             if span_labels[span_index] not in str(actual_tag):
                 print(
-                    f"VALIDATION FAIL: {span_tokens[span_index]} ->  Expected: {span_labels[span_index]}, Found: {actual_tag}"
+                    f"VALIDATION FAIL********: {span_tokens[span_index]} ->  Expected: {span_labels[span_index]}, Found: {actual_tag}"
                 )
                 span_index += 1
             else:
@@ -168,6 +165,7 @@ def convert_tokens_to_whole_word(doc, biluo_tags, spans, text):
                 )
                 span_index += 1
 
+    print("-" * 15, "convert_tokens_to_whole_word", "-" * 15)
     return biluo_tokens
 
 
@@ -182,7 +180,6 @@ def convert_to_spacy_format(train_data):
     for index, entry in enumerate(train_data):
         text = entry["text"]
         entities = entry.get("entities", [])
-
         doc = nlp_blank.make_doc(text)
         tokens = []
         spans = []
@@ -198,12 +195,8 @@ def convert_to_spacy_format(train_data):
 
         biluo_tags = custom_offsets_to_biluo_tags(spans, text)
         converted_tags = convert_tokens_to_whole_word(doc, biluo_tags, spans, text)
-        # print(f"************tags: {biluo_tags}")
-        print(f"tokens : {tokens}")
-        print(f" doc: {doc}")
-        print("-" * 25)
 
-        for token, tag in zip([token.text for token in doc], biluo_tags):
+        for token, tag in zip([token.text for token in doc], converted_tags):
             print(f"token: {token} tag: {tag}")
 
         if spans:
@@ -214,12 +207,10 @@ def convert_to_spacy_format(train_data):
             for start, end, label, token in spans:
                 print(f"{start:<10}{end:<10}{label:<20}{token:<20}")
 
-            print(f"\n{'BILUO Tags:':<35}")
-            print(f"{'Token':<15}{'BILUO Tag':<15}")
-            print("-" * 25)
-
         example_entities = [(start, end, label) for start, end, label, _ in spans]
+
         example = Example.from_dict(doc, {"entities": example_entities})
+
         doc._.set("index", index)
         db.add(example.reference)
         examples.append(example)
