@@ -9,6 +9,11 @@ from spacy.training import Example
 from app.python.utils.data_handler import hash_train_data, load_data
 
 # -------------------- SpaCy Data Conversion --------------------
+def print_token_characters(tokens):
+    text = ''.join(tokens)
+    
+    for idx, char in enumerate(text):
+        print(f"{char} {idx}")
 
 #  custom offsets from BIO to BILUO tags
 def bio_to_offset(nlp, text, labels):
@@ -16,22 +21,28 @@ def bio_to_offset(nlp, text, labels):
     doc = nlp.make_doc(text)
     tokens = [token.text for token in doc]
     
-    # format to add spaces after tokens
     all_tokens = []
     all_labels = []
+
+    no_space_entities = {"COMMITMENT", "CURRENCY", "SALARY_SINGLE"}
 
     for i, token in enumerate(tokens):
         all_tokens.append(token)
         all_labels.append(labels[i])  
-
+        print(f"token: {token}, label: {labels[i]}")
         if i < len(tokens) - 1:
             next_token = tokens[i + 1]
             
             if re.match(r'^\$|\€|\£|\₹|\¥$', token) and re.match(r'^\d[\d,]*$', next_token):
-                continue
+                continue   
 
-            if (labels[i].startswith("B-") or labels[i].startswith("I-") )and labels[i + 1].startswith("I-") and labels[i][2:] == labels[i + 1][2:]:
-                continue
+            if labels[i].startswith("B-") and labels[i + 1].startswith("I-") and labels[i][2:] == labels[i + 1][2:]:
+                if labels[i][2:] not in no_space_entities: 
+                    all_tokens.append(" ")  
+                    all_labels.append("O")
+
+            if labels[i + 1].startswith("I-") and labels[i][2:] == labels[i + 1][2:]:     
+                continue 
 
             elif next_token not in [".", ",", "!", "?", ";", ":", "'"]:
                 all_tokens.append(" ")
@@ -40,57 +51,62 @@ def bio_to_offset(nlp, text, labels):
     if len(all_tokens) != len(all_labels):
         raise ValueError(f"Token and label length mismatch. Tokens: {len(all_tokens)}, Labels: {len(all_labels)}")
 
+    print_token_characters(all_tokens)
+
     entities = []
     current_entity = None
     current_start = None
     current_label = None
     char_offset = 0
-    previous_label = None
-    previous_previous_label = None
+    next_label = None
+
 
     for i, (word, label) in enumerate(zip(all_tokens, all_labels)):
         word_start = char_offset
         word_length = len(word)
         char_offset += word_length 
-        # print(f"word: {word}, label : {label}, word_start : {word_start}, char_offset : {char_offset}, previous_label: {previous_label}")
+        next_label = all_labels[i + 1] if i < len(all_labels) - 1 else "O"
+        print(f"--------next label: {next_label}")
+        print(f"word: {word}, label : {label}, word_start : {word_start}, char_offset : {char_offset}")
 
         if label.startswith("B-"):
             if current_entity is not None:
-                # print(f"1 appending current_entity: {current_entity}, current_start: {current_start}, char_offset - word_length: {char_offset - word_length}, current_label: {current_label} previous_label : {previous_label}, previous_previous_label : {previous_previous_label}")
+                print(f"1 aappending current_entity: {current_entity}, current_start: {current_start}, char_offset - word_length: {char_offset - word_length}, current_label: {current_label}")
                 entities.append((current_start, char_offset - word_length, current_label, current_entity))
 
             current_entity = word
             current_start = word_start
             current_label = label[2:]
+
         elif label.startswith("I-"):
-            if current_entity is None:
-                raise ValueError(f"Invalid BIO format. Expected B- but got I-: {label}")
-            current_entity += " " + word
+            print(f"  current_entity: {current_entity}, current label : {current_label}")
+            if current_entity is not None and current_label not in no_space_entities:
+                current_entity += " " + word
+                print(f"1b appending current_entity: {current_entity}, current label : {current_label} current_start: {current_start}")
+                entities.append((current_start, char_offset, current_label, current_entity))
+                current_entity = None
+                current_start = None
+                current_label = None
+            # else:
+            #     current_entity += " " + word
 
         elif label == "O":
-            if current_entity is not None: # TODO: reduce code duplication
-                if previous_previous_label and (previous_previous_label.startswith("B-") or previous_previous_label.startswith("I-")):
-                    # print(f"2a appending current_entity next to another entity: {current_entity}, current_start: {current_start}, char_offset - 1: {char_offset - 1}, current_label: {current_label} previous_label : {previous_label} , previous_previous_label : {previous_previous_label}")
-                    entities.append((current_start, char_offset - 1, current_label, current_entity))
-                else:
-                    # print(f"2b appending current_entity: {current_entity}, current_start: {current_start}, char_offset - 1: {char_offset - 1}, current_label: {current_label} previous_label : {previous_label}, previous_previous_label : {previous_previous_label}")
-                    entities.append((current_start, char_offset - 1, current_label, current_entity))
-
+            if current_entity is not None and current_label in no_space_entities:
+                print(f"2a appending current_entity next to another entity: {current_entity}, current_start: {current_start}, char_offset - 1: {char_offset - 1}, current_label: {current_label} ")
+                entities.append((current_start, char_offset - 1, current_label, current_entity))
+        
                 current_entity = None
                 current_start = None
                 current_label = None
         else:
             raise ValueError(f"Invalid label: {label}")
         
-        previous_previous_label = previous_label
-        previous_label = label
-        
         if i == len(all_tokens) - 1:
             if current_entity is not None:
-                # print(f"3 appending current_entity: {current_entity}, current_start: {current_start}, char_offset: {char_offset}, current_label: {current_label}")
+                print(f"3 appending current_entity: {current_entity}, current_start: {current_start}, char_offset: {char_offset}, current_label: {current_label}")
                 entities.append((current_start, char_offset, current_label, current_entity))
 
-    # print(f"entities: {entities}")
+    print(f"entities: {entities}")
     print("-" * 15, "bio_to_offset", "-" * 15)
     return [
         {"start": start, "end": end, "label": label, "token": token}
@@ -200,7 +216,6 @@ def convert_tokens_to_whole_word(doc, biluo_tags, spans, text):
                 span_index += 1
     print("-" * 15, "convert_tokens_to_whole_word", "-" * 15)
     return biluo_tokens
-
 
 def convert_to_spacy_format(train_data):
     """Convert training data to spaCy format with BILUO alignment."""
