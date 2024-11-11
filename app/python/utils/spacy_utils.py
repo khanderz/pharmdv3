@@ -15,12 +15,7 @@ def print_token_characters(tokens):
     for idx, char in enumerate(text):
         print(f"{char} {idx}")
 
-#  custom offsets from BIO to BILUO tags
-def bio_to_offset(nlp, text, labels):
-    """Convert BIO data format (len(text)) to spaCy's character offset format (len(doc))."""
-    doc = nlp.make_doc(text)
-    tokens = [token.text for token in doc]
-    
+def add_space_to_tokens(tokens, labels):
     all_tokens = []
     all_labels = []
 
@@ -48,6 +43,16 @@ def bio_to_offset(nlp, text, labels):
                 all_tokens.append(" ")
                 all_labels.append("O")
 
+    return all_tokens, all_labels
+
+#  custom offsets from BIO to BILUO tags
+def bio_to_offset(nlp, text, labels):
+    """Convert BIO data format (len(text)) to spaCy's character offset format (len(doc))."""
+    doc = nlp.make_doc(text)
+    tokens = [token.text for token in doc]
+    
+    all_tokens, all_labels = add_space_to_tokens(tokens, labels)
+
     if len(all_tokens) != len(all_labels):
         raise ValueError(f"Token and label length mismatch. Tokens: {len(all_tokens)}, Labels: {len(all_labels)}")
 
@@ -58,20 +63,17 @@ def bio_to_offset(nlp, text, labels):
     current_start = None
     current_label = None
     char_offset = 0
-    next_label = None
 
 
     for i, (word, label) in enumerate(zip(all_tokens, all_labels)):
         word_start = char_offset
         word_length = len(word)
         char_offset += word_length 
-        next_label = all_labels[i + 1] if i < len(all_labels) - 1 else "O"
-        print(f"--------next label: {next_label}")
-        print(f"word: {word}, label : {label}, word_start : {word_start}, char_offset : {char_offset}")
+        # print(f"word: {word}, label : {label}, word_start : {word_start}, char_offset : {char_offset}")
 
         if label.startswith("B-"):
             if current_entity is not None:
-                print(f"1 aappending current_entity: {current_entity}, current_start: {current_start}, char_offset - word_length: {char_offset - word_length}, current_label: {current_label}")
+                # print(f"1 appending current_entity: {current_entity}, current_start: {current_start}, char_offset - word_length: {char_offset - word_length}, current_label: {current_label}")
                 entities.append((current_start, char_offset - word_length, current_label, current_entity))
 
             current_entity = word
@@ -79,10 +81,10 @@ def bio_to_offset(nlp, text, labels):
             current_label = label[2:]
 
         elif label.startswith("I-"):
-            print(f"  current_entity: {current_entity}, current label : {current_label}")
+            # print(f"  current_entity: {current_entity}, current label : {current_label}")
             if current_entity is not None and current_label not in no_space_entities:
                 current_entity += " " + word
-                print(f"1b appending current_entity: {current_entity}, current label : {current_label} current_start: {current_start}")
+                # print(f"1b appending current_entity: {current_entity}, current label : {current_label} current_start: {current_start}")
                 entities.append((current_start, char_offset, current_label, current_entity))
                 current_entity = None
                 current_start = None
@@ -91,22 +93,22 @@ def bio_to_offset(nlp, text, labels):
             #     current_entity += " " + word
 
         elif label == "O":
-            if current_entity is not None and current_label in no_space_entities:
-                print(f"2a appending current_entity next to another entity: {current_entity}, current_start: {current_start}, char_offset - 1: {char_offset - 1}, current_label: {current_label} ")
+            if current_entity is not None:
+                # print(f"2a appending current_entity next to another entity: {current_entity}, current_start: {current_start}, char_offset - 1: {char_offset - 1}, current_label: {current_label} ")
                 entities.append((current_start, char_offset - 1, current_label, current_entity))
         
                 current_entity = None
                 current_start = None
-                current_label = None
+                current_label = None    
         else:
             raise ValueError(f"Invalid label: {label}")
         
         if i == len(all_tokens) - 1:
             if current_entity is not None:
-                print(f"3 appending current_entity: {current_entity}, current_start: {current_start}, char_offset: {char_offset}, current_label: {current_label}")
+                # print(f"3 appending current_entity: {current_entity}, current_start: {current_start}, char_offset: {char_offset}, current_label: {current_label}")
                 entities.append((current_start, char_offset, current_label, current_entity))
 
-    print(f"entities: {entities}")
+    # print(f"entities: {entities}")
     print("-" * 15, "bio_to_offset", "-" * 15)
     return [
         {"start": start, "end": end, "label": label, "token": token}
@@ -132,21 +134,26 @@ def convert_bio_to_spacy_format(input_file, folder, nlp, CONVERTED_FILE_PATH):
     )
 
 #  custom offsets BILUO tags from doc to text
-def custom_offsets_to_biluo_tags(spans, text):
+def custom_offsets_to_biluo_tags(spans, text, doc):
     """Convert spans len(doc) into BILUO format len(text)."""
     biluo_tags = ["O"] * len(text)
+
+    # for token in doc:
+    #     print(f"Token: '{token.text}' (start: {token.idx}, end: {token.idx + len(token.text)})")
+
+    print(f"len text: {len(text)}, len doc : {len(doc)}")
 
     for start, end, label, token in spans:
         word = None
         print(f" start : {start} end : {end} label : {label} token : {token}")
 
         if start < len(text) and end <= len(text):
+            print(f"start {text[start]} end {text[end]}, print word : {text[start:end]}")
             word = text[start:end]
             biluo_tags[start] = f"U-{label}"
 
-        print(f"word : {word}")
         if word is not None :
-            if len(word) > 1 :
+            if len(word) > 1:
                 biluo_tags[start] = f"B-{label}"
                 for i in range(start + 1, end - 1):
                     biluo_tags[i] = f"I-{label}"
@@ -241,7 +248,7 @@ def convert_to_spacy_format(train_data):
 
         print(f"\n{'Original Text:':<20} '{text}'")
 
-        biluo_tags = custom_offsets_to_biluo_tags(spans, text)
+        biluo_tags = custom_offsets_to_biluo_tags(spans, text, doc)
         converted_tags = convert_tokens_to_whole_word(doc, biluo_tags, spans, text)
 
         # for token, tag in zip([token.text for token in doc], converted_tags):
