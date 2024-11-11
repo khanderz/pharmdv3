@@ -157,7 +157,6 @@ def convert_tokens_to_whole_word(doc, biluo_tags, spans, text):
             new_char_to_token_index.append(char_to_token_index.pop(0))
 
     text_length = len(text)
-    # print(f"len text : {text_length}, len biluo_tags : {len(biluo_tags)}")
     assert (
         len(new_char_to_token_index) == text_length
     ), f"Length mismatch: {len(new_char_to_token_index)} != {text_length}"
@@ -178,13 +177,15 @@ def convert_tokens_to_whole_word(doc, biluo_tags, spans, text):
     # """Validation check for the converted BILUO tags."""
     span_labels = [label for _, _, label, _ in spans]
     span_tokens = [token for _, _, _, token in spans]
+    RED = "\033[31m"
+    RESET = "\033[0m"
 
     span_index = 0
     for idx, (token, actual_tag) in enumerate(zip(doc, biluo_tokens)):
         if actual_tag != "O":
             if span_labels[span_index] not in str(actual_tag):
                 print(
-                    f"VALIDATION FAIL********: {span_tokens[span_index]} ->  Expected: {span_labels[span_index]}, Found: {actual_tag}"
+                    f"{RED}VALIDATION FAIL********: {span_tokens[span_index]} ->  Expected: {span_labels[span_index]}, Found: {actual_tag}{RESET}"
                 )
                 span_index += 1
             else:
@@ -192,7 +193,6 @@ def convert_tokens_to_whole_word(doc, biluo_tags, spans, text):
                     f"VALIDATION PASS: {span_tokens[span_index]} ->   {span_labels[span_index]} equals {actual_tag}"
                 )
                 span_index += 1
-    # print(f"biluo_tokens: {biluo_tokens}")
     print("-" * 15, "convert_tokens_to_whole_word", "-" * 15)
     return biluo_tokens
 
@@ -221,19 +221,19 @@ def convert_to_spacy_format(train_data):
 
         print(f"\n{'Original Text:':<20} '{text}'")
 
-        # biluo_tags = custom_offsets_to_biluo_tags(spans, text)
-        # converted_tags = convert_tokens_to_whole_word(doc, biluo_tags, spans, text)
+        biluo_tags = custom_offsets_to_biluo_tags(spans, text)
+        converted_tags = convert_tokens_to_whole_word(doc, biluo_tags, spans, text)
 
-        # for token, tag in zip([token.text for token in doc], converted_tags):
-        #     print(f"token: {token} tag: {tag}")
+        for token, tag in zip([token.text for token in doc], converted_tags):
+            print(f"token: {token} tag: {tag}")
 
-        # if spans:
-        #     print(f"\n{'Entities (start, end, label, token):':<50}")
-        #     print(f"{'Start':<10}{'End':<10}{'Label':<20}{'Token':<20}")
-        #     print("-" * 70)
+        if spans:
+            print(f"\n{'Entities (start, end, label, token):':<50}")
+            print(f"{'Start':<10}{'End':<10}{'Label':<20}{'Token':<20}")
+            print("-" * 70)
 
-        #     for start, end, label, token in spans:
-        #         print(f"{start:<10}{end:<10}{label:<20}{token:<20}")
+            for start, end, label, token in spans:
+                print(f"{start:<10}{end:<10}{label:<20}{token:<20}")
 
         example_entities = [(start, end, label) for start, end, label, _ in spans]
 
