@@ -141,7 +141,8 @@ def custom_offsets_to_biluo_tags(spans, text, doc):
     # for token in doc:
     #     print(f"Token: '{token.text}' (start: {token.idx}, end: {token.idx + len(token.text)})")
 
-    print(f"len text: {len(text)}, len doc : {len(doc)}")
+    # for i, el in enumerate(text):
+    #     print(f"i: {i}, el: {el}")
 
     for start, end, label, token in spans:
         word = None
