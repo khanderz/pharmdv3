@@ -139,19 +139,26 @@ def custom_offsets_to_biluo_tags(spans, text, doc):
     """Convert spans len(doc) into BILUO format len(text)."""
     modified_text = text 
     previous_end = 0
+    previous_token_text = None
+    COMMITMENT_TEXT = ["part", "full"]
     
     for token in doc:
-        connecting_hyphen = token.text == "-" and previous_end == token.idx
-        # print(f"Previous end: {previous_end}, token.idx: {token.idx}, token.text: {token.text} connecting_hyphen: {connecting_hyphen}")
+        print(f" 1 Token: '{token.text}' (start: {token.idx}, end: {token.idx})")
+        is_commitment_token = False
+        if previous_token_text:
+            is_commitment_token = any(word.lower() == previous_token_text.lower() for word in COMMITMENT_TEXT)
         
-        if connecting_hyphen:
+
+        connecting_hyphen = token.text == "-" and previous_end == token.idx
+        print(f" 2 Previous end: {previous_end}, token.idx: {token.idx}, token.text: {token.text} connecting_hyphen: {connecting_hyphen}")
+        
+        if connecting_hyphen and not is_commitment_token:
             modified_text = modified_text[:token.idx] + ' - ' + modified_text[token.idx + len(token.text):]
-            # print(f"Replaced hyphen at position {token.idx} with ' - '")
+            print(f" 3 Replaced hyphen at position {token.idx} with ' - '")
         
         previous_end = token.idx + len(token.text)
-        # print(f"Token: '{token.text}' (start: {token.idx}, end: {token.idx + len(token.text)}) connecting_hyphen: {connecting_hyphen}")
+        previous_token_text = token.text
 
-    # print(f"Modified text: '{modified_text}'")
     biluo_tags = ["O"] * len(modified_text) 
     # for i, el in enumerate(text):
     #     print(f"i: {i}, el: {el}")
@@ -164,21 +171,22 @@ def custom_offsets_to_biluo_tags(spans, text, doc):
             # print(f" 1 start {modified_text[start]} end {modified_text[end]}, print word : {modified_text[start:end]}")
             # print(f"2 span_modified_text: {span_modified_text}, word : {word}")
 
-            # if '-' in span_modified_text:
-            #     span_modified_text = span_modified_text.replace('-', '')  
-            #     print(f" 3 Hyphen detected: handling as a single word: {span_modified_text} ,word : {word}")
             word = span_modified_text
             biluo_tags[start] = f"U-{label}"
-            # print(f"4 biluo_tags[start]: {biluo_tags[start]} word : {word}")
+            # print(f"3 biluo_tags[start]: {biluo_tags[start]} word : {word}")
 
         if word is not None :
-            # print(f"5 word: {word}, token: {token}")
+            # print(f"4 word: {word}, token: {token}")
             if len(word) > 1:
                 biluo_tags[start] = f"B-{label}"
+                # print(f"5 biluo_tags[start]: {biluo_tags[start]}")
+
                 for i in range(start + 1, end - 1):
                     biluo_tags[i] = f"I-{label}"
+                    # print(f"6 biluo_tags[i]: {biluo_tags[i]}")
                 if end - 1 >= start:
                     biluo_tags[end - 1] = f"L-{label}"
+                    # print(f"7 biluo_tags[end - 1]: {biluo_tags[end - 1]}")
 
         if word != token:
             print(f"{RED}Word mismatch: {word} != {token}{RESET}")   
