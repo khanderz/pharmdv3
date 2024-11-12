@@ -26,22 +26,29 @@ def add_space_to_tokens(tokens, labels):
     for i, token in enumerate(tokens):
         all_tokens.append(token)
         all_labels.append(labels[i])  
+
+        # print(f" 1 Token: {token}, Label: {labels[i]}")
  
         if i < len(tokens) - 1:
             next_token = tokens[i + 1]
             
             if re.match(r'^\$|\€|\£|\₹|\¥$', token) and re.match(r'^\d[\d,]*$', next_token):
+                # print(f"2 Token: {token}, Next Token: {next_token}")
                 continue   
 
             if labels[i].startswith("B-") and labels[i + 1].startswith("I-") and labels[i][2:] == labels[i + 1][2:]:
+                # print(f"3 Token: {token}, Next Token: {next_token}")
                 if labels[i][2:] not in no_space_entities: 
+                    # print(f"4 APPENDING Token: {token}, Next Token: {next_token}")
                     all_tokens.append(" ")  
                     all_labels.append("O")
 
-            if labels[i + 1].startswith("I-") and labels[i][2:] == labels[i + 1][2:]:     
+            if labels[i + 1].startswith("I-") and labels[i][2:] == labels[i + 1][2:]:   
+                # print(f"5 Token: {token}, Next Token: {next_token}")  
                 continue 
 
-            elif next_token not in [".", ",", "!", "?", ";", ":", "'"]:
+            elif next_token not in [".", ",", "!", "?", ";", ":", "'"] and labels[i][2:] not in no_space_entities:
+                # print(f"6 APPENDING Token: {token}, Next Token: {next_token}")
                 all_tokens.append(" ")
                 all_labels.append("O")
 
@@ -52,20 +59,23 @@ def bio_to_offset(nlp, text, labels):
     """Convert BIO data format (len(text)) to spaCy's character offset format (len(doc))."""
     doc = nlp.make_doc(text)
     tokens = [token.text for token in doc]
+    # for el in tokens:
+    #     print(f"Token: {el}")
     
     all_tokens, all_labels = add_space_to_tokens(tokens, labels)
+
+    # for el in all_tokens:
+        # print(f"Token: {el}")
 
     if len(all_tokens) != len(all_labels):
         raise ValueError(f"Token and label length mismatch. Tokens: {len(all_tokens)}, Labels: {len(all_labels)}")
 
-    # print_token_characters(all_tokens)
-    # print(f"all_tokens length: {len(all_tokens)}")
     entities = []
     current_entity = None
     current_start = None
     current_label = None
     char_offset = 0
-
+ 
     for i, (word, label) in enumerate(zip(all_tokens, all_labels)):
         word_start = char_offset
         word_length = len(word)
@@ -76,7 +86,7 @@ def bio_to_offset(nlp, text, labels):
 
         if label.startswith("B-"):
             if current_entity is not None:
-                # print(f"1 appending current_entity: {current_entity}, current_start: {current_start}, char_offset - word_length: {char_offset - word_length}, current_label: {current_label}")
+                # print(f"1 APPENDING---- current_entity: {current_entity}, current_start: {current_start}, char_offset - word_length: {char_offset - word_length}, current_label: {current_label}")
                 entities.append((current_start, char_offset - word_length, current_label, current_entity))
 
             current_entity = word
@@ -84,10 +94,14 @@ def bio_to_offset(nlp, text, labels):
             current_label = label[2:]
 
         elif label.startswith("I-"):
-            # print(f"  current_entity: {current_entity}, current label : {current_label}")
-            if current_entity is not None:
-                current_entity += " " + word
-                # print(f"1b appending current_entity: {current_entity}, current label : {current_label} current_start: {current_start}")
+            # print(f"1a current_entity: {current_entity}, current label : {current_label}")
+            if current_entity is not None and next_label is not None and (not next_label.startswith("I-")):
+                if current_label == "COMMITMENT":
+                    current_entity += "-" + word
+                else:
+                    current_entity += " " + word
+                
+                # print(f"1b APPENDING---- current_entity: {current_entity}, current label : {current_label} current_start: {current_start}")
                 entities.append((current_start, char_offset, current_label, current_entity))
                 current_entity = None
                 current_start = None
@@ -95,7 +109,7 @@ def bio_to_offset(nlp, text, labels):
 
         elif label == "O":
             if current_entity is not None and next_label is not None and (not next_label.startswith("I-")):
-                # print(f"2a appending current_entity next to another entity: {current_entity}, current_start: {current_start}, char_offset - 1: {char_offset - 1}, current_label: {current_label} ")
+                # print(f"2a APPENDING---- current_entity next to another entity: {current_entity}, current_start: {current_start}, char_offset - 1: {char_offset - 1}, current_label: {current_label} ")
                 entities.append((current_start, char_offset - 1, current_label, current_entity))
         
                 current_entity = None
@@ -106,11 +120,11 @@ def bio_to_offset(nlp, text, labels):
         
         if i == len(all_tokens) - 1:
             if current_entity is not None:
-                # print(f"3 appending current_entity: {current_entity}, current_start: {current_start}, char_offset - 1: {char_offset - 1}, current_label: {current_label}")
+                # print(f"3 APPENDING---- current_entity: {current_entity}, current_start: {current_start}, char_offset - 1: {char_offset - 1}, current_label: {current_label}")
                 entities.append((current_start, char_offset - 1, current_label, current_entity))
 
     # print(f"entities: {entities}")
-    # print("-" * 15, "bio_to_offset", "-" * 15)
+    print("-" * 15, "bio_to_offset", "-" * 15)
     return [
         {"start": start, "end": end, "label": label, "token": token}
         for start, end, label, token in entities
@@ -137,41 +151,41 @@ def convert_bio_to_spacy_format(input_file, folder, nlp, CONVERTED_FILE_PATH):
 #  custom offsets BILUO tags from doc to text
 def custom_offsets_to_biluo_tags(spans, text, doc):
     """Convert spans len(doc) into BILUO format len(text)."""
-    modified_text = text 
-    previous_end = 0
-    previous_token_text = None
-    COMMITMENT_TEXT = ["part", "full"]
+    # modified_text = text 
+    # previous_end = 0
+    # previous_token_text = None
+    # COMMITMENT_TEXT = ["part", "full"]
     
-    for token in doc:
-        print(f" 1 Token: '{token.text}' (start: {token.idx}, end: {token.idx})")
-        is_commitment_token = False
-        if previous_token_text:
-            is_commitment_token = any(word.lower() == previous_token_text.lower() for word in COMMITMENT_TEXT)
+    # for token in doc:
+    #     print(f" 1 Token: '{token.text}' (start: {token.idx}, end: {token.idx})")
+    #     is_commitment_token = False
+    #     if previous_token_text:
+    #         is_commitment_token = any(word.lower() == previous_token_text.lower() for word in COMMITMENT_TEXT)
         
 
-        connecting_hyphen = token.text == "-" and previous_end == token.idx
-        print(f" 2 Previous end: {previous_end}, token.idx: {token.idx}, token.text: {token.text} connecting_hyphen: {connecting_hyphen}")
+    #     connecting_hyphen = token.text == "-" and previous_end == token.idx
+    #     print(f" 2 Previous end: {previous_end}, token.idx: {token.idx}, token.text: {token.text} connecting_hyphen: {connecting_hyphen}")
         
-        if connecting_hyphen and not is_commitment_token:
-            modified_text = modified_text[:token.idx] + ' - ' + modified_text[token.idx + len(token.text):]
-            print(f" 3 Replaced hyphen at position {token.idx} with ' - '")
+    #     if connecting_hyphen and not is_commitment_token:
+    #         modified_text = modified_text[:token.idx] + ' - ' + modified_text[token.idx + len(token.text):]
+    #         print(f" 3 Replaced hyphen at position {token.idx} with ' - '")
         
-        previous_end = token.idx + len(token.text)
-        previous_token_text = token.text
+    #     previous_end = token.idx + len(token.text)
+    #     previous_token_text = token.text
 
-    biluo_tags = ["O"] * len(modified_text) 
+    biluo_tags = ["O"] * len(text) 
     # for i, el in enumerate(text):
     #     print(f"i: {i}, el: {el}")
 
     for start, end, label, token in spans:
         word = None
 
-        if start < len(modified_text) and end <= len(modified_text):
-            span_modified_text = modified_text[start:end]
-            # print(f" 1 start {modified_text[start]} end {modified_text[end]}, print word : {modified_text[start:end]}")
-            # print(f"2 span_modified_text: {span_modified_text}, word : {word}")
+        if start < len(text) and end <= len(text):
+            span_text = text[start:end]
+            # print(f" 1 start {text[start]} end {text[end]}, print word : {text[start:end]}")
+            # print(f"2 span_text: {span_text}, word : {word}")
 
-            word = span_modified_text
+            word = span_text
             biluo_tags[start] = f"U-{label}"
             # print(f"3 biluo_tags[start]: {biluo_tags[start]} word : {word}")
 
@@ -192,8 +206,8 @@ def custom_offsets_to_biluo_tags(spans, text, doc):
             print(f"{RED}Word mismatch: {word} != {token}{RESET}")   
 
     # for idx, tag in enumerate(biluo_tags):
-    #     if idx < len(modified_text):  
-    #         print(f"biluo_tags[{idx}]: {tag}, associated token: {modified_text[idx]}")
+    #     if idx < len(text):  
+    #         print(f"biluo_tags[{idx}]: {tag}, associated token: {text[idx]}")
 
     print("-" * 15, "custom_offsets_to_biluo_tags", "-" * 15)
     return biluo_tags
@@ -282,7 +296,7 @@ def convert_to_spacy_format(train_data):
         print(f"\n{'Original Text:':<20} '{text}'")
 
         biluo_tags = custom_offsets_to_biluo_tags(spans, text, doc)
-        # converted_tags = convert_tokens_to_whole_word(doc, biluo_tags, spans, text)
+        converted_tags = convert_tokens_to_whole_word(doc, biluo_tags, spans, text)
 
         # for token, tag in zip([token.text for token in doc], converted_tags):
         #     print(f"token: {token} tag: {tag}")
