@@ -138,11 +138,11 @@ def custom_offsets_to_biluo_tags(spans, text, doc):
     """Convert spans len(doc) into BILUO format len(text)."""
     biluo_tags = ["O"] * len(text)
 
-    # for token in doc:
-    #     print(f"Token: '{token.text}' (start: {token.idx}, end: {token.idx + len(token.text)})")
+    for token in doc:
+        print(f"Token: '{token.text}' (start: {token.idx}, end: {token.idx + len(token.text)})")
 
-    # for i, el in enumerate(text):
-    #     print(f"i: {i}, el: {el}")
+    for i, el in enumerate(text):
+        print(f"i: {i}, el: {el}")
 
     for start, end, label, token in spans:
         word = None
