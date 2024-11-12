@@ -148,7 +148,7 @@ def add_space_to_tokens(tokens, labels):
                     continue
 
                 if token == "-":
-                    print(f"5a {RED} HYPHEN-- Token: {token}, Next Token: {next_token}, next label type: {next_label_type} {RESET}")
+                    # print(f"5a {RED} HYPHEN-- Token: {token}, Next Token: {next_token}, next label type: {next_label_type} {RESET}")
                     # if next_label_type in no_space_entities:
                     #     continue
 
@@ -161,16 +161,17 @@ def add_space_to_tokens(tokens, labels):
                     all_labels.append("O")
 
             else:
-                print(f"6 current_label_type: {current_label_type}, next_label_type: {next_label_type}")
+                # print(f"6 Token: {token}, current_label_type: {current_label_type}, next_label_type: {next_label_type}")
                 if current_label_type == next_label_type:
-                    print(f"7 Token: {token}, Next Token: {next_token}")
-                    if current_label_type not in no_space_entities and token != ",":
-                        print(f"8 Token: {token}, Next Token: {next_token}")
+                    # print(f"7 Next Token: {next_token}")
+                    if current_label_type not in no_space_entities and token != "," and next_token != ":":
+                        # print(f"8 Token: {token}, Next Token: {next_token}")
                         all_tokens.append(" ")
                         all_labels.append("O")
 
+
                 elif next_token not in punctuations:
-                    print(f"9 Token: {token}, Next Token: {next_token}")
+                    # print(f"9 Token: {token}, Next Token: {next_token}")
                     all_tokens.append(" ")
                     all_labels.append("O")
     # print(f"all_tokens: {all_tokens}, all_labels: {all_labels}")
@@ -259,7 +260,7 @@ def custom_offsets_to_biluo_tags(spans, text):
             print(f"{RED}Word mismatch: {word} != {token}{RESET}")   
 
     if word_mismatch:
-        print(f"tokens with spaces: {tokens_with_spaces}, new text: {new_text}")
+        # print(f"tokens with spaces: {tokens_with_spaces}, new text: {new_text}")
         for idx, tag in enumerate(biluo_tags):
             if idx < len(new_text):  
                 print(f"biluo_tags[{idx}]: {tag}, associated token: {new_text[idx]}")
