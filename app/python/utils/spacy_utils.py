@@ -9,6 +9,8 @@ from spacy.training import Example
 from app.python.utils.data_handler import hash_train_data, load_data
 
 # -------------------- SpaCy Data Conversion --------------------
+RED = "\033[31m"
+RESET = "\033[0m"
 def print_token_characters(tokens):
     text = ''.join(tokens)
     
@@ -24,7 +26,7 @@ def add_space_to_tokens(tokens, labels):
     for i, token in enumerate(tokens):
         all_tokens.append(token)
         all_labels.append(labels[i])  
-        print(f"token: {token}, label: {labels[i]}")
+ 
         if i < len(tokens) - 1:
             next_token = tokens[i + 1]
             
@@ -56,20 +58,21 @@ def bio_to_offset(nlp, text, labels):
     if len(all_tokens) != len(all_labels):
         raise ValueError(f"Token and label length mismatch. Tokens: {len(all_tokens)}, Labels: {len(all_labels)}")
 
-    print_token_characters(all_tokens)
-
+    # print_token_characters(all_tokens)
+    # print(f"all_tokens length: {len(all_tokens)}")
     entities = []
     current_entity = None
     current_start = None
     current_label = None
     char_offset = 0
 
-
     for i, (word, label) in enumerate(zip(all_tokens, all_labels)):
         word_start = char_offset
         word_length = len(word)
         char_offset += word_length 
-        # print(f"word: {word}, label : {label}, word_start : {word_start}, char_offset : {char_offset}")
+        next_label = all_labels[i + 1] if i + 1 < len(all_labels) else None
+
+        # print(f"word: {word}, label : {label}, next label: {next_label} word_start : {word_start}, char_offset : {char_offset}")
 
         if label.startswith("B-"):
             if current_entity is not None:
@@ -82,18 +85,16 @@ def bio_to_offset(nlp, text, labels):
 
         elif label.startswith("I-"):
             # print(f"  current_entity: {current_entity}, current label : {current_label}")
-            if current_entity is not None and current_label not in no_space_entities:
+            if current_entity is not None:
                 current_entity += " " + word
                 # print(f"1b appending current_entity: {current_entity}, current label : {current_label} current_start: {current_start}")
                 entities.append((current_start, char_offset, current_label, current_entity))
                 current_entity = None
                 current_start = None
                 current_label = None
-            # else:
-            #     current_entity += " " + word
 
         elif label == "O":
-            if current_entity is not None:
+            if current_entity is not None and next_label is not None and (not next_label.startswith("I-")):
                 # print(f"2a appending current_entity next to another entity: {current_entity}, current_start: {current_start}, char_offset - 1: {char_offset - 1}, current_label: {current_label} ")
                 entities.append((current_start, char_offset - 1, current_label, current_entity))
         
@@ -105,11 +106,11 @@ def bio_to_offset(nlp, text, labels):
         
         if i == len(all_tokens) - 1:
             if current_entity is not None:
-                # print(f"3 appending current_entity: {current_entity}, current_start: {current_start}, char_offset: {char_offset}, current_label: {current_label}")
-                entities.append((current_start, char_offset, current_label, current_entity))
+                # print(f"3 appending current_entity: {current_entity}, current_start: {current_start}, char_offset - 1: {char_offset - 1}, current_label: {current_label}")
+                entities.append((current_start, char_offset - 1, current_label, current_entity))
 
     # print(f"entities: {entities}")
-    print("-" * 15, "bio_to_offset", "-" * 15)
+    # print("-" * 15, "bio_to_offset", "-" * 15)
     return [
         {"start": start, "end": end, "label": label, "token": token}
         for start, end, label, token in entities
@@ -136,31 +137,56 @@ def convert_bio_to_spacy_format(input_file, folder, nlp, CONVERTED_FILE_PATH):
 #  custom offsets BILUO tags from doc to text
 def custom_offsets_to_biluo_tags(spans, text, doc):
     """Convert spans len(doc) into BILUO format len(text)."""
-    biluo_tags = ["O"] * len(text)
-
+    modified_text = text 
+    previous_end = 0
+    
     for token in doc:
-        print(f"Token: '{token.text}' (start: {token.idx}, end: {token.idx + len(token.text)})")
+        connecting_hyphen = token.text == "-" and previous_end == token.idx
+        # print(f"Previous end: {previous_end}, token.idx: {token.idx}, token.text: {token.text} connecting_hyphen: {connecting_hyphen}")
+        
+        if connecting_hyphen:
+            modified_text = modified_text[:token.idx] + ' - ' + modified_text[token.idx + len(token.text):]
+            # print(f"Replaced hyphen at position {token.idx} with ' - '")
+        
+        previous_end = token.idx + len(token.text)
+        # print(f"Token: '{token.text}' (start: {token.idx}, end: {token.idx + len(token.text)}) connecting_hyphen: {connecting_hyphen}")
 
-    for i, el in enumerate(text):
-        print(f"i: {i}, el: {el}")
+    # print(f"Modified text: '{modified_text}'")
+    biluo_tags = ["O"] * len(modified_text) 
+    # for i, el in enumerate(text):
+    #     print(f"i: {i}, el: {el}")
 
     for start, end, label, token in spans:
         word = None
-        print(f" start : {start} end : {end} label : {label} token : {token}")
 
-        if start < len(text) and end <= len(text):
-            print(f"start {text[start]} end {text[end]}, print word : {text[start:end]}")
-            word = text[start:end]
+        if start < len(modified_text) and end <= len(modified_text):
+            span_modified_text = modified_text[start:end]
+            # print(f" 1 start {modified_text[start]} end {modified_text[end]}, print word : {modified_text[start:end]}")
+            # print(f"2 span_modified_text: {span_modified_text}, word : {word}")
+
+            # if '-' in span_modified_text:
+            #     span_modified_text = span_modified_text.replace('-', '')  
+            #     print(f" 3 Hyphen detected: handling as a single word: {span_modified_text} ,word : {word}")
+            word = span_modified_text
             biluo_tags[start] = f"U-{label}"
+            # print(f"4 biluo_tags[start]: {biluo_tags[start]} word : {word}")
 
         if word is not None :
+            # print(f"5 word: {word}, token: {token}")
             if len(word) > 1:
                 biluo_tags[start] = f"B-{label}"
                 for i in range(start + 1, end - 1):
                     biluo_tags[i] = f"I-{label}"
                 if end - 1 >= start:
                     biluo_tags[end - 1] = f"L-{label}"
-    # print(f"biluo_tags: {biluo_tags}")
+
+        if word != token:
+            print(f"{RED}Word mismatch: {word} != {token}{RESET}")   
+
+    # for idx, tag in enumerate(biluo_tags):
+    #     if idx < len(modified_text):  
+    #         print(f"biluo_tags[{idx}]: {tag}, associated token: {modified_text[idx]}")
+
     print("-" * 15, "custom_offsets_to_biluo_tags", "-" * 15)
     return biluo_tags
 
@@ -206,8 +232,6 @@ def convert_tokens_to_whole_word(doc, biluo_tags, spans, text):
     # """Validation check for the converted BILUO tags."""
     span_labels = [label for _, _, label, _ in spans]
     span_tokens = [token for _, _, _, token in spans]
-    RED = "\033[31m"
-    RESET = "\033[0m"
 
     span_index = 0
     for idx, (token, actual_tag) in enumerate(zip(doc, biluo_tokens)):
@@ -250,7 +274,7 @@ def convert_to_spacy_format(train_data):
         print(f"\n{'Original Text:':<20} '{text}'")
 
         biluo_tags = custom_offsets_to_biluo_tags(spans, text, doc)
-        converted_tags = convert_tokens_to_whole_word(doc, biluo_tags, spans, text)
+        # converted_tags = convert_tokens_to_whole_word(doc, biluo_tags, spans, text)
 
         # for token, tag in zip([token.text for token in doc], converted_tags):
         #     print(f"token: {token} tag: {tag}")
