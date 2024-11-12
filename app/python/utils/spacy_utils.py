@@ -11,6 +11,9 @@ from app.python.utils.data_handler import hash_train_data, load_data
 # -------------------- SpaCy Data Conversion --------------------
 RED = "\033[31m"
 RESET = "\033[0m"
+no_space_entities = {"COMMITMENT", "CURRENCY", "SALARY_SINGLE"}
+punctuations = [".", ",", "!", "?", ";", ":", "'"]
+
 def print_token_characters(tokens):
     text = ''.join(tokens)
     
@@ -40,7 +43,7 @@ def bio_to_offset(nlp, text, labels):
     """Convert BIO data format (len(text)) to spaCy's character offset format (len(doc))."""
     doc = nlp.make_doc(text)
     tokens = [token.text for token in doc]
-     
+    print(f"text: {text} ") 
     all_tokens, all_labels = add_space_to_tokens(tokens, labels)
 
     # print_token_characters(all_tokens)
@@ -113,9 +116,7 @@ def add_space_to_tokens(tokens, labels):
     # print(f"tokens: {tokens}, labels: {labels}, is_bio_format: {is_bio_format}")
     all_tokens = []
     all_labels = []
-
-    no_space_entities = {"COMMITMENT", "CURRENCY", "SALARY_SINGLE"}
-    punctuations = [".", ",", "!", "?", ";", ":", "'"]
+    print(f"is bio format: {is_bio_format}, labels : {labels}")
 
     for i, token in enumerate(tokens):
         all_tokens.append(token)
@@ -147,7 +148,10 @@ def add_space_to_tokens(tokens, labels):
                     continue
 
                 if token == "-":
-                    # print(f"5a HYPHEN-- Token: {token}, Next Token: {next_token}")
+                    print(f"5a {RED} HYPHEN-- Token: {token}, Next Token: {next_token}, next label type: {next_label_type} {RESET}")
+                    # if next_label_type in no_space_entities:
+                    #     continue
+
                     all_tokens.append(" ")  
                     all_labels.append("O")                   
 
@@ -163,6 +167,15 @@ def add_space_to_tokens(tokens, labels):
                         # print(f"8 Token: {token}, Next Token: {next_token}")
                         all_tokens.append(" ")
                         all_labels.append("O")
+
+                # if token == "-":
+                #     # print(f"5a HYPHEN-- Token: {token}, Next Token: {next_token}")
+                #     if next_label_type in no_space_entities:
+                #         continue
+
+                #     all_tokens.append(" ")  
+                #     all_labels.append("O")   
+
                 elif next_token not in punctuations:
                     # print(f"9 Token: {token}, Next Token: {next_token}")
                     all_tokens.append(" ")
@@ -171,7 +184,7 @@ def add_space_to_tokens(tokens, labels):
     return all_tokens, all_labels
 
 def convert_biluo_to_tokens_and_labels(text, all_tokens, all_labels):
-    # print(f"all_tokens : {all_tokens}, all_labels : {all_labels}, text : {text}")
+    print(f"all_tokens : {all_tokens}, all_labels : {all_labels}, text : {text}")
     result = []
 
     flattened_tokens = []
@@ -181,13 +194,16 @@ def convert_biluo_to_tokens_and_labels(text, all_tokens, all_labels):
         sub_tokens = token.split()
         flattened_tokens.extend(sub_tokens)
         flattened_labels.extend([label] * len(sub_tokens))
+        print(f"token : {token}, label : {label}, sub_tokens : {sub_tokens}")
 
-    text_tokens = re.findall(r'\w+(?:,\w+)*|[^\w\s]', text)
+    text_tokens = re.findall(r'\b(?:part|full|time)-\w+\b|\b\w+(?:,\w+)*\b|[^\w\s]', text, re.IGNORECASE)
     
     token_index = 0
     total_tokens = len(flattened_tokens)
+    print(f"flattened_tokens: {flattened_tokens}, flattened_labels: {flattened_labels}, text_tokens: {text_tokens}")
 
     for word in text_tokens:
+        print(f"word: {word}")
         if token_index < total_tokens and word == flattened_tokens[token_index]:
             result.append(f"Token: {word}, Label: {flattened_labels[token_index]}")
             token_index += 1  # Move to the next flattened token
@@ -208,10 +224,10 @@ def custom_offsets_to_biluo_tags(spans, text):
     new_labels = [tag.split(', Label: ')[1] for tag in new_tags]
     new_tokens = [tag.split(', Label: ')[0].replace('Token: ', '').strip() for tag in new_tags]
 
-    tokens_with_spaces, labels_with_spaces = add_space_to_tokens(new_tokens, new_labels)
+    tokens_with_spaces, _ = add_space_to_tokens(new_tokens, new_labels)
     new_text = ''.join(tokens_with_spaces)
-    # print(f"spans: {spans}, text: {text} ")
-    # print(f"tokens_with_spaces: {tokens_with_spaces}, labels with spaces: {labels_with_spaces}")
+
+    # print(f"tokens_with_spaces: {tokens_with_spaces}")
     biluo_tags = ["O"] * len(new_text) 
 
     # print(f"{len(('').join(text))}")
