@@ -110,47 +110,51 @@ def bio_to_offset(nlp, text, labels):
 
 def add_space_to_tokens(tokens, labels):
     is_bio_format = all(label.startswith("B-") or label.startswith("I-") or label == "O" for label in labels)
-    print(f"is_bio_format: {is_bio_format}")
-
+    # print(f"tokens: {tokens}, labels: {labels}, is_bio_format: {is_bio_format}")
     all_tokens = []
     all_labels = []
 
-    # print(f"tokens: {tokens}")
-    # print(f"labels: {labels}")
-
     no_space_entities = {"COMMITMENT", "CURRENCY", "SALARY_SINGLE"}
+    punctuations = [".", ",", "!", "?", ";", ":", "'"]
 
     for i, token in enumerate(tokens):
         all_tokens.append(token)
         all_labels.append(labels[i])  
 
-        print(f"Token: {token}, Label: {labels[i]}")
-
         # print(f" 1 Token: {token}, Label: {labels[i]}")
  
         if i < len(tokens) - 1:
-            next_token = tokens[i + 1]
-            
+            next_token, next_label = tokens[i + 1], labels[i + 1]
+            current_label_type = labels[i][2:] if is_bio_format and labels[i] != "O" else labels[i]
+            next_label_type = next_label[2:] if is_bio_format and next_label != "O" else next_label
+
+            # print(f" 2 Next Token: {next_token}, Next Label: {next_label}, Current Label Type: {current_label_type}, Next Label Type: {next_label_type}")
+
             if (re.match(r'^[\$\€\£\₹\¥]$', token) and re.match(r'^-?\d[\d,]*$', next_token)) or token == '-':
-                # print(f"2 Token: {token}, Next Token: {next_token}")
+                # print(f"3 Token: {token}, Next Token: {next_token}")
                 continue   
 
-            if labels[i].startswith("B-") and labels[i + 1].startswith("I-") and labels[i][2:] == labels[i + 1][2:]:
-                # print(f"3 Token: {token}, Next Token: {next_token}")
+            if is_bio_format:
+                if labels[i].startswith("B-") and next_label.startswith("I-") and current_label_type == next_label_type:
+                    if current_label_type not in no_space_entities: 
+                        all_tokens.append(" ")  
+                        all_labels.append("O")
 
-                if labels[i][2:] not in no_space_entities: 
-                    # print(f"4 APPENDING Token: {token}, Next Token: {next_token}")
-                    all_tokens.append(" ")  
+                if next_label.startswith("I-") and current_label_type == next_label_type:
+                    continue
+
+                elif next_token not in punctuations:
+                    all_tokens.append(" ")
                     all_labels.append("O")
 
-            if labels[i + 1].startswith("I-") and labels[i][2:] == labels[i + 1][2:]:   
-                # print(f"5 Token: {token}, Next Token: {next_token}")  
-                continue 
-
-            elif next_token not in [".", ",", "!", "?", ";", ":", "'"] and labels[i][2:] not in no_space_entities:
-                # print(f"6 APPENDING Token: {token}, Next Token: {next_token}")
-                all_tokens.append(" ")
-                all_labels.append("O")
+            else:
+                if current_label_type == next_label_type:
+                    if current_label_type not in no_space_entities:
+                        all_tokens.append(" ")
+                        all_labels.append("O")
+                elif next_token not in punctuations:
+                    all_tokens.append(" ")
+                    all_labels.append("O")
 
     return all_tokens, all_labels
 
@@ -187,6 +191,12 @@ def custom_offsets_to_biluo_tags(spans, text, doc):
     all_labels = [label for _, _, label, _ in spans]
     all_tokens = [token for _, _, _, token in spans]
 
+    new_tags = convert_biluo_to_tokens_and_labels(text, all_tokens, all_labels)
+    new_labels = [tag.split(', Label: ')[1] for tag in new_tags]
+    new_tokens = [tag.split(', Label: ')[0].replace('Token: ', '').strip() for tag in new_tags]
+    tokens_with_spaces, labels_with_spaces = add_space_to_tokens(new_tokens, new_labels)
+
+    print(f"tokens_with_spaces: {tokens_with_spaces}, labels with spaces: {labels_with_spaces}")
     biluo_tags = ["O"] * len(text) 
 
     # print_token_characters(tokens_with_spaces)
@@ -219,9 +229,6 @@ def custom_offsets_to_biluo_tags(spans, text, doc):
         if word != token:
             print(f"{RED}Word mismatch: {word} != {token}{RESET}")   
 
- 
-    new_tags = convert_biluo_to_tokens_and_labels(text, all_tokens, all_labels)
-    # tokens_with_spaces, labels_with_spaces = add_space_to_tokens(all_tokens, all_labels)
  
     # for idx, tag in enumerate(biluo_tags):
     #     if idx < len(text):  
