@@ -186,27 +186,32 @@ def convert_biluo_to_tokens_and_labels(text, all_tokens, all_labels):
     return result
 
 #  custom offsets BILUO tags from doc to text
-def custom_offsets_to_biluo_tags(spans, text, doc):
+def custom_offsets_to_biluo_tags(spans, text):
     """Convert spans len(doc) into BILUO format len(text)."""
     all_labels = [label for _, _, label, _ in spans]
     all_tokens = [token for _, _, _, token in spans]
 
     new_tags = convert_biluo_to_tokens_and_labels(text, all_tokens, all_labels)
+
     new_labels = [tag.split(', Label: ')[1] for tag in new_tags]
     new_tokens = [tag.split(', Label: ')[0].replace('Token: ', '').strip() for tag in new_tags]
+
     tokens_with_spaces, labels_with_spaces = add_space_to_tokens(new_tokens, new_labels)
+    new_text = ''.join(tokens_with_spaces)
+    # print(f"spans: {spans}, text: {text} ")
+    # print(f"tokens_with_spaces: {tokens_with_spaces}, labels with spaces: {labels_with_spaces}")
+    biluo_tags = ["O"] * len(new_text) 
 
-    print(f"tokens_with_spaces: {tokens_with_spaces}, labels with spaces: {labels_with_spaces}")
-    biluo_tags = ["O"] * len(text) 
-
+    # print(f"{len(('').join(text))}")
     # print_token_characters(tokens_with_spaces)
+    # print(f"{len(('').join(tokens_with_spaces))}")
 
     for start, end, label, token in spans:
         word = None
 
-        if start < len(text) and end <= len(text):
-            span_text = text[start:end]
-            # print(f" 1 start {text[start]} end {text[end]}, print word : {text[start:end]}")
+        if start < len(new_text) and end <= len(new_text):
+            span_text = new_text[start:end]
+            # print(f" 1 start {new_text[start]} end {new_text[end]}, print word : {new_text[start:end]}")
             # print(f"2 span_text: {span_text}, word : {word}")
 
             word = span_text
@@ -231,8 +236,8 @@ def custom_offsets_to_biluo_tags(spans, text, doc):
 
  
     # for idx, tag in enumerate(biluo_tags):
-    #     if idx < len(text):  
-    #         print(f"biluo_tags[{idx}]: {tag}, associated token: {text[idx]}")
+    #     if idx < len(new_text):  
+    #         print(f"biluo_tags[{idx}]: {tag}, associated token: {new_text[idx]}")
 
     print("-" * 15, "custom_offsets_to_biluo_tags", "-" * 15)
     return biluo_tags
@@ -310,6 +315,7 @@ def convert_to_spacy_format(train_data):
         doc = nlp_blank.make_doc(text)
         tokens = []
         spans = []
+        
         for ent in entities:
             start = int(ent["start"])
             end = int(ent["end"])
@@ -320,19 +326,19 @@ def convert_to_spacy_format(train_data):
 
         print(f"\n{'Original Text:':<20} '{text}'")
 
-        biluo_tags = custom_offsets_to_biluo_tags(spans, text, doc)
-        # converted_tags = convert_tokens_to_whole_word(doc, biluo_tags, spans, text)
+        biluo_tags = custom_offsets_to_biluo_tags(spans, text)
+        converted_tags = convert_tokens_to_whole_word(doc, biluo_tags, spans, text)
 
-        # for token, tag in zip([token.text for token in doc], converted_tags):
-        #     print(f"token: {token} tag: {tag}")
+        for token, tag in zip([token.text for token in doc], converted_tags):
+            print(f"token: {token} tag: {tag}")
 
-        # if spans:
-        #     print(f"\n{'Entities (start, end, label, token):':<50}")
-        #     print(f"{'Start':<10}{'End':<10}{'Label':<20}{'Token':<20}")
-        #     print("-" * 70)
+        if spans:
+            print(f"\n{'Entities (start, end, label, token):':<50}")
+            print(f"{'Start':<10}{'End':<10}{'Label':<20}{'Token':<20}")
+            print("-" * 70)
 
-        #     for start, end, label, token in spans:
-        #         print(f"{start:<10}{end:<10}{label:<20}{token:<20}")
+            for start, end, label, token in spans:
+                print(f"{start:<10}{end:<10}{label:<20}{token:<20}")
 
         example_entities = [(start, end, label) for start, end, label, _ in spans]
 
