@@ -16,7 +16,7 @@ from app.python.utils.spacy_utils import (
     convert_to_spacy_format,
     handle_convert_to_spacy,
 )
-from app.python.utils.validation_utils import check_entity_alignment
+from app.python.utils.validation_utils import evaluate_model, print_label_token_pairs
 
 RED = "\033[31m"
 GREEN = "\033[32m"
@@ -32,6 +32,9 @@ CONVERTED_FILE_PATH = os.path.join(BASE_DIR, "data", CONVERTED_FILE)
 MODEL_SAVE_PATH = os.path.join(BASE_DIR, "model", "spacy_salary_ner_model")
 SPACY_DATA_PATH = os.path.join(BASE_DIR, "data", "train.spacy")
 
+VALIDATION_DATA_FILE = "validation_data.json"
+validation_data = load_data(VALIDATION_DATA_FILE, FOLDER)
+
 warnings.filterwarnings("ignore", message="`resume_download` is deprecated")
 warnings.filterwarnings(
     "ignore",
@@ -45,11 +48,11 @@ logging.getLogger("torch").setLevel(logging.WARNING)
 logging.getLogger("transformers").setLevel(logging.ERROR)
 logging.getLogger("torch").setLevel(logging.ERROR)
 
-
 # Load and configure the spaCy model
 if os.path.exists(MODEL_SAVE_PATH):
     print(f"{BLUE}Loading existing model for further training...{RESET}")
     nlp = spacy.load(MODEL_SAVE_PATH)
+    # nlp = spacy.blank("en")
 else:
     print(f"{RED}No existing model found. Initializing new model...{RESET}")
     nlp = spacy.blank("en")
@@ -72,42 +75,49 @@ else:
 if not os.path.exists(generate_path(CONVERTED_FILE, FOLDER)):
     convert_bio_to_spacy_format(TRAIN_DATA_FILE, FOLDER, nlp, CONVERTED_FILE_PATH)
 
-# # Register extension for Doc to store indices
+# Register extension for Doc to store indices
 spacy.tokens.Doc.set_extension("index", default=None)
 handle_convert_to_spacy(SPACY_DATA_PATH, CONVERTED_FILE, FOLDER, TRAIN_DATA_FILE)
 
 # data = load_data(TRAIN_DATA_FILE, FOLDER)
-# converted_data = load_data(CONVERTED_FILE, FOLDER)
+converted_data = load_data(CONVERTED_FILE, FOLDER)
+print_label_token_pairs(converted_data)
 
-# doc_bin, examples = convert_to_spacy_format(converted_data)
-# doc_bin.to_disk("app/python/salary_extraction/data/train.spacy")
+doc_bin, examples = convert_to_spacy_format(converted_data)
+doc_bin.to_disk("app/python/salary_extraction/data/train.spacy")
 
-# def train_spacy_model():
-#     """Train the spaCy model with the given examples."""
-#     print("\nStarting model training...")
-#     optimizer = nlp.begin_training()
+def train_spacy_model():
+    """Train the spaCy model with the given examples."""
+    print("\nStarting model training...")
+    optimizer = nlp.begin_training()
 
-#     for epoch in range(5):
-#         random.shuffle(examples)
-#         losses = {}
+    for epoch in range(5):
+        random.shuffle(examples)
+        losses = {}
 
-#         for example in examples:
-#             index = example.reference._.get("index")
-#             if index is not None and index % (len(examples) // 5) == 0:
-#                 print(f"\nTraining example: '{example.reference.text[:50]}...'")
+        for example in examples:
+            index = example.reference._.get("index")
+            if index is not None and index % (len(examples) // 5) == 0:
+                print(f"\nTraining example: '{example.reference.text[:50]}...'")
 
-#             nlp.update([example], drop=0.2, losses=losses, sgd=optimizer)
+            nlp.update([example], drop=0.2, losses=losses, sgd=optimizer)
 
-#         print(f"\nEpoch {epoch + 1}, Losses: {losses}")
-#         print("----" * 10)
+        print(f"\nEpoch {epoch + 1}, Losses: {losses}")
+        print("----" * 10)
 
-#     nlp.to_disk(MODEL_SAVE_PATH)
-#     print(f"Model saved to {MODEL_SAVE_PATH}")
+    os.makedirs(MODEL_SAVE_PATH, exist_ok=True)
 
-# train_spacy_model()
+    nlp.to_disk(MODEL_SAVE_PATH)
+    print(f"Model saved to {MODEL_SAVE_PATH}")
 
-# # Load the trained model for predictions
+train_spacy_model()
+
+# Load the trained model for predictions
 # nlp = spacy.load(MODEL_SAVE_PATH)
+
+# validate trainer
+# evaluate_model(nlp, validation_data)
+evaluate_model(nlp, converted_data)
 
 # def convert_example_to_biluo(text):
 #     """Convert model predictions for the given text to BILUO format."""

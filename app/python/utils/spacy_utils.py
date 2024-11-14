@@ -258,19 +258,20 @@ def custom_offsets_to_biluo_tags(spans, text):
                     biluo_tags[end - 1] = f"L-{label}"
                     # print(f"7 biluo_tags[end - 1]: {biluo_tags[end - 1]}")
 
-        word_mismatch = False
+        # word_mismatch = False
 
-        if word != token:
-            word_mismatch = True
-            print(f"{RED}Word mismatch: {word} != {token}{RESET}")   
+        # if word != token:
+        #     word_mismatch = True
+        #     print(f"{RED}Word mismatch: {word} != {token}{RESET}")   
 
     # if word_mismatch:
         # print(f"tokens with spaces: {tokens_with_spaces}, new text: {new_text}")
         # for idx, tag in enumerate(biluo_tags):
         #     if idx < len(new_text):  
         #         print(f"biluo_tags[{idx}]: {tag}, associated token: {new_text[idx]}")
-
-    print("-" * 15, "custom_offsets_to_biluo_tags", "-" * 15)
+    # print_side_by_side(text, biluo_tags)
+    # print_token_characters(tokens_with_spaces)
+    # print("-" * 15, "custom_offsets_to_biluo_tags", "-" * 15)
     return biluo_tags, tokens_with_spaces
 
 def align_biluo_tags(char_to_token_index, biluo_tags, document_text):
@@ -334,7 +335,7 @@ def convert_tokens_to_whole_word(doc, biluo_tags, spans, tokens_with_spaces):
 
     tags = align_biluo_tags(char_to_token_index, biluo_tags, [token.text for token in doc])
 
-    print_side_by_side([token.text for token in doc], tags)
+    # print_side_by_side([token.text for token in doc], tags)
 
     # """Validation check for the converted BILUO tags."""
     span_labels = [label for _, _, label, _ in spans]
@@ -345,78 +346,78 @@ def convert_tokens_to_whole_word(doc, biluo_tags, spans, tokens_with_spaces):
     token_list = []
     span_index = 0
 
-    for i, (word, tag) in enumerate(zip(doc, tags)):
-        word = word.text if hasattr(word, 'text') else word
+    # for i, (word, tag) in enumerate(zip(doc, tags)):
+    #     word = word.text if hasattr(word, 'text') else word
 
-        if tag != "O":
-            tag_prefix, entity_label = tag.split("-")
-        else:
-            tag_prefix, entity_label = "O", None
+    #     if tag != "O":
+    #         tag_prefix, entity_label = tag.split("-")
+    #     else:
+    #         tag_prefix, entity_label = "O", None
 
-        if tag_prefix == "B" or tag_prefix == "U":
-            if current_entity is not None:
-                combined_token = " ".join(token_list).strip()  
-                if span_index < len(span_labels) and current_entity == span_labels[span_index] and combined_token == span_tokens[span_index]:
-                    print(f"{GREEN}Word match: {combined_token} == {span_tokens[span_index]}{RESET}")
-                    print(f"{GREEN}Entity match: {current_entity} == {span_labels[span_index]}{RESET}")
-                else:
-                    print(f"{RED}1 Word mismatch: {combined_token} != {span_tokens[span_index]}{RESET}")
-                    print(f"{RED}1 Entity mismatch: {current_entity} != {span_labels[span_index]}{RESET}")
-                span_index += 1
+    #     if tag_prefix == "B" or tag_prefix == "U":
+    #         if current_entity is not None:
+    #             combined_token = " ".join(token_list).strip()  
+    #             if span_index < len(span_labels) and current_entity == span_labels[span_index] and combined_token == span_tokens[span_index]:
+    #                 print(f"{GREEN}Word match: {combined_token} == {span_tokens[span_index]}{RESET}")
+    #                 print(f"{GREEN}Entity match: {current_entity} == {span_labels[span_index]}{RESET}")
+    #             else:
+    #                 print(f"{RED}1 Word mismatch: {combined_token} != {span_tokens[span_index]}{RESET}")
+    #                 print(f"{RED}1 Entity mismatch: {current_entity} != {span_labels[span_index]}{RESET}")
+    #             span_index += 1
 
-            current_entity = entity_label
-            token_list = [word]
+    #         current_entity = entity_label
+    #         token_list = [word]
 
-            if tag_prefix == "U":
-                combined_token = " ".join(token_list).strip()
-                if span_index < len(span_labels) and current_entity == span_labels[span_index] and combined_token == span_tokens[span_index]:
-                    print(f"{GREEN}Word match: {combined_token} == {span_tokens[span_index]}{RESET}")
-                    print(f"{GREEN}Entity match: {current_entity} == {span_labels[span_index]}{RESET}")
-                else:
-                    print(f"{RED}2 Word mismatch: {combined_token} != {span_tokens[span_index]}{RESET}")
-                    print(f"{RED}2 Entity mismatch: {current_entity} != {span_labels[span_index]}{RESET}")
-                span_index += 1
-                current_entity = None
+    #         if tag_prefix == "U":
+    #             combined_token = " ".join(token_list).strip()
+    #             if span_index < len(span_labels) and current_entity == span_labels[span_index] and combined_token == span_tokens[span_index]:
+    #                 print(f"{GREEN}Word match: {combined_token} == {span_tokens[span_index]}{RESET}")
+    #                 print(f"{GREEN}Entity match: {current_entity} == {span_labels[span_index]}{RESET}")
+    #             else:
+    #                 print(f"{RED}2 Word mismatch: {combined_token} != {span_tokens[span_index]}{RESET}")
+    #                 print(f"{RED}2 Entity mismatch: {current_entity} != {span_labels[span_index]}{RESET}")
+    #             span_index += 1
+    #             current_entity = None
 
-        elif tag_prefix == "I" or tag_prefix == "L":
-            if word in ["-", "/", "&"]:
-                token_list[-1] += word  
-            else:
-                token_list.append(word) 
+    #     elif tag_prefix == "I" or tag_prefix == "L":
+    #         if word in ["-", "/", "&"]:
+    #             token_list[-1] += word  
+    #         else:
+    #             token_list.append(word) 
 
-            if tag_prefix == "L":
-                combined_token = ''.join(token_list) if any('-' in token for token in token_list) else ' '.join(token_list).strip()
-                if span_index < len(span_labels) and current_entity == span_labels[span_index] and combined_token == span_tokens[span_index]:
-                    print(f"{GREEN}Word match: {combined_token} == {span_tokens[span_index]}{RESET}")
-                    print(f"{GREEN}Entity match: {current_entity} == {span_labels[span_index]}{RESET}")
-                else:
-                    print(f"{RED}3 Word mismatch: {combined_token} != {span_tokens[span_index]}{RESET}")
-                    print(f"{RED}3 Entity mismatch: {current_entity} != {span_labels[span_index]}{RESET}")
-                span_index += 1
-                current_entity = None
+    #         if tag_prefix == "L":
+    #             combined_token = ''.join(token_list) if any('-' in token for token in token_list) else ' '.join(token_list).strip()
+    #             if span_index < len(span_labels) and current_entity == span_labels[span_index] and combined_token == span_tokens[span_index]:
+    #                 print(f"{GREEN}Word match: {combined_token} == {span_tokens[span_index]}{RESET}")
+    #                 print(f"{GREEN}Entity match: {current_entity} == {span_labels[span_index]}{RESET}")
+    #             else:
+    #                 print(f"{RED}3 Word mismatch: {combined_token} != {span_tokens[span_index]}{RESET}")
+    #                 print(f"{RED}3 Entity mismatch: {current_entity} != {span_labels[span_index]}{RESET}")
+    #             span_index += 1
+    #             current_entity = None
 
-        elif tag == "O":
-            if current_entity is not None:
-                combined_token = " ".join(token_list).strip()  
-                if span_index < len(span_labels) and current_entity == span_labels[span_index] and combined_token == span_tokens[span_index]:
-                    print(f"{GREEN}Word match: {combined_token} == {span_tokens[span_index]}{RESET}")
-                    print(f"{GREEN}Entity match: {current_entity} == {span_labels[span_index]}{RESET}")
-                else:
-                    print(f"{RED}4 Word mismatch: {combined_token} != {span_tokens[span_index]}{RESET}")
-                    print(f"{RED}4 Entity mismatch: {current_entity} != {span_labels[span_index]}{RESET}")
-                span_index += 1
-                current_entity = None
+    #     elif tag == "O":
+    #         if current_entity is not None:
+    #             combined_token = " ".join(token_list).strip()  
+    #             if span_index < len(span_labels) and current_entity == span_labels[span_index] and combined_token == span_tokens[span_index]:
+    #                 print(f"{GREEN}Word match: {combined_token} == {span_tokens[span_index]}{RESET}")
+    #                 print(f"{GREEN}Entity match: {current_entity} == {span_labels[span_index]}{RESET}")
+    #             else:
+    #                 print(f"{RED}4 Word mismatch: {combined_token} != {span_tokens[span_index]}{RESET}")
+    #                 print(f"{RED}4 Entity mismatch: {current_entity} != {span_labels[span_index]}{RESET}")
+    #             span_index += 1
+    #             current_entity = None
 
-    if current_entity is not None and span_index < len(span_labels):
-        combined_token = " ".join(token_list).strip()  
-        if current_entity == span_labels[span_index] and combined_token == span_tokens[span_index]:
-            print(f"{GREEN}Word match: {combined_token} == {span_tokens[span_index]}{RESET}")
-            print(f"{GREEN}Entity match: {current_entity} == {span_labels[span_index]}{RESET}")
-        else:
-            print(f"{RED}5 Word mismatch: {combined_token} != {span_tokens[span_index]}{RESET}")
-            print(f"{RED}5 Entity mismatch: {current_entity} != {span_labels[span_index]}{RESET}")
+    # if current_entity is not None and span_index < len(span_labels):
+    #     combined_token = " ".join(token_list).strip()  
+    #     if current_entity == span_labels[span_index] and combined_token == span_tokens[span_index]:
+    #         print(f"{GREEN}Word match: {combined_token} == {span_tokens[span_index]}{RESET}")
+    #         print(f"{GREEN}Entity match: {current_entity} == {span_labels[span_index]}{RESET}")
+    #     else:
+    #         print(f"{RED}5 Word mismatch: {combined_token} != {span_tokens[span_index]}{RESET}")
+    #         print(f"{RED}5 Entity mismatch: {current_entity} != {span_labels[span_index]}{RESET}")
 
-    print("-" * 15, "convert_tokens_to_whole_word", "-" * 15)
+    # print("-" * 15, "convert_tokens_to_whole_word", "-" * 15)
     return tags
 
 def convert_to_spacy_format(train_data):
@@ -425,7 +426,7 @@ def convert_to_spacy_format(train_data):
     nlp_blank = spacy.blank("en")
     examples = []
 
-    print("\nConverting training data to spaCy format...")
+    # print("\nConverting training data to spaCy format...")
 
     for index, entry in enumerate(train_data):
         text = entry["text"]
@@ -442,12 +443,13 @@ def convert_to_spacy_format(train_data):
             spans.append((start, end, label, token))
             tokens.append(token)
 
-        print(f"\n{'Original Text:':<20} '{text}'")
+        # print(f"\n{'Original Text:':<20} '{text}'")
 
         biluo_tags, tokens_with_spaces = custom_offsets_to_biluo_tags(spans, text)
         converted_tags = convert_tokens_to_whole_word(doc, biluo_tags, spans, tokens_with_spaces)
 
-
+        # print(f"biluo_tags: {biluo_tags}")
+        # print(f"converted_tags: {converted_tags}")
         example_entities = []
         offset = 0 
         
@@ -460,8 +462,8 @@ def convert_to_spacy_format(train_data):
                 example_entities.append((start, end, label))
                 
                 offset = end
-        print(f"spans: {spans}")
-        print(f"{'Entities:':<20} {example_entities}")
+        # print(f"spans: {spans}")
+        # print(f"{'Entities:':<20} {example_entities}")
         example = Example.from_dict(doc, {"entities": example_entities})        
 
         doc._.set("index", index)
