@@ -10,20 +10,11 @@ from app.python.utils.data_handler import hash_train_data, load_data
 
 # -------------------- SpaCy Data Conversion --------------------
 RED = "\033[31m"
+GREEN = "\033[32m"
+BLUE = "\033[34m"
 RESET = "\033[0m"
 no_space_entities = {"COMMITMENT", "CURRENCY", "SALARY_SINGLE"}
 punctuations = [".", ",", "!", "?", ";", ":", "'"]
-
-def print_tags_with_text(biluo_tags, text):
-    if len(biluo_tags) > len(text):
-        biluo_tags = biluo_tags[:len(text)]
-    elif len(biluo_tags) < len(text):
-        biluo_tags.extend(["O"] * (len(text) - len(biluo_tags)))
-
-    print("Index | Character | BILUO Tag")
-    print("-" * 30)
-    for i, (char, tag) in enumerate(zip(text, biluo_tags)):
-        print(f"{i:5} | {char:10} | {tag}")
 
 def print_token_characters(tokens):
     text = ''.join(tokens)
@@ -217,6 +208,15 @@ def convert_biluo_to_tokens_and_labels(text, all_tokens, all_labels):
     # print(f"result: {result}")
     return result
 
+def print_side_by_side(arr1, arr2):
+    max_len = max(len(arr1), len(arr2))
+
+    for i in range(max_len):
+        elem1 = arr1[i] if i < len(arr1) else ""
+        elem2 = arr2[i] if i < len(arr2) else ""
+        
+        print(f"{elem1}\t{elem2}")
+
 #  custom offsets BILUO tags from doc to text
 def custom_offsets_to_biluo_tags(spans, text):
     """Convert spans len(doc) into BILUO format len(text)."""
@@ -231,7 +231,7 @@ def custom_offsets_to_biluo_tags(spans, text):
     tokens_with_spaces, _ = add_space_to_tokens(new_tokens, new_labels)
     new_text = ''.join(tokens_with_spaces)
     biluo_tags = ["O"] * len(new_text) 
- 
+
     for start, end, label, token in spans:
         word = None
 
@@ -264,110 +264,117 @@ def custom_offsets_to_biluo_tags(spans, text):
             word_mismatch = True
             print(f"{RED}Word mismatch: {word} != {token}{RESET}")   
 
-    if word_mismatch:
+    # if word_mismatch:
         # print(f"tokens with spaces: {tokens_with_spaces}, new text: {new_text}")
-        for idx, tag in enumerate(biluo_tags):
-            if idx < len(new_text):  
-                print(f"biluo_tags[{idx}]: {tag}, associated token: {new_text[idx]}")
+        # for idx, tag in enumerate(biluo_tags):
+        #     if idx < len(new_text):  
+        #         print(f"biluo_tags[{idx}]: {tag}, associated token: {new_text[idx]}")
 
     print("-" * 15, "custom_offsets_to_biluo_tags", "-" * 15)
     return biluo_tags, tokens_with_spaces
 
-def iterate_characters(tokens_with_spaces):
-    """Iterate through each character in tokens_with_spaces and return a list of characters, including spaces."""
-    characters = []
+def align_biluo_tags(char_to_token_index, biluo_tags, document_text):
+    # print(f"tags : {biluo_tags}")
+    alignment = []
+    token_pos = 0
+    always_u_tags = {"CURRENCY", "SALARY_MIN", "SALARY_MAX", "SALARY_SINGLE", "INTERVAL"}
 
-    # Join tokens to form a continuous string with spaces
-    text = ''.join(tokens_with_spaces)
+    for word in document_text:
+        word_tags = []
+        # print(f"word: {word}")
+        
+        for _ in word:
+            while token_pos < len(char_to_token_index) and char_to_token_index[token_pos] == -1:
+                token_pos += 1
+            
+            if token_pos < len(char_to_token_index):
+                tag_index = char_to_token_index[token_pos]
+                if tag_index >= 0:
+                    word_tags.append(biluo_tags[token_pos])
+                token_pos += 1
+        # print(f"word_tags: {word_tags}")
+        if word_tags:
+            if "JOB_COUNTRY" in word_tags[0]:
+                if len(word_tags) == 1:
+                    final_tag = "U-JOB_COUNTRY"
+                elif word_tags[0].startswith("B-"):
+                    final_tag = "B-JOB_COUNTRY"
+                elif word_tags[-1].startswith("L-"):
+                    final_tag = "L-JOB_COUNTRY"
+                else:
+                    final_tag = "I-JOB_COUNTRY"
 
-    # Iterate over each character and append to the result list
-    for char in text:
-        characters.append(char)
+            else:
+                final_tag = word_tags[0] if word_tags[0].startswith("B-") or word_tags[0].startswith("U-") else word_tags[-1]
 
-    return characters
+            tag_type = final_tag.split("-")[-1]
+            if tag_type in always_u_tags:
+                final_tag = f"U-{tag_type}"
 
-def convert_tokens_to_whole_word(doc, biluo_tags, spans, tokens_with_spaces, text, tokens):
-    # """Convert BILUO tags(len(text)) to whole word tokens(len(doc))"""
-    biluo_tokens = ["O"] * len(tokens_with_spaces)
+        else:
+            final_tag = "O"
+        
+        alignment.append(final_tag)
+    return alignment
+
+def convert_tokens_to_whole_word(doc, biluo_tags, spans, tokens_with_spaces):
+    """Convert BILUO tags(len(text)) to whole word tokens(len(doc))"""
+    biluo_tokens = ["O"] * len(doc)
     char_to_token_index = []
     current_token_index = 0
-    print(f"len(biluo_tokens): {len(biluo_tokens)}, len text : {len(text)}  ")
-    # print(f" biluo_tags: {biluo_tags}")
 
-    # associates each character with a token index
     for token in tokens_with_spaces:
+        if token == " ":
+            char_to_token_index.append(-1)
+            continue
         token_len = len(token)
         for _ in range(token_len):
             char_to_token_index.append(current_token_index)
         current_token_index += 1
 
-    # print(f"char_to_token_index: {char_to_token_index}")
-    # print(f"biluo_tags: {biluo_tags},tokens_with_spaces: {tokens_with_spaces}")
-    print(f"doc: {doc}, doc len : {len(doc)} ")
-    print(f"len of tokens with spaces: {len(tokens_with_spaces)}")
+    tags = align_biluo_tags(char_to_token_index, biluo_tags, [token.text for token in doc])
 
-    # assert (
-    #     len(char_to_token_index) == len(tokens_with_spaces)
-    # ), f"{RED}Length mismatch: {len(char_to_token_index)} != {len(tokens_with_spaces)}{RESET}"
-    
-    # print(f"char length : {len(char_to_token_index)} tokens_with_spaceslen : {len(tokens_with_spaces)}")
-
-    for i in range(len(biluo_tags)):
-        if i < len(char_to_token_index):
-            token_index = char_to_token_index[i]
-            next_biluo_tag = biluo_tags[i + 1] if i + 1 < len(biluo_tags) else None
-
-            if token_index == -1:
-                continue
-                
-            # print(f"biluo_tags[i]: {biluo_tags[i]} ")
-            # print(f"next_biluo_tag: {next_biluo_tag}")
-            # print(f"token index: {token_index} ")
-            if biluo_tags[i].startswith("B-"):
-                # print(f" 1 {biluo_tags[i][2:]}")
-                biluo_tokens[token_index] = f"B-{biluo_tags[i][2:]}"
-            elif biluo_tags[i].startswith("I-"):
-                # print(f" 2 {biluo_tags[i][2:]} ")
-                if biluo_tokens[token_index] == "O":
-                    biluo_tokens[token_index] = f"I-{biluo_tags[i][2:]}"
-            elif biluo_tags[i].startswith("U-"):
-                # print(f" 3 {biluo_tags[i][2:]} ")
-                biluo_tokens[token_index] = f"U-{biluo_tags[i][2:]}"
-            elif biluo_tags[i].startswith("L-"):
-                # print(f" 4 {biluo_tags[i][2:]}")
-                if biluo_tokens[token_index] == "O":
-                    biluo_tokens[token_index] = f"L-{biluo_tags[i][2:]}"
-            else:
-                # print(f" 5  {biluo_tags[i][2:]}")
-                biluo_tokens[token_index] = "O"
+    print_side_by_side([token.text for token in doc], tags)
 
     # """Validation check for the converted BILUO tags."""
     span_labels = [label for _, _, label, _ in spans]
     span_tokens = [token for _, _, _, token in spans]
 
-    print(f"span labels : {span_labels}, span tokens : {span_tokens}")
-    print(f"biluo tokens : {biluo_tokens}, tokens : {tokens}")
-    print(f"tokens_with_spaces : {tokens_with_spaces}")
-    word_mismatch = False
     span_index = 0
-    for idx, (token, actual_tag) in enumerate(zip(tokens_with_spaces, biluo_tokens)):
+    combined_token = ""   
+    current_entity = None
 
-         if span_index < len(span_labels) and actual_tag != "O":
-            
-            if span_labels[span_index] not in str(actual_tag):
-                print(
-                    f"{RED}VALIDATION FAIL********: {span_tokens[span_index]} ->  Expected: {span_labels[span_index]}, Found: {actual_tag}{RESET}"
-                )
-                span_index += 1
-                word_mismatch = True
-            else:
-                print(
-                    f"VALIDATION PASS: {span_tokens[span_index]} ->   {span_labels[span_index]} equals {actual_tag}"
-                )
-                span_index += 1
+    for idx, (token, actual_tag) in enumerate(zip(doc, tags)):
+        next_tag = biluo_tokens[idx + 1] if idx + 1 < len(biluo_tokens) else None
 
-    # if word_mismatch:
-    #     print_tags_with_text(biluo_tags, new_text)
+        if span_index < len(span_tokens):
+            if actual_tag == "O":
+                continue
+
+            if actual_tag.startswith("B-"):
+                combined_token = token.text
+                current_entity = actual_tag[2:]
+            if actual_tag.startswith("I-") and next_tag.startswith("I-"):
+                combined_token += " " + token.text
+            if actual_tag.startswith("L-"):
+                combined_token += " " + token.text
+                if combined_token != span_tokens[span_index] or current_entity != span_labels[span_index]:
+                    print(f"{RED}Word mismatch: {combined_token} != {span_tokens[span_index]}{RESET}")
+                    print(f"{RED}Entity mismatch: {current_entity} != {span_labels[span_index]}{RESET}")
+                else:
+                    print(f"{GREEN}Word match: {combined_token} == {span_tokens[span_index]}{RESET}")    
+                    print(f"{GREEN}Entity match: {current_entity} == {span_labels[span_index]}{RESET}")
+                span_index += 1
+                combined_token = ""
+                current_entity = None    
+            if actual_tag.startswith("U-"):
+                if token.text != span_tokens[span_index]:
+                    print(f"{RED}Word mismatch: {token.text} != {span_tokens[span_index]}{RESET}")
+                    print(f"{RED}Entity mismatch: {current_entity} != {span_labels[span_index]}{RESET}")
+                else:
+                    print(f"{GREEN}Word match: {token.text} == {span_tokens[span_index]}{RESET}")    
+                    print(f"{GREEN}Entity match: {current_entity} == {span_labels[span_index]}{RESET}")    
+                span_index += 1    
 
     print("-" * 15, "convert_tokens_to_whole_word", "-" * 15)
     return biluo_tokens
@@ -398,7 +405,7 @@ def convert_to_spacy_format(train_data):
         print(f"\n{'Original Text:':<20} '{text}'")
 
         biluo_tags, tokens_with_spaces = custom_offsets_to_biluo_tags(spans, text)
-        converted_tags = convert_tokens_to_whole_word(doc, biluo_tags, spans, tokens_with_spaces, text, tokens)
+        converted_tags = convert_tokens_to_whole_word(doc, biluo_tags, spans, tokens_with_spaces)
 
         # for token, tag in zip([token.text for token in doc], converted_tags):
         #     print(f"token: {token} tag: {tag}")
