@@ -92,3 +92,4 @@ app/python/salary_extraction/data/*
 .DS_Store
 app/.DS_Store
 app/python/.DS_Store
+app/python/salary_extraction/model/spacy_salary_ner_model/tokenizer
