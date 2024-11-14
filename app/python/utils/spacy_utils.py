@@ -7,21 +7,14 @@ import spacy
 from spacy.tokens import DocBin
 from spacy.training import Example
 from app.python.utils.data_handler import hash_train_data, load_data
+from app.python.utils.logger import GREEN, RED, RESET
+from app.python.utils.utils import add_space_to_tokens
 
 # -------------------- SpaCy Data Conversion --------------------
-RED = "\033[31m"
-GREEN = "\033[32m"
-BLUE = "\033[34m"
-RESET = "\033[0m"
 no_space_entities = {"COMMITMENT", "CURRENCY", "SALARY_SINGLE"}
 punctuations = [".", ",", "!", "?", ";", ":", "'"]
 
-def print_token_characters(tokens):
-    text = ''.join(tokens)
-    
-    for idx, char in enumerate(text):
-        print(f"{char} {idx}")
-
+# ------------------- CONVERT BIO TO SPACY -------------------
 def convert_bio_to_spacy_format(input_file, folder, nlp, CONVERTED_FILE_PATH):
     """Convert BIO formatted input data to spaCy format and save it."""
     data = load_data(input_file, folder)
@@ -113,73 +106,103 @@ def bio_to_offset(nlp, text, labels):
         for start, end, label, token in entities
     ]
 
-def add_space_to_tokens(tokens, labels):
-    is_bio_format = all(label.startswith("B-") or label.startswith("I-") or label == "O" for label in labels)
-    # print(f"tokens: {tokens}, labels: {labels}, is_bio_format: {is_bio_format}")
-    all_tokens = []
-    all_labels = []
-    # print(f"is bio format: {is_bio_format}, labels : {labels}")
+# ------------------- CONVERT SPACY TO BILUO -------------------
+def handle_convert_to_spacy(SPACY_DATA_PATH, CONVERTED_FILE, FOLDER, TRAIN_DATA_FILE):
+    if os.path.exists(SPACY_DATA_PATH):
+        print("Converted data already exists. Checking for changes...")
 
-    for i, token in enumerate(tokens):
-        all_tokens.append(token)
-        all_labels.append(labels[i])  
+        current_hash = hash_train_data(CONVERTED_FILE)
 
-        # print(f" 1 Token: {token}, Label: {labels[i]}")
- 
-        if i < len(tokens) - 1:
-            next_token, next_label = tokens[i + 1], labels[i + 1]
-            current_label_type = labels[i][2:] if is_bio_format and labels[i] != "O" else labels[i]
-            next_label_type = next_label[2:] if is_bio_format and next_label != "O" else next_label
+        try:
+            with open("last_train_data_hash.txt", "r") as f:
+                last_hash = f.read()
+        except FileNotFoundError:
+            last_hash = None
 
-            # print(f" 2 Token: {token} Next Token: {next_token}, Next Label: {next_label}, Current Label Type: {current_label_type}, Next Label Type: {next_label_type}")
+        if current_hash == last_hash:
+            print("Training data has not changed. Loading existing data...")
+            doc_bin = DocBin().from_disk(SPACY_DATA_PATH)
+            examples = []
+        else:
+            print("Training data has changed. Converting data now...")
+            train_data = load_data(CONVERTED_FILE, FOLDER)
+            doc_bin, examples = convert_to_spacy_format(train_data)
 
-            if (re.match(r'^\$|\€|\£|\₹|\¥$', token) and re.match(r'^\d[\d,]*$', next_token)): 
-            # or token == '-':
-                # print(f"3 Token: {token}, Next Token: {next_token}")
-                continue   
+            doc_bin.to_disk(SPACY_DATA_PATH)
+            if current_hash is not None:
+                with open("last_train_data_hash.txt", "w") as f:
+                    f.write(current_hash)
 
-            if is_bio_format:
-                if labels[i].startswith("B-") and next_label.startswith("I-") and current_label_type == next_label_type:
-                    # print(f"4 Token: {token}, Next Token: {next_token}")
-                    if current_label_type not in no_space_entities: 
-                        all_tokens.append(" ")  
-                        all_labels.append("O")
+    else:
+        print("Converted data does not exist. Converting data now...")
+        train_data = load_data(CONVERTED_FILE, FOLDER)
+        doc_bin, examples = convert_to_spacy_format(train_data)
 
-                if next_label.startswith("I-") and current_label_type == next_label_type:
-                    # print(f"5 Token: {token}, Next Token: {next_token}")
-                    continue
+        doc_bin.to_disk(SPACY_DATA_PATH)
 
-                if token == "-":
-                    # print(f"5a {RED} HYPHEN-- Token: {token}, Next Token: {next_token}, next label type: {next_label_type} {RESET}")
-                    # if next_label_type in no_space_entities:
-                    #     continue
+        current_hash = hash_train_data(TRAIN_DATA_FILE)
+        if current_hash is not None:
+            with open("last_train_data_hash.txt", "w") as f:
+                f.write(current_hash)
+        else:
+            print(
+                "Unable to save the hash since the training data file does not exist."
+            )
 
-                    all_tokens.append(" ")  
-                    all_labels.append("O")                   
+def convert_to_spacy_format(train_data):
+    """Convert training data to spaCy format with BILUO alignment."""
+    db = DocBin()
+    nlp_blank = spacy.blank("en")
+    examples = []
 
-                elif next_token not in punctuations:
-                    # print(f"6 Token: {token}, Next Token: {next_token}")
-                    all_tokens.append(" ")
-                    all_labels.append("O")
+    # print("\nConverting training data to spaCy format...")
 
-            else:
-                # print(f"6 Token: {token}, current_label_type: {current_label_type}, next_label_type: {next_label_type}")
-                if current_label_type == next_label_type:
-                    # print(f"7 Next Token: {next_token}")
-                    if current_label_type not in no_space_entities and token != "," and next_token != ":":
-                        # print(f"8 Token: {token}, Next Token: {next_token}")
-                        all_tokens.append(" ")
-                        all_labels.append("O")
+    for index, entry in enumerate(train_data):
+        text = entry["text"]
+        entities = entry.get("entities", [])
+        doc = nlp_blank.make_doc(text)
+        tokens = []
+        spans = []
+        
+        for ent in entities:
+            start = int(ent["start"])
+            end = int(ent["end"])
+            label = ent["label"]
+            token = ent["token"]
+            spans.append((start, end, label, token))
+            tokens.append(token)
 
+        # print(f"\n{'Original Text:':<20} '{text}'")
 
-                elif next_token not in punctuations:
-                    # print(f"9 Token: {token}, Next Token: {next_token}")
-                    all_tokens.append(" ")
-                    all_labels.append("O")
-    # print(f"all_tokens: {all_tokens}, all_labels: {all_labels}")
-    return all_tokens, all_labels
+        biluo_tags, tokens_with_spaces = custom_offsets_to_biluo_tags(spans, text)
+        converted_tags = convert_tokens_to_whole_word(doc, biluo_tags, spans, tokens_with_spaces)
+
+        # print(f"biluo_tags: {biluo_tags}")
+        # print(f"converted_tags: {converted_tags}")
+        example_entities = []
+        offset = 0 
+        
+        for tag, token in zip(converted_tags, tokens_with_spaces):
+            if tag != 'O':
+                start = text.find(token, offset) 
+                end = start + len(token)
+                label = tag.split('-')[-1]  
+                
+                example_entities.append((start, end, label))
+                
+                offset = end
+        # print(f"spans: {spans}")
+        # print(f"{'Entities:':<20} {example_entities}")
+        example = Example.from_dict(doc, {"entities": example_entities})        
+
+        doc._.set("index", index)
+        db.add(example.reference)
+        examples.append(example)
+
+    return db, examples
 
 def convert_biluo_to_tokens_and_labels(text, all_tokens, all_labels):
+    """Convert BILUO tags to tokens and labels."""
     # print(f"all_tokens : {all_tokens}, all_labels : {all_labels}, text : {text}")
     result = []
 
@@ -207,15 +230,6 @@ def convert_biluo_to_tokens_and_labels(text, all_tokens, all_labels):
 
     # print(f"result: {result}")
     return result
-
-def print_side_by_side(arr1, arr2):
-    max_len = max(len(arr1), len(arr2))
-
-    for i in range(max_len):
-        elem1 = arr1[i] if i < len(arr1) else ""
-        elem2 = arr2[i] if i < len(arr2) else ""
-        
-        print(f"{elem1}\t{elem2}")
 
 #  custom offsets BILUO tags from doc to text
 def custom_offsets_to_biluo_tags(spans, text):
@@ -275,6 +289,7 @@ def custom_offsets_to_biluo_tags(spans, text):
     return biluo_tags, tokens_with_spaces
 
 def align_biluo_tags(char_to_token_index, biluo_tags, document_text):
+    """Align BILUO tags(len(text)) to whole word tokens(len(doc))."""
     # print(f"tags : {biluo_tags}")
     alignment = []
     token_pos = 0
@@ -419,98 +434,3 @@ def convert_tokens_to_whole_word(doc, biluo_tags, spans, tokens_with_spaces):
 
     # print("-" * 15, "convert_tokens_to_whole_word", "-" * 15)
     return tags
-
-def convert_to_spacy_format(train_data):
-    """Convert training data to spaCy format with BILUO alignment."""
-    db = DocBin()
-    nlp_blank = spacy.blank("en")
-    examples = []
-
-    # print("\nConverting training data to spaCy format...")
-
-    for index, entry in enumerate(train_data):
-        text = entry["text"]
-        entities = entry.get("entities", [])
-        doc = nlp_blank.make_doc(text)
-        tokens = []
-        spans = []
-        
-        for ent in entities:
-            start = int(ent["start"])
-            end = int(ent["end"])
-            label = ent["label"]
-            token = ent["token"]
-            spans.append((start, end, label, token))
-            tokens.append(token)
-
-        # print(f"\n{'Original Text:':<20} '{text}'")
-
-        biluo_tags, tokens_with_spaces = custom_offsets_to_biluo_tags(spans, text)
-        converted_tags = convert_tokens_to_whole_word(doc, biluo_tags, spans, tokens_with_spaces)
-
-        # print(f"biluo_tags: {biluo_tags}")
-        # print(f"converted_tags: {converted_tags}")
-        example_entities = []
-        offset = 0 
-        
-        for tag, token in zip(converted_tags, tokens_with_spaces):
-            if tag != 'O':
-                start = text.find(token, offset) 
-                end = start + len(token)
-                label = tag.split('-')[-1]  
-                
-                example_entities.append((start, end, label))
-                
-                offset = end
-        # print(f"spans: {spans}")
-        # print(f"{'Entities:':<20} {example_entities}")
-        example = Example.from_dict(doc, {"entities": example_entities})        
-
-        doc._.set("index", index)
-        db.add(example.reference)
-        examples.append(example)
-
-    return db, examples
-
-
-def handle_convert_to_spacy(SPACY_DATA_PATH, CONVERTED_FILE, FOLDER, TRAIN_DATA_FILE):
-    if os.path.exists(SPACY_DATA_PATH):
-        print("Converted data already exists. Checking for changes...")
-
-        current_hash = hash_train_data(CONVERTED_FILE)
-
-        try:
-            with open("last_train_data_hash.txt", "r") as f:
-                last_hash = f.read()
-        except FileNotFoundError:
-            last_hash = None
-
-        if current_hash == last_hash:
-            print("Training data has not changed. Loading existing data...")
-            doc_bin = DocBin().from_disk(SPACY_DATA_PATH)
-            examples = []
-        else:
-            print("Training data has changed. Converting data now...")
-            train_data = load_data(CONVERTED_FILE, FOLDER)
-            doc_bin, examples = convert_to_spacy_format(train_data)
-
-            doc_bin.to_disk(SPACY_DATA_PATH)
-            if current_hash is not None:
-                with open("last_train_data_hash.txt", "w") as f:
-                    f.write(current_hash)
-
-    else:
-        print("Converted data does not exist. Converting data now...")
-        train_data = load_data(CONVERTED_FILE, FOLDER)
-        doc_bin, examples = convert_to_spacy_format(train_data)
-
-        doc_bin.to_disk(SPACY_DATA_PATH)
-
-        current_hash = hash_train_data(TRAIN_DATA_FILE)
-        if current_hash is not None:
-            with open("last_train_data_hash.txt", "w") as f:
-                f.write(current_hash)
-        else:
-            print(
-                "Unable to save the hash since the training data file does not exist."
-            )

@@ -2,7 +2,28 @@
 import hashlib
 import json
 import os
+import spacy
+from app.python.utils.logger import BLUE, RED, RESET
 
+def load_spacy_model(MODEL_SAVE_PATH):
+    if os.path.exists(MODEL_SAVE_PATH):
+        print(f"{BLUE}Loading existing model for further training...{RESET}")
+        nlp = spacy.load(MODEL_SAVE_PATH)
+        # nlp = spacy.blank("en")
+    else:
+        print(f"{RED}No existing model found. Initializing new model...{RESET}")
+        nlp = spacy.blank("en")
+        nlp.add_pipe(
+            "transformer",
+            config={
+                "model": {
+                    "@architectures": "spacy-transformers.TransformerModel.v1",
+                    "name": "roberta-base",
+                    "get_spans": {"@span_getters": "spacy-transformers.doc_spans.v1"},
+                }
+            },
+        )
+    return nlp    
 
 def generate_path(file_name, folder):
     """Generate a full path to a file in a specified folder."""
@@ -31,6 +52,7 @@ def hash_train_data(file_path):
         return hashlib.md5(f.read().encode()).hexdigest()
 
 
+# ------ for BIO format
 # def create_tokenized_dataset(data):
 #     dataset = Dataset.from_dict({
 #         "text": [item["text"] for item in data],

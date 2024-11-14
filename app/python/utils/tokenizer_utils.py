@@ -1,8 +1,12 @@
-# # app/python/salary_extraction/utils/tokenizer_utils.py
+# app/python/salary_extraction/utils/tokenizer_utils.py
+
+# ------- for BIO format
+
+
+
 
 # from transformers import AutoTokenizer
 # from app.python.salary_extraction.utils.label_mapping import get_label_to_id, get_id_to_label
-
 
 # label_to_id = get_label_to_id()
 # id_to_label = get_id_to_label()
