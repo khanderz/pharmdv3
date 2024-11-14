@@ -7,7 +7,8 @@ import os
 import warnings
 import logging
 from spacy.tokens import DocBin
-
+from spacy.training import Example
+from spacy.training import iob_to_biluo
 from app.python.utils.label_mapping import get_label_list
 from app.python.utils.data_handler import generate_path, load_data, hash_train_data
 from app.python.utils.spacy_utils import (
@@ -62,74 +63,78 @@ if not os.path.exists(generate_path(CONVERTED_FILE, FOLDER)):
 spacy.tokens.Doc.set_extension("index", default=None)
 handle_convert_to_spacy(SPACY_DATA_PATH, CONVERTED_FILE, FOLDER, TRAIN_DATA_FILE)
 
-# data = load_data(TRAIN_DATA_FILE, FOLDER)
-# converted_data = load_data(CONVERTED_FILE, FOLDER)
+data = load_data(TRAIN_DATA_FILE, FOLDER)
+converted_data = load_data(CONVERTED_FILE, FOLDER)
 
 
-# for label in get_label_list():
-#     ner.add_label(label)
+for label in get_label_list():
+    ner.add_label(label)
 
 
-# doc_bin, examples = convert_to_spacy_format(converted_data)
-# doc_bin.to_disk("app/python/salary_extraction/data/train.spacy")
+doc_bin, examples = convert_to_spacy_format(converted_data)
+doc_bin.to_disk("app/python/salary_extraction/data/train.spacy")
 
-# def train_spacy_model():
-#     """Train the spaCy model with the given examples."""
-#     print("\nStarting model training...")
-#     optimizer = nlp.begin_training()
+def train_spacy_model():
+    """Train the spaCy model with the given examples."""
+    print("\nStarting model training...")
+    optimizer = nlp.begin_training()
 
-#     for epoch in range(5):
-#         random.shuffle(examples)
-#         losses = {}
+    for epoch in range(5):
+        random.shuffle(examples)
+        losses = {}
 
-#         for example in examples:
-#             index = example.reference._.get("index")
-#             if index is not None and index % (len(examples) // 5) == 0:
-#                 print(f"\nTraining example: '{example.reference.text[:50]}...'")
+        for example in examples:
+            index = example.reference._.get("index")
+            if index is not None and index % (len(examples) // 5) == 0:
+                print(f"\nTraining example: '{example.reference.text[:50]}...'")
 
-#             nlp.update([example], drop=0.2, losses=losses, sgd=optimizer)
+            nlp.update([example], drop=0.2, losses=losses, sgd=optimizer)
 
-#         print(f"\nEpoch {epoch + 1}, Losses: {losses}")
-#         print("----" * 10)
+        print(f"\nEpoch {epoch + 1}, Losses: {losses}")
+        print("----" * 10)
 
-#     nlp.to_disk(MODEL_SAVE_PATH)
-#     print(f"Model saved to {MODEL_SAVE_PATH}")
+    nlp.to_disk(MODEL_SAVE_PATH)
+    print(f"Model saved to {MODEL_SAVE_PATH}")
 
-# # Check entity alignment for the training data
-# for entry in converted_data:
-#     print('entry--------------------' , entry)
-#     text = entry["text"]
-#     entities = [(ent["start"], ent["end"], ent["label"]) for ent in entry.get("entities", [])]
-#     check_entity_alignment(nlp, text, entities)
+train_spacy_model()
 
-# train_spacy_model()
+# Load the trained model for predictions
+nlp = spacy.load(MODEL_SAVE_PATH)
 
-# # Load the trained model for predictions
-# nlp = spacy.load(MODEL_SAVE_PATH)
+def convert_example_to_biluo(text):
+    """Convert model predictions for the given text to BILUO format."""
+    doc = nlp(text)
+    
+    iob_tags = [token.ent_iob_ + '-' + token.ent_type_ if token.ent_type_ else 'O' for token in doc]
+    biluo_tags = iob_to_biluo(iob_tags)
+    
+    return doc, biluo_tags
 
-# def inspect_model_predictions(text):
-#     """Inspect model predictions for the given text."""
-#     doc = nlp(text)
-#     print("\nOriginal Text:")
-#     print(f"'{text}'\n")
-#     print("Token Predictions:")
-#     print(f"{'Token':<15}{'Predicted Label':<20}{'BILUO Tag':<20}")
-#     print("-" * 50)
-#     for token in doc:
-#         print(f"{token.text:<15}{token.ent_type_ if token.ent_type_ else 'O':<20}{token.ent_iob_ if token.ent_type_ else 'O':<20}")
+def inspect_model_predictions(text):
+    """Inspect model predictions for the given text."""
+    doc, biluo_tags = convert_example_to_biluo(text)
 
+    print("\nOriginal Text:")
+    print(f"'{text}'\n")
+    print("Token Predictions:")
+    print(f"{'Token':<15}{'Predicted Label':<20}{'BILUO Tag':<20}")
+    print("-" * 50)
+    for token, biluo_tag in zip(doc, biluo_tags):
+        predicted_label = token.ent_type_ if token.ent_type_ else 'O'
+        print(f"{token.text:<15}{predicted_label:<20}{biluo_tag:<20}")
 
-# print("\nExample Prediction:")
-# inspect_model_predictions("The salary is expected to be $100,000 annually in USD.")
+print("\nExample Prediction:")
+inspect_model_predictions("The salary is expected to be $100,000 annually in USD.")
 
-# test_texts = [
-#     "The annual salary is expected to be $120,000 USD.",
-#     "Compensation ranges from €50,000 to €70,000 annually.",
-#     "Base pay in Canada is CAD 60,000 per year.",
-#     "This position offers a minimum salary of £45,000.",
-#     "Contractor role with hourly rate of 25 AUD."
-# ]
+test_texts = [
+    "The annual salary is expected to be $120,000 USD.",
+    "Compensation ranges from €50,000 to €70,000 annually.",
+    "Base pay in Canada is CAD 60,000 per year.",
+    "This position offers a minimum salary of £45,000.",
+    "Contractor role with hourly rate of 25 AUD.",
+    "Full-time position with a salary of 80,000 GBP.",
+]
 
-# for text in test_texts:
-#     print(f"\nTesting text: '{text}'")
-#     inspect_model_predictions(text)
+for text in test_texts:
+    print(f"\nTesting text: '{text}'")
+    inspect_model_predictions(text)
