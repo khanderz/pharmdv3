@@ -18,6 +18,11 @@ from app.python.utils.spacy_utils import (
 )
 from app.python.utils.validation_utils import check_entity_alignment
 
+RED = "\033[31m"
+GREEN = "\033[32m"
+BLUE = "\033[34m"
+RESET = "\033[0m"
+
 FOLDER = "salary_extraction"
 BASE_DIR = os.path.join("app", "python", FOLDER)
 
@@ -42,18 +47,26 @@ logging.getLogger("torch").setLevel(logging.ERROR)
 
 
 # Load and configure the spaCy model
-nlp = spacy.blank("en")
-nlp.add_pipe(
-    "transformer",
-    config={
-        "model": {
-            "@architectures": "spacy-transformers.TransformerModel.v1",
-            "name": "roberta-base",
-            "get_spans": {"@span_getters": "spacy-transformers.doc_spans.v1"},
-        }
-    },
-)
-ner = nlp.add_pipe("ner")
+if os.path.exists(MODEL_SAVE_PATH):
+    print(f"{BLUE}Loading existing model for further training...{RESET}")
+    nlp = spacy.load(MODEL_SAVE_PATH)
+else:
+    print(f"{RED}No existing model found. Initializing new model...{RESET}")
+    nlp = spacy.blank("en")
+    nlp.add_pipe(
+        "transformer",
+        config={
+            "model": {
+                "@architectures": "spacy-transformers.TransformerModel.v1",
+                "name": "roberta-base",
+                "get_spans": {"@span_getters": "spacy-transformers.doc_spans.v1"},
+            }
+        },
+    )
+    ner = nlp.add_pipe("ner")
+
+    for label in get_label_list():
+        ner.add_label(label)
 
 # Check if converted JSON file exists; if not, run conversion
 if not os.path.exists(generate_path(CONVERTED_FILE, FOLDER)):
@@ -63,78 +76,73 @@ if not os.path.exists(generate_path(CONVERTED_FILE, FOLDER)):
 spacy.tokens.Doc.set_extension("index", default=None)
 handle_convert_to_spacy(SPACY_DATA_PATH, CONVERTED_FILE, FOLDER, TRAIN_DATA_FILE)
 
-data = load_data(TRAIN_DATA_FILE, FOLDER)
-converted_data = load_data(CONVERTED_FILE, FOLDER)
+# data = load_data(TRAIN_DATA_FILE, FOLDER)
+# converted_data = load_data(CONVERTED_FILE, FOLDER)
 
+# doc_bin, examples = convert_to_spacy_format(converted_data)
+# doc_bin.to_disk("app/python/salary_extraction/data/train.spacy")
 
-for label in get_label_list():
-    ner.add_label(label)
+# def train_spacy_model():
+#     """Train the spaCy model with the given examples."""
+#     print("\nStarting model training...")
+#     optimizer = nlp.begin_training()
 
+#     for epoch in range(5):
+#         random.shuffle(examples)
+#         losses = {}
 
-doc_bin, examples = convert_to_spacy_format(converted_data)
-doc_bin.to_disk("app/python/salary_extraction/data/train.spacy")
+#         for example in examples:
+#             index = example.reference._.get("index")
+#             if index is not None and index % (len(examples) // 5) == 0:
+#                 print(f"\nTraining example: '{example.reference.text[:50]}...'")
 
-def train_spacy_model():
-    """Train the spaCy model with the given examples."""
-    print("\nStarting model training...")
-    optimizer = nlp.begin_training()
+#             nlp.update([example], drop=0.2, losses=losses, sgd=optimizer)
 
-    for epoch in range(5):
-        random.shuffle(examples)
-        losses = {}
+#         print(f"\nEpoch {epoch + 1}, Losses: {losses}")
+#         print("----" * 10)
 
-        for example in examples:
-            index = example.reference._.get("index")
-            if index is not None and index % (len(examples) // 5) == 0:
-                print(f"\nTraining example: '{example.reference.text[:50]}...'")
+#     nlp.to_disk(MODEL_SAVE_PATH)
+#     print(f"Model saved to {MODEL_SAVE_PATH}")
 
-            nlp.update([example], drop=0.2, losses=losses, sgd=optimizer)
+# train_spacy_model()
 
-        print(f"\nEpoch {epoch + 1}, Losses: {losses}")
-        print("----" * 10)
+# # Load the trained model for predictions
+# nlp = spacy.load(MODEL_SAVE_PATH)
 
-    nlp.to_disk(MODEL_SAVE_PATH)
-    print(f"Model saved to {MODEL_SAVE_PATH}")
-
-train_spacy_model()
-
-# Load the trained model for predictions
-nlp = spacy.load(MODEL_SAVE_PATH)
-
-def convert_example_to_biluo(text):
-    """Convert model predictions for the given text to BILUO format."""
-    doc = nlp(text)
+# def convert_example_to_biluo(text):
+#     """Convert model predictions for the given text to BILUO format."""
+#     doc = nlp(text)
     
-    iob_tags = [token.ent_iob_ + '-' + token.ent_type_ if token.ent_type_ else 'O' for token in doc]
-    biluo_tags = iob_to_biluo(iob_tags)
+#     iob_tags = [token.ent_iob_ + '-' + token.ent_type_ if token.ent_type_ else 'O' for token in doc]
+#     biluo_tags = iob_to_biluo(iob_tags)
     
-    return doc, biluo_tags
+#     return doc, biluo_tags
 
-def inspect_model_predictions(text):
-    """Inspect model predictions for the given text."""
-    doc, biluo_tags = convert_example_to_biluo(text)
+# def inspect_model_predictions(text):
+#     """Inspect model predictions for the given text."""
+#     doc, biluo_tags = convert_example_to_biluo(text)
 
-    print("\nOriginal Text:")
-    print(f"'{text}'\n")
-    print("Token Predictions:")
-    print(f"{'Token':<15}{'Predicted Label':<20}{'BILUO Tag':<20}")
-    print("-" * 50)
-    for token, biluo_tag in zip(doc, biluo_tags):
-        predicted_label = token.ent_type_ if token.ent_type_ else 'O'
-        print(f"{token.text:<15}{predicted_label:<20}{biluo_tag:<20}")
+#     print("\nOriginal Text:")
+#     print(f"'{text}'\n")
+#     print("Token Predictions:")
+#     print(f"{'Token':<15}{'Predicted Label':<20}{'BILUO Tag':<20}")
+#     print("-" * 50)
+#     for token, biluo_tag in zip(doc, biluo_tags):
+#         predicted_label = token.ent_type_ if token.ent_type_ else 'O'
+#         print(f"{token.text:<15}{predicted_label:<20}{biluo_tag:<20}")
 
-print("\nExample Prediction:")
-inspect_model_predictions("The salary is expected to be $100,000 annually in USD.")
+# print("\nExample Prediction:")
+# inspect_model_predictions("The salary is expected to be $100,000 annually in USD.")
 
-test_texts = [
-    "The annual salary is expected to be $120,000 USD.",
-    "Compensation ranges from €50,000 to €70,000 annually.",
-    "Base pay in Canada is CAD 60,000 per year.",
-    "This position offers a minimum salary of £45,000.",
-    "Contractor role with hourly rate of 25 AUD.",
-    "Full-time position with a salary of 80,000 GBP.",
-]
+# test_texts = [
+#     "The annual salary is expected to be $120,000 USD.",
+#     "Compensation ranges from €50,000 to €70,000 annually.",
+#     "Base pay in Canada is CAD 60,000 per year.",
+#     "This position offers a minimum salary of £45,000.",
+#     "Contractor role with hourly rate of 25 AUD.",
+#     "Full-time position with a salary of 80,000 GBP.",
+# ]
 
-for text in test_texts:
-    print(f"\nTesting text: '{text}'")
-    inspect_model_predictions(text)
+# for text in test_texts:
+#     print(f"\nTesting text: '{text}'")
+#     inspect_model_predictions(text)

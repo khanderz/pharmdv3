@@ -447,20 +447,22 @@ def convert_to_spacy_format(train_data):
         biluo_tags, tokens_with_spaces = custom_offsets_to_biluo_tags(spans, text)
         converted_tags = convert_tokens_to_whole_word(doc, biluo_tags, spans, tokens_with_spaces)
 
-        for token, tag in zip([token.text for token in doc], converted_tags):
-            print(f"token: {token} tag: {tag}")
 
-        if spans:
-            print(f"\n{'Entities (start, end, label, token):':<50}")
-            print(f"{'Start':<10}{'End':<10}{'Label':<20}{'Token':<20}")
-            print("-" * 70)
-
-            for start, end, label, token in spans:
-                print(f"{start:<10}{end:<10}{label:<20}{token:<20}")
-
-        example_entities = [(start, end, label) for start, end, label, _ in spans]
-
-        example = Example.from_dict(doc, {"entities": example_entities})
+        example_entities = []
+        offset = 0 
+        
+        for tag, token in zip(converted_tags, tokens_with_spaces):
+            if tag != 'O':
+                start = text.find(token, offset) 
+                end = start + len(token)
+                label = tag.split('-')[-1]  
+                
+                example_entities.append((start, end, label))
+                
+                offset = end
+        print(f"spans: {spans}")
+        print(f"{'Entities:':<20} {example_entities}")
+        example = Example.from_dict(doc, {"entities": example_entities})        
 
         doc._.set("index", index)
         db.add(example.reference)
