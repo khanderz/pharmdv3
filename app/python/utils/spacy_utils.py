@@ -319,7 +319,7 @@ def align_biluo_tags(char_to_token_index, biluo_tags, document_text):
 
 def convert_tokens_to_whole_word(doc, biluo_tags, spans, tokens_with_spaces):
     """Convert BILUO tags(len(text)) to whole word tokens(len(doc))"""
-    biluo_tokens = ["O"] * len(doc)
+    biluo_tokens = ["O"] * len(doc) #TODO:
     char_to_token_index = []
     current_token_index = 0
 
@@ -334,7 +334,7 @@ def convert_tokens_to_whole_word(doc, biluo_tags, spans, tokens_with_spaces):
 
     tags = align_biluo_tags(char_to_token_index, biluo_tags, [token.text for token in doc])
 
-    # print_side_by_side([token.text for token in doc], tags)
+    print_side_by_side([token.text for token in doc], tags)
 
     # """Validation check for the converted BILUO tags."""
     span_labels = [label for _, _, label, _ in spans]
@@ -407,14 +407,14 @@ def convert_tokens_to_whole_word(doc, biluo_tags, spans, tokens_with_spaces):
                 span_index += 1
                 current_entity = None
 
-        if current_entity is not None and span_index < len(span_labels):
-            combined_token = " ".join(token_list).strip()  
-            if current_entity == span_labels[span_index] and combined_token == span_tokens[span_index]:
-                print(f"{GREEN}Word match: {combined_token} == {span_tokens[span_index]}{RESET}")
-                print(f"{GREEN}Entity match: {current_entity} == {span_labels[span_index]}{RESET}")
-            else:
-                print(f"{RED}5 Word mismatch: {combined_token} != {span_tokens[span_index]}{RESET}")
-                print(f"{RED}5 Entity mismatch: {current_entity} != {span_labels[span_index]}{RESET}")
+    if current_entity is not None and span_index < len(span_labels):
+        combined_token = " ".join(token_list).strip()  
+        if current_entity == span_labels[span_index] and combined_token == span_tokens[span_index]:
+            print(f"{GREEN}Word match: {combined_token} == {span_tokens[span_index]}{RESET}")
+            print(f"{GREEN}Entity match: {current_entity} == {span_labels[span_index]}{RESET}")
+        else:
+            print(f"{RED}5 Word mismatch: {combined_token} != {span_tokens[span_index]}{RESET}")
+            print(f"{RED}5 Entity mismatch: {current_entity} != {span_labels[span_index]}{RESET}")
 
     print("-" * 15, "convert_tokens_to_whole_word", "-" * 15)
     return tags
@@ -446,7 +446,7 @@ def convert_to_spacy_format(train_data):
 
         biluo_tags, tokens_with_spaces = custom_offsets_to_biluo_tags(spans, text)
         converted_tags = convert_tokens_to_whole_word(doc, biluo_tags, spans, tokens_with_spaces)
-        print(f"converted_tags: {converted_tags}")
+
         for token, tag in zip([token.text for token in doc], converted_tags):
             print(f"token: {token} tag: {tag}")
 

@@ -95,7 +95,7 @@ handle_convert_to_spacy(SPACY_DATA_PATH, CONVERTED_FILE, FOLDER, TRAIN_DATA_FILE
 #     nlp.to_disk(MODEL_SAVE_PATH)
 #     print(f"Model saved to {MODEL_SAVE_PATH}")
 
-# Check entity alignment for the training data
+# # Check entity alignment for the training data
 # for entry in converted_data:
 #     print('entry--------------------' , entry)
 #     text = entry["text"]
@@ -104,7 +104,7 @@ handle_convert_to_spacy(SPACY_DATA_PATH, CONVERTED_FILE, FOLDER, TRAIN_DATA_FILE
 
 # train_spacy_model()
 
-# Load the trained model for predictions
+# # Load the trained model for predictions
 # nlp = spacy.load(MODEL_SAVE_PATH)
 
 # def inspect_model_predictions(text):
