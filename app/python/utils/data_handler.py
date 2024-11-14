@@ -47,10 +47,10 @@ def load_data(json_file, folder):
 
 def hash_train_data(folder, file_path):
     """Calculate a hash of the training data to check for changes."""
-    full_path = os.path.join(project_root, folder, file_path)
+    full_path = os.path.join(project_root, folder, 'data', file_path)
 
     if not os.path.exists(full_path):
-        print(f"Warning: Training data file '{full_path}' does not exist.")  # TODO: fix
+        print(f"Warning: Training data file '{full_path}' does not exist.") 
         return None
     
     with open(full_path, "r") as f:

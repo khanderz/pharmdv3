@@ -6,7 +6,7 @@ import os
 import spacy
 from spacy.tokens import DocBin
 from spacy.training import Example
-from app.python.utils.data_handler import hash_train_data, load_data
+from app.python.utils.data_handler import generate_path, hash_train_data, load_data
 from app.python.utils.label_mapping import get_label_list
 from app.python.utils.logger import GREEN, RED, RESET
 from app.python.utils.utils import add_space_to_tokens, print_side_by_side, print_token_characters
@@ -109,13 +109,16 @@ def bio_to_offset(nlp, text, labels):
 
 # ------------------- CONVERT SPACY TO BILUO -------------------
 def handle_convert_to_spacy(SPACY_DATA_PATH, CONVERTED_FILE, FOLDER, TRAIN_DATA_FILE):
+    last_hash_path = generate_path("last_train_data_hash.txt", FOLDER)
+    examples = []
+
     if os.path.exists(SPACY_DATA_PATH):
         print("Converted data already exists. Checking for changes...")
 
-        current_hash = hash_train_data(FOLDER,CONVERTED_FILE)
+        current_hash = hash_train_data(FOLDER,TRAIN_DATA_FILE)
 
         try:
-            with open("last_train_data_hash.txt", "r") as f:
+            with open(last_hash_path, "r") as f:
                 last_hash = f.read()
         except FileNotFoundError:
             last_hash = None
@@ -131,7 +134,7 @@ def handle_convert_to_spacy(SPACY_DATA_PATH, CONVERTED_FILE, FOLDER, TRAIN_DATA_
 
             doc_bin.to_disk(SPACY_DATA_PATH)
             if current_hash is not None:
-                with open("last_train_data_hash.txt", "w") as f:
+                with open(last_hash_path, "w") as f:
                     f.write(current_hash)
 
     else:
@@ -143,7 +146,7 @@ def handle_convert_to_spacy(SPACY_DATA_PATH, CONVERTED_FILE, FOLDER, TRAIN_DATA_
 
         current_hash = hash_train_data(FOLDER, TRAIN_DATA_FILE)
         if current_hash is not None:
-            with open("last_train_data_hash.txt", "w") as f:
+            with open(last_hash_path, "w") as f:
                 f.write(current_hash)
         else:
             print(
