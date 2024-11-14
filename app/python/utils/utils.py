@@ -22,7 +22,7 @@ def print_side_by_side(arr1, arr2):
         
         print(f"{elem1}\t{elem2}")        
 
-def add_space_to_tokens(tokens, labels):
+def add_space_to_tokens(tokens, labels, no_space_entities, punctuations):
     is_bio_format = all(label.startswith("B-") or label.startswith("I-") or label == "O" for label in labels)
     # print(f"tokens: {tokens}, labels: {labels}, is_bio_format: {is_bio_format}")
     all_tokens = []

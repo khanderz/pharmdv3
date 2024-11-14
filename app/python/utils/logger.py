@@ -14,6 +14,10 @@ def configure_warnings():
         "ignore",
         message="Some weights of the model checkpoint at roberta-base were not used",
     )
+    warnings.filterwarnings(
+        "ignore",
+        message="Some weights of RobertaModel were not initialized from the model checkpoint",
+    )
     warnings.simplefilter(action="ignore", category=FutureWarning)
     warnings.filterwarnings("ignore", category=UserWarning)
 

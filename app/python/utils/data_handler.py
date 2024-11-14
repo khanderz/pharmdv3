@@ -5,10 +5,14 @@ import os
 import spacy
 from app.python.utils.logger import BLUE, RED, RESET
 
+project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../..", "app", "python"))
+
 def load_spacy_model(MODEL_SAVE_PATH):
-    if os.path.exists(MODEL_SAVE_PATH):
+    full_path = os.path.join(project_root, MODEL_SAVE_PATH)
+
+    if os.path.exists(full_path):
         print(f"{BLUE}Loading existing model for further training...{RESET}")
-        nlp = spacy.load(MODEL_SAVE_PATH)
+        nlp = spacy.load(full_path)
         # nlp = spacy.blank("en")
     else:
         print(f"{RED}No existing model found. Initializing new model...{RESET}")
@@ -27,13 +31,11 @@ def load_spacy_model(MODEL_SAVE_PATH):
 
 def generate_path(file_name, folder):
     """Generate a full path to a file in a specified folder."""
-    project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
     return os.path.join(project_root, folder, "data", file_name)
-
 
 def load_data(json_file, folder):
     """Load JSON data from a specified file in a given folder."""
-    train_data_path = generate_path(json_file, os.path.join(folder))
+    train_data_path = generate_path(json_file, folder)
 
     try:
         with open(train_data_path, "r") as f:
@@ -43,12 +45,15 @@ def load_data(json_file, folder):
         return []
 
 
-def hash_train_data(file_path):
+def hash_train_data(folder, file_path):
     """Calculate a hash of the training data to check for changes."""
-    if not os.path.exists(file_path):
-        print(f"Warning: Training data file '{file_path}' does not exist.")  # TODO: fix
+    full_path = os.path.join(project_root, folder, file_path)
+
+    if not os.path.exists(full_path):
+        print(f"Warning: Training data file '{full_path}' does not exist.")  # TODO: fix
         return None
-    with open(file_path, "r") as f:
+    
+    with open(full_path, "r") as f:
         return hashlib.md5(f.read().encode()).hexdigest()
 
 

@@ -7,8 +7,9 @@ import spacy
 from spacy.tokens import DocBin
 from spacy.training import Example
 from app.python.utils.data_handler import hash_train_data, load_data
+from app.python.utils.label_mapping import get_label_list
 from app.python.utils.logger import GREEN, RED, RESET
-from app.python.utils.utils import add_space_to_tokens
+from app.python.utils.utils import add_space_to_tokens, print_side_by_side, print_token_characters
 
 # -------------------- SpaCy Data Conversion --------------------
 no_space_entities = {"COMMITMENT", "CURRENCY", "SALARY_SINGLE"}
@@ -39,7 +40,7 @@ def bio_to_offset(nlp, text, labels):
     doc = nlp.make_doc(text)
     tokens = [token.text for token in doc]
     # print(f"text: {text} ") 
-    all_tokens, all_labels = add_space_to_tokens(tokens, labels)
+    all_tokens, all_labels = add_space_to_tokens(tokens, labels, no_space_entities, punctuations)
 
     # print_token_characters(all_tokens)
 
@@ -111,7 +112,7 @@ def handle_convert_to_spacy(SPACY_DATA_PATH, CONVERTED_FILE, FOLDER, TRAIN_DATA_
     if os.path.exists(SPACY_DATA_PATH):
         print("Converted data already exists. Checking for changes...")
 
-        current_hash = hash_train_data(CONVERTED_FILE)
+        current_hash = hash_train_data(FOLDER,CONVERTED_FILE)
 
         try:
             with open("last_train_data_hash.txt", "r") as f:
@@ -122,7 +123,7 @@ def handle_convert_to_spacy(SPACY_DATA_PATH, CONVERTED_FILE, FOLDER, TRAIN_DATA_
         if current_hash == last_hash:
             print("Training data has not changed. Loading existing data...")
             doc_bin = DocBin().from_disk(SPACY_DATA_PATH)
-            examples = []
+ 
         else:
             print("Training data has changed. Converting data now...")
             train_data = load_data(CONVERTED_FILE, FOLDER)
@@ -140,7 +141,7 @@ def handle_convert_to_spacy(SPACY_DATA_PATH, CONVERTED_FILE, FOLDER, TRAIN_DATA_
 
         doc_bin.to_disk(SPACY_DATA_PATH)
 
-        current_hash = hash_train_data(TRAIN_DATA_FILE)
+        current_hash = hash_train_data(FOLDER, TRAIN_DATA_FILE)
         if current_hash is not None:
             with open("last_train_data_hash.txt", "w") as f:
                 f.write(current_hash)
@@ -149,55 +150,56 @@ def handle_convert_to_spacy(SPACY_DATA_PATH, CONVERTED_FILE, FOLDER, TRAIN_DATA_
                 "Unable to save the hash since the training data file does not exist."
             )
 
+    return doc_bin, examples         
+
 def convert_to_spacy_format(train_data):
     """Convert training data to spaCy format with BILUO alignment."""
     db = DocBin()
     nlp_blank = spacy.blank("en")
+
+    train_examples = [Example.from_dict(nlp_blank.make_doc(entry["text"]), {"entities": [(int(ent["start"]), int(ent["end"]), ent["label"]) for ent in entry["entities"]]}) for entry in train_data[:5]]
+
+    # Initialize the NER model with example data
+    nlp_blank.initialize(get_examples=lambda: train_examples)
+
     examples = []
-
-    # print("\nConverting training data to spaCy format...")
-
-    for index, entry in enumerate(train_data):
+    for _, entry in enumerate(train_data):
         text = entry["text"]
         entities = entry.get("entities", [])
-        doc = nlp_blank.make_doc(text)
-        tokens = []
-        spans = []
-        
-        for ent in entities:
-            start = int(ent["start"])
-            end = int(ent["end"])
-            label = ent["label"]
-            token = ent["token"]
-            spans.append((start, end, label, token))
-            tokens.append(token)
+        doc = nlp_blank(text)
+        example_entities = [(int(ent["start"]), int(ent["end"]), ent["label"]) for ent in entities]
 
         # print(f"\n{'Original Text:':<20} '{text}'")
 
-        biluo_tags, tokens_with_spaces = custom_offsets_to_biluo_tags(spans, text)
-        converted_tags = convert_tokens_to_whole_word(doc, biluo_tags, spans, tokens_with_spaces)
+        # spans = [(int(ent["start"]), int(ent["end"]), ent["label"], ent["token"]) for ent in entities]
+        # tokens = [ent["token"] for ent in entities]
 
-        # print(f"biluo_tags: {biluo_tags}")
-        # print(f"converted_tags: {converted_tags}")
-        example_entities = []
-        offset = 0 
+        # biluo_tags, tokens_with_spaces = custom_offsets_to_biluo_tags(spans, text)
+        # converted_tags = convert_tokens_to_whole_word(doc, biluo_tags, spans, tokens_with_spaces)
+
+        # example_entities = []
+        # for token, tag in zip(doc, converted_tags):
+        #     if tag != 'O':
+        #         label = tag.split('-')[-1]
+        #         start = token.idx
+        #         end = token.idx + len(token)
+        #         example_entities.append((start, end, label))
+
+        # print(f"\nText: '{text}'")
+        # print(f"Example entities from custom BILUO (start, end, label): {example_entities}")
         
-        for tag, token in zip(converted_tags, tokens_with_spaces):
-            if tag != 'O':
-                start = text.find(token, offset) 
-                end = start + len(token)
-                label = tag.split('-')[-1]  
-                
-                example_entities.append((start, end, label))
-                
-                offset = end
-        # print(f"spans: {spans}")
-        # print(f"{'Entities:':<20} {example_entities}")
+
+        # for token in doc:
+        #     print(f"Token: '{token.text}', Start: {token.idx}, End: {token.idx + len(token.text)}, Label: '{token.ent_type_}'")
+
         example = Example.from_dict(doc, {"entities": example_entities})        
 
-        doc._.set("index", index)
+        # doc._.set("index", index)
         db.add(example.reference)
         examples.append(example)
+        
+        # print(f"Constructed example_entities: {example_entities}")
+        # print(f"doc.ents after entity assignment: {[{'text': ent.text, 'start': ent.start_char, 'end': ent.end_char, 'label': ent.label_} for ent in doc.ents]}")
 
     return db, examples
 
@@ -242,7 +244,7 @@ def custom_offsets_to_biluo_tags(spans, text):
     new_labels = [tag.split(', Label: ')[1] for tag in new_tags]
     new_tokens = [tag.split(', Label: ')[0].replace('Token: ', '').strip() for tag in new_tags]
 
-    tokens_with_spaces, _ = add_space_to_tokens(new_tokens, new_labels)
+    tokens_with_spaces, _ = add_space_to_tokens(new_tokens, new_labels, no_space_entities, punctuations)
     new_text = ''.join(tokens_with_spaces)
     biluo_tags = ["O"] * len(new_text) 
 
