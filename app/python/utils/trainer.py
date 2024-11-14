@@ -1,12 +1,17 @@
 # app/python/utils/trainer.py
 import random
 import os
+import spacy
+from spacy.tokens import Doc
+
+if not Doc.has_extension("index"):
+    Doc.set_extension("index", default=None)
 
 def train_spacy_model(MODEL_SAVE_PATH, nlp, examples):
     """Train the spaCy model with the given examples."""
     print("\nStarting model training...")
     optimizer = nlp.begin_training()
-
+    print(f"examples: {examples}")
     for epoch in range(5):
         random.shuffle(examples)
         losses = {}

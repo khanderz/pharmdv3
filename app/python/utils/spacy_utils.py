@@ -112,18 +112,17 @@ def handle_convert_to_spacy(SPACY_DATA_PATH, CONVERTED_FILE, FOLDER, TRAIN_DATA_
     examples = []
 
     converted_file_path = generate_path(CONVERTED_FILE, FOLDER)
+    current_hash = hash_train_data(FOLDER,TRAIN_DATA_FILE)
+
     if not os.path.exists(converted_file_path):
         print(f"Converted file {converted_file_path} not found. Generating it from BIO format.")
         convert_bio_to_spacy_format(TRAIN_DATA_FILE, FOLDER, spacy.blank("en"), converted_file_path)
     else:
         print(f"Using existing converted file: {converted_file_path}")
 
-
     if os.path.exists(SPACY_DATA_PATH):
         print("Converted data already exists. Checking for changes...")
-
-        current_hash = hash_train_data(FOLDER,TRAIN_DATA_FILE)
-
+        
         try:
             with open(last_hash_path, "r") as f:
                 last_hash = f.read()
@@ -135,18 +134,18 @@ def handle_convert_to_spacy(SPACY_DATA_PATH, CONVERTED_FILE, FOLDER, TRAIN_DATA_
             doc_bin = DocBin().from_disk(SPACY_DATA_PATH)
 
             docs = list(doc_bin.get_docs(spacy.blank("en").vocab))
-            if docs:
-                print(f"Loaded {len(docs)} documents from doc_bin.")
-                examples = [
-                    Example.from_dict(doc, {"entities": [(ent.start_char, ent.end_char, ent.label_) for ent in doc.ents]})
-                    for doc in docs
-                ]
+            # if docs:
+            #     print(f"Loaded {len(docs)} documents from doc_bin.")
+            #     examples = [
+            #         Example.from_dict(doc, {"entities": [(ent.start_char, ent.end_char, ent.label_) for ent in doc.ents]})
+            #         for doc in docs
+            #     ]
 
-                for i, doc in enumerate(docs):
-                    entities = [(ent.text, ent.start_char, ent.end_char, ent.label_) for ent in doc.ents]
-                    print(f"Document {i} entities: {entities}")
-            else:
-                print(f"{RED}No documents loaded from doc_bin.{RESET}")
+            #     for i, doc in enumerate(docs):
+            #         entities = [(ent.text, ent.start_char, ent.end_char, ent.label_) for ent in doc.ents]
+            #         print(f"Document {i} entities: {entities}")
+            # else:
+            #     print(f"{RED}No documents loaded from doc_bin.{RESET}")
         else:
             print("Training data has changed. Converting data now...")
             train_data = load_data(CONVERTED_FILE, FOLDER)

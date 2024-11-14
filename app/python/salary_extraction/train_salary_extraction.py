@@ -5,7 +5,7 @@ import spacy
 import os
 # from spacy.tokens import DocBin
 # from spacy.training import Example
-# from spacy.training import iob_to_biluo
+from spacy.training import iob_to_biluo
 from app.python.utils.label_mapping import get_label_list
 from app.python.utils.data_handler import generate_path, load_data, load_spacy_model
 from app.python.utils.logger import GREEN, RED, RESET, configure_logging, configure_warnings
@@ -32,6 +32,9 @@ SPACY_DATA_PATH = os.path.join(BASE_DIR, "data", "train.spacy")
 # VALIDATION_DATA_FILE = "validation_data.json"
 # validation_data = load_data(VALIDATION_DATA_FILE, FOLDER)
 # print(f"{generate_path(CONVERTED_FILE, FOLDER)}")
+
+converted_data = load_data(CONVERTED_FILE, FOLDER)
+
 nlp = load_spacy_model(MODEL_SAVE_PATH)
 
 if "ner" not in nlp.pipe_names:
@@ -74,13 +77,13 @@ if examples:
             print(f"  - Text: '{ent.text}', Start: {ent.start_char}, End: {ent.end_char}, Label: {ent.label_}")
 
 # ------------------- TRAIN MODEL -------------------
-# train_spacy_model(MODEL_SAVE_PATH, nlp, examples)
+train_spacy_model(MODEL_SAVE_PATH, nlp, examples)
 
 
 # ------------------- VALIDATE TRAINER -------------------
 
 # evaluate_model(nlp, validation_data)
-# evaluate_model(nlp, converted_data)
+evaluate_model(nlp, converted_data)
 
 
 # ------------------- TEST EXAMPLES -------------------

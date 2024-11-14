@@ -1,9 +1,8 @@
 #  app/python/utils/validation_utils.py
-from sklearn.metrics import classification_report
-from sklearn.preprocessing import MultiLabelBinarizer
 from app.python.utils.logger import RED, GREEN, RESET
 from app.python.utils.spacy_utils import print_token_characters
-
+from spacy.scorer import Scorer
+from spacy.training import Example
 
 def print_tokenization(doc):
     print("\nTokenization Debugging:")
@@ -41,41 +40,22 @@ def fuzzy_match(true_entities, pred_entities, tolerance=1):
 
 def evaluate_model(nlp, validation_data):
     """Evaluate the model on the validation dataset and print metrics."""
-    true_labels = []
-    pred_labels = []
+    scorer = Scorer()
+    examples = []
     
-    # verify_data_consistency(validation_data)
     for entry in validation_data:
-        # doc = nlp(entry["text"])
-        # print_tokenization(doc)
-        text = entry["text"]
-        true_entities = [ent["label"] for ent in entry["entities"]] 
-
-        doc = nlp(text)
-        # print_token_characters(text)
+        example = Example.from_dict(nlp.make_doc(entry["text"]), {"entities": [(ent["start"], ent["end"], ent["label"]) for ent in entry["entities"]]})
         
-        # print("\nTokenization:")
-        # for token in doc:
-        #     print(f"Token: '{token.text}', Start: {token.idx}, End: {token.idx + len(token.text)}")
-        for ent in doc.ents:
-            print(f"Predicted entity: '{ent.text}', Start: {ent.start_char}, End: {ent.end_char}, Label: {ent.label_}")
-
-        pred_entities = [(ent.start_char, ent.end_char, ent.label_) for ent in doc.ents]
-        # fuzzy_matched = fuzzy_match(entry["entities"], pred_entities)
-        # print(f"Fuzzy Matched: {fuzzy_matched}") 
-        # print(f"\nText: {text}")
-        # print(f"True Entities: {true_entities}")
-        # print(f"Predicted Entities: {pred_entities}")
-        
-        true_labels.append(true_entities)
-        pred_labels.append(pred_entities)
-
-    mlb = MultiLabelBinarizer()
-    true_labels_binary = mlb.fit_transform(true_labels)
-    pred_labels_binary = mlb.transform(pred_labels)    
-
-    print(f"\n{GREEN}Validation Performance:{RESET}")
-    print(classification_report(true_labels_binary, pred_labels_binary, target_names=mlb.classes_, zero_division=0))
+        nlp_pred = nlp(example.reference.text)
+        example.predicted = nlp_pred 
+        examples.append(example)  
+    
+    results = scorer.score(examples)
+    
+    print("Entity Precision: {:.2f}%".format(results["ents_p"] * 100))
+    print("Entity Recall: {:.2f}%".format(results["ents_r"] * 100))
+    print("Entity F1-score: {:.2f}%".format(results["ents_f"] * 100))
+    return results
 
 def print_label_token_pairs(data):
     """Prints label and associated token for each entity in the data."""
