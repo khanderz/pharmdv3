@@ -31,11 +31,15 @@ def load_spacy_model(MODEL_SAVE_PATH):
 
 def generate_path(file_name, folder):
     """Generate a full path to a file in a specified folder."""
-    return os.path.join(project_root, folder, "data", file_name)
+    path = os.path.join(project_root, folder, "data", file_name)
+    # print(f"{path}")
+    return path
 
 def load_data(json_file, folder):
     """Load JSON data from a specified file in a given folder."""
     train_data_path = generate_path(json_file, folder)
+
+    # print(f"Loading data from {train_data_path}")
 
     try:
         with open(train_data_path, "r") as f:
@@ -48,7 +52,7 @@ def load_data(json_file, folder):
 def hash_train_data(folder, file_path):
     """Calculate a hash of the training data to check for changes."""
     full_path = os.path.join(project_root, folder, 'data', file_path)
-
+    
     if not os.path.exists(full_path):
         print(f"Warning: Training data file '{full_path}' does not exist.") 
         return None

@@ -7,7 +7,6 @@ import spacy
 from spacy.tokens import DocBin
 from spacy.training import Example
 from app.python.utils.data_handler import generate_path, hash_train_data, load_data
-from app.python.utils.label_mapping import get_label_list
 from app.python.utils.logger import GREEN, RED, RESET
 from app.python.utils.utils import add_space_to_tokens, print_side_by_side, print_token_characters
 
@@ -112,6 +111,14 @@ def handle_convert_to_spacy(SPACY_DATA_PATH, CONVERTED_FILE, FOLDER, TRAIN_DATA_
     last_hash_path = generate_path("last_train_data_hash.txt", FOLDER)
     examples = []
 
+    converted_file_path = generate_path(CONVERTED_FILE, FOLDER)
+    if not os.path.exists(converted_file_path):
+        print(f"Converted file {converted_file_path} not found. Generating it from BIO format.")
+        convert_bio_to_spacy_format(TRAIN_DATA_FILE, FOLDER, spacy.blank("en"), converted_file_path)
+    else:
+        print(f"Using existing converted file: {converted_file_path}")
+
+
     if os.path.exists(SPACY_DATA_PATH):
         print("Converted data already exists. Checking for changes...")
 
@@ -126,43 +133,72 @@ def handle_convert_to_spacy(SPACY_DATA_PATH, CONVERTED_FILE, FOLDER, TRAIN_DATA_
         if current_hash == last_hash:
             print("Training data has not changed. Loading existing data...")
             doc_bin = DocBin().from_disk(SPACY_DATA_PATH)
- 
+
+            docs = list(doc_bin.get_docs(spacy.blank("en").vocab))
+            if docs:
+                print(f"Loaded {len(docs)} documents from doc_bin.")
+                examples = [
+                    Example.from_dict(doc, {"entities": [(ent.start_char, ent.end_char, ent.label_) for ent in doc.ents]})
+                    for doc in docs
+                ]
+
+                for i, doc in enumerate(docs):
+                    entities = [(ent.text, ent.start_char, ent.end_char, ent.label_) for ent in doc.ents]
+                    print(f"Document {i} entities: {entities}")
+            else:
+                print(f"{RED}No documents loaded from doc_bin.{RESET}")
         else:
             print("Training data has changed. Converting data now...")
             train_data = load_data(CONVERTED_FILE, FOLDER)
-            doc_bin, examples = convert_to_spacy_format(train_data)
-
-            doc_bin.to_disk(SPACY_DATA_PATH)
-            if current_hash is not None:
+            doc_bin, examples = convert_to_spacy_format(train_data, SPACY_DATA_PATH)
+ 
+            try:
+                doc_bin.to_disk(SPACY_DATA_PATH)
+                print(f"Data saved to {SPACY_DATA_PATH}")
                 with open(last_hash_path, "w") as f:
                     f.write(current_hash)
+            except Exception as e:
+                print(f"Error saving doc_bin: {e}")
 
     else:
         print("Converted data does not exist. Converting data now...")
         train_data = load_data(CONVERTED_FILE, FOLDER)
-        doc_bin, examples = convert_to_spacy_format(train_data)
+        doc_bin, examples = convert_to_spacy_format(train_data, SPACY_DATA_PATH)
 
-        doc_bin.to_disk(SPACY_DATA_PATH)
-
-        current_hash = hash_train_data(FOLDER, TRAIN_DATA_FILE)
-        if current_hash is not None:
+        try:
+            doc_bin.to_disk(SPACY_DATA_PATH)
+            print(f"Data saved to {SPACY_DATA_PATH}")
             with open(last_hash_path, "w") as f:
                 f.write(current_hash)
-        else:
-            print(
-                "Unable to save the hash since the training data file does not exist."
-            )
+        except Exception as e:
+            print(f"{RED}Error saving doc_bin: {e} {RESET}")
+
+    if not examples:
+        print("Warning: `examples` is empty after processing. Possible serialization issue.")
+    else:
+        print(f"Returning {len(examples)} examples.")
 
     return doc_bin, examples         
 
-def convert_to_spacy_format(train_data):
+def convert_to_spacy_format(train_data, SPACY_DATA_PATH):
     """Convert training data to spaCy format with BILUO alignment."""
     db = DocBin()
     nlp_blank = spacy.blank("en")
+    
+    print(f"---------------CONVERTING TRAIN DATA TO SPACY FORMAT...")
 
-    train_examples = [Example.from_dict(nlp_blank.make_doc(entry["text"]), {"entities": [(int(ent["start"]), int(ent["end"]), ent["label"]) for ent in entry["entities"]]}) for entry in train_data[:5]]
-
-    # Initialize the NER model with example data
+    if not train_data:
+        print("{RED}Error: train_data is empty; cannot convert to spaCy format.{RESET}")
+        return db, []
+    
+    train_examples = [
+        Example.from_dict(
+            nlp_blank.make_doc(entry["text"]),
+            {"entities": [(int(ent["start"]), int(ent["end"]), ent["label"]) for ent in entry["entities"]]}
+        )
+        for entry in train_data
+    ]
+ 
     nlp_blank.initialize(get_examples=lambda: train_examples)
 
     examples = []
@@ -195,14 +231,20 @@ def convert_to_spacy_format(train_data):
         # for token in doc:
         #     print(f"Token: '{token.text}', Start: {token.idx}, End: {token.idx + len(token.text)}, Label: '{token.ent_type_}'")
 
-        example = Example.from_dict(doc, {"entities": example_entities})        
+        example = Example.from_dict(doc, {"entities": example_entities}) 
+        db.add(doc)   
+        examples.append(example)      
 
-        # doc._.set("index", index)
-        db.add(example.reference)
-        examples.append(example)
-        
-        # print(f"Constructed example_entities: {example_entities}")
-        # print(f"doc.ents after entity assignment: {[{'text': ent.text, 'start': ent.start_char, 'end': ent.end_char, 'label': ent.label_} for ent in doc.ents]}")
+    db.to_disk(SPACY_DATA_PATH)
+    loaded_db = DocBin().from_disk(SPACY_DATA_PATH)
+    loaded_docs = list(loaded_db.get_docs(nlp_blank.vocab))
+    print(f"Loaded {len(loaded_docs)} documents after saving and reloading.")
+
+
+    if not list(db.get_docs(nlp_blank.vocab)):
+        print("Warning: No documents were added to `doc_bin`.")
+    else:
+        print(f"{len(list(db.get_docs(nlp_blank.vocab)))} documents added to `doc_bin`.")
 
     return db, examples
 

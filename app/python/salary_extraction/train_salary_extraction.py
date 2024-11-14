@@ -4,7 +4,7 @@ import spacy
 # import spacy_transformers
 import os
 # from spacy.tokens import DocBin
-from spacy.training import Example
+# from spacy.training import Example
 # from spacy.training import iob_to_biluo
 from app.python.utils.label_mapping import get_label_list
 from app.python.utils.data_handler import generate_path, load_data, load_spacy_model
@@ -29,9 +29,9 @@ CONVERTED_FILE_PATH = os.path.join(BASE_DIR, "data", CONVERTED_FILE)
 MODEL_SAVE_PATH = os.path.join(BASE_DIR, "model", "spacy_salary_ner_model")
 SPACY_DATA_PATH = os.path.join(BASE_DIR, "data", "train.spacy")
 
-VALIDATION_DATA_FILE = "validation_data.json"
-validation_data = load_data(VALIDATION_DATA_FILE, FOLDER)
-
+# VALIDATION_DATA_FILE = "validation_data.json"
+# validation_data = load_data(VALIDATION_DATA_FILE, FOLDER)
+# print(f"{generate_path(CONVERTED_FILE, FOLDER)}")
 nlp = load_spacy_model(MODEL_SAVE_PATH)
 
 if "ner" not in nlp.pipe_names:
@@ -41,7 +41,7 @@ if "ner" not in nlp.pipe_names:
     for label in get_label_list():
         ner.add_label(label)
 
-    if not os.path.exists(generate_path(CONVERTED_FILE, FOLDER)):
+    if not CONVERTED_FILE_PATH:
         convert_bio_to_spacy_format(TRAIN_DATA_FILE, FOLDER, nlp, CONVERTED_FILE_PATH)
 
     spacy.tokens.Doc.set_extension("index", default=None)
@@ -49,11 +49,6 @@ if "ner" not in nlp.pipe_names:
 
     nlp.initialize(get_examples=lambda: examples)
 
-    # for example in examples:
-    #     print(f"\nText: '{example.reference.text}'")
-    #     print("Entities after initialization:")
-    #     for ent in example.reference.ents:
-    #         print(f"  - Text: '{ent.text}', Start: {ent.start_char}, End: {ent.end_char}, Label: {ent.label_}")
 
     os.makedirs(MODEL_SAVE_PATH, exist_ok=True)
     nlp.to_disk(MODEL_SAVE_PATH)
@@ -62,16 +57,21 @@ else:
     ner = nlp.get_pipe("ner")
     print(f"{GREEN}NER pipe already exists in blank model: {nlp.pipe_names}{RESET}")
 
+
     doc_bin, examples = handle_convert_to_spacy(SPACY_DATA_PATH, CONVERTED_FILE, FOLDER, TRAIN_DATA_FILE)
+ 
+    # print_label_token_pairs(converted_data)
 
+if doc_bin:
+    doc_bin.to_disk(os.path.join(BASE_DIR, "data", "train.spacy"))
+    print(f"Data saved to {os.path.join(BASE_DIR, 'data', 'train.spacy')}")
 
-
-# print_label_token_pairs(converted_data)
-
-doc_bin.to_disk("app/python/salary_extraction/data/train.spacy")
-
-# for example in examples:
-#     print(f"Example entities in final doc (start, end, label): {[(ent.start_char, ent.end_char, ent.label_) for ent in example.reference.ents]}")
+if examples: 
+    for example in examples:
+        print(f"\nText: '{example.reference.text}'")
+        print("Entities after initialization:")
+        for ent in example.reference.ents:
+            print(f"  - Text: '{ent.text}', Start: {ent.start_char}, End: {ent.end_char}, Label: {ent.label_}")
 
 # ------------------- TRAIN MODEL -------------------
 # train_spacy_model(MODEL_SAVE_PATH, nlp, examples)
