@@ -1,7 +1,6 @@
 # app/python/utils/trainer.py
 import random
 import os
-import spacy
 from spacy.tokens import Doc
 
 if not Doc.has_extension("index"):

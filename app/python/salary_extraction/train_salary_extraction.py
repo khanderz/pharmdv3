@@ -1,18 +1,13 @@
 # app/python/salary_extraction/train_salary_expections.py
 
 import spacy
-# import spacy_transformers
 import os
-# from spacy.tokens import DocBin
-# from spacy.training import Example
 from spacy.training import iob_to_biluo
 from app.python.utils.label_mapping import get_label_list
-from app.python.utils.data_handler import generate_path, load_data, load_spacy_model
+from app.python.utils.data_handler import load_data, load_spacy_model
 from app.python.utils.logger import GREEN, RED, RESET, configure_logging, configure_warnings
-from app.python.utils.spacy_utils import (
-    convert_bio_to_spacy_format,
-    handle_spacy_data,
-)
+from app.python.utils.spacy_utils import   handle_spacy_data
+
 from app.python.utils.trainer import train_spacy_model
 from app.python.utils.validation_utils import evaluate_model
 from app.python.utils.data_handler import project_root
@@ -31,7 +26,6 @@ SPACY_DATA_PATH = os.path.join(BASE_DIR, "data", "train.spacy")
 
 # VALIDATION_DATA_FILE = "validation_data.json"
 # validation_data = load_data(VALIDATION_DATA_FILE, FOLDER)
-# print(f"{generate_path(CONVERTED_FILE, FOLDER)}")
 
 converted_data = load_data(CONVERTED_FILE, FOLDER)
 
@@ -58,8 +52,6 @@ else:
 
     doc_bin, examples = handle_spacy_data(SPACY_DATA_PATH, CONVERTED_FILE, FOLDER, TRAIN_DATA_FILE)
  
-    # print_label_token_pairs(converted_data)
-
 if examples: 
     for example in examples:
         print(f"\nText: '{example.reference.text}'")
@@ -79,40 +71,40 @@ evaluate_model(nlp, converted_data)
 
 # ------------------- TEST EXAMPLES -------------------
 
-# def convert_example_to_biluo(text):
-#     """Convert model predictions for the given text to BILUO format."""
-#     doc = nlp(text)
+def convert_example_to_biluo(text):
+    """Convert model predictions for the given text to BILUO format."""
+    doc = nlp(text)
     
-#     iob_tags = [token.ent_iob_ + '-' + token.ent_type_ if token.ent_type_ else 'O' for token in doc]
-#     biluo_tags = iob_to_biluo(iob_tags)
+    iob_tags = [token.ent_iob_ + '-' + token.ent_type_ if token.ent_type_ else 'O' for token in doc]
+    biluo_tags = iob_to_biluo(iob_tags)
     
-#     return doc, biluo_tags
+    return doc, biluo_tags
 
-# def inspect_model_predictions(text):
-#     """Inspect model predictions for the given text."""
-#     doc, biluo_tags = convert_example_to_biluo(text)
+def inspect_model_predictions(text):
+    """Inspect model predictions for the given text."""
+    doc, biluo_tags = convert_example_to_biluo(text)
 
-#     print("\nOriginal Text:")
-#     print(f"'{text}'\n")
-#     print("Token Predictions:")
-#     print(f"{'Token':<15}{'Predicted Label':<20}{'BILUO Tag':<20}")
-#     print("-" * 50)
-#     for token, biluo_tag in zip(doc, biluo_tags):
-#         predicted_label = token.ent_type_ if token.ent_type_ else 'O'
-#         print(f"{token.text:<15}{predicted_label:<20}{biluo_tag:<20}")
+    print("\nOriginal Text:")
+    print(f"'{text}'\n")
+    print("Token Predictions:")
+    print(f"{'Token':<15}{'Predicted Label':<20}{'BILUO Tag':<20}")
+    print("-" * 50)
+    for token, biluo_tag in zip(doc, biluo_tags):
+        predicted_label = token.ent_type_ if token.ent_type_ else 'O'
+        print(f"{token.text:<15}{predicted_label:<20}{biluo_tag:<20}")
 
-# print("\nExample Prediction:")
-# inspect_model_predictions("The salary is expected to be $100,000 annually in USD.")
+print("\nExample Prediction:")
+inspect_model_predictions("The salary is expected to be $100,000 annually in USD.")
 
-# test_texts = [
-#     "The annual salary is expected to be $120,000 USD.",
-#     "Compensation ranges from €50,000 to €70,000 annually.",
-#     "Base pay in Canada is CAD 60,000 per year.",
-#     "This position offers a minimum salary of £45,000.",
-#     "Contractor role with hourly rate of 25 AUD.",
-#     "Full-time position with a salary of 80,000 GBP.",
-# ]
+test_texts = [
+    "The annual salary is expected to be $120,000 USD.",
+    "Compensation ranges from €50,000 to €70,000 annually.",
+    "Base pay in Canada is CAD 60,000 per year.",
+    "This position offers a minimum salary of £45,000.",
+    "Contractor role with hourly rate of 25 AUD.",
+    "Full-time position with a salary of 80,000 GBP.",
+]
 
-# for text in test_texts:
-#     print(f"\nTesting text: '{text}'")
-#     inspect_model_predictions(text)
+for text in test_texts:
+    print(f"\nTesting text: '{text}'")
+    inspect_model_predictions(text)

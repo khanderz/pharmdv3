@@ -7,7 +7,7 @@ import spacy
 from spacy.tokens import DocBin
 from spacy.training import Example
 from app.python.utils.data_handler import generate_path, hash_train_data, load_data
-from app.python.utils.logger import BLUE, GREEN, RED, RESET
+from app.python.utils.logger import BLUE,   RED, RESET
 from app.python.utils.utils import add_space_to_tokens, print_side_by_side, print_token_characters
 
 # -------------------- SpaCy Data Conversion --------------------
@@ -204,7 +204,7 @@ def convert_to_spacy_format(train_data, SPACY_DATA_PATH):
         for entry in train_data
     ]
  
-    nlp_blank.initialize(get_examples=lambda: train_examples)
+    # nlp_blank.initialize(get_examples=lambda: train_examples)
 
     examples = []
     for _, entry in enumerate(train_data):
@@ -212,20 +212,6 @@ def convert_to_spacy_format(train_data, SPACY_DATA_PATH):
         entities = entry.get("entities", [])
         doc = nlp_blank(text)
         example_entities = [(int(ent["start"]), int(ent["end"]), ent["label"]) for ent in entities]
-
-        # spans = [(int(ent["start"]), int(ent["end"]), ent["label"], ent["token"]) for ent in entities]
-        # tokens = [ent["token"] for ent in entities]
-
-        # biluo_tags, tokens_with_spaces = custom_offsets_to_biluo_tags(spans, text)
-        # converted_tags = convert_tokens_to_whole_word(doc, biluo_tags, spans, tokens_with_spaces)
-
-        # example_entities = []
-        # for token, tag in zip(doc, converted_tags):
-        #     if tag != 'O':
-        #         label = tag.split('-')[-1]
-        #         start = token.idx
-        #         end = token.idx + len(token)
-        #         example_entities.append((start, end, label))
 
         example = Example.from_dict(doc, {"entities": example_entities}) 
         db.add(doc)   
