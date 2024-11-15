@@ -201,6 +201,9 @@ def convert_to_spacy_format(train_data, SPACY_DATA_PATH, nlp):
         entities = entry.get("entities", [])
         doc = nlp(text)
         example_entities = [(int(ent["start"]), int(ent["end"]), ent["label"]) for ent in entities]
+        spans = [doc.char_span(start, end, label=label) for start, end, label in example_entities]
+        spans = [span for span in spans if span is not None]   
+        doc.ents = spans
 
         example = Example.from_dict(doc, {"entities": example_entities}) 
         db.add(doc)   
