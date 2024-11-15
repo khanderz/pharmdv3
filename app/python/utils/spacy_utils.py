@@ -106,7 +106,7 @@ def bio_to_offset(nlp, text, labels):
     ]
 
 # ------------------- LOAD/CONVERT SPACY TO BILUO -------------------
-def handle_spacy_data(SPACY_DATA_PATH, CONVERTED_FILE, FOLDER, TRAIN_DATA_FILE):
+def handle_spacy_data(SPACY_DATA_PATH, CONVERTED_FILE, FOLDER, TRAIN_DATA_FILE, nlp):
     last_hash_path = generate_path("last_train_data_hash.txt", FOLDER)
     examples = []
 
@@ -116,7 +116,7 @@ def handle_spacy_data(SPACY_DATA_PATH, CONVERTED_FILE, FOLDER, TRAIN_DATA_FILE):
     if not os.path.exists(converted_file_path):
         print(f"{BLUE}BIO TO BILUO FORMAT converted file {converted_file_path} not found. Generating it from BIO format.{RESET}")
         
-        pre_examples  = convert_bio_to_spacy_format(TRAIN_DATA_FILE, FOLDER, spacy.blank("en"), converted_file_path)
+        pre_examples  = convert_bio_to_spacy_format(TRAIN_DATA_FILE, FOLDER, nlp, converted_file_path)
         doc_bin, examples = convert_to_spacy_format(pre_examples, SPACY_DATA_PATH)
     else:
         print(f"{BLUE}Using existing BIO to BILUO format converted file: {converted_file_path}{RESET}")
@@ -136,8 +136,8 @@ def handle_spacy_data(SPACY_DATA_PATH, CONVERTED_FILE, FOLDER, TRAIN_DATA_FILE):
             print(f"{BLUE}Training data has not changed. Loading existing data...{RESET}")
             doc_bin = DocBin().from_disk(SPACY_DATA_PATH)
 
-            docs = list(doc_bin.get_docs(spacy.blank("en").vocab))
-            print(f"docs: {docs}")
+            docs = list(doc_bin.get_docs(nlp.vocab))
+            # print(f"docs: {docs}")
             if docs:
                 print(f"{BLUE}Loaded {len(docs)} documents from doc_bin.{RESET}")
                 examples = [
@@ -191,20 +191,6 @@ def convert_to_spacy_format(train_data, SPACY_DATA_PATH):
     nlp_blank = spacy.blank("en")
     
     print(f"---------------CONVERTING TRAIN DATA TO SPACY FORMAT...")
-
-    if not train_data:
-        print(f"{RED}Error: train_data is empty; cannot convert to spaCy format.{RESET}")
-        return db, []
-    
-    train_examples = [
-        Example.from_dict(
-            nlp_blank.make_doc(entry["text"]),
-            {"entities": [(int(ent["start"]), int(ent["end"]), ent["label"]) for ent in entry["entities"]]}
-        )
-        for entry in train_data
-    ]
- 
-    # nlp_blank.initialize(get_examples=lambda: train_examples)
 
     examples = []
     for _, entry in enumerate(train_data):
