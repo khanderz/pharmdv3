@@ -47,7 +47,7 @@ if "ner" not in nlp.pipe_names:
     if not CONVERTED_FILE_PATH:
         convert_bio_to_spacy_format(TRAIN_DATA_FILE, FOLDER, nlp, CONVERTED_FILE_PATH)
 
-    spacy.tokens.Doc.set_extension("index", default=None)
+    spacy.tokens.Doc.set_extension("index", default=None, force=True)
     doc_bin, examples = handle_convert_to_spacy(SPACY_DATA_PATH, CONVERTED_FILE, FOLDER, TRAIN_DATA_FILE)
 
     nlp.initialize(get_examples=lambda: examples)
@@ -65,10 +65,6 @@ else:
  
     # print_label_token_pairs(converted_data)
 
-if doc_bin:
-    doc_bin.to_disk(os.path.join(BASE_DIR, "data", "train.spacy"))
-    print(f"Data saved to {os.path.join(BASE_DIR, 'data', 'train.spacy')}")
-
 if examples: 
     for example in examples:
         print(f"\nText: '{example.reference.text}'")
@@ -77,7 +73,7 @@ if examples:
             print(f"  - Text: '{ent.text}', Start: {ent.start_char}, End: {ent.end_char}, Label: {ent.label_}")
 
 # ------------------- TRAIN MODEL -------------------
-train_spacy_model(MODEL_SAVE_PATH, nlp, examples)
+# train_spacy_model(MODEL_SAVE_PATH, nlp, examples)
 
 
 # ------------------- VALIDATE TRAINER -------------------
