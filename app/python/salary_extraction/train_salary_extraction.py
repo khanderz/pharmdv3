@@ -11,7 +11,7 @@ from app.python.utils.data_handler import generate_path, load_data, load_spacy_m
 from app.python.utils.logger import GREEN, RED, RESET, configure_logging, configure_warnings
 from app.python.utils.spacy_utils import (
     convert_bio_to_spacy_format,
-    handle_convert_to_spacy,
+    handle_spacy_data,
 )
 from app.python.utils.trainer import train_spacy_model
 from app.python.utils.validation_utils import evaluate_model
@@ -44,14 +44,10 @@ if "ner" not in nlp.pipe_names:
     for label in get_label_list():
         ner.add_label(label)
 
-    if not CONVERTED_FILE_PATH:
-        convert_bio_to_spacy_format(TRAIN_DATA_FILE, FOLDER, nlp, CONVERTED_FILE_PATH)
-
     spacy.tokens.Doc.set_extension("index", default=None, force=True)
-    doc_bin, examples = handle_convert_to_spacy(SPACY_DATA_PATH, CONVERTED_FILE, FOLDER, TRAIN_DATA_FILE)
+    doc_bin, examples = handle_spacy_data(SPACY_DATA_PATH, CONVERTED_FILE, FOLDER, TRAIN_DATA_FILE)
 
     nlp.initialize(get_examples=lambda: examples)
-
 
     os.makedirs(MODEL_SAVE_PATH, exist_ok=True)
     nlp.to_disk(MODEL_SAVE_PATH)
@@ -60,8 +56,7 @@ else:
     ner = nlp.get_pipe("ner")
     print(f"{GREEN}NER pipe already exists in blank model: {nlp.pipe_names}{RESET}")
 
-
-    doc_bin, examples = handle_convert_to_spacy(SPACY_DATA_PATH, CONVERTED_FILE, FOLDER, TRAIN_DATA_FILE)
+    doc_bin, examples = handle_spacy_data(SPACY_DATA_PATH, CONVERTED_FILE, FOLDER, TRAIN_DATA_FILE)
  
     # print_label_token_pairs(converted_data)
 
@@ -73,7 +68,7 @@ if examples:
             print(f"  - Text: '{ent.text}', Start: {ent.start_char}, End: {ent.end_char}, Label: {ent.label_}")
 
 # ------------------- TRAIN MODEL -------------------
-# train_spacy_model(MODEL_SAVE_PATH, nlp, examples)
+train_spacy_model(MODEL_SAVE_PATH, nlp, examples)
 
 
 # ------------------- VALIDATE TRAINER -------------------

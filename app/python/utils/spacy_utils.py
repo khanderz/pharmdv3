@@ -105,8 +105,8 @@ def bio_to_offset(nlp, text, labels):
         for start, end, label, token in entities
     ]
 
-# ------------------- CONVERT SPACY TO BILUO -------------------
-def handle_convert_to_spacy(SPACY_DATA_PATH, CONVERTED_FILE, FOLDER, TRAIN_DATA_FILE):
+# ------------------- LOAD/CONVERT SPACY TO BILUO -------------------
+def handle_spacy_data(SPACY_DATA_PATH, CONVERTED_FILE, FOLDER, TRAIN_DATA_FILE):
     last_hash_path = generate_path("last_train_data_hash.txt", FOLDER)
     examples = []
 
@@ -114,7 +114,7 @@ def handle_convert_to_spacy(SPACY_DATA_PATH, CONVERTED_FILE, FOLDER, TRAIN_DATA_
     current_hash = hash_train_data(FOLDER,TRAIN_DATA_FILE)
 
     if not os.path.exists(converted_file_path):
-        print(f"{BLUE}Converted file {converted_file_path} not found. Generating it from BIO format.{RESET}")
+        print(f"{BLUE}BIO TO BILUO FORMAT converted file {converted_file_path} not found. Generating it from BIO format.{RESET}")
         
         pre_examples  = convert_bio_to_spacy_format(TRAIN_DATA_FILE, FOLDER, spacy.blank("en"), converted_file_path)
         doc_bin, examples = convert_to_spacy_format(pre_examples, SPACY_DATA_PATH)
@@ -122,7 +122,7 @@ def handle_convert_to_spacy(SPACY_DATA_PATH, CONVERTED_FILE, FOLDER, TRAIN_DATA_
         print(f"{BLUE}Using existing BIO to BILUO format converted file: {converted_file_path}{RESET}")
 
     if os.path.exists(SPACY_DATA_PATH):
-        print(f"{BLUE}Converted data already exists. Checking for changes...{RESET}")
+        print(f"{BLUE}BIO TO BILUO FORMAT Converted data already exists. Checking for changes...{RESET}")
         
         try:
             with open(last_hash_path, "r") as f:
@@ -137,8 +137,9 @@ def handle_convert_to_spacy(SPACY_DATA_PATH, CONVERTED_FILE, FOLDER, TRAIN_DATA_
             doc_bin = DocBin().from_disk(SPACY_DATA_PATH)
 
             docs = list(doc_bin.get_docs(spacy.blank("en").vocab))
+            print(f"docs: {docs}")
             if docs:
-                print(f"Loaded {len(docs)} documents from doc_bin.")
+                print(f"{BLUE}Loaded {len(docs)} documents from doc_bin.{RESET}")
                 examples = [
                     Example.from_dict(doc, {"entities": [(ent.start_char, ent.end_char, ent.label_) for ent in doc.ents]})
                     for doc in docs
@@ -234,6 +235,7 @@ def convert_to_spacy_format(train_data, SPACY_DATA_PATH):
     loaded_db = DocBin().from_disk(SPACY_DATA_PATH)
     loaded_docs = list(loaded_db.get_docs(nlp_blank.vocab))
 
+    # docs = list(DocBin().from_disk("path/to/train.spacy").get_docs(nlp.vocab))
     if not list(loaded_db.get_docs(nlp_blank.vocab)):
         print(f"{RED}Warning: No documents were added to `doc_bin`.{RESET}")
     else:
