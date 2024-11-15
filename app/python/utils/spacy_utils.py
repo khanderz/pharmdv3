@@ -137,7 +137,7 @@ def handle_spacy_data(SPACY_DATA_PATH, CONVERTED_FILE, FOLDER, TRAIN_DATA_FILE, 
             doc_bin = DocBin().from_disk(SPACY_DATA_PATH)
 
             docs = list(doc_bin.get_docs(nlp.vocab))
-            # print(f"docs: {docs}")
+            
             if docs:
                 print(f"{BLUE}Loaded {len(docs)} documents from doc_bin.{RESET}")
 
@@ -146,9 +146,10 @@ def handle_spacy_data(SPACY_DATA_PATH, CONVERTED_FILE, FOLDER, TRAIN_DATA_FILE, 
                     for doc in docs
                 ]
 
-                for i, doc in enumerate(docs):
+                for _, doc in enumerate(docs):
                     entities = [(ent.text, ent.start_char, ent.end_char, ent.label_) for ent in doc.ents]
-                    print(f"Document {i} entities: {entities}")
+                    # print(f"Document {i} entities: {entities}")
+                    return entities
             else:
                 print(f"{RED}No documents loaded from doc_bin.{RESET}")
 
@@ -181,10 +182,6 @@ def handle_spacy_data(SPACY_DATA_PATH, CONVERTED_FILE, FOLDER, TRAIN_DATA_FILE, 
         except Exception as e:
             print(f"{RED}Error saving doc_bin: {e} {RESET}")
 
-    # if not examples:
-    #     print("{RED}Warning: `examples` is empty after processing. Possible serialization issue.{RESET}")
-    # else:
-    #     print(f"{BLUE}Returning {len(examples)} examples after converting to Spacy format.{RESET}")
 
     return doc_bin, examples         
 
