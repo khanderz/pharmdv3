@@ -1,5 +1,4 @@
-# app/python/salary_extraction/train_salary_expections.py
-
+# app/python/job_description_extraction/train_job_description_extraction.py
 import spacy
 import os
 from spacy.training import iob_to_biluo
@@ -14,17 +13,14 @@ from app.python.utils.data_handler import project_root
 configure_warnings()
 configure_logging()
 
-FOLDER = "salary_extraction"
+FOLDER = "job_description_extraction"
 BASE_DIR = os.path.join(project_root, FOLDER)
 
 TRAIN_DATA_FILE = "train_data.json"
 CONVERTED_FILE = "train_data_spacy.json"
 CONVERTED_FILE_PATH = os.path.join(BASE_DIR, "data", CONVERTED_FILE)
-MODEL_SAVE_PATH = os.path.join(BASE_DIR, "model", "spacy_salary_ner_model")
+MODEL_SAVE_PATH = os.path.join(BASE_DIR, "model", "spacy_job_description_ner_model")
 SPACY_DATA_PATH = os.path.join(BASE_DIR, "data", "train.spacy")
-
-# VALIDATION_DATA_FILE = "validation_data.json"
-# validation_data = load_data(VALIDATION_DATA_FILE, FOLDER)
 
 converted_data = load_data(CONVERTED_FILE, FOLDER)
 
@@ -70,40 +66,35 @@ evaluate_model(nlp, converted_data)
 
 # ------------------- TEST EXAMPLES -------------------
 
-def convert_example_to_biluo(text):
-    """Convert model predictions for the given text to BILUO format."""
-    doc = nlp(text)
+# def convert_example_to_biluo(text):
+#     """Convert model predictions for the given text to BILUO format."""
+#     doc = nlp(text)
     
-    iob_tags = [token.ent_iob_ + '-' + token.ent_type_ if token.ent_type_ else 'O' for token in doc]
-    biluo_tags = iob_to_biluo(iob_tags)
+#     iob_tags = [token.ent_iob_ + '-' + token.ent_type_ if token.ent_type_ else 'O' for token in doc]
+#     biluo_tags = iob_to_biluo(iob_tags)
     
-    return doc, biluo_tags
+#     return doc, biluo_tags
 
-def inspect_model_predictions(text):
-    """Inspect model predictions for the given text."""
-    doc, biluo_tags = convert_example_to_biluo(text)
+# def inspect_model_predictions(text):
+#     """Inspect model predictions for the given text."""
+#     doc, biluo_tags = convert_example_to_biluo(text)
 
-    print("\nOriginal Text:")
-    print(f"'{text}'\n")
-    print("Token Predictions:")
-    print(f"{'Token':<15}{'Predicted Label':<20}{'BILUO Tag':<20}")
-    print("-" * 50)
-    for token, biluo_tag in zip(doc, biluo_tags):
-        predicted_label = token.ent_type_ if token.ent_type_ else 'O'
-        print(f"{token.text:<15}{predicted_label:<20}{biluo_tag:<20}")
+#     print("\nOriginal Text:")
+#     print(f"'{text}'\n")
+#     print("Token Predictions:")
+#     print(f"{'Token':<15}{'Predicted Label':<20}{'BILUO Tag':<20}")
+#     print("-" * 50)
+#     for token, biluo_tag in zip(doc, biluo_tags):
+#         predicted_label = token.ent_type_ if token.ent_type_ else 'O'
+#         print(f"{token.text:<15}{predicted_label:<20}{biluo_tag:<20}")
 
-print("\nExample Prediction:")
-inspect_model_predictions("The salary is expected to be $100,000 annually in USD.")
+# print("\nExample Prediction:")
+# inspect_model_predictions("The salary is expected to be $100,000 annually in USD.")
 
-test_texts = [
-    "The annual salary is expected to be $120,000 USD.",
-    "Compensation ranges from €50,000 to €70,000 annually.",
-    "Base pay in Canada is CAD 60,000 per year.",
-    "This position offers a minimum salary of £45,000.",
-    "Contractor role with hourly rate of 25 AUD.",
-    "Full-time position with a salary of 80,000 GBP.",
-]
+# test_texts = [
 
-for text in test_texts:
-    print(f"\nTesting text: '{text}'")
-    inspect_model_predictions(text)
+# ]
+
+# for text in test_texts:
+#     print(f"\nTesting text: '{text}'")
+#     inspect_model_predictions(text)

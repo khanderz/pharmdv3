@@ -21,8 +21,7 @@ class JobPost < ApplicationRecord
 
   validates :job_title, presence: true
   validates :job_url, uniqueness: true
-  validates :job_salary_min, :job_salary_max, numericality: { greater_than_or_equal_to: 0 },
-                                              allow_nil: true
+  validates :job_salary_min, :job_salary_max, numericality: { greater_than_or_equal_to: 0 }, allow_nil: true
 
   # Shared methods -----------------------------------------------------------
   def self.deactivate_old_jobs(company, active_job_ids)

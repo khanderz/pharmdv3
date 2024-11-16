@@ -7,14 +7,18 @@ require 'base64'
 
 class JobPostService
   def self.extract_and_save_salary(job_post)
+    job_title = job_post.job_title.to_s
     job_description = job_post.job_description.to_s
+    job_qualifications = job_post.job_qualifications.to_s
     job_additional = job_post.job_additional.to_s
-    combined_text = "#{job_description} #{job_additional}"
 
-    puts "combined text for salary extraction: #{combined_text}"
-    return if combined_text.empty?
+    # -------------- 1. Extract salary from job description --------------
+    salary_combined_text = "#{job_description} #{job_additional}"
 
-    json_data = { text: combined_text }.to_json
+    puts "combined text for salary extraction: #{salary_combined_text}"
+    return if salary_combined_text.empty?
+
+    json_data = { text: salary_combined_text }.to_json
     encoded_data = Base64.strict_encode64(json_data)
 
     command = "python3 app/python/salary_extraction/job_salary_processing.py '#{encoded_data}'"
