@@ -1,5 +1,31 @@
 # app/python/utils/utils.py
 import re
+import spacy
+import html
+from bs4 import BeautifulSoup
+
+# Preprocess text to decode HTML entities
+# ex: &lt;p&gt;&lt;strong&gt;What You&#39;ll Achieve (Performance Outcomes)&lt;/strong&gt;&lt;/p&gt;
+# returns: <p><strong>What You'll Achieve (Performance Outcomes)</strong></p>
+def preprocess_text(text):
+    return html.unescape(text)
+
+# Clean HTML tags from text
+# ex: <p><strong>What You'll Achieve (Performance Outcomes)</strong></p>
+# returns: What You'll Achieve (Performance Outcomes)
+def clean_html_tags(html_text):
+    soup = BeautifulSoup(html_text, "html.parser")
+    return soup.get_text()
+
+def preprocess_html_content(html_text):
+    decoded_text = html.unescape(html_text)
+    clean_text = clean_html_tags(decoded_text)
+    return clean_text
+
+def preprocess_training_data(data):
+    for item in data:
+        item["text"] = preprocess_html_content(item["text"])
+    return data
 
 def clean_text(text):
     """
@@ -86,4 +112,53 @@ def add_space_to_tokens(tokens, labels, no_space_entities, punctuations):
                     all_tokens.append(" ")
                     all_labels.append("O")
     # print(f"all_tokens: {all_tokens}, all_labels: {all_labels}")
-    return all_tokens, all_labels        
+    return all_tokens, all_labels  
+      
+def calculate_entity_indices(data):
+    """
+    Takes in an array of data with empty entities and calculates the start and end indices for tokens.
+
+    Args:
+        data (list): List of dictionaries containing text and (initially empty) entity annotations.
+
+    Returns:
+        list: Updated data with calculated entity indices.
+    """
+    nlp = spacy.blank("en") 
+    
+    for item in data:
+        text = item["text"]
+        doc = nlp(text)
+        entities = []
+        
+        for token in doc:
+            entities.append({
+                "start": token.idx,
+                "end": token.idx + len(token),
+                "label": "",  
+                "token": token.text
+            })
+        
+        item["entities"] = entities
+    
+    return data
+
+def print_data_with_entities(data):
+    """
+    Prints the text with its dynamically calculated entity indices.
+    
+    Args:
+        data (list): List of dictionaries containing text and entity annotations.
+    
+    Returns:
+        None: Prints the formatted text and entities.
+    """
+    for item in data:
+        text = item["text"]
+        entities = item["entities"]
+
+        print(f"Text: {text}\n")
+        print("Tokens with Indices:")
+        for entity in entities:
+            print(f"{entity['token']} ({entity['start']}, {entity['end']}): {entity['label']}")
+        print("\n" + "-" * 50 + "\n")

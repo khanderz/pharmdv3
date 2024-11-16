@@ -10,6 +10,7 @@ from app.python.utils.spacy_utils import   handle_spacy_data
 from app.python.utils.trainer import train_spacy_model
 from app.python.utils.validation_utils import evaluate_model
 from app.python.utils.data_handler import project_root
+from app.python.utils.utils import print_token_characters
 
 configure_warnings()
 configure_logging()
@@ -34,7 +35,7 @@ if "ner" not in nlp.pipe_names:
     ner = nlp.add_pipe("ner")
     print(f"{RED}Added NER pipe to blank model: {nlp.pipe_names}{RESET}")
 
-    for label in get_label_list():
+    for label in get_label_list(entity_type="salary"):
         ner.add_label(label)
 
     spacy.tokens.Doc.set_extension("index", default=None, force=True)
@@ -49,7 +50,11 @@ else:
     ner = nlp.get_pipe("ner")
     print(f"{GREEN}NER pipe already exists in blank model: {nlp.pipe_names}{RESET}")
 
-    doc_bin, examples = handle_spacy_data(SPACY_DATA_PATH, CONVERTED_FILE, FOLDER, TRAIN_DATA_FILE, nlp)
+    train_data = load_data(TRAIN_DATA_FILE, FOLDER)
+    for text in train_data:
+        print_token_characters(text)
+
+    # doc_bin, examples = handle_spacy_data(SPACY_DATA_PATH, CONVERTED_FILE, FOLDER, TRAIN_DATA_FILE, nlp)
 
 if examples: 
     for example in examples:
