@@ -93,3 +93,4 @@ app/python/salary_extraction/data/*
 app/.DS_Store
 app/python/.DS_Store
 app/python/salary_extraction/model/spacy_salary_ner_model/tokenizer
+app/python/job_description_extraction/data/train_data.json
