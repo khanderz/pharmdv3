@@ -76,23 +76,11 @@ app/python/salary_extraction/data/train_data.json
 /.vscode
 
 app/python/salary_extraction/.DS_Store
-app/python/salary_extraction/model/spacy_salary_ner_model/config.cfg
-app/python/salary_extraction/model/spacy_salary_ner_model/ner/model
-app/python/salary_extraction/model/spacy_salary_ner_model/vocab/vectors
-app/python/salary_extraction/model/spacy_salary_ner_model/vocab/vectors.cfg
-app/python/salary_extraction/model/spacy_salary_ner_model/vocab/strings.json
-app/python/salary_extraction/model/spacy_salary_ner_model/vocab/lookups.bin
-app/python/salary_extraction/model/spacy_salary_ner_model/vocab/key2row
-app/python/salary_extraction/model/spacy_salary_ner_model/transformer/model
-app/python/salary_extraction/model/spacy_salary_ner_model/transformer/cfg
-app/python/salary_extraction/model/spacy_salary_ner_model/ner/moves
-app/python/salary_extraction/model/spacy_salary_ner_model/ner/cfg
-app/python/salary_extraction/model/spacy_salary_ner_model/meta.json
+app/python/salary_extraction/model/*
 app/python/salary_extraction/data/*
 
 .DS_Store
 app/.DS_Store
 app/python/.DS_Store
-app/python/salary_extraction/model/spacy_salary_ner_model/tokenizer
 app/python/job_description_extraction/data/*
 app/python/job_description_extraction/model/*
