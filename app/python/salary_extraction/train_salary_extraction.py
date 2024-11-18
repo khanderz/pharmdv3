@@ -50,11 +50,11 @@ else:
     ner = nlp.get_pipe("ner")
     print(f"{GREEN}NER pipe already exists in blank model: {nlp.pipe_names}{RESET}")
 
-    train_data = load_data(TRAIN_DATA_FILE, FOLDER)
-    for text in train_data:
-        print_token_characters(text)
+    # train_data = load_data(TRAIN_DATA_FILE, FOLDER)
+    # for text in train_data:
+    #     print_token_characters(text)
 
-    # doc_bin, examples = handle_spacy_data(SPACY_DATA_PATH, CONVERTED_FILE, FOLDER, TRAIN_DATA_FILE, nlp)
+    doc_bin, examples = handle_spacy_data(SPACY_DATA_PATH, CONVERTED_FILE, FOLDER, TRAIN_DATA_FILE, nlp)
 
 if examples: 
     for example in examples:

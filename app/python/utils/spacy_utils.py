@@ -146,10 +146,10 @@ def handle_spacy_data(SPACY_DATA_PATH, CONVERTED_FILE, FOLDER, TRAIN_DATA_FILE, 
                     for doc in docs
                 ]
 
-                for _, doc in enumerate(docs):
-                    entities = [(ent.text, ent.start_char, ent.end_char, ent.label_) for ent in doc.ents]
-                    # print(f"Document {i} entities: {entities}")
-                    return entities
+                # for _, doc in enumerate(docs):
+                #     entities = [(ent.text, ent.start_char, ent.end_char, ent.label_) for ent in doc.ents]
+                #     # print(f"Document {i} entities: {entities}")
+                #     return entities
             else:
                 print(f"{RED}No documents loaded from doc_bin.{RESET}")
 
@@ -181,7 +181,6 @@ def handle_spacy_data(SPACY_DATA_PATH, CONVERTED_FILE, FOLDER, TRAIN_DATA_FILE, 
                 f.write(current_hash)
         except Exception as e:
             print(f"{RED}Error saving doc_bin: {e} {RESET}")
-
 
     return doc_bin, examples         
 
