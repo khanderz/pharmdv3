@@ -84,3 +84,4 @@ app/.DS_Store
 app/python/.DS_Store
 app/python/job_description_extraction/data/*
 app/python/job_description_extraction/model/*
+app/python/job_description_extraction/data/train_data.json
