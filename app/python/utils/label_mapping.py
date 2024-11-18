@@ -19,8 +19,15 @@ JOB_DESCRIPTION_ENTITY_LABELS =[
     "CREDENTIALS",
     "EDUCATION",
     "EXPERIENCE",
-
+    "BENEFITS"
 ]
+
+    #   {
+    #     "start": ,
+    #     "end": ,
+    #     "label": "",
+    #     "token": ""
+    #   }
 
 JOB_LOCATION_ENTITY_LABELS = [
     "JOB_SETTING",
@@ -46,7 +53,8 @@ JOB_BENEFIT_ENTITY_LABELS = [
     "CULTURE",
     "PARENTAL",
     "WORK_LIFE_BALANCE",
-    "DIVERSITY"
+    "DIVERSITY",
+    "VISA_SPONSORSHIP",
 ]
 
 def generate_label_mappings(entity_type):
