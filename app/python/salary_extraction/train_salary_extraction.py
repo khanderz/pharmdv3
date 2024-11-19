@@ -97,9 +97,6 @@ def inspect_model_predictions(text):
         predicted_label = token.ent_type_ if token.ent_type_ else 'O'
         print(f"{token.text:<15}{predicted_label:<20}{biluo_tag:<20}")
 
-print("\nExample Prediction:")
-inspect_model_predictions("The salary is expected to be $100,000 annually in USD.")
-
 test_texts = [
     "The annual salary is expected to be $120,000 USD.",
     "Compensation ranges from €50,000 to €70,000 annually.",

@@ -49,6 +49,10 @@ def evaluate_model(nlp, validation_data):
         nlp_pred = nlp(example.reference.text)
         example.predicted = nlp_pred 
         examples.append(example)  
+
+        # print(f"\nText: {entry['text']}")
+        # print("Ground Truth:", [(ent["start"], ent["end"], ent["label"]) for ent in entry["entities"]])
+        # print("Predictions:", [(ent.start_char, ent.end_char, ent.label_) for ent in nlp_pred.ents])
     
     results = scorer.score(examples)
     

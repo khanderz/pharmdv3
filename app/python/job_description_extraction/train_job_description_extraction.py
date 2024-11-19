@@ -8,7 +8,7 @@ from app.python.utils.logger import GREEN, RED, RESET, configure_logging, config
 from app.python.utils.spacy_utils import   handle_spacy_data
 from app.python.utils.trainer import train_spacy_model
 from app.python.utils.utils import calculate_entity_indices, print_data_with_entities
-from app.python.utils.validation_utils import evaluate_model
+from app.python.utils.validation_utils import evaluate_model, print_label_token_pairs
 from app.python.utils.data_handler import project_root
 from transformers import LongformerTokenizer, LongformerModel
 
@@ -40,6 +40,7 @@ MAX_SEQ_LENGTH = 4096
 converted_data = load_data(CONVERTED_FILE, FOLDER)
 nlp = load_spacy_model(MODEL_SAVE_PATH, MAX_SEQ_LENGTH)
 
+# print_label_token_pairs(converted_data)
 if "ner" not in nlp.pipe_names:
     ner = nlp.add_pipe("ner")
     print(f"{RED}Added NER pipe to blank model: {nlp.pipe_names}{RESET}")
@@ -61,12 +62,6 @@ else:
 
     doc_bin, examples = handle_spacy_data(SPACY_DATA_PATH, CONVERTED_FILE, FOLDER, TRAIN_DATA_FILE, nlp, tokenizer, MAX_SEQ_LENGTH)
 
-    # for example in examples[:5]:   
-    #     print(f"Text: {example.reference.text}")
-    #     print("Entities:")
-    #     for ent in example.reference.ents:
-    #         print(f"  - Text: '{ent.text}', Start: {ent.start_char}, End: {ent.end_char}, Label: {ent.label_}")
-
 # if examples: 
 #     for example in examples:
 #         print(f"\nText: '{example.reference.text}'")
@@ -83,49 +78,47 @@ evaluate_model(nlp, converted_data)
 
 
 # ------------------- TEST EXAMPLES -------------------
-# def inspect_job_description_predictions(text, nlp, tokenizer, max_seq_length=4096):
-#     """Inspect model predictions for job description text."""
-#     # Tokenize the text with the long transformer's tokenizer
-#     tokens = tokenizer(
-#         text,
-#         max_length=max_seq_length,
-#         truncation=True,
-#         padding="max_length",
-#         return_tensors="pt",
-#     )
+def convert_example_to_biluo(text):
+    """Convert model predictions for the given text to BILUO format."""
+    tokens = tokenizer(
+        text,
+        max_length=MAX_SEQ_LENGTH,
+        truncation=True,
+        padding="max_length",
+        return_tensors="pt",
+    )
     
-#     # Convert tokens back to text for spaCy model
-#     decoded_text = tokenizer.decode(tokens["input_ids"][0], skip_special_tokens=True)
-    
-#     # Process the text with the spaCy model
-#     doc = nlp(decoded_text)
-    
-#     print("\nOriginal Text:")
-#     print(f"'{text}'\n")
-#     print("Predicted Entities:")
-#     print(f"{'Entity Text':<40}{'Start':<10}{'End':<10}{'Label':<20}")
-#     print("-" * 80)
-#     for ent in doc.ents:
-#         print(f"{ent.text:<40}{ent.start_char:<10}{ent.end_char:<10}{ent.label_:<20}")
+    decoded_text = tokenizer.decode(tokens["input_ids"][0], skip_special_tokens=True)
 
-# # Example Predictions
-# print("\nExample Prediction:")
-# inspect_job_description_predictions(
-#     "The Senior Technical Engagement Manager oversees project timelines, "
-#     "status updates, and provides day-to-day operational leadership.",
-#     nlp,
-#     tokenizer,
-# )
+    doc = nlp(decoded_text)
 
-# # Test texts
-# test_texts = [
-#     "This position requires 5+ years of experience in project management and a proven track record.",
-#     "Compensation includes a salary range of $100,000 to $120,000 plus benefits.",
-#     "Candidates must be proficient in data analysis and possess strong communication skills.",
-#     "Responsibilities include providing technical guidance and leading cross-functional teams.",
-#     "The ideal candidate should hold a Master's degree in a relevant field.",
-# ]
+    iob_tags = [token.ent_iob_ + '-' + token.ent_type_ if token.ent_type_ else 'O' for token in doc]
+    biluo_tags = iob_to_biluo(iob_tags)
+    
+    return doc, biluo_tags
+
+def inspect_job_description_predictions(text):
+    """Inspect model predictions for job description text."""
+    doc, biluo_tags = convert_example_to_biluo(text)
+    
+    print("\nOriginal Text:")
+    print(f"'{text}'\n")
+    print("Token Predictions:")
+    print(f"{'Token':<15}{'Predicted Label':<20}{'BILUO Tag':<20}")
+    print("-" * 50)
+    for token, biluo_tag in zip(doc, biluo_tags):
+        predicted_label = token.ent_type_ if token.ent_type_ else 'O'
+        print(f"{token.text:<15}{predicted_label:<20}{biluo_tag:<20}")
+
+
+test_texts = [
+    "This position requires 5+ years of experience in project management and a proven track record.",
+    "Compensation includes a salary range of $100,000 to $120,000 plus benefits.",
+    "Candidates must be proficient in data analysis and possess strong communication skills.",
+    "Responsibilities include providing technical guidance and leading cross-functional teams.",
+    "The ideal candidate should hold a Master's degree in a relevant field.",
+]
 
 # for text in test_texts:
 #     print(f"\nTesting text: '{text}'")
-#     inspect_job_description_predictions(text, nlp, tokenizer)
+#     inspect_job_description_predictions(text)
