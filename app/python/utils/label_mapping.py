@@ -20,10 +20,26 @@ JOB_DESCRIPTION_ENTITY_LABELS =[
     "EDUCATION",
     "EXPERIENCE",
     "BENEFITS",
+    "JOB_ROLE",
     "JOB_TITLE",
+    "JOB_SENIORITY",
+    "JOB_DEPT",
     "JOB_TEAM",
+    "JOB_SETTING",
+    "JOB_COUNTRY",
     "JOB_CITY",
-    "JOB_SETTING"
+    "JOB_STATE",
+    "COMPENSATION",
+    "RETIREMENT",
+    "OFFICE_LIFE",
+    "PROFESSIONAL_DEVELOPMENT",
+    "WELLNESS",
+    "CULTURE",
+    "PARENTAL",
+    "WORK_LIFE_BALANCE",
+    "DIVERSITY",
+    "VISA_SPONSORSHIP",
+    "ADDITIONAL_PERKS"
 ]
 
     #   {
@@ -59,6 +75,7 @@ JOB_BENEFIT_ENTITY_LABELS = [
     "WORK_LIFE_BALANCE",
     "DIVERSITY",
     "VISA_SPONSORSHIP",
+    "ADDITIONAL_PERKS"
 ]
 
 def generate_label_mappings(entity_type):

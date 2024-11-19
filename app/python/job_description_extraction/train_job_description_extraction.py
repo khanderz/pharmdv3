@@ -116,5 +116,5 @@ test_texts = [
     "The ideal candidate should hold a Master's degree in a relevant field.",
 ]
 
-# for text in test_texts:
-#     inspect_job_description_predictions(text)
+for text in test_texts:
+    inspect_job_description_predictions(text)

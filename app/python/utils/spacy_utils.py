@@ -4,6 +4,7 @@ import json
 import re
 import os
 import spacy
+import torch
 from spacy.tokens import DocBin
 from spacy.training import Example
 from app.python.utils.data_handler import generate_path, hash_train_data, load_data
@@ -139,26 +140,47 @@ def handle_spacy_data(SPACY_DATA_PATH, CONVERTED_FILE, FOLDER, TRAIN_DATA_FILE, 
             docs = list(doc_bin.get_docs(nlp.vocab))
 
             processed_examples = []
-            for doc in docs:
+            batch_size = 8
+
+            for i in range(0, len(docs), batch_size):
+                batch_docs = docs[i:i + batch_size]
+                
                 if tokenizer and MAX_SEQ_LENGTH:
-                    inputs = tokenizer(
-                        doc.text,
+                    batch_inputs = tokenizer(
+                        [doc.text for doc in batch_docs],
                         max_length=MAX_SEQ_LENGTH,
                         truncation=True,
                         padding="max_length",
                         return_tensors="pt",
                     )
-                    outputs = longformer_model(**inputs)
-                    embeddings = outputs.last_hidden_state 
-                    entities = [(ent.start_char, ent.end_char, ent.label_) for ent in doc.ents]
-                    processed_examples.append({"inputs": inputs, "embeddings": embeddings, "entities": entities})
+                    outputs = longformer_model(**batch_inputs)
+                    batch_embeddings = outputs.last_hidden_state.cpu().detach().numpy() 
+
+                    for j, doc in enumerate(batch_docs):
+                        entities = [(ent.start_char, ent.end_char, ent.label_) for ent in doc.ents]
+                        processed_examples.append({
+                            "inputs": batch_inputs,
+                            "embeddings": batch_embeddings[j],
+                            "entities": entities
+                        })
+
+                    del batch_inputs, outputs, batch_embeddings
+                    torch.cuda.empty_cache()
+
                 else:
-                    entities = [(ent.start_char, ent.end_char, ent.label_) for ent in doc.ents]
-                    processed_examples.append({"inputs": None, "entities": entities})
+                    for doc in batch_docs:
+                        entities = [(ent.start_char, ent.end_char, ent.label_) for ent in doc.ents]
+                        processed_examples.append({
+                            "inputs": None,
+                            "embeddings": None,   
+                            "entities": entities
+                        })
+                
+            examples = []
+            for item, doc in zip(processed_examples, docs):
+                examples.append(Example.from_dict(doc, {"entities": item["entities"]}))
 
-                # examples.append(Example.from_dict(doc, {"entities": entities})) //TODO: check if this is needed
-
-            return doc_bin, processed_examples  
+            return doc_bin, examples
         else:
             print(f"{BLUE}Training data has changed. Converting data now...{RESET}")
             train_data = load_data(CONVERTED_FILE, FOLDER)
