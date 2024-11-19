@@ -37,6 +37,7 @@ def load_spacy_model(MODEL_SAVE_PATH, MAX_SEQ_LENGTH=None):
             },
             last=True,
         )
+        
     return nlp    
 
 def generate_path(file_name, folder):
