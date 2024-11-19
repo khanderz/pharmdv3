@@ -11,7 +11,8 @@ def train_spacy_model(MODEL_SAVE_PATH, nlp, examples):
     print("\nStarting model training...")
     optimizer = nlp.begin_training()
     # print(f"examples: {examples}")
-    for epoch in range(10):
+    
+    for epoch in range(3):
         random.shuffle(examples)
         losses = {}
 

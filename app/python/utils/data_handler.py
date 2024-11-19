@@ -7,25 +7,35 @@ from app.python.utils.logger import BLUE, RED, RESET
 
 project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../..", "app", "python"))
 
-def load_spacy_model(MODEL_SAVE_PATH):
+def load_spacy_model(MODEL_SAVE_PATH, MAX_SEQ_LENGTH=None):
+    """
+    Load an existing spaCy model or initialize a new Longformer-based model.
+    """
+        
     full_path = os.path.join(project_root, MODEL_SAVE_PATH)
 
     if os.path.exists(full_path):
         print(f"{BLUE}Loading existing model for further training...{RESET}")
         nlp = spacy.load(full_path)
-        # nlp = spacy.blank("en")
     else:
         print(f"{RED}No existing model found. Initializing new model...{RESET}")
+
         nlp = spacy.blank("en")
         nlp.add_pipe(
             "transformer",
             config={
                 "model": {
                     "@architectures": "spacy-transformers.TransformerModel.v1",
-                    "name": "roberta-base",
+                    "name": "allenai/longformer-base-4096",
+                    "tokenizer_config": {
+                        "max_length": MAX_SEQ_LENGTH or 4096,
+                        "truncation": True,
+                        "padding": "max_length",
+                    },
                     "get_spans": {"@span_getters": "spacy-transformers.doc_spans.v1"},
                 }
             },
+            last=True,
         )
     return nlp    
 

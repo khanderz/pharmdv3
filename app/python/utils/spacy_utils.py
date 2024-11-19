@@ -106,7 +106,7 @@ def bio_to_offset(nlp, text, labels):
     ]
 
 # ------------------- LOAD/CONVERT SPACY TO BILUO -------------------
-def handle_spacy_data(SPACY_DATA_PATH, CONVERTED_FILE, FOLDER, TRAIN_DATA_FILE, nlp):
+def handle_spacy_data(SPACY_DATA_PATH, CONVERTED_FILE, FOLDER, TRAIN_DATA_FILE, nlp, tokenizer=None, MAX_SEQ_LENGTH=None):
     last_hash_path = generate_path("last_train_data_hash.txt", FOLDER)
     examples = []
 
@@ -134,26 +134,29 @@ def handle_spacy_data(SPACY_DATA_PATH, CONVERTED_FILE, FOLDER, TRAIN_DATA_FILE, 
 
         if current_hash == last_hash:
             print(f"{BLUE}Training data has not changed. Loading existing data...{RESET}")
-            doc_bin = DocBin().from_disk(SPACY_DATA_PATH)
-
-            docs = list(doc_bin.get_docs(nlp.vocab))
             
-            if docs:
-                print(f"{BLUE}Loaded {len(docs)} documents from doc_bin.{RESET}")
+            doc_bin = DocBin().from_disk(SPACY_DATA_PATH)
+            docs = list(doc_bin.get_docs(nlp.vocab))
 
-                examples = [
-                    Example.from_dict(doc, {"entities": [(ent.start_char, ent.end_char, ent.label_) for ent in doc.ents]})
-                    for doc in docs
-                ]
+            processed_examples = []
+            for doc in docs:
+                if tokenizer and MAX_SEQ_LENGTH:
+                    inputs = tokenizer(
+                        doc.text,
+                        max_length=MAX_SEQ_LENGTH,
+                        truncation=True,
+                        padding="max_length",
+                        return_tensors="pt",
+                    )
+                    entities = [(ent.start_char, ent.end_char, ent.label_) for ent in doc.ents]
+                    processed_examples.append({"inputs": inputs, "entities": entities})
+                else:
+                    entities = [(ent.start_char, ent.end_char, ent.label_) for ent in doc.ents]
+                    processed_examples.append({"inputs": None, "entities": entities})
 
-                # for _, doc in enumerate(docs):
-                #     entities = [(ent.text, ent.start_char, ent.end_char, ent.label_) for ent in doc.ents]
-                #     # print(f"Document {i} entities: {entities}")
-                #     return entities
-            else:
-                print(f"{RED}No documents loaded from doc_bin.{RESET}")
+                examples.append(Example.from_dict(doc, {"entities": entities}))
 
-            return doc_bin, examples    
+            return doc_bin, examples  
         else:
             print(f"{BLUE}Training data has changed. Converting data now...{RESET}")
             train_data = load_data(CONVERTED_FILE, FOLDER)
@@ -208,6 +211,12 @@ def convert_to_spacy_format(train_data, SPACY_DATA_PATH, nlp):
     db.to_disk(SPACY_DATA_PATH)
     loaded_db = DocBin().from_disk(SPACY_DATA_PATH)
     loaded_docs = list(loaded_db.get_docs(nlp.vocab))
+
+    # for doc in loaded_docs:
+    #     print(f"\nText: {doc.text}")
+    #     print("Entities:")
+    #     for ent in doc.ents:
+    #         print(f"  - Text: '{ent.text}', Start: {ent.start_char}, End: {ent.end_char}, Label: {ent.label_}")
 
     # docs = list(DocBin().from_disk("path/to/train.spacy").get_docs(nlp.vocab))
     if not list(loaded_db.get_docs(nlp.vocab)):

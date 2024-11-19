@@ -19,7 +19,11 @@ JOB_DESCRIPTION_ENTITY_LABELS =[
     "CREDENTIALS",
     "EDUCATION",
     "EXPERIENCE",
-    "BENEFITS"
+    "BENEFITS",
+    "JOB_TITLE",
+    "JOB_TEAM",
+    "JOB_CITY",
+    "JOB_SETTING"
 ]
 
     #   {
