@@ -5,8 +5,14 @@ import os
 from spacy.training import iob_to_biluo
 from app.python.utils.label_mapping import get_label_list
 from app.python.utils.data_handler import load_data, load_spacy_model
-from app.python.utils.logger import GREEN, RED, RESET, configure_logging, configure_warnings
-from app.python.utils.spacy_utils import   handle_spacy_data
+from app.python.utils.logger import (
+    GREEN,
+    RED,
+    RESET,
+    configure_logging,
+    configure_warnings,
+)
+from app.python.utils.spacy_utils import handle_spacy_data
 from app.python.utils.trainer import train_spacy_model
 from app.python.utils.validation_utils import evaluate_model
 from app.python.utils.data_handler import project_root
@@ -39,7 +45,9 @@ if "ner" not in nlp.pipe_names:
         ner.add_label(label)
 
     spacy.tokens.Doc.set_extension("index", default=None, force=True)
-    doc_bin, examples = handle_spacy_data(SPACY_DATA_PATH, CONVERTED_FILE, FOLDER, TRAIN_DATA_FILE, nlp)
+    doc_bin, examples = handle_spacy_data(
+        SPACY_DATA_PATH, CONVERTED_FILE, FOLDER, TRAIN_DATA_FILE, nlp
+    )
 
     nlp.initialize(get_examples=lambda: examples)
 
@@ -54,14 +62,18 @@ else:
     # for text in train_data:
     #     print_token_characters(text)
 
-    doc_bin, examples = handle_spacy_data(SPACY_DATA_PATH, CONVERTED_FILE, FOLDER, TRAIN_DATA_FILE, nlp)
+    doc_bin, examples = handle_spacy_data(
+        SPACY_DATA_PATH, CONVERTED_FILE, FOLDER, TRAIN_DATA_FILE, nlp
+    )
 
-if examples: 
+if examples:
     for example in examples:
         print(f"\nText: '{example.reference.text}'")
         print("Entities after initialization:")
         for ent in example.reference.ents:
-            print(f"  - Text: '{ent.text}', Start: {ent.start_char}, End: {ent.end_char}, Label: {ent.label_}")
+            print(
+                f"  - Text: '{ent.text}', Start: {ent.start_char}, End: {ent.end_char}, Label: {ent.label_}"
+            )
 
 # ------------------- TRAIN MODEL -------------------
 train_spacy_model(MODEL_SAVE_PATH, nlp, examples)
@@ -75,14 +87,19 @@ evaluate_model(nlp, converted_data)
 
 # ------------------- TEST EXAMPLES -------------------
 
+
 def convert_example_to_biluo(text):
     """Convert model predictions for the given text to BILUO format."""
     doc = nlp(text)
-    
-    iob_tags = [token.ent_iob_ + '-' + token.ent_type_ if token.ent_type_ else 'O' for token in doc]
+
+    iob_tags = [
+        token.ent_iob_ + "-" + token.ent_type_ if token.ent_type_ else "O"
+        for token in doc
+    ]
     biluo_tags = iob_to_biluo(iob_tags)
-    
+
     return doc, biluo_tags
+
 
 def inspect_model_predictions(text):
     """Inspect model predictions for the given text."""
@@ -94,8 +111,9 @@ def inspect_model_predictions(text):
     print(f"{'Token':<15}{'Predicted Label':<20}{'BILUO Tag':<20}")
     print("-" * 50)
     for token, biluo_tag in zip(doc, biluo_tags):
-        predicted_label = token.ent_type_ if token.ent_type_ else 'O'
+        predicted_label = token.ent_type_ if token.ent_type_ else "O"
         print(f"{token.text:<15}{predicted_label:<20}{biluo_tag:<20}")
+
 
 test_texts = [
     "The annual salary is expected to be $120,000 USD.",

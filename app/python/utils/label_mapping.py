@@ -10,12 +10,12 @@ SALARY_ENTITY_LABELS = [
     "JOB_COUNTRY",
 ]
 
-JOB_DESCRIPTION_ENTITY_LABELS =[
+JOB_DESCRIPTION_ENTITY_LABELS = [
     "DESCRIPTION",
     "RESPONSIBILITIES",
     "QUALIFICATIONS",
     "ADDITIONAL",
-    'SKILLS',
+    "SKILLS",
     "CREDENTIALS",
     "EDUCATION",
     "EXPERIENCE",
@@ -37,15 +37,15 @@ JOB_DESCRIPTION_ENTITY_LABELS =[
     "WORK_LIFE_BALANCE",
     "DIVERSITY",
     "VISA_SPONSORSHIP",
-    "ADDITIONAL_PERKS"
+    "ADDITIONAL_PERKS",
 ]
 
-    #   {
-    #     "start": ,
-    #     "end": ,
-    #     "label": "",
-    #     "token": ""
-    #   }
+#   {
+#     "start": ,
+#     "end": ,
+#     "label": "",
+#     "token": ""
+#   }
 
 JOB_LOCATION_ENTITY_LABELS = [
     "JOB_SETTING",
@@ -54,12 +54,7 @@ JOB_LOCATION_ENTITY_LABELS = [
     "JOB_STATE",
 ]
 
-JOB_ROLE_ENTITY_LABELS = [
-    "JOB_ROLE",
-    "JOB_SENIORITY",
-    "JOB_DEPT",
-    "JOB_TEAM"
-]
+JOB_ROLE_ENTITY_LABELS = ["JOB_ROLE", "JOB_SENIORITY", "JOB_DEPT", "JOB_TEAM"]
 
 JOB_BENEFIT_ENTITY_LABELS = [
     "COMPENSATION",
@@ -72,8 +67,9 @@ JOB_BENEFIT_ENTITY_LABELS = [
     "WORK_LIFE_BALANCE",
     "DIVERSITY",
     "VISA_SPONSORSHIP",
-    "ADDITIONAL_PERKS"
+    "ADDITIONAL_PERKS",
 ]
+
 
 def generate_label_mappings(entity_type):
     if entity_type == "salary":
@@ -96,14 +92,17 @@ def generate_label_mappings(entity_type):
 
     return label_list, label_to_id, id_to_label
 
+
 # Utils
 def get_label_list(entity_type):
     label_list, _, _ = generate_label_mappings(entity_type)
     return label_list
 
+
 def get_label_to_id(entity_type):
     _, label_to_id, _ = generate_label_mappings(entity_type)
     return label_to_id
+
 
 def get_id_to_label(entity_type):
     _, _, id_to_label = generate_label_mappings(entity_type)

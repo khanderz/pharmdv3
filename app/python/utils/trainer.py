@@ -6,13 +6,14 @@ from spacy.tokens import Doc
 if not Doc.has_extension("index"):
     Doc.set_extension("index", default=None)
 
+
 def train_spacy_model(MODEL_SAVE_PATH, nlp, examples):
     """Train the spaCy model with the given examples."""
     print("\nStarting model training...")
     optimizer = nlp.begin_training()
     # optimizer = nlp.resume_training()
     # print(f"examples: {examples}")
-    
+
     for epoch in range(10):
         random.shuffle(examples)
         losses = {}

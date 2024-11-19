@@ -8,6 +8,7 @@ GREEN = "\033[32m"
 BLUE = "\033[34m"
 RESET = "\033[0m"
 
+
 def configure_warnings():
     warnings.filterwarnings("ignore", message="`resume_download` is deprecated")
     warnings.filterwarnings(
@@ -20,6 +21,7 @@ def configure_warnings():
     )
     warnings.simplefilter(action="ignore", category=FutureWarning)
     warnings.filterwarnings("ignore", category=UserWarning)
+
 
 def configure_logging():
     logging.getLogger("transformers").setLevel(logging.WARNING)
