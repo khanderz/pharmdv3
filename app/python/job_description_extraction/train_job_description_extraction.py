@@ -8,7 +8,7 @@ from app.python.utils.logger import GREEN, RED, RESET, configure_logging, config
 from app.python.utils.spacy_utils import   handle_spacy_data
 from app.python.utils.trainer import train_spacy_model
 from app.python.utils.utils import calculate_entity_indices, print_data_with_entities
-from app.python.utils.validation_utils import evaluate_model, print_label_token_pairs
+from app.python.utils.validation_utils import evaluate_model
 from app.python.utils.data_handler import project_root
 from transformers import LongformerTokenizer, LongformerModel
 
@@ -40,7 +40,6 @@ MAX_SEQ_LENGTH = 4096
 converted_data = load_data(CONVERTED_FILE, FOLDER)
 nlp = load_spacy_model(MODEL_SAVE_PATH, MAX_SEQ_LENGTH)
 
-# print_label_token_pairs(converted_data)
 if "ner" not in nlp.pipe_names:
     ner = nlp.add_pipe("ner")
     print(f"{RED}Added NER pipe to blank model: {nlp.pipe_names}{RESET}")
@@ -106,6 +105,7 @@ def inspect_job_description_predictions(text):
     print("Token Predictions:")
     print(f"{'Token':<15}{'Predicted Label':<20}{'BILUO Tag':<20}")
     print("-" * 50)
+    
     for token, biluo_tag in zip(doc, biluo_tags):
         predicted_label = token.ent_type_ if token.ent_type_ else 'O'
         print(f"{token.text:<15}{predicted_label:<20}{biluo_tag:<20}")
@@ -119,6 +119,6 @@ test_texts = [
     "The ideal candidate should hold a Master's degree in a relevant field.",
 ]
 
-# for text in test_texts:
-#     print(f"\nTesting text: '{text}'")
-#     inspect_job_description_predictions(text)
+for text in test_texts:
+    print(f"\nTesting text: '{text}'")
+    inspect_job_description_predictions(text)
