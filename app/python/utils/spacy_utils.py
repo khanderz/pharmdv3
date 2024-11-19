@@ -106,7 +106,7 @@ def bio_to_offset(nlp, text, labels):
     ]
 
 # ------------------- LOAD/CONVERT SPACY TO BILUO -------------------
-def handle_spacy_data(SPACY_DATA_PATH, CONVERTED_FILE, FOLDER, TRAIN_DATA_FILE, nlp, tokenizer=None, MAX_SEQ_LENGTH=None):
+def handle_spacy_data(SPACY_DATA_PATH, CONVERTED_FILE, FOLDER, TRAIN_DATA_FILE, nlp, tokenizer=None, MAX_SEQ_LENGTH=None, longformer_model=None):
     last_hash_path = generate_path("last_train_data_hash.txt", FOLDER)
     examples = []
 
@@ -148,15 +148,17 @@ def handle_spacy_data(SPACY_DATA_PATH, CONVERTED_FILE, FOLDER, TRAIN_DATA_FILE, 
                         padding="max_length",
                         return_tensors="pt",
                     )
+                    outputs = longformer_model(**inputs)
+                    embeddings = outputs.last_hidden_state 
                     entities = [(ent.start_char, ent.end_char, ent.label_) for ent in doc.ents]
-                    processed_examples.append({"inputs": inputs, "entities": entities})
+                    processed_examples.append({"inputs": inputs, "embeddings": embeddings, "entities": entities})
                 else:
                     entities = [(ent.start_char, ent.end_char, ent.label_) for ent in doc.ents]
                     processed_examples.append({"inputs": None, "entities": entities})
 
-                examples.append(Example.from_dict(doc, {"entities": entities}))
+                # examples.append(Example.from_dict(doc, {"entities": entities})) //TODO: check if this is needed
 
-            return doc_bin, examples  
+            return doc_bin, processed_examples  
         else:
             print(f"{BLUE}Training data has changed. Converting data now...{RESET}")
             train_data = load_data(CONVERTED_FILE, FOLDER)
