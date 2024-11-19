@@ -31,6 +31,21 @@ def verify_data_consistency(validation_data):
                 text[start:end] == entity["token"]
             ), f"{RED}{print_token_characters(text)}{RESET}"
 
+def validate_entities(data, nlp):
+    for idx, item in enumerate(data):
+        doc = nlp(item["text"])
+        for entity in item["entities"]:
+            start, end, label = entity["start"], entity["end"], entity["label"]
+            extracted_token = item["text"][start:end]
+            spacy_token = doc.char_span(start, end)
+            
+            if spacy_token is None or extracted_token != spacy_token.text:
+                print(
+                    f"Mismatch found in object {idx + 1}:\n"
+                    f"  Label: {label}\n"
+                    f"  Expected: '{extracted_token}' (start={start}, end={end})\n"
+                    f"  Actual: '{spacy_token.text if spacy_token else None}'\n"
+                )
 
 def fuzzy_match(true_entities, pred_entities, tolerance=1):
     matched = []
