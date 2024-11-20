@@ -1,15 +1,9 @@
-# google_sheets_updater.py
-import os
-from dotenv import load_dotenv
+# app/python/companies/google_sheets_updater.py
 from google.oauth2 import service_account
 from googleapiclient.discovery import build
 import pandas as pd
 
-load_dotenv()
-
-
-def load_sheet_data(sheet_id, range_name):
-    credentials_path = os.getenv("GOOGLE_CREDENTIALS_PATH")
+def load_sheet_data(credentials_path, sheet_id, range_name):
     creds = service_account.Credentials.from_service_account_file(credentials_path)
     service = build("sheets", "v4", credentials=creds)
     sheet = service.spreadsheets()
@@ -31,13 +25,12 @@ def load_sheet_data(sheet_id, range_name):
     return data
 
 
-def update_google_sheet(sheet_id, range_name, data):
+def update_google_sheet(credentials_path, sheet_id, range_name, data):
     data = data.fillna("").astype(str)
     data = data.iloc[:, :18]
     values = [data.columns.tolist()] + data.values.tolist()
 
     body = {"values": values}
-    credentials_path = os.getenv("GOOGLE_CREDENTIALS_PATH")
     creds = service_account.Credentials.from_service_account_file(credentials_path)
     service = build("sheets", "v4", credentials=creds)
     sheet = service.spreadsheets()
@@ -57,13 +50,3 @@ def update_google_sheet(sheet_id, range_name, data):
     except Exception as e:
         print(f"An error occurred during update: {e}")
 
-
-def remove_duplicates(data):
-    data["company_name"] = data["company_name"].str.lower().str.strip()
-    initial_count = len(data)
-    data = data.drop_duplicates(subset="company_name", keep="first").reset_index(
-        drop=True
-    )
-    final_count = len(data)
-    print(f"Removed {initial_count - final_count} duplicate rows.")
-    return data

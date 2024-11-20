@@ -1,8 +1,5 @@
+# app/python/hooks/get_linkedin_data.py
 from linkedin_api import Linkedin
-import os
-from dotenv import load_dotenv
-
-load_dotenv()
 
 def fetch_company_data(company_name, username, password):
     """
@@ -24,12 +21,3 @@ def fetch_company_data(company_name, username, password):
     except Exception as e:
         print(f"Failed to authenticate with LinkedIn: {e}")
         return {"error": f"Authentication error: {str(e)}"}
-
-if __name__ == "__main__":
-    USERNAME = os.getenv("LINKEDIN_USERNAME")
-    PASSWORD = os.getenv("LINKEDIN_PASSWORD")
-
-    COMPANY_NAME = "91181613"
-
-    company_data = fetch_company_data(COMPANY_NAME, USERNAME, PASSWORD)
-    print(company_data)
