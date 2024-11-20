@@ -1,7 +1,6 @@
 # main.py
 import os
 from dotenv import load_dotenv
-import pandas as pd
 from google_sheets_updater import (
     load_sheet_data,
     update_google_sheet,

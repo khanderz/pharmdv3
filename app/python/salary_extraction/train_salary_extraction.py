@@ -16,7 +16,6 @@ from app.python.utils.spacy_utils import handle_spacy_data
 from app.python.utils.trainer import train_spacy_model
 from app.python.utils.validation_utils import evaluate_model
 from app.python.utils.data_handler import project_root
-from app.python.utils.utils import print_token_characters
 
 configure_warnings()
 configure_logging()
@@ -24,14 +23,10 @@ configure_logging()
 FOLDER = "salary_extraction"
 BASE_DIR = os.path.join(project_root, FOLDER)
 
-TRAIN_DATA_FILE = "train_data.json"
 CONVERTED_FILE = "train_data_spacy.json"
 CONVERTED_FILE_PATH = os.path.join(BASE_DIR, "data", CONVERTED_FILE)
 MODEL_SAVE_PATH = os.path.join(BASE_DIR, "model", "spacy_salary_ner_model")
 SPACY_DATA_PATH = os.path.join(BASE_DIR, "data", "train.spacy")
-
-# VALIDATION_DATA_FILE = "validation_data.json"
-# validation_data = load_data(VALIDATION_DATA_FILE, FOLDER)
 
 converted_data = load_data(CONVERTED_FILE, FOLDER)
 
@@ -46,7 +41,7 @@ if "ner" not in nlp.pipe_names:
 
     spacy.tokens.Doc.set_extension("index", default=None, force=True)
     doc_bin, examples = handle_spacy_data(
-        SPACY_DATA_PATH, CONVERTED_FILE, FOLDER, TRAIN_DATA_FILE, nlp
+        SPACY_DATA_PATH, CONVERTED_FILE, FOLDER, nlp
     )
 
     nlp.initialize(get_examples=lambda: examples)
@@ -58,30 +53,24 @@ else:
     ner = nlp.get_pipe("ner")
     print(f"{GREEN}NER pipe already exists in blank model: {nlp.pipe_names}{RESET}")
 
-    # train_data = load_data(TRAIN_DATA_FILE, FOLDER)
-    # for text in train_data:
-    #     print_token_characters(text)
-
     doc_bin, examples = handle_spacy_data(
-        SPACY_DATA_PATH, CONVERTED_FILE, FOLDER, TRAIN_DATA_FILE, nlp
+        SPACY_DATA_PATH, CONVERTED_FILE, FOLDER, nlp
     )
 
-if examples:
-    for example in examples:
-        print(f"\nText: '{example.reference.text}'")
-        print("Entities after initialization:")
-        for ent in example.reference.ents:
-            print(
-                f"  - Text: '{ent.text}', Start: {ent.start_char}, End: {ent.end_char}, Label: {ent.label_}"
-            )
+# if examples:
+#     for example in examples:
+#         print(f"\nText: '{example.reference.text}'")
+#         print("Entities after initialization:")
+#         for ent in example.reference.ents:
+#             print(
+#                 f"  - Text: '{ent.text}', Start: {ent.start_char}, End: {ent.end_char}, Label: {ent.label_}"
+#             )
 
 # ------------------- TRAIN MODEL -------------------
 train_spacy_model(MODEL_SAVE_PATH, nlp, examples)
 
 
 # ------------------- VALIDATE TRAINER -------------------
-
-# evaluate_model(nlp, validation_data)
 evaluate_model(nlp, converted_data)
 
 

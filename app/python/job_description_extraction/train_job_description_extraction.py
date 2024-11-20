@@ -24,19 +24,16 @@ configure_logging()
 FOLDER = "job_description_extraction"
 BASE_DIR = os.path.join(project_root, FOLDER)
 
-TRAIN_DATA_FILE = "train_data.json"
 CONVERTED_FILE = "train_data_spacy.json"
 CONVERTED_FILE_PATH = os.path.join(BASE_DIR, "data", CONVERTED_FILE)
 MODEL_SAVE_PATH = os.path.join(BASE_DIR, "model", "spacy_job_description_ner_model")
 SPACY_DATA_PATH = os.path.join(BASE_DIR, "data", "train.spacy")
 
-train_data = load_data(TRAIN_DATA_FILE, FOLDER)
 # updated_data = calculate_entity_indices(train_data)
 # print_data_with_entities(updated_data)
 
 tokenizer = LongformerTokenizer.from_pretrained("allenai/longformer-base-4096")
 transformer = LongformerModel.from_pretrained("allenai/longformer-base-4096")
-
 
 MAX_SEQ_LENGTH = 4096
 
@@ -55,7 +52,6 @@ if "ner" not in nlp.pipe_names:
         SPACY_DATA_PATH,
         CONVERTED_FILE,
         FOLDER,
-        TRAIN_DATA_FILE,
         nlp,
         tokenizer,
         MAX_SEQ_LENGTH,
@@ -75,7 +71,6 @@ else:
         SPACY_DATA_PATH,
         CONVERTED_FILE,
         FOLDER,
-        TRAIN_DATA_FILE,
         nlp,
         tokenizer,
         MAX_SEQ_LENGTH,

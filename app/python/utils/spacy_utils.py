@@ -143,7 +143,6 @@ def handle_spacy_data(
     SPACY_DATA_PATH,
     CONVERTED_FILE,
     FOLDER,
-    TRAIN_DATA_FILE,
     nlp,
     tokenizer=None,
     MAX_SEQ_LENGTH=None,
@@ -152,43 +151,18 @@ def handle_spacy_data(
     last_hash_path = generate_path("last_train_data_hash.txt", FOLDER)
     examples = []
 
-    converted_file_path = generate_path(CONVERTED_FILE, FOLDER)
-    current_hash = hash_train_data(FOLDER, TRAIN_DATA_FILE)
-
-    if not os.path.exists(converted_file_path):
-        print(
-            f"{BLUE}BIO TO BILUO FORMAT converted file {converted_file_path} not found. Generating it from BIO format.{RESET}"
-        )
-
-        pre_examples = convert_bio_to_spacy_format(
-            TRAIN_DATA_FILE, FOLDER, nlp, converted_file_path
-        )
-        doc_bin, examples = convert_to_spacy_format(
-            pre_examples,
-            SPACY_DATA_PATH,
-            nlp,
-            tokenizer,
-            MAX_SEQ_LENGTH,
-            longformer_model,
-        )
-    else:
-        print(
-            f"{BLUE}Using existing BIO to BILUO format converted file: {converted_file_path}{RESET}"
-        )
+    current_hash = hash_train_data(FOLDER, CONVERTED_FILE)
+    last_hash = None
 
     if os.path.exists(SPACY_DATA_PATH):
-        print(
-            f"{BLUE}BIO TO BILUO FORMAT Converted data already exists. Checking for changes...{RESET}"
-        )
-
         try:
             with open(last_hash_path, "r") as f:
-                last_hash = f.read()
-                print(f"{BLUE}Last hash found{RESET}")
+                last_hash = f.read().strip()
+                print(f"{BLUE}Last hash for converted file found: {last_hash}{RESET}")
         except FileNotFoundError:
-            last_hash = None
-            print(f"{RED}Warning: last_train_data_hash.txt not found.{RESET}")
-
+            print(f"{RED}Warning: last_converted_file_hash.txt not found. Assuming no prior hash.{RESET}")
+        
+        
         if current_hash == last_hash:
             print(
                 f"{BLUE}Training data has not changed. Loading existing data...{RESET}"
