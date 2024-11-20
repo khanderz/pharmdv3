@@ -20,12 +20,17 @@ Angellist (now Wellfound) for pharmacists and other healthcare professionals loo
 - TypeScript
 - JavaScript
 - HTML
-- CSS
+- SCSS
 - React
-- Material UI
+- Material-UI
 - MUI-X
 - Node.js
 - Postgresql
+- TensorFlow
+- spaCy
+- NumPy
+- pandas
+- scikit-learn
 
 ## <a name="api"></a>APIs Integrated:
 
