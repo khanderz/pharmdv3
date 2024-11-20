@@ -90,60 +90,60 @@ else:
 #             print(f"  - Text: '{ent.text}', Start: {ent.start_char}, End: {ent.end_char}, Label: {ent.label_}")
 
 # ------------------- TRAIN MODEL -------------------
-# train_spacy_model(MODEL_SAVE_PATH, nlp, examples)
+train_spacy_model(MODEL_SAVE_PATH, nlp, examples)
 
 
 # ------------------- VALIDATE TRAINER -------------------
-# evaluate_model(nlp, converted_data)
-validate_entities(converted_data, nlp)
+evaluate_model(nlp, converted_data)
+# validate_entities(converted_data, nlp)
 
 
 # ------------------- TEST EXAMPLES -------------------
-# def convert_example_to_biluo(text):
-#     """Convert model predictions for the given text to BILUO format."""
-#     tokens = tokenizer(
-#         text,
-#         max_length=MAX_SEQ_LENGTH,
-#         truncation=True,
-#         padding="max_length",
-#         return_tensors="pt",
-#     )
+def convert_example_to_biluo(text):
+    """Convert model predictions for the given text to BILUO format."""
+    tokens = tokenizer(
+        text,
+        max_length=MAX_SEQ_LENGTH,
+        truncation=True,
+        padding="max_length",
+        return_tensors="pt",
+    )
 
-#     decoded_text = tokenizer.decode(tokens["input_ids"][0], skip_special_tokens=True)
+    decoded_text = tokenizer.decode(tokens["input_ids"][0], skip_special_tokens=True)
 
-#     doc = nlp(decoded_text)
+    doc = nlp(decoded_text)
 
-#     iob_tags = [
-#         token.ent_iob_ + "-" + token.ent_type_ if token.ent_type_ else "O"
-#         for token in doc
-#     ]
-#     biluo_tags = iob_to_biluo(iob_tags)
+    iob_tags = [
+        token.ent_iob_ + "-" + token.ent_type_ if token.ent_type_ else "O"
+        for token in doc
+    ]
+    biluo_tags = iob_to_biluo(iob_tags)
 
-#     return doc, biluo_tags
-
-
-# def inspect_job_description_predictions(text):
-#     """Inspect model predictions for job description text."""
-#     doc, biluo_tags = convert_example_to_biluo(text)
-
-#     print("\nOriginal Text:")
-#     print(f"'{text}'\n")
-#     print("Token Predictions:")
-#     print(f"{'Token':<15}{'Predicted Label':<20}{'BILUO Tag':<20}")
-#     print("-" * 50)
-
-#     for token, biluo_tag in zip(doc, biluo_tags):
-#         predicted_label = token.ent_type_ if token.ent_type_ else "O"
-#         print(f"{token.text:<15}{predicted_label:<20}{biluo_tag:<20}")
+    return doc, biluo_tags
 
 
-# test_texts = [
-#     "We dramatically improve lives, by letting healthcare professionals turn extra time and ambition into career growth and financial opportunity.  This position requires 5+ years of experience in project management and a proven track record.",
-#     "There has never been a more exciting time to join our growing team and help us serve even more healthcare professionals and healthcare facilities, who can then better serve patients. Compensation includes a salary range of $100,000 to $120,000 plus benefits.",
-#     "Included Health is a new kind of healthcare company, delivering integrated virtual care and navigation. We’re on a mission to raise the standard of healthcare for everyone. Candidates must be proficient in data analysis and possess strong communication skills.",
-#     "Included Health considers all qualified applicants in accordance with the San Francisco Fair Chance Ordinance. Responsibilities include providing technical guidance and leading cross-functional teams.",
-#     "The ideal candidate should hold a Master's degree in a relevant field.",
-# ]
+def inspect_job_description_predictions(text):
+    """Inspect model predictions for job description text."""
+    doc, biluo_tags = convert_example_to_biluo(text)
 
-# for text in test_texts:
-#     inspect_job_description_predictions(text)
+    print("\nOriginal Text:")
+    print(f"'{text}'\n")
+    print("Token Predictions:")
+    print(f"{'Token':<15}{'Predicted Label':<20}{'BILUO Tag':<20}")
+    print("-" * 50)
+
+    for token, biluo_tag in zip(doc, biluo_tags):
+        predicted_label = token.ent_type_ if token.ent_type_ else "O"
+        print(f"{token.text:<15}{predicted_label:<20}{biluo_tag:<20}")
+
+
+test_texts = [
+    "We dramatically improve lives, by letting healthcare professionals turn extra time and ambition into career growth and financial opportunity.  This position requires 5+ years of experience in project management and a proven track record.",
+    "There has never been a more exciting time to join our growing team and help us serve even more healthcare professionals and healthcare facilities, who can then better serve patients. Compensation includes a salary range of $100,000 to $120,000 plus benefits.",
+    "Included Health is a new kind of healthcare company, delivering integrated virtual care and navigation. We’re on a mission to raise the standard of healthcare for everyone. Candidates must be proficient in data analysis and possess strong communication skills.",
+    "Included Health considers all qualified applicants in accordance with the San Francisco Fair Chance Ordinance. Responsibilities include providing technical guidance and leading cross-functional teams.",
+    "The ideal candidate should hold a Master's degree in a relevant field.",
+]
+
+for text in test_texts:
+    inspect_job_description_predictions(text)
