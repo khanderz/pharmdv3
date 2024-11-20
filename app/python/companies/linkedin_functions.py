@@ -28,8 +28,6 @@ def enrich_with_linkedin_data(master_active_data, linkedin_username, linkedin_pw
             print(f"{RED}Failed to fetch data for {company_name}{RESET}")
             continue
 
-# add tagline column
-
         if pd.isna(row.get("last_funding_type")) or not row["last_funding_type"]:
             master_active_data.at[index, "last_funding_type"] = linkedin_data.get("fundingType")
 
@@ -38,14 +36,21 @@ def enrich_with_linkedin_data(master_active_data, linkedin_username, linkedin_pw
 
         if pd.isna(row.get("is_public")) or not row["is_public"]:
             company_type = linkedin_data.get("companyType", {}).get("code")
-            master_active_data.at[index, "is_public"] = company_type
-
+            if company_type == "PRIVATELY_HELD":
+                master_active_data.at[index, "is_public"] = False
+            elif company_type == "PUBLIC":
+                master_active_data.at[index, "is_public"] = True
+                
         if pd.isna(row.get("year_founded")) or not row["year_founded"]:
             year_founded = linkedin_data.get("foundedOn", {}).get("year")
             master_active_data.at[index, "year_founded"] = year_founded
 
         if pd.isna(row.get("company_description")) or not row["company_description"]:
             master_active_data.at[index, "company_description"] = linkedin_data.get("description")
+
+        company_tagline = linkedin_data.get("tagline")    
+        if company_tagline:
+            master_active_data.at[index, "company_tagline"] = company_tagline
 
         confirmed_locations = linkedin_data.get("confirmedLocations", [])
         if confirmed_locations:

@@ -28,6 +28,7 @@ funding_types = [
   { funding_type_name: 'SERIES_H' },
   { funding_type_name: 'SERIES_I' },
   { funding_type_name: 'SERIES_J' },
+  { funding_type_name: 'SERIES_UNKNOWN' },
   { funding_type_name: 'SERIES_UNKNOWN_VENTURE' },
   { funding_type_name: 'UNDISCLOSED' },
   { funding_type_name: 'OTHER' }
