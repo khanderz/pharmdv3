@@ -2,7 +2,8 @@
 from google.oauth2 import service_account
 from googleapiclient.discovery import build
 import pandas as pd
-from app.python.utils.logger import BLUE, RED, RESET, GREEN
+
+from app.python.ai_processing.utils.logger import RED
 
 
 def load_sheet_data(credentials_path, sheet_id, range_name):

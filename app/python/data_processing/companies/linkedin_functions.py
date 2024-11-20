@@ -1,10 +1,11 @@
 # app/python/companies/utils/linkedin_functions.pyimport requests
 import pandas as pd
 import requests
-from app.python.hooks.get_company_sizes import fetch_company_sizes, get_company_size
+from app.python.ai_processing.utils.logger import BLUE, GREEN, RED, RESET
+from app.python.data_processing.companies.google_sheets_updater import update_google_sheet
+from app.python.hooks.get_company_sizes import fetch_company_sizes
 from app.python.hooks.get_linkedin_data import fetch_company_data
-from app.python.utils.logger import BLUE, RED, RESET, GREEN
-from app.python.companies.google_sheets_updater import update_google_sheet
+
 
 def enrich_with_linkedin_data(master_active_data, linkedin_username, linkedin_pw):
     """
@@ -40,6 +41,8 @@ def enrich_with_linkedin_data(master_active_data, linkedin_username, linkedin_pw
                 master_active_data.at[index, "is_public"] = False
             elif company_type == "PUBLIC":
                 master_active_data.at[index, "is_public"] = True
+            else:
+                print(f"{RED}Unknown company type/is_public for {company_name}: {company_type}{RESET}")    
                 
         if pd.isna(row.get("year_founded")) or not row["year_founded"]:
             year_founded = linkedin_data.get("foundedOn", {}).get("year")
