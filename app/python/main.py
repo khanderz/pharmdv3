@@ -1,14 +1,12 @@
 # app/python/main.py
 import os
 from dotenv import load_dotenv
-from google_sheets_updater import (
-    load_sheet_data,
-    update_google_sheet,
-)
-from hubspot_functions import rename_hubspot_columns, fill_missing_values_with_hubspot
-from linkedin_functions import filter_active_companies, enrich_with_linkedin_data
-from utils.cleaner import remove_duplicates
-from zapier_functions import transfer_data
+ 
+from companies.google_sheets_updater import load_sheet_data
+from companies.hubspot_functions import rename_hubspot_columns, fill_missing_values_with_hubspot
+from companies.linkedin_functions import filter_active_companies, enrich_with_linkedin_data
+from companies.utils.cleaner import remove_duplicates
+from companies.zapier_functions import transfer_data
 
 load_dotenv()
 
@@ -17,8 +15,8 @@ if __name__ == "__main__":
 
     master_sheet_id = os.getenv("MASTER_SHEET_ID")
     master_range_name = os.getenv("MASTER_RANGE_NAME")
-    SHEET_ID = os.getenv("SHEET_ID")
-    ACTIVE_RANGE_NAME = os.getenv("ACTIVE_SHEET_RANGE")
+    master_active_range_name = os.getenv("MASTER_ACTIVE_RANGE_NAME")
+    master_linkedin_issues_range_name = os.getenv("MASTER_LINKEDIN_ISSUE_RANGE_NAME")
 
     # hubspot_sheet_id = os.getenv("HUBSPOT_SHEET_ID")
     # hubspot_range_name = os.getenv("HUBSPOT_RANGE_NAME")
@@ -29,6 +27,8 @@ if __name__ == "__main__":
     linkedin_pw = os.getenv("LINKEDIN_PASSWORD")
 
     master_data = load_sheet_data(credentials_path, master_sheet_id, master_range_name)
+    master_active_data = load_sheet_data(credentials_path, master_sheet_id, master_active_range_name)
+    master_linkedin_issue_data = load_sheet_data(credentials_path, master_sheet_id, master_linkedin_issues_range_name)
     # hubspot_data = load_sheet_data(credentials_path, hubspot_sheet_id, hubspot_range_name)
     # zapier_data = load_sheet_data(credentials_path, zapier_sheet_id, zapier_range_name)
 
@@ -38,6 +38,7 @@ if __name__ == "__main__":
 
     master_data = remove_duplicates(master_data)
 
-    filter_active_companies(master_data, SHEET_ID, ACTIVE_RANGE_NAME, credentials_path)
+    filter_active_companies(master_data, master_sheet_id, master_active_range_name, credentials_path, master_linkedin_issue_data )
+    master_active_data = remove_duplicates(master_active_data)
     # enrich_with_linkedin_data(master_data, linkedin_username, linkedin_pw)
     # update_google_sheet(mcredentials_path, master_sheet_id, master_range_name, master_data)

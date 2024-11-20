@@ -2,6 +2,8 @@
 from google.oauth2 import service_account
 from googleapiclient.discovery import build
 import pandas as pd
+from app.python.utils.logger import BLUE, RED, RESET, GREEN
+
 
 def load_sheet_data(credentials_path, sheet_id, range_name):
     creds = service_account.Credentials.from_service_account_file(credentials_path)
@@ -20,7 +22,7 @@ def load_sheet_data(credentials_path, sheet_id, range_name):
     if "company_name" in data.columns:
         data["company_name"] = data["company_name"].str.lower().str.strip()
     else:
-        print("Warning: 'company_name' column is missing from the loaded data.")
+        print(f"{RED}Warning: 'company_name' column is missing from the loaded data.{RESET}")
 
     return data
 
@@ -46,7 +48,7 @@ def update_google_sheet(credentials_path, sheet_id, range_name, data):
             )
             .execute()
         )
-        print(f"{result.get('updatedCells')} cells updated.")
+        print(f"{GREEN}{result.get('updatedCells')} cells updated.{RESET}")
     except Exception as e:
-        print(f"An error occurred during update: {e}")
+        print(f"{RED}An error occurred during update: {e}{RESET}")
 
