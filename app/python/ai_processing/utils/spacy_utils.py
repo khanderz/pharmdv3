@@ -1,4 +1,4 @@
-# app/python/utils/spacy_utils.py
+# app/python/ai_processing/utils/spacy_utils.py
 
 import json
 import re
@@ -7,9 +7,9 @@ import spacy
 import torch
 from spacy.tokens import DocBin
 from spacy.training import Example
-from app.python.utils.data_handler import generate_path, hash_train_data, load_data
-from app.python.utils.logger import BLUE, RED, RESET
-from app.python.utils.utils import (
+from app.python.ai_processing.utils.data_handler import generate_path, hash_train_data, load_data
+from app.python.ai_processing.utils.logger import BLUE, RED, RESET
+from app.python.ai_processing.utils.utils import (
     add_space_to_tokens,
     print_side_by_side,
     print_token_characters,

@@ -1,4 +1,4 @@
-# app/python/companies/utils/linkedin_functions.pyimport requests
+# app/python/data_processing/companies/utils/linkedin_functions.pyimport requests
 import pandas as pd
 import requests
 from app.python.ai_processing.utils.logger import BLUE, GREEN, RED, RESET

@@ -1,9 +1,9 @@
-# app/python/companies/google_sheets_updater.py
+# app/python/data_processing/companies/google_sheets_updater.py
 from google.oauth2 import service_account
 from googleapiclient.discovery import build
 import pandas as pd
 
-from app.python.ai_processing.utils.logger import RED
+from app.python.ai_processing.utils.logger import GREEN, RED, RESET
 
 
 def load_sheet_data(credentials_path, sheet_id, range_name):

@@ -1,4 +1,4 @@
-# app/python/utils/label_mapping.py
+# app/python/ai_processing/utils/label_mapping.py
 
 SALARY_ENTITY_LABELS = [
     "SALARY_MIN",
@@ -84,7 +84,7 @@ def generate_label_mappings(entity_type):
     elif entity_type == "job_role":
         ENTITY_LABELS = JOB_ROLE_ENTITY_LABELS
     else:
-        raise ValueError("Invalid entity type. Must pass entity type as argument.")
+        raise ValueError(f"Invalid entity type {entity_type}. Must pass entity type as argument.")
 
     label_list = ["O"]
     for label in ENTITY_LABELS:
@@ -95,7 +95,6 @@ def generate_label_mappings(entity_type):
 
     return label_list, label_to_id, id_to_label
 
-
 # Utils
 def get_label_list(entity_type):
     label_list, _, _ = generate_label_mappings(entity_type)
@@ -105,8 +104,3 @@ def get_label_list(entity_type):
 def get_label_to_id(entity_type):
     _, label_to_id, _ = generate_label_mappings(entity_type)
     return label_to_id
-
-
-def get_id_to_label(entity_type):
-    _, _, id_to_label = generate_label_mappings(entity_type)
-    return id_to_label

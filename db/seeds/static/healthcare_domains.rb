@@ -71,7 +71,10 @@ healthcare_domains = [
     aliases: ['joint health', 'autoimmune', 'rheumatic', 'rheumatoid arthritis', 'lupus', 'spondylitis'] },
   { key: 'SLEEP_HEALTH', value: 'Sleep Health',
     aliases: ['sleep health', 'sleep disorders', 'insomnia', 'sleep', 'sleep apnea', 'narcolepsy'] },
-  { key: 'SPEECH_THERAPY', value: 'Speech Language Pathology',
+  { key: 'SOCIAL_WORK', value: 'Social Work',
+      aliases: ["social work", "community health", "social determinants of health", "case management", "social services", "family support", "counseling", "advocacy"]
+    },    
+    { key: 'SPEECH_THERAPY', value: 'Speech Language Pathology',
     aliases: ['speech', 'language', 'communication', 'voice therapy', 'dysphagia', 'stuttering', 'aphasia'] },
   { key: 'SURGERY', value: 'Surgery',
     aliases: ['surgical', 'operative', 'operations', 'procedures', 'surgery', 'minimally invasive', 'heart surgery', 'organ transplant'] },

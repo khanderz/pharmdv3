@@ -1,21 +1,21 @@
-# app/python/job_description_extraction/train_job_description_extraction.py
+# app/python/ai_processing/job_description_extraction/train_job_description_extraction.py
 import spacy
 import os
 from spacy.training import iob_to_biluo
-from app.python.utils.label_mapping import get_label_list
-from app.python.utils.data_handler import load_data, load_spacy_model
-from app.python.utils.logger import (
+from app.python.ai_processing.utils.label_mapping import get_label_list
+from app.python.ai_processing.utils.data_handler import load_data, load_spacy_model
+from app.python.ai_processing.utils.logger import (
     GREEN,
     RED,
     RESET,
     configure_logging,
     configure_warnings,
 )
-from app.python.utils.spacy_utils import handle_spacy_data
-from app.python.utils.trainer import train_spacy_model
-from app.python.utils.utils import calculate_entity_indices, print_data_with_entities
-from app.python.utils.validation_utils import evaluate_model, validate_entities
-from app.python.utils.data_handler import project_root
+from app.python.ai_processing.utils.spacy_utils import handle_spacy_data
+from app.python.ai_processing.utils.trainer import train_spacy_model
+from app.python.ai_processing.utils.utils import calculate_entity_indices, print_data_with_entities
+from app.python.ai_processing.utils.validation_utils import evaluate_model, validate_entities
+from app.python.ai_processing.utils.data_handler import project_root
 from transformers import LongformerTokenizer, LongformerModel
 
 configure_warnings()

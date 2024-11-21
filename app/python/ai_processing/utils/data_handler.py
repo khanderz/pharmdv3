@@ -1,9 +1,9 @@
-# app/python/utils/data_handler.py
+# app/python/ai_processing/utils/data_handler.py
 import hashlib
 import json
 import os
 import spacy
-from app.python.utils.logger import BLUE, RED, RESET
+from app.python.ai_processing.utils.logger import BLUE, RED, RESET
 
 project_root = os.path.abspath(
     os.path.join(os.path.dirname(__file__), "../../..", "app", "python")

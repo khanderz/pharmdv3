@@ -1,6 +1,6 @@
-#  app/python/utils/validation_utils.py
-from app.python.utils.logger import RED, GREEN, RESET
-from app.python.utils.spacy_utils import print_token_characters
+#  app/python/ai_processing/utils/validation_utils.py
+from app.python.ai_processing.utils.logger import RED, GREEN, RESET
+from app.python.ai_processing.utils.spacy_utils import print_token_characters
 from spacy.scorer import Scorer
 from spacy.training import Example
 
