@@ -22,5 +22,5 @@ def fetch_company_data(company_name, username, password):
         print(f"Failed to authenticate with LinkedIn: {e}")
         return {"error": f"Authentication error: {str(e)}"}
     
-if __name__ == "__main__":
-    fetch_company_data("23andme", "username", "password")
+# if __name__ == "__main__":
+#     fetch_company_data("23andme", "username", "password")

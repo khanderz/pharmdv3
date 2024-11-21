@@ -24,7 +24,7 @@ def enrich_with_linkedin_data(master_active_data, linkedin_username, linkedin_pw
         print(f"{BLUE}Fetching LinkedIn master_active_data for {company_name}...{RESET}")
 
         linkedin_data = fetch_company_data(company_name, linkedin_username, linkedin_pw)
-
+        
         if not linkedin_data or "error" in linkedin_data:
             print(f"{RED}Failed to fetch data for {company_name}{RESET}")
             continue
@@ -48,8 +48,8 @@ def enrich_with_linkedin_data(master_active_data, linkedin_username, linkedin_pw
             year_founded = linkedin_data.get("foundedOn", {}).get("year")
             master_active_data.at[index, "year_founded"] = year_founded
 
-        if pd.isna(row.get("company_description")) or not row["company_description"]:
-            master_active_data.at[index, "company_description"] = linkedin_data.get("description")
+
+        master_active_data.at[index, "company_description"] = linkedin_data.get("description")
 
         company_tagline = linkedin_data.get("tagline")    
         if company_tagline:
@@ -97,8 +97,7 @@ def enrich_with_linkedin_data(master_active_data, linkedin_username, linkedin_pw
                     if min_size <= staff_count <= max_size:
                         master_active_data.at[index, "company_size"] = size_range
                         break
-
-
+                 
     return master_active_data
 
 def filter_active_companies(master_data, master_sheet_id, active_range_name, credentials_path, master_linkedin_issues_range_name, master_range_name):

@@ -31,6 +31,10 @@ healthcare_domains = [
     aliases: %w[blood hematologic anemia hematology leukemia lymphoma hemophilia] },
   { key: 'INFECTIOUS_DISEASE', value: 'Infectious Disease',
     aliases: ['infectious', 'epidemiology', 'disease prevention', 'COVID-19', 'HIV/AIDS', 'hepatitis', 'tuberculosis', 'malaria', 'covid', 'ebola'] },
+    {
+      key: "MENS_HEALTH", value: 'Men\'s Health',
+      aliases: ['urology', 'prostate', 'erectile dysfunction', 'testosterone']
+    },
   { key: 'NEPHROLOGY', value: 'Nephrology',
     aliases: ['kidney', 'renal', 'nephrology', 'dialysis', 'kidney disease', 'chronic kidney disease', 'ckd'] },
   { key: 'NEUROLOGY', value: 'Neurology',
@@ -66,7 +70,7 @@ healthcare_domains = [
   { key: 'REPRODUCTIVE_HEALTH', value: 'Reproductive Health',
     aliases: ['fertility', 'family planning', 'reproductive', 'genetic counseling', 'fertility treatments', 'IVF', 'birth control'] },
   { key: 'RESEARCH', value: 'Research',
-    aliases: ['clinical research', 'medical studies', 'biomedical research', 'biomedical', 'research', 'data activation', 'molecular', 'clinical trials', 'drug trials', 'discovery', 'Biotechnology'] },
+    aliases: ['clinical research', 'medical studies', 'biomedical research', 'biomedical', 'research', 'data activation', 'molecular', 'clinical trials', 'drug trials', 'discovery', 'biotechnology'] },
   { key: 'RHEUMATOLOGY', value: 'Rheumatology',
     aliases: ['joint health', 'autoimmune', 'rheumatic', 'rheumatoid arthritis', 'lupus', 'spondylitis'] },
   { key: 'SLEEP_HEALTH', value: 'Sleep Health',
@@ -79,7 +83,11 @@ healthcare_domains = [
   { key: 'SURGERY', value: 'Surgery',
     aliases: ['surgical', 'operative', 'operations', 'procedures', 'surgery', 'minimally invasive', 'heart surgery', 'organ transplant'] },
   { key: 'UROLOGY', value: 'Urology',
-    aliases: ['urinary', 'kidney', 'urological', 'prostate', 'kidney stones', 'incontinence'] }
+    aliases: ['urinary', 'kidney', 'urological', 'prostate', 'kidney stones', 'incontinence'] },
+    {
+      key: 'WOMENS_HEALTH', value: 'Women\'s Health',
+      aliases: ['gynecology', 'obstetrics', 'pregnancy', 'menstrual', 'menopause', 'breast health', 'reproductive health', 'pelvic health', 'prenatal care', 'contraception', 'hormone therapy', 'pap smear', 'mammogram']
+    }
 ]
 
 seeded_count = 0
