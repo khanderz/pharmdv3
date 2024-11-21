@@ -1,26 +1,52 @@
 # app/python/hooks/get_linkedin_data.py
-from linkedin_api import Linkedin
+import os
+import requests
+from dotenv import load_dotenv
 
-def fetch_company_data(company_name, username, password):
+load_dotenv()
+
+def fetch_company_data(linkedin_url):
     """
-    Fetch company data from LinkedIn using a linkedin-api library.
+    Fetch company data from LinkedIn using the Proxycurl API.
     """
     try:
-        api = Linkedin(username, password)
-        print(f"Authenticated as {username}")
+        proxycurl_key = os.getenv("PROXYCURL_API_KEY")
+        if not proxycurl_key:
+            raise ValueError("Proxycurl API key is missing. Set PROXYCURL_API_KEY in your environment variables.")
         
-        try:
-            company = api.get_company(company_name)
-            print(f"Fetched company data for {company_name}")
-            return company
+        headers = {
+            "Authorization": f"Bearer {proxycurl_key}"
+        }
         
-        except Exception as e:
-            print(f"Error fetching company data for {company_name}: {e}")
-            return {"error": f"Company fetch error: {str(e)}"}
+        params = {
+            "url": linkedin_url,  
+            "categories": "include",
+            "funding_data": "include",
+            "exit_data": "include",
+            "acquisitions": "include",
+            "extra": "include",
+            "use_cache": "if-present",
+            "fallback_to_cache": "on-error"
+        }
+        
+        api_url = "https://nubela.co/proxycurl/api/linkedin/company"
+
+        print(f"Fetching company data with URL: {api_url} and Params: {params}")
+        response = requests.get(api_url, headers=headers, params=params)
+
+        if response.status_code == 200:
+            company_data = response.json()
+            print(f"Fetched company data for {linkedin_url}: {company_data}")
+            return company_data
+        else:
+            print(f"Failed to fetch company data for {linkedin_url}. Status Code: {response.status_code}, Response: {response.text}")
+            return {"error": f"Company fetch error: {response.text}"}
 
     except Exception as e:
-        print(f"Failed to authenticate with LinkedIn: {e}")
-        return {"error": f"Authentication error: {str(e)}"}
-    
-# if __name__ == "__main__":
-#     fetch_company_data("23andme", "username", "password")
+        print(f"Error occurred while fetching company data for {linkedin_url}: {e}")
+        return {"error": f"Unexpected error: {str(e)}"}
+
+# Example usage
+if __name__ == "__main__":
+    linkedin_url = "https://www.linkedin.com/company/23andme/"   
+    result = fetch_company_data(linkedin_url)
