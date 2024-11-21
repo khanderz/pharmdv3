@@ -101,22 +101,27 @@ def enrich_with_linkedin_data(master_active_data, linkedin_username, linkedin_pw
 
     return master_active_data
 
-def filter_active_companies(master_data, master_sheet_id, active_range_name, credentials_path, master_linkedin_issue_data):
+def filter_active_companies(master_data, master_sheet_id, active_range_name, credentials_path, master_linkedin_issues_range_name, master_range_name):
     """
     Filter companies with active LinkedIn URLs and add them to the "active" spreadsheet.
     """
 
     active_data = []
     problem_data = []
- 
+
+    existing_active_data = pd.DataFrame(columns=master_data.columns)
+    existing_problem_data = pd.DataFrame(columns=master_data.columns)
+
     for index, row in master_data.iterrows():
         company_name = row["company_name"]
-        print(f"{BLUE}Checking LinkedIn URL for {company_name}...{RESET}")
         linkedin_url = row.get("linkedin_url")
+
+        print(f"{BLUE}Checking LinkedIn URL for {company_name}...{RESET}")
 
         if pd.isna(linkedin_url) or not linkedin_url.strip():
             master_data.at[index, "operating_status"] = False
             print(f"{RED}No LinkedIn URL found for {company_name}{RESET}")
+            problem_data.append(row)
             continue
 
         try:
@@ -135,26 +140,48 @@ def filter_active_companies(master_data, master_sheet_id, active_range_name, cre
                 updated_row["operating_status"] = True
                 active_data.append(updated_row)
 
+                existing_problem_data = existing_problem_data[existing_problem_data["company_name"] != company_name]
+
             elif response.status_code == 404:
                 print(f"{RED}LinkedIn URL not found (404) for {company_name}{RESET}")
-                master_data.at[index, "operating_status"] = False   
+                master_data.at[index, "operating_status"] = False 
+
+                existing_active_data = existing_active_data[existing_active_data["company_name"] != company_name]
+                existing_problem_data = existing_problem_data[existing_problem_data["company_name"] != company_name]
 
             else:
                 print(f"{RED}Request issue for {company_name}: HTTP {response.status_code}{RESET}")
-                updated_row = row.copy()
-                problem_data.append(updated_row)
+                problem_row = row.copy()
+                problem_data.append(problem_row)
+
+                existing_active_data = existing_active_data[existing_active_data["company_name"] != company_name]
 
         except requests.RequestException as e:
             print(f"{RED}Error checking LinkedIn URL for {company_name}: {e}{RESET}")
 
+            problem_row = row.copy()
+            problem_data.append(problem_row)
+            existing_active_data = existing_active_data[existing_active_data["company_name"] != company_name]
+
     if active_data:
         active_df = pd.DataFrame(active_data, columns=master_data.columns)
-        update_google_sheet(credentials_path, master_sheet_id, active_range_name, active_df)
+        updated_active_data = pd.concat([existing_active_data, active_df]).drop_duplicates(subset="company_name")
+        update_google_sheet(credentials_path, master_sheet_id, active_range_name, updated_active_data)
+
+        print(f"{GREEN} existing_active_data length : {len(existing_active_data)}{RESET}")
         print(f"{GREEN}Updated 'active' spreadsheet with {len(active_data)} companies.{RESET}")
         
     if problem_data:
         problem_df = pd.DataFrame(problem_data, columns=master_data.columns)
-        update_google_sheet(credentials_path, master_sheet_id, master_linkedin_issue_data, problem_df)
+        print(f"problem_df: {problem_df}")
+        updated_problem_data = pd.concat([existing_problem_data, problem_df]).drop_duplicates(subset="company_name")
+        update_google_sheet(credentials_path, master_sheet_id, master_linkedin_issues_range_name, updated_problem_data)
+
+        print(f"{RED} existing_problem_data length : {len(existing_problem_data)}{RESET}")
         print(f"{RED}Updated 'LinkedIn issues' spreadsheet with {len(problem_data)} companies.{RESET}")    
+
     else:
         print(f"{BLUE}No active companies found to update.{RESET}")
+
+    update_google_sheet(credentials_path, master_sheet_id, master_range_name, master_data)
+    print(f"{BLUE}Master data sheet updated with all changes.{RESET}")
