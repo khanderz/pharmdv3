@@ -4,7 +4,7 @@ import requests
 
 def fetch_hc_domains():
     try:
-        response = requests.get("http://localhost:3000/hc_domains.json")
+        response = requests.get("http://localhost:3000/healthcare_domains.json")
         response.raise_for_status()
         return response.json()
     except requests.exceptions.RequestException as e:

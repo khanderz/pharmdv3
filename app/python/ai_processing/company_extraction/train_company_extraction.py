@@ -4,7 +4,7 @@ import spacy
 import os
 from spacy.training import iob_to_biluo
 from app.python.ai_processing.utils.data_handler import load_data, load_spacy_model
-from app.python.ai_processing.utils.label_mapping import get_label_list
+from app.python.ai_processing.company_extraction.label_mapping import get_label_list
 from app.python.ai_processing.utils.logger import (
     GREEN,
     RED,

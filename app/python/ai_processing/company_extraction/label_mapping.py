@@ -17,13 +17,13 @@ COMPANY_ENTITY_LABELS =[
 HEALTHCARE_DOMAIN_ENTITY_LABELS = []
 
 if hc_domain_data:
-    HEALTHCARE_DOMAIN_ENTITY_LABELS = [hc_domain["name"] for hc_domain in hc_domain_data]
+    HEALTHCARE_DOMAIN_ENTITY_LABELS = [hc_domain["key"] for hc_domain in hc_domain_data]
 else: 
     print("Error fetching healthcare domains")
 
 COMPANY_SPECIALTY_ENTITY_LABELS = []    
 if company_specialty_data:
-    COMPANY_SPECIALTY_ENTITY_LABELS = [specialty["name"] for specialty in company_specialty_data]
+    COMPANY_SPECIALTY_ENTITY_LABELS = [specialty["key"] for specialty in company_specialty_data]
 else:
     print("Warning: No company specialty data fetched.")
  
@@ -59,7 +59,6 @@ def generate_label_mappings(entity_type):
     else:
         raise ValueError(f"Unknown entity type: {entity_type}")
     
-    print(f'ENTITY_LABELS: {ENTITY_LABELS}')
     label_list = ["O"]
     for label in ENTITY_LABELS:
         label_list.extend([f"B-{label}", f"I-{label}", f"L-{label}", f"U-{label}"])
