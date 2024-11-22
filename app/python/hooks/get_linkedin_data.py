@@ -31,12 +31,11 @@ def fetch_company_data(linkedin_url):
         
         api_url = "https://nubela.co/proxycurl/api/linkedin/company"
 
-        print(f"Fetching company data with URL: {api_url} and Params: {params}")
         response = requests.get(api_url, headers=headers, params=params)
 
         if response.status_code == 200:
             company_data = response.json()
-            print(f"Fetched company data for {linkedin_url}: {company_data}")
+            # print(f"Fetched company data for {linkedin_url}: {company_data}")
             return company_data
         else:
             print(f"Failed to fetch company data for {linkedin_url}. Status Code: {response.status_code}, Response: {response.text}")
@@ -47,6 +46,6 @@ def fetch_company_data(linkedin_url):
         return {"error": f"Unexpected error: {str(e)}"}
 
 # Example usage
-if __name__ == "__main__":
-    linkedin_url = "https://www.linkedin.com/company/23andme/"   
-    result = fetch_company_data(linkedin_url)
+# if __name__ == "__main__":
+#     linkedin_url = "https://www.linkedin.com/company/23andme/"   
+#     result = fetch_company_data(linkedin_url)

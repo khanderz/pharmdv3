@@ -7,7 +7,7 @@ from app.python.hooks.get_company_sizes import fetch_company_sizes
 from app.python.hooks.get_linkedin_data import fetch_company_data
 
 
-def enrich_with_linkedin_data(master_active_data, linkedin_username, linkedin_pw):
+def enrich_with_linkedin_data(master_active_data):
     """
     Enrich data with LinkedIn company details using the LinkedIn API hook.
     """
@@ -23,7 +23,9 @@ def enrich_with_linkedin_data(master_active_data, linkedin_username, linkedin_pw
 
         print(f"{BLUE}Fetching LinkedIn master_active_data for {company_name}...{RESET}")
 
-        linkedin_data = fetch_company_data(company_name, linkedin_username, linkedin_pw)
+        linkedin_url = row.get("linkedin_url")
+
+        linkedin_data = fetch_company_data(linkedin_url)
         
         if not linkedin_data or "error" in linkedin_data:
             print(f"{RED}Failed to fetch data for {company_name}{RESET}")
