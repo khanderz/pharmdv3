@@ -28,38 +28,39 @@ def enrich_with_linkedin_data(master_active_data, linkedin_username, linkedin_pw
         if not linkedin_data or "error" in linkedin_data:
             print(f"{RED}Failed to fetch data for {company_name}{RESET}")
             continue
-
-        if pd.isna(row.get("last_funding_type")) or not row["last_funding_type"]:
-            master_active_data.at[index, "last_funding_type"] = linkedin_data.get("fundingType")
+        
+        # if pd.isna(row.get("last_funding_type")) or not row["last_funding_type"]:
+        #     master_active_data.at[index, "last_funding_type"] = linkedin_data.get("fundingType")
 
         if pd.isna(row.get("company_url")) or not row["company_url"]:
-            master_active_data.at[index, "company_url"] = linkedin_data.get("companyPageUrl")
+            master_active_data.at[index, "company_url"] = linkedin_data.get("website")
+
+        if pd.isna(row.get("logo_url")) or not row["logo_url"]:
+            master_active_data.at[index, "logo_url"] = linkedin_data.get("profile_pic_url")
 
         if pd.isna(row.get("is_public")) or not row["is_public"]:
             company_type = linkedin_data.get("companyType", {}).get("code")
             if company_type == "PRIVATELY_HELD":
                 master_active_data.at[index, "is_public"] = False
-            elif company_type == "PUBLIC":
+            elif company_type == "PUBLIC_COMPANY":
                 master_active_data.at[index, "is_public"] = True
             else:
-                print(f"{RED}Unknown company type/is_public for {company_name}: {company_type}{RESET}")    
+                master_active_data.at[index, "is_public"] = False
                 
         if pd.isna(row.get("year_founded")) or not row["year_founded"]:
-            year_founded = linkedin_data.get("foundedOn", {}).get("year")
-            master_active_data.at[index, "year_founded"] = year_founded
+            master_active_data.at[index, "year_founded"] = linkedin_data.get("founded_year")
 
 
         master_active_data.at[index, "company_description"] = linkedin_data.get("description")
 
-        company_tagline = linkedin_data.get("tagline")    
-        if company_tagline:
-            master_active_data.at[index, "company_tagline"] = company_tagline
+        if linkedin_data.get("tagline") is not None:
+            master_active_data.at[index, "company_tagline"] = linkedin_data.get("tagline")
 
-        confirmed_locations = linkedin_data.get("confirmedLocations", [])
+        confirmed_locations = linkedin_data.get("locations", [])
         if confirmed_locations:
             for location in confirmed_locations:
                 country = location.get("country")
-                geographic_area = location.get("geographicArea")
+                state = location.get("state")
                 city = location.get("city")
 
                 current_countries = row.get("company_countries") or []
@@ -72,8 +73,8 @@ def enrich_with_linkedin_data(master_active_data, linkedin_username, linkedin_pw
                 current_states = row.get("company_states") or []
                 if isinstance(current_states, str):
                     current_states = eval(current_states) if current_states else []
-                if geographic_area and geographic_area not in current_states:
-                    current_states.append(geographic_area)
+                if state and state not in current_states:
+                    current_states.append(state)
                     master_active_data.at[index, "company_states"] = current_states
 
                 current_cities = row.get("company_cities") or []
@@ -86,7 +87,7 @@ def enrich_with_linkedin_data(master_active_data, linkedin_username, linkedin_pw
         if company_size_data is None:
             print(f"{RED}Error: Unable to fetch company size data. Skipping company size update.{RESET}")
         else:
-            staff_count = linkedin_data.get("staffCount")
+            staff_count = linkedin_data.get("company_size_on_linkedin")
             if staff_count is not None:
                 for size in company_size_data:
                     size_range = size["size_range"]

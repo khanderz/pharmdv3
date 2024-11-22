@@ -20,11 +20,11 @@ def fetch_company_data(linkedin_url):
         
         params = {
             "url": linkedin_url,  
-            "categories": "include",
-            "funding_data": "include",
-            "exit_data": "include",
-            "acquisitions": "include",
-            "extra": "include",
+            # "categories": "include", #TODO: might consider later for industry attribute
+            # "funding_data": "include", #TODO: might consider later for last_funding_type attribute
+            # "exit_data": "include",
+            # "acquisitions": "include", # TODO: might consider later for acquired_by attribute
+            # "extra": "include", #TODO: might consider later for ipo_status, operating_status
             "use_cache": "if-present",
             "fallback_to_cache": "on-error"
         }
