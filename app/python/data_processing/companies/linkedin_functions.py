@@ -5,12 +5,24 @@ from app.python.ai_processing.utils.logger import BLUE, GREEN, RED, RESET
 from app.python.data_processing.companies.google_sheets_updater import update_google_sheet
 from app.python.hooks.get_company_sizes import fetch_company_sizes
 from app.python.hooks.get_linkedin_data import fetch_company_data
+import ast
 
+def safely_parse_list(value):
+    if isinstance(value, list):
+        return value  
+    if isinstance(value, str):
+        try:
+            return ast.literal_eval(value)
+        except (ValueError, SyntaxError):
+            pass
 
-def enrich_with_linkedin_data(master_active_data):
+    return [value] if value else []
+
+def enrich_with_linkedin_data(master_active_data, credentials_path, master_sheet_id, active_range_name):
     """
     Enrich data with LinkedIn company details using the LinkedIn API hook.
     """
+    # updates_summary = {}
 
     company_size_data = fetch_company_sizes()
 
@@ -30,12 +42,15 @@ def enrich_with_linkedin_data(master_active_data):
         if not linkedin_data or "error" in linkedin_data:
             print(f"{RED}Failed to fetch data for {company_name}{RESET}")
             continue
+
+        updated_attributes = []
         
         # if pd.isna(row.get("last_funding_type")) or not row["last_funding_type"]:
         #     master_active_data.at[index, "last_funding_type"] = linkedin_data.get("fundingType")
 
         if pd.isna(row.get("company_url")) or not row["company_url"]:
             master_active_data.at[index, "company_url"] = linkedin_data.get("website")
+            updated_attributes.append("company_url")
 
         if pd.isna(row.get("logo_url")) or not row["logo_url"]:
             master_active_data.at[index, "logo_url"] = linkedin_data.get("profile_pic_url")
@@ -49,14 +64,18 @@ def enrich_with_linkedin_data(master_active_data):
             else:
                 master_active_data.at[index, "is_public"] = False
                 
+            updated_attributes.append("is_public")
+
         if pd.isna(row.get("year_founded")) or not row["year_founded"]:
             master_active_data.at[index, "year_founded"] = linkedin_data.get("founded_year")
-
+            updated_attributes.append("year_founded")
 
         master_active_data.at[index, "company_description"] = linkedin_data.get("description")
+        updated_attributes.append("company_description")
 
         if linkedin_data.get("tagline") is not None:
             master_active_data.at[index, "company_tagline"] = linkedin_data.get("tagline")
+            updated_attributes.append("company_tagline")
 
         confirmed_locations = linkedin_data.get("locations", [])
         if confirmed_locations:
@@ -65,26 +84,23 @@ def enrich_with_linkedin_data(master_active_data):
                 state = location.get("state")
                 city = location.get("city")
 
-                current_countries = row.get("company_countries") or []
-                if isinstance(current_countries, str):
-                    current_countries = eval(current_countries) if current_countries else []
+                current_countries = safely_parse_list(row.get("company_countries"))
                 if country and country not in current_countries:
                     current_countries.append(country)
                     master_active_data.at[index, "company_countries"] = current_countries
+                    updated_attributes.append("company_countries")
 
-                current_states = row.get("company_states") or []
-                if isinstance(current_states, str):
-                    current_states = eval(current_states) if current_states else []
+                current_states = safely_parse_list(row.get("company_states"))
                 if state and state not in current_states:
                     current_states.append(state)
                     master_active_data.at[index, "company_states"] = current_states
+                    updated_attributes.append("company_states")
 
-                current_cities = row.get("company_cities") or []
-                if isinstance(current_cities, str):
-                    current_cities = eval(current_cities) if current_cities else []
+                current_cities = safely_parse_list(row.get("company_cities"))
                 if city and city not in current_cities:
                     current_cities.append(city)
                     master_active_data.at[index, "company_cities"] = current_cities
+                    updated_attributes.append("company_cities")
 
         if company_size_data is None:
             print(f"{RED}Error: Unable to fetch company size data. Skipping company size update.{RESET}")
@@ -93,14 +109,35 @@ def enrich_with_linkedin_data(master_active_data):
             if staff_count is not None:
                 for size in company_size_data:
                     size_range = size["size_range"]
-                    min_size, max_size = size_range.replace("+", "").split("-")
-                    min_size = int(min_size)
-                    max_size = float("inf") if "+" in size_range else int(max_size)
+                    try:
+                        if "+" in size_range:
+                            min_size = int(size_range.replace("+", "").strip())
+                            max_size = float("inf")  
+                        else:
+                            min_size, max_size = map(int, size_range.split("-"))
+                    except ValueError:
+                        print(f"{RED}Unexpected size_range format: '{size_range}' for company size data. Skipping.{RESET}")
+                        continue
 
                     if min_size <= staff_count <= max_size:
                         master_active_data.at[index, "company_size"] = size_range
+                        updated_attributes.append("company_size")
                         break
                  
+        if updated_attributes:
+            print(f"{GREEN}Updated attributes for {company_name}: {', '.join(updated_attributes)}{RESET}")       
+            
+        try:
+            print(f"{BLUE}Updating Google Sheet after processing {company_name}...{RESET}")
+            update_google_sheet(credentials_path, master_sheet_id, active_range_name, master_active_data)
+        except Exception as e:
+            print(f"{RED}An error occurred during Google Sheet update: {e}{RESET}")
+
+
+    # print(f"{GREEN}Summary of Updates:{RESET}")
+    # for company, attributes in updates_summary.items():
+    #     print(f"{BLUE}{company}{RESET}: Updated attributes - {', '.join(attributes)}")
+
     return master_active_data
 
 def filter_active_companies(master_data, master_sheet_id, active_range_name, credentials_path, master_linkedin_issues_range_name, master_range_name):

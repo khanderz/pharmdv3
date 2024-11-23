@@ -39,11 +39,11 @@ if __name__ == "__main__":
     # master_data = remove_duplicates(master_data)
 
     # filter_active_companies(master_data, master_sheet_id, master_active_range_name, credentials_path, master_linkedin_issues_range_name, master_range_name)
-    master_active_data = remove_duplicates(master_active_data)
+    # master_active_data = remove_duplicates(master_active_data)
     # master_linkedin_issue_data = remove_duplicates(master_linkedin_issue_data)
     # master_data = remove_duplicates(master_data)
 
-    updated_active_data = enrich_with_linkedin_data(master_active_data)
+    updated_active_data = enrich_with_linkedin_data(master_active_data, credentials_path, master_sheet_id, master_active_range_name)
 
     update_google_sheet(credentials_path, master_sheet_id, master_active_range_name, updated_active_data)
     # update_google_sheet(credentials_path, master_sheet_id, master_range_name, master_data)
