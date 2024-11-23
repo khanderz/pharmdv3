@@ -34,7 +34,6 @@ domains = {
   radiology: HealthcareDomain.find_by(key: 'RADIOLOGY'),
   reproductive_health: HealthcareDomain.find_by(key: 'REPRODUCTIVE_HEALTH'),
   research: HealthcareDomain.find_by(key: 'RESEARCH'),
-  rheumatology: HealthcareDomain.find_by(key: 'RHEUMATOLOGY'),
   sleep_health: HealthcareDomain.find_by(key: 'SLEEP_HEALTH'),
   speech_therapy: HealthcareDomain.find_by(key: 'SPEECH_THERAPY'),
   surgery: HealthcareDomain.find_by(key: 'SURGERY'),
@@ -45,7 +44,11 @@ specialties = {
     { key: 'ALLERGY_TREATMENT', value: 'Allergy Treatment',
       aliases: ['allergy care', 'immunotherapy'] },
     { key: 'IMMUNE_DISORDER_MANAGEMENT', value: 'Immune Disorder Management',
-      aliases: ['autoimmune care', 'immune system health'] }
+      aliases: ['autoimmune care', 'immune system health'] },
+    { key: 'ARTHRITIS_MANAGEMENT', value: 'Arthritis Management',
+      aliases: ['arthritis care', 'joint inflammation treatment'] },
+    { key: 'AUTOIMMUNE_DISORDER_TREATMENT', value: 'Autoimmune Disorder Treatment',
+      aliases: ['autoimmune care', 'immune disorder treatment'] }
   ],
   cardiology: [
     { key: 'CARDIAC_REHABILITATION', value: 'Cardiac Rehabilitation',
@@ -336,12 +339,6 @@ specialties = {
       aliases: ['oncology research', 'tumor research'] },
     { key: 'GENOMIC_RESEARCH', value: 'Genomic Research',
       aliases: ['genetic research', 'DNA study'] }
-  ],
-  rheumatology: [
-    { key: 'ARTHRITIS_MANAGEMENT', value: 'Arthritis Management',
-      aliases: ['arthritis care', 'joint inflammation treatment'] },
-    { key: 'AUTOIMMUNE_DISORDER_TREATMENT', value: 'Autoimmune Disorder Treatment',
-      aliases: ['autoimmune care', 'immune disorder treatment'] }
   ],
   sleep_health: [
     { key: 'INSOMNIA_TREATMENT', value: 'Insomnia Treatment',

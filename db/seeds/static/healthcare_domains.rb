@@ -2,7 +2,7 @@
 
 healthcare_domains = [
   { key: 'ALLERGY_IMMUNOLOGY', value: 'Allergy and Immunology',
-    aliases: ['allergy', 'autoimmune', 'immunodeficiency', 'adaptive immunity', 'innate immunityimmunodeficient', 'immunodeficiencies', 'antibodies', 'immune system', 'immunotherapy', 'asthma', 'hay fever', 'eczema', 'anaphylaxis'] },
+    aliases: ['allergy', 'immunodeficiency', 'adaptive immunity', 'innate immunityimmunodeficient', 'immunodeficiencies', 'antibodies', 'immune system', 'immunotherapy', 'asthma', 'hay fever', 'eczema', 'anaphylaxis', 'joint health', 'autoimmune', 'rheumatic', 'rheumatoid arthritis', 'lupus', 'spondylitis'] },
   { key: 'CARDIOLOGY', value: 'Cardiology',
     aliases: ['heart', 'cardiac', 'cardiovascular', 'hypertension', 'heart disease', 'arrhythmia', 'heart attack'] },
   { key: 'DENTAL', value: 'Dental',
@@ -69,8 +69,6 @@ healthcare_domains = [
     aliases: ['fertility', 'family planning', 'reproductive', 'genetic counseling', 'fertility treatments', 'IVF', 'birth control'] },
   { key: 'RESEARCH', value: 'Research',
     aliases: ['clinical research', 'medical studies', 'biomedical research', 'biomedical', 'research', 'data activation', 'molecular', 'clinical trials', 'drug trials', 'discovery', 'biotechnology'] },
-  { key: 'RHEUMATOLOGY', value: 'Rheumatology',
-    aliases: ['joint health', 'autoimmune', 'rheumatic', 'rheumatoid arthritis', 'lupus', 'spondylitis'] },
   { key: 'SLEEP_HEALTH', value: 'Sleep Health',
     aliases: ['sleep health', 'sleep disorders', 'insomnia', 'sleep', 'sleep apnea', 'narcolepsy'] },
   { key: 'SOCIAL_WORK', value: 'Social Work',
