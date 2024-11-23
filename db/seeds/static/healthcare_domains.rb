@@ -38,8 +38,6 @@ healthcare_domains = [
     aliases: ['brain', 'neurological', 'neuroscience', 'neurodegenerative', 'epilepsy', 'parkinson\'s disease', 'Alzheimers', 'migraine'] },
   { key: 'NURSING', value: 'Nursing',
     aliases: ['nurse', 'nursing', 'nurse practitioners', 'patient care'] },
-  { key: 'OBSTETRICS', value: 'Obstetrics',
-    aliases: %w[maternity prenatal pregnancy pregnant childbirth] },
   { key: 'ONCOLOGY', value: 'Oncology',
     aliases: ['cancer', 'oncological', 'cancer treatment', 'chemotherapy', 'chemo', 'precision medicine', 'immuno-oncology', 'breast cancer', 'lung cancer', 'leukemia'] },
   { key: 'OPTOMETRY', value: 'Optometry',
@@ -69,16 +67,15 @@ healthcare_domains = [
   { key: 'SLEEP_HEALTH', value: 'Sleep Health',
     aliases: ['sleep health', 'sleep disorders', 'insomnia', 'sleep', 'sleep apnea', 'narcolepsy'] },
   { key: 'SOCIAL_WORK', value: 'Social Work',
-      aliases: ["social work", "community health", "social determinants of health", "case management", "social services", "family support", "counseling", "advocacy"]
-    },    
-    { key: 'SPEECH_THERAPY', value: 'Speech Language Pathology',
+    aliases: ["social work", "community health", "social determinants of health", "case management", "social services", "family support", "counseling", "advocacy"]},
+  { key: 'SPEECH_THERAPY', value: 'Speech Language Pathology',
     aliases: ['speech', 'language', 'communication', 'voice therapy', 'dysphagia', 'stuttering', 'aphasia'] },
   { key: 'SURGERY', value: 'Surgery',
     aliases: ['surgical', 'operative', 'operations', 'procedures', 'surgery', 'minimally invasive', 'heart surgery', 'organ transplant'] },
-    {
-      key: 'WOMENS_HEALTH', value: 'Women\'s Health',
-      aliases: ['gynecology', 'obstetrics', 'pregnancy', 'menstrual', 'menopause', 'breast health', 'reproductive health', 'pelvic health', 'prenatal care', 'contraception', 'hormone therapy', 'pap smear', 'mammogram']
-    }
+  {
+    key: 'WOMENS_HEALTH', value: 'Women\'s Health',
+    aliases: ['gynecology', 'obstetrics', 'pregnancy', 'menstrual', 'menopause', 'breast health', 'reproductive health', 'pelvic health', 'prenatal', 'contraception', 'hormone therapy', 'pap smear', 'mammogram', 'maternity', 'pregnant', 'childbirth']
+  }
 ]
 
 seeded_count = 0

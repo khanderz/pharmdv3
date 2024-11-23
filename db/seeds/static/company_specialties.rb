@@ -16,10 +16,10 @@ domains = {
   genetics: HealthcareDomain.find_by(key: 'GENETICS'),
   geriatrics: HealthcareDomain.find_by(key: 'GERIATRICS'),
   hematology: HealthcareDomain.find_by(key: 'HEMATOLOGY'),
+  mens_health: HealthcareDomain.find_by(key: 'MENS_HEALTH'),
   nephrology: HealthcareDomain.find_by(key: 'NEPHROLOGY'),
   neurology: HealthcareDomain.find_by(key: 'NEUROLOGY'),
   nursing: HealthcareDomain.find_by(key: 'NURSING'),
-  obstetrics: HealthcareDomain.find_by(key: 'OBSTETRICS'),
   oncology: HealthcareDomain.find_by(key: 'ONCOLOGY'),
   optometry: HealthcareDomain.find_by(key: 'OPTOMETRY'),
   orthopedics: HealthcareDomain.find_by(key: 'ORTHOPEDICS'),
@@ -36,6 +36,7 @@ domains = {
   sleep_health: HealthcareDomain.find_by(key: 'SLEEP_HEALTH'),
   speech_therapy: HealthcareDomain.find_by(key: 'SPEECH_THERAPY'),
   surgery: HealthcareDomain.find_by(key: 'SURGERY'),
+  womens_health: HealthcareDomain.find_by(key: 'WOMENS_HEALTH')
 }
 
 specialties = {
@@ -197,12 +198,6 @@ specialties = {
     { key: 'PSYCHIATRIC_NURSING', value: 'Psychiatric Nursing',
       aliases: ['mental health nursing', 'behavioral health nursing'] }
   ],
-  obstetrics: [
-    { key: 'BIRTH_SERVICES', value: 'Birth Services',
-      aliases: ['labor and delivery', 'childbirth services'] },
-    { key: 'MATERNAL_HEALTH', value: 'Maternal Health',
-      aliases: ['pregnancy care', 'prenatal care'] }
-  ],
   oncology: [
     { key: 'CHEMOTHERAPY', value: 'Chemotherapy', aliases: ['chemo', 'cancer drugs'] },
     { key: 'MEDICAL_ONCOLOGY', value: 'Medical Oncology',
@@ -320,13 +315,15 @@ specialties = {
   ],
   reproductive_health: [
     { key: 'FERTILITY_TREATMENTS', value: 'Fertility Treatments',
-      aliases: ['IVF', 'fertility care'] },
+      aliases: ['IVF', 'fertility care', 'sperm'] },
     { key: 'PREGNANCY_CARE', value: 'Pregnancy Care',
       aliases: ['prenatal care', 'maternal health'] },
     { key: 'SEXUAL_HEALTH_SERVICES', value: 'Sexual Health Services',
       aliases: ['STI testing', 'sexual wellness'] },
     { key: 'BIRTH_CONTROL_SERVICES', value: 'Birth Control Services',
-      aliases: ['contraception', 'family planning'] }
+      aliases: ['contraception', 'family planning'] },
+    { key: 'BIRTH_SERVICES', value: 'Birth Services',
+      aliases: ['labor and delivery', 'childbirth services'] },
   ],
   research: [
     { key: 'BIOTECHNOLOGY', value: 'Biotechnology', aliases: ['biotech research', 'bio-research'] },
@@ -354,6 +351,10 @@ specialties = {
       aliases: ['laparoscopic surgery', 'keyhole surgery'] },
     { key: 'PLASTIC_SURGERY', value: 'Plastic Surgery',
       aliases: ['cosmetic surgery', 'reconstructive surgery'] }
+  ],
+  womens_health: [
+    { key: 'MATERNAL_HEALTH', value: 'Maternal Health',
+      aliases: ['pregnancy care', 'prenatal care'] }
   ]
 }
 
