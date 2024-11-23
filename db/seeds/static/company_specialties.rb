@@ -31,7 +31,6 @@ domains = {
   podiatry: HealthcareDomain.find_by(key: 'PODIATRY'),
   primary_care: HealthcareDomain.find_by(key: 'PRIMARY_CARE'),
   psychiatry: HealthcareDomain.find_by(key: 'PSYCHIATRY'),
-  pulmonology: HealthcareDomain.find_by(key: 'PULMONOLOGY'),
   radiology: HealthcareDomain.find_by(key: 'RADIOLOGY'),
   reproductive_health: HealthcareDomain.find_by(key: 'REPRODUCTIVE_HEALTH'),
   research: HealthcareDomain.find_by(key: 'RESEARCH'),
@@ -122,7 +121,13 @@ specialties = {
     { key: 'HEARING_AIDS', value: 'Hearing Aids',
       aliases: ['hearing devices', 'hearing technology'] },
     { key: 'HEARING_TESTS', value: 'Hearing Tests',
-      aliases: ['hearing evaluation', 'hearing screening'] }
+      aliases: ['hearing evaluation', 'hearing screening'] },
+    { key: 'ASTHMA_MANAGEMENT', value: 'Asthma Management',
+      aliases: ['asthma care', 'asthma treatment'] },
+    { key: 'COPD_CARE', value: 'COPD Care',
+      aliases: ['chronic obstructive pulmonary disease', 'lung disease care'] },
+    { key: 'RESPIRATORY_THERAPY', value: 'Respiratory Therapy',
+      aliases: ['breathing therapy', 'lung therapy'] }
   ],
   epidemiology: [
     { key: 'DISEASE_CONTROL', value: 'Disease Control',
@@ -306,14 +311,6 @@ specialties = {
       aliases: ['health outreach', 'public health services'] },
     { key: 'EPIDEMIOLOGY', value: 'Epidemiology',
       aliases: ['disease study', 'public health research'] }
-  ],
-  pulmonology: [
-    { key: 'ASTHMA_MANAGEMENT', value: 'Asthma Management',
-      aliases: ['asthma care', 'asthma treatment'] },
-    { key: 'COPD_CARE', value: 'COPD Care',
-      aliases: ['chronic obstructive pulmonary disease', 'lung disease care'] },
-    { key: 'RESPIRATORY_THERAPY', value: 'Respiratory Therapy',
-      aliases: ['breathing therapy', 'lung therapy'] }
   ],
   radiology: [
     { key: 'MRI_IMAGING', value: 'MRI Imaging',
