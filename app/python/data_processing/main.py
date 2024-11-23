@@ -2,6 +2,7 @@
 import os
 from dotenv import load_dotenv
  
+from app.python.data_processing.companies.source_ats_type import update_ats_type_in_master_data
 from companies.google_sheets_updater import load_sheet_data, update_google_sheet
 from companies.hubspot_functions import rename_hubspot_columns, fill_missing_values_with_hubspot
 from companies.linkedin_functions import filter_active_companies, enrich_with_linkedin_data
@@ -43,9 +44,11 @@ if __name__ == "__main__":
     # master_linkedin_issue_data = remove_duplicates(master_linkedin_issue_data)
     # master_data = remove_duplicates(master_data)
 
-    updated_active_data = enrich_with_linkedin_data(master_active_data, credentials_path, master_sheet_id, master_active_range_name)
+    updated_data = update_ats_type_in_master_data(master_active_data, credentials_path, master_sheet_id, master_active_range_name)
 
-    update_google_sheet(credentials_path, master_sheet_id, master_active_range_name, updated_active_data)
+    # updated_active_data = enrich_with_linkedin_data(master_active_data, credentials_path, master_sheet_id, master_active_range_name)
+
+    # update_google_sheet(credentials_path, master_sheet_id, master_active_range_name, updated_active_data)
     # update_google_sheet(credentials_path, master_sheet_id, master_range_name, master_data)
     # update_google_sheet(credentials_path, master_sheet_id, master_active_range_name, master_active_data)
     # update_google_sheet(credentials_path, master_sheet_id, master_linkedin_issues_range_name, master_linkedin_issue_data)

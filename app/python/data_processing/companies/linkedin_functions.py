@@ -22,7 +22,6 @@ def enrich_with_linkedin_data(master_active_data, credentials_path, master_sheet
     """
     Enrich data with LinkedIn company details using the LinkedIn API hook.
     """
-    # updates_summary = {}
 
     company_size_data = fetch_company_sizes()
 
