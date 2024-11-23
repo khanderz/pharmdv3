@@ -39,7 +39,6 @@ domains = {
   sleep_health: HealthcareDomain.find_by(key: 'SLEEP_HEALTH'),
   speech_therapy: HealthcareDomain.find_by(key: 'SPEECH_THERAPY'),
   surgery: HealthcareDomain.find_by(key: 'SURGERY'),
-  urology: HealthcareDomain.find_by(key: 'UROLOGY')
 }
 
 specialties = {
@@ -171,7 +170,10 @@ specialties = {
     { key: 'DIALYSIS_SERVICES', value: 'Dialysis Services',
       aliases: ['kidney dialysis', 'renal dialysis'] },
     { key: 'KIDNEY_TRANSPLANT_SERVICES ', value: 'Kidney Transplant Services',
-      aliases: ['renal transplant', 'kidney surgery'] }
+      aliases: ['renal transplant', 'kidney surgery'] },
+    { key: 'KIDNEY_HEALTH', value: 'Kidney Health', aliases: ['renal health', 'nephrology care'] },
+    { key: 'PROSTATE_CARE', value: 'Prostate Care',
+      aliases: ['prostate health', 'prostate disease'] }
   ],
   neurology: [
     { key: 'NEURODEGENERATIVE_DISORDER_CARE', value: 'Neurodegenerative Disorder Care',
@@ -361,11 +363,6 @@ specialties = {
       aliases: ['laparoscopic surgery', 'keyhole surgery'] },
     { key: 'PLASTIC_SURGERY', value: 'Plastic Surgery',
       aliases: ['cosmetic surgery', 'reconstructive surgery'] }
-  ],
-  urology: [
-    { key: 'KIDNEY_HEALTH', value: 'Kidney Health', aliases: ['renal health', 'nephrology care'] },
-    { key: 'PROSTATE_CARE', value: 'Prostate Care',
-      aliases: ['prostate health', 'prostate disease'] }
   ]
 }
 

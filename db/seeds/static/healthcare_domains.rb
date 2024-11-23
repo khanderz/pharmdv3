@@ -36,7 +36,7 @@ healthcare_domains = [
       aliases: ['urology', 'prostate', 'erectile dysfunction', 'testosterone']
     },
   { key: 'NEPHROLOGY', value: 'Nephrology',
-    aliases: ['kidney', 'renal', 'nephrology', 'dialysis', 'kidney disease', 'chronic kidney disease', 'ckd'] },
+    aliases: ['kidney', 'renal', 'nephrology', 'dialysis', 'kidney disease', 'chronic kidney disease', 'ckd', 'urinary', 'kidney', 'urological', 'prostate', 'kidney stones', 'incontinence'] },
   { key: 'NEUROLOGY', value: 'Neurology',
     aliases: ['brain', 'neurological', 'neuroscience', 'neurodegenerative', 'epilepsy', 'parkinson\'s disease', 'Alzheimers', 'migraine'] },
   { key: 'NURSING', value: 'Nursing',
@@ -82,8 +82,6 @@ healthcare_domains = [
     aliases: ['speech', 'language', 'communication', 'voice therapy', 'dysphagia', 'stuttering', 'aphasia'] },
   { key: 'SURGERY', value: 'Surgery',
     aliases: ['surgical', 'operative', 'operations', 'procedures', 'surgery', 'minimally invasive', 'heart surgery', 'organ transplant'] },
-  { key: 'UROLOGY', value: 'Urology',
-    aliases: ['urinary', 'kidney', 'urological', 'prostate', 'kidney stones', 'incontinence'] },
     {
       key: 'WOMENS_HEALTH', value: 'Women\'s Health',
       aliases: ['gynecology', 'obstetrics', 'pregnancy', 'menstrual', 'menopause', 'breast health', 'reproductive health', 'pelvic health', 'prenatal care', 'contraception', 'hormone therapy', 'pap smear', 'mammogram']

@@ -211,7 +211,7 @@ def filter_active_companies(master_data, master_sheet_id, active_range_name, cre
         
     if problem_data:
         problem_df = pd.DataFrame(problem_data, columns=master_data.columns)
-        print(f"problem_df: {problem_df}")
+
         updated_problem_data = pd.concat([existing_problem_data, problem_df]).drop_duplicates(subset="company_name")
         update_google_sheet(credentials_path, master_sheet_id, master_linkedin_issues_range_name, updated_problem_data)
 
