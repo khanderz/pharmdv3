@@ -18,7 +18,7 @@ healthcare_domains = [
   { key: 'ENT', value: 'Ear, Nose, and Throat',
     aliases: ['ENT care', 'otolaryngology', 'head and neck', 'hearing', 'auditory', 'nasal', 'throat', 'sinusitis', 'tonsillitis', 'hearing loss', 'lung', 'lungs', 'breathe', 'air', 'air pollution', 'respiratory', 'COPD', 'pulmonary', 'respiratory', 'asthma', 'bronchitis', 'emphysema'] },
   { key: 'EPIDEMIOLOGY', value: 'Epidemiology',
-    aliases: ['disease control', 'public health', 'epidemiological', 'community health', 'health education', 'population health', 'pandemic', 'infectious diseases'] },
+    aliases: ['disease control', 'public health', 'epidemiological', 'community health', 'health education', 'population health', 'pandemic', 'infectious diseases', 'infectious', 'epidemiology', 'disease prevention', 'COVID-19', 'HIV/AIDS', 'hepatitis', 'tuberculosis', 'malaria', 'covid', 'ebola'] },
   { key: 'ENVIRONMENTAL_HEALTH', value: 'Environmental Health',
     aliases: ['environmental', 'environmental medicine', 'environmental science', 'pollution', 'toxins', 'climate change'] },
   { key: 'GASTROENTEROLOGY', value: 'Gastroenterology',
@@ -29,12 +29,9 @@ healthcare_domains = [
     aliases: %w[elder elderly senior geriatric aging dementia osteoporosis arthritis] },
   { key: 'HEMATOLOGY', value: 'Hematology',
     aliases: %w[blood hematologic anemia hematology leukemia lymphoma hemophilia] },
-  { key: 'INFECTIOUS_DISEASE', value: 'Infectious Disease',
-    aliases: ['infectious', 'epidemiology', 'disease prevention', 'COVID-19', 'HIV/AIDS', 'hepatitis', 'tuberculosis', 'malaria', 'covid', 'ebola'] },
-    {
-      key: "MENS_HEALTH", value: 'Men\'s Health',
-      aliases: ['urology', 'prostate', 'erectile dysfunction', 'testosterone']
-    },
+  {
+    key: 'MENS_HEALTH', value: 'Men\'s Health', aliases: ['urology', 'prostate', 'erectile dysfunction', 'testosterone']
+  },
   { key: 'NEPHROLOGY', value: 'Nephrology',
     aliases: ['kidney', 'renal', 'nephrology', 'dialysis', 'kidney disease', 'chronic kidney disease', 'ckd', 'urinary', 'kidney', 'urological', 'prostate', 'kidney stones', 'incontinence'] },
   { key: 'NEUROLOGY', value: 'Neurology',

@@ -16,7 +16,6 @@ domains = {
   genetics: HealthcareDomain.find_by(key: 'GENETICS'),
   geriatrics: HealthcareDomain.find_by(key: 'GERIATRICS'),
   hematology: HealthcareDomain.find_by(key: 'HEMATOLOGY'),
-  infectious_disease: HealthcareDomain.find_by(key: 'INFECTIOUS_DISEASE'),
   nephrology: HealthcareDomain.find_by(key: 'NEPHROLOGY'),
   neurology: HealthcareDomain.find_by(key: 'NEUROLOGY'),
   nursing: HealthcareDomain.find_by(key: 'NURSING'),
@@ -136,7 +135,11 @@ specialties = {
     { key: 'DISEASE_CONTROL', value: 'Disease Control',
       aliases: ['disease prevention', 'epidemiology'] },
     { key: 'PUBLIC_HEALTH', value: 'Public Health',
-      aliases: ['community health', 'health education'] }
+      aliases: ['community health', 'health education'] },
+    { key: 'ANTIVIRAL_TREATMENTS', value: 'Antiviral Treatments',
+      aliases: ['antiviral therapy', 'viral care'] },
+    { key: 'INFECTION_CONTROL', value: 'Infection Control',
+      aliases: ['infection prevention', 'disease prevention'] }
   ],
   environmental_health: [
     { key: 'CLIMATE_CHANGE_HEALTH', value: 'Climate Change Health',
@@ -167,12 +170,6 @@ specialties = {
       aliases: ['blood disorder care', 'anemia care'] },
     { key: 'BLOOD_CANCER_TREATMENT', value: 'Blood Cancer Treatment',
       aliases: ['leukemia care', 'lymphoma care'] }
-  ],
-  infectious_disease: [
-    { key: 'ANTIVIRAL_TREATMENTS', value: 'Antiviral Treatments',
-      aliases: ['antiviral therapy', 'viral care'] },
-    { key: 'INFECTION_CONTROL', value: 'Infection Control',
-      aliases: ['infection prevention', 'disease prevention'] }
   ],
   nephrology: [
     { key: 'DIALYSIS_SERVICES', value: 'Dialysis Services',
