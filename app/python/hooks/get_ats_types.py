@@ -30,8 +30,11 @@ def fetch_ats_types():
             "SMARTRECRUITERS": "https://*.smartrecruiters.com",
             "TALEO": "https://*.taleo.net",
             "WELLFOUND": "https://wellfound.com/company/*/jobs",
-            "WORKABLE": "https://*.workable.com",
+            "WORKABLE": "https://*.workable.com", # "https://apply.workable.com/*/#jobs",
             "YCOMBINATOR": "https://ycombinator.com/companies/*/jobs",
+            # "HRM_DIRECT": "https://*.hrmdirect.com",
+            # "GEM": "https://jobs.gem.com/*",
+            # "GUSTO": "https://jobs.gusto.com/boards/*",
         }
 
         ats_homepages = {

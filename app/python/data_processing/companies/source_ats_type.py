@@ -4,9 +4,6 @@ import pandas as pd
 from app.python.ai_processing.utils.logger import BLUE, GREEN, RED, RESET
 from app.python.data_processing.companies.google_sheets_updater import update_google_sheet
 from app.python.hooks.get_ats_types import fetch_ats_types
-
-ats_type_data = fetch_ats_types()
-
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.chrome.options import Options
@@ -14,6 +11,8 @@ from selenium.webdriver.common.by import By
 from selenium.common.exceptions import WebDriverException, TimeoutException, NoSuchElementException
 from webdriver_manager.chrome import ChromeDriverManager
 import time
+
+ats_type_data = fetch_ats_types()
 
 def fetch_url_status(url, ats_homepage):
     """
@@ -87,9 +86,6 @@ def fetch_url_status(url, ats_homepage):
         if driver:
             driver.quit()
 
-
-
-
 def build_ats_url(ats_pattern, company_name):
     """
     Replaces the wildcard (*) in the ATS pattern with the company_name.
@@ -127,7 +123,6 @@ def update_ats_type_in_master_data(master_active_data, credentials_path, master_
     Updates the Google Sheet immediately for each matched ats_type.
     """
     
-
     existing_active_data = pd.DataFrame(columns=master_active_data.columns)
 
     for index, row in master_active_data.iterrows():

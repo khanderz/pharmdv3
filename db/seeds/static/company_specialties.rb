@@ -1,6 +1,5 @@
 # frozen_string_literal: true
 
-#  38
 domains = {
   allergy_immunology: HealthcareDomain.find_by(key: 'ALLERGY_IMMUNOLOGY'),
   cardiology: HealthcareDomain.find_by(key: 'CARDIOLOGY'),

@@ -21,7 +21,15 @@ ats_types = [
   { ats_type_code: 'TALEO', ats_type_name: 'Taleo' },
   { ats_type_code: 'WELLFOUND', ats_type_name: 'Wellfound' },
   { ats_type_code: 'WORKABLE', ats_type_name: 'Workable' },
-  { ats_type_code: 'YCOMBINATOR', ats_type_name: 'YCombinator' }
+  { ats_type_code: 'YCOMBINATOR', ats_type_name: 'YCombinator' },
+  { ats_type_code: 'HRM_DIRECT', ats_type_name: 'HRM Direct' }
+  # { ats_type_code: 'SCREENLOOP', ats_type_name: 'Screenloop' }
+  # { ats_type_code: 'ULTIPRO', ats_type_name: 'Ultipro' }
+  # { ats_type_code: 'INDEED', ats_type_name: 'Indeed' }
+  # { ats_type_code: 'LINKEDIN', ats_type_name: 'LinkedIn' }
+  # { ats_type_code: 'GEM', ats_type_name: 'Gem' }
+  # { ats_type_code: 'GUSTO', ats_type_name: 'Gusto' }
+  # { ats_type_code: 'PAYLOCITY', ats_type_name: 'Paylocity' }
 ]
 
 seeded_count = 0
