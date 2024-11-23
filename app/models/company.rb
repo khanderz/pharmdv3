@@ -132,26 +132,4 @@ class Company < ApplicationRecord
     end
     changes_made
   end
-
-  def populate_missing_data
-    data = {
-      company_name: company_name,
-      operating_status: operating_status,
-      industry: healthcare_domains.map(&:key).join(','),
-      company_ats_type: ats_type&.ats_type_code,
-      company_size: company_size&.size_range,
-      healthcare_domain: healthcare_domains.present? ? healthcare_domains.map(&:key).join(',') : nil,
-      company_specialty: company_specialties.present? ? company_specialties.map(&:key).join(',') : nil
-    }
-
-    processed_data = DataProcessingService.predict_company_attributes(data)
-    self.company_size ||= processed_data[:predicted_size]
-    if healthcare_domains.empty?
-      healthcare_domains << HealthcareDomain.find_by(key: processed_data[:predicted_healthcare_domain])
-    end
-    if company_specialties.empty?
-      company_specialties << CompanySpecialty.find_by(key: processed_data[:predicted_company_specialty])
-    end
-    save
-  end
 end
