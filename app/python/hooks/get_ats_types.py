@@ -28,7 +28,7 @@ def fetch_ats_types():
             "PROPRIETARY": None,
             "RIPPLING": "https://ats.rippling.com/*",
             "SMARTRECRUITERS": "https://*.smartrecruiters.com",
-            "TALEO": "https://*.taleo.net",
+            # "TALEO": "https://*.taleo.net", # redirects to auth
             "WELLFOUND": "https://wellfound.com/company/*/jobs",
             "WORKABLE": "https://*.workable.com", # "https://apply.workable.com/*/#jobs",
             "YCOMBINATOR": "https://ycombinator.com/companies/*/jobs",
@@ -54,7 +54,7 @@ def fetch_ats_types():
             "PROPRIETARY": None,   
             "RIPPLING": "https://www.rippling.com/",
             "SMARTRECRUITERS": "https://www.smartrecruiters.com/",
-            "TALEO": "https://www.oracle.com/taleo/",
+            # "TALEO": "https://www.oracle.com/taleo/",
             "WELLFOUND": "https://wellfound.com/",   
             "WORKABLE": "https://www.workable.com/",
             "YCOMBINATOR": "https://www.ycombinator.com/",

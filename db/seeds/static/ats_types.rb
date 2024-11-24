@@ -18,7 +18,7 @@ ats_types = [
   { ats_type_code: 'PROPRIETARY', ats_type_name: 'Proprietary' },
   { ats_type_code: 'RIPPLING', ats_type_name: 'Rippling' },
   { ats_type_code: 'SMARTRECRUITERS', ats_type_name: 'SmartRecruiters' },
-  { ats_type_code: 'TALEO', ats_type_name: 'Taleo' },
+  # { ats_type_code: 'TALEO', ats_type_name: 'Taleo' },
   { ats_type_code: 'WELLFOUND', ats_type_name: 'Wellfound' },
   { ats_type_code: 'WORKABLE', ats_type_name: 'Workable' },
   { ats_type_code: 'YCOMBINATOR', ats_type_name: 'YCombinator' },

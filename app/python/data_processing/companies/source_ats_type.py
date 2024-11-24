@@ -129,11 +129,11 @@ def update_ats_type_in_master_data(master_active_data, credentials_path, master_
     
     for index, row in master_active_data.iterrows():
         company_name = row["company_name"]
-        current_ats_type = row.get("ats_type")
+        current_ats_type = row["company_ats_type"]
 
         print(f"{BLUE}Processing {company_name}...{RESET}")
 
-        if current_ats_type and not pd.isna(current_ats_type):
+        if pd.notna(current_ats_type) and str(current_ats_type).strip():
             print(f"{GREEN}ATS type already set for {company_name}, skipping.{RESET}")
             continue
 
