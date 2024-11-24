@@ -1,5 +1,6 @@
 # app/python/data_processing/companies/source_ats_type.py
 
+import re
 import pandas as pd
 from app.python.ai_processing.utils.logger import BLUE, GREEN, RED, RESET
 from app.python.data_processing.companies.google_sheets_updater import update_google_sheet_row
@@ -93,7 +94,13 @@ def build_ats_url(ats_pattern, company_name):
     """
     Replaces the wildcard (*) in the ATS pattern with the company_name.
     """
-    sanitized_name = company_name.replace(" ", "").lower()
+    suffixes = ["inc", "inc.", "corp", "corp.", "ltd", "ltd.", "llc", "llc."]
+
+    name_without_suffix = company_name
+    for suffix in suffixes:
+        name_without_suffix = re.sub(rf"(?i)\b{suffix}\b", "", name_without_suffix)
+
+    sanitized_name = re.sub(r"[^\w]", "", name_without_suffix).lower()
 
     return ats_pattern.replace("*", sanitized_name), sanitized_name
 

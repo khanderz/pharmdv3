@@ -60,7 +60,7 @@ def fetch_ats_types():
             "WORKABLE": "https://www.workable.com/",
             "YCOMBINATOR": "https://www.ycombinator.com/",
             "HRM_DIRECT": "https://www.hrmdirect.com/",
-            "SCREENLOOP": "https://screenloop.com/",
+            "SCREENLOOP": "https://app.screenloop.com/auth/sign_in",
             "GEM": "https://gem.com/",
         }
 

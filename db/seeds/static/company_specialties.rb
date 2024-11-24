@@ -19,6 +19,8 @@ domains = {
   nephrology: HealthcareDomain.find_by(key: 'NEPHROLOGY'),
   neurology: HealthcareDomain.find_by(key: 'NEUROLOGY'),
   nursing: HealthcareDomain.find_by(key: 'NURSING'),
+  nutrition: HealthcareDomain.find_by(key: 'NUTRITION'),
+  occupational_health: HealthcareDomain.find_by(key: 'OCCUPATIONAL_HEALTH'),
   oncology: HealthcareDomain.find_by(key: 'ONCOLOGY'),
   optometry: HealthcareDomain.find_by(key: 'OPTOMETRY'),
   orthopedics: HealthcareDomain.find_by(key: 'ORTHOPEDICS'),
@@ -196,6 +198,21 @@ specialties = {
       aliases: ['child nursing', 'kids nursing'] },
     { key: 'PSYCHIATRIC_NURSING', value: 'Psychiatric Nursing',
       aliases: ['mental health nursing', 'behavioral health nursing'] }
+  ],
+  nutrition: [
+    { key: 'DIETARY_COUNSELING', value: 'Dietary Counseling',
+      aliases: ['nutrition counseling', 'diet advice'] },
+    { key: 'NUTRITIONAL_SUPPLEMENTS', value: 'Nutritional Supplements',
+      aliases: ['vitamins', 'nutritional support'] }
+  ],
+  occupational_health: [
+    { key: 'ERGONOMICS', value: 'Ergonomics', aliases: ['workplace ergonomics', 'ergonomic design'] },
+    { key: 'INDUSTRIAL_HYGIENE', value: 'Industrial Hygiene',
+      aliases: ['workplace safety', 'occupational health'] },
+    { key: 'OCCUPATIONAL_THERAPY', value: 'Occupational Therapy',
+      aliases: ['OT', 'workplace therapy'] },
+    { key: 'WORKPLACE_MENTAL_HEALTH', value: 'Workplace Mental Health',
+      aliases: ['mental health at work', 'workplace wellness'] }
   ],
   oncology: [
     { key: 'CHEMOTHERAPY', value: 'Chemotherapy', aliases: ['chemo', 'cancer drugs'] },
