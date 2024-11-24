@@ -54,7 +54,7 @@ def fetch_ats_types():
             "PINPOINTHQ": "https://www.pinpointhq.com/",
             # "PROPRIETARY": None,   
             "RIPPLING": "https://www.rippling.com/",
-            "SMARTRECRUITERS": "https://www.smartrecruiters.com/",
+            "SMARTRECRUITERS": "https://jobs.smartrecruiters.com/",
             # "TALEO": "https://www.oracle.com/taleo/",
             # "WELLFOUND": "https://wellfound.com/",   
             "WORKABLE": "https://www.workable.com/",

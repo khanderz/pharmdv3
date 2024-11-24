@@ -95,7 +95,7 @@ def build_ats_url(ats_pattern, company_name):
     """
     sanitized_name = company_name.replace(" ", "").lower()
 
-    return ats_pattern.replace("*", sanitized_name)
+    return ats_pattern.replace("*", sanitized_name), sanitized_name
 
 def match_ats_type(company_name):
     """
@@ -113,14 +113,14 @@ def match_ats_type(company_name):
         if not ats_pattern:
             continue
 
-        test_url = build_ats_url(ats_pattern, company_name)
+        test_url, sanitized_name = build_ats_url(ats_pattern, company_name)
 
         status = fetch_url_status(test_url, ats_homepage)
 
         if status:
-            return ats_type_code
+            return ats_type_code, sanitized_name
 
-    return None
+    return None, None
 
 def update_ats_type_in_master_data(master_active_data, credentials_path, master_sheet_id, master_active_sheet_name):
     """
@@ -138,11 +138,15 @@ def update_ats_type_in_master_data(master_active_data, credentials_path, master_
             print(f"{GREEN}ATS type already set for {company_name}, skipping.{RESET}")
             continue
 
-        matched_ats_type = match_ats_type(company_name)
+        matched_ats_type, sanitized_name = match_ats_type(company_name)
 
         if matched_ats_type:
             print(f"{GREEN}Matched ATS type for {company_name}: {matched_ats_type}{RESET}")
+            print(f"{GREEN}Setting ats_id for {company_name}: {sanitized_name}{RESET}")
+
             master_active_data.at[index, "company_ats_type"] = matched_ats_type
+            master_active_data.at[index, "ats_id"] = sanitized_name
+
             updated_row = master_active_data.loc[index]
             row_data = updated_row.fillna("").astype(str).tolist()
             
