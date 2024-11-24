@@ -54,3 +54,40 @@ def update_google_sheet(credentials_path, sheet_id, range_name, data):
     except Exception as e:
         print(f"{RED}An error occurred during update: {e}{RESET}")
 
+def update_google_sheet_row(credentials_path, sheet_id, range_name, row_index, data):
+    """
+    Updates a specific row in a Google Sheet.
+    
+    Args:
+        credentials_path (str): Path to the Google service account JSON credentials file.
+        sheet_id (str): ID of the Google Sheet.
+        range_name (str): Name of the range in A1 notation (e.g., 'Sheet1').
+        row_index (int): Index of the row to update (1-based index).
+        data (list): List of values to update in the row.
+
+    Example:
+        update_google_sheet_row('credentials.json', 'sheet_id', 'Sheet1', 3, ['Value1', 'Value2'])
+    """
+    try:
+        creds = service_account.Credentials.from_service_account_file(credentials_path)
+        service = build("sheets", "v4", credentials=creds)
+        sheet = service.spreadsheets()
+
+        range_to_update = f"{range_name}!A{row_index}:{chr(64 + len(data))}{row_index}"
+
+        body = {"values": [data]}
+
+        result = (
+            sheet.values()
+            .update(
+                spreadsheetId=sheet_id,
+                range=range_to_update,
+                valueInputOption="RAW",
+                body=body,
+            )
+            .execute()
+        )
+
+        print(f"{GREEN}{result.get('updatedCells')} cells updated.{RESET}")
+    except Exception as e:
+        print(f"{RED}An error occurred during update: {e}{RESET}")

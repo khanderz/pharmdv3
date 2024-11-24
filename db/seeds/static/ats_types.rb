@@ -9,7 +9,7 @@ ats_types = [
   { ats_type_code: 'DOVER', ats_type_name: 'Dover' },
   { ats_type_code: 'EIGHTFOLD', ats_type_name: 'Eightfold' },
   { ats_type_code: 'FOUNTAIN  ', ats_type_name: 'Fountain' },
-  # { ats_type_code: 'GREENHOUSE', ats_type_name: 'Greenhouse' },
+  { ats_type_code: 'GREENHOUSE', ats_type_name: 'Greenhouse' },
   # { ats_type_code: 'ICIMS', ats_type_name: 'iCIMS' },
   { ats_type_code: 'JAZZHR', ats_type_name: 'JazzHR' },
   { ats_type_code: 'LEVER', ats_type_name: 'Lever' },
@@ -22,7 +22,7 @@ ats_types = [
   { ats_type_code: 'WELLFOUND', ats_type_name: 'Wellfound' },
   { ats_type_code: 'WORKABLE', ats_type_name: 'Workable' },
   { ats_type_code: 'YCOMBINATOR', ats_type_name: 'YCombinator' },
-  { ats_type_code: 'HRM_DIRECT', ats_type_name: 'HRM Direct' }
+  # { ats_type_code: 'HRM_DIRECT', ats_type_name: 'HRM Direct' }
   # { ats_type_code: 'SCREENLOOP', ats_type_name: 'Screenloop' }
   # { ats_type_code: 'ULTIPRO', ats_type_name: 'Ultipro' }
   # { ats_type_code: 'INDEED', ats_type_name: 'Indeed' }

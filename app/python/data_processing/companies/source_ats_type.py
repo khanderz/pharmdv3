@@ -2,7 +2,7 @@
 
 import pandas as pd
 from app.python.ai_processing.utils.logger import BLUE, GREEN, RED, RESET
-from app.python.data_processing.companies.google_sheets_updater import update_google_sheet
+from app.python.data_processing.companies.google_sheets_updater import update_google_sheet_row
 from app.python.hooks.get_ats_types import fetch_ats_types
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
@@ -80,8 +80,11 @@ def fetch_url_status(url, ats_homepage):
     except TimeoutException:
         print(f"{RED}Timeout occurred while fetching URL: {url}{RESET}")
         return False
+    
     except WebDriverException as e:
+        # print(f"{RED}An error occurred while fetching URL: {url}, {e}{RESET}")
         return False
+    
     finally:
         if driver:
             driver.quit()
@@ -90,7 +93,9 @@ def build_ats_url(ats_pattern, company_name):
     """
     Replaces the wildcard (*) in the ATS pattern with the company_name.
     """
-    return ats_pattern.replace("*", company_name.lower())
+    sanitized_name = company_name.replace(" ", "").lower()
+
+    return ats_pattern.replace("*", sanitized_name)
 
 def match_ats_type(company_name):
     """
@@ -112,7 +117,6 @@ def match_ats_type(company_name):
         status = fetch_url_status(test_url, ats_homepage)
 
         if status:
-            print(f" status")
             return ats_type_code
 
     return None
@@ -123,12 +127,9 @@ def update_ats_type_in_master_data(master_active_data, credentials_path, master_
     Updates the Google Sheet immediately for each matched ats_type.
     """
     
-    existing_active_data = pd.DataFrame(columns=master_active_data.columns)
-
     for index, row in master_active_data.iterrows():
         company_name = row["company_name"]
         current_ats_type = row.get("ats_type")
-        updated_data = []
 
         print(f"{BLUE}Processing {company_name}...{RESET}")
 
@@ -140,20 +141,23 @@ def update_ats_type_in_master_data(master_active_data, credentials_path, master_
 
         if matched_ats_type:
             print(f"{GREEN}Matched ATS type for {company_name}: {matched_ats_type}{RESET}")
-            # row["company_ats_type"] = matched_ats_type
             master_active_data.at[index, "company_ats_type"] = matched_ats_type
-            updated_data.append(row)
-
-        else:
-            print(f"{RED}No ATS type matched for {company_name}{RESET}")
-
-        if updated_data:
+            row_data = row.fillna("").astype(str).tolist()
+            
             try:
-                print(f"{BLUE}Updating Google Sheet for {company_name}...{RESET}")
-                update_google_sheet(credentials_path, master_sheet_id, active_range_name, master_active_data)
+                print(f"{BLUE}Updating Google Sheet for {company_name} for row {index + 1} ...{RESET}")
+                update_google_sheet_row(
+                    credentials_path,
+                    master_sheet_id,
+                    active_range_name,
+                    row_index=index + 1, 
+                    data=row_data
+                )
                 print(f"{GREEN}Google Sheet updated successfully for {company_name}.{RESET}")
             except Exception as e:
                 print(f"{RED}An error occurred during Google Sheet update: {e}{RESET}")
+        else:
+            print(f"{RED}No ATS type matched for {company_name}{RESET}")
     
     print(f"{GREEN}Finished processing all companies.{RESET}")
     return master_active_data
