@@ -86,7 +86,7 @@ def update_google_sheet_row(credentials_path, sheet_id, range_name, row_index, d
         start_column = "A"
         end_column = get_column_letter(len(data)) 
 
-        range_to_update = f"{range_name}!{start_column}{row_index}:{end_column}{row_index}"
+        range_to_update = f"{range_name}!{start_column}{row_index+1}:{end_column}{row_index+1}"
 
         body = {"values": [data]}
 

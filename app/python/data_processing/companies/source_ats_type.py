@@ -143,7 +143,8 @@ def update_ats_type_in_master_data(master_active_data, credentials_path, master_
         if matched_ats_type:
             print(f"{GREEN}Matched ATS type for {company_name}: {matched_ats_type}{RESET}")
             master_active_data.at[index, "company_ats_type"] = matched_ats_type
-            row_data = row.fillna("").astype(str).tolist()
+            updated_row = master_active_data.loc[index]
+            row_data = updated_row.fillna("").astype(str).tolist()
             
             try:
                 print(f"{BLUE}Updating Google Sheet for {company_name} for row {index + 1} ...{RESET}")
