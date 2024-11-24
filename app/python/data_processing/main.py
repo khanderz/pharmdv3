@@ -17,6 +17,7 @@ if __name__ == "__main__":
     master_sheet_id = os.getenv("MASTER_SHEET_ID")
     master_range_name = os.getenv("MASTER_RANGE_NAME")
     master_active_range_name = os.getenv("MASTER_ACTIVE_RANGE_NAME")
+    master_active_sheet_name = os.getenv("MASTER_ACTIVE_SHEET_NAME")
     master_linkedin_issues_range_name = os.getenv("MASTER_LINKEDIN_ISSUE_RANGE_NAME")
 
     # hubspot_sheet_id = os.getenv("HUBSPOT_SHEET_ID")
@@ -44,7 +45,7 @@ if __name__ == "__main__":
     # master_linkedin_issue_data = remove_duplicates(master_linkedin_issue_data)
     # master_data = remove_duplicates(master_data)
 
-    updated_data = update_ats_type_in_master_data(master_active_data, credentials_path, master_sheet_id, master_active_range_name)
+    updated_data = update_ats_type_in_master_data(master_active_data, credentials_path, master_sheet_id, master_active_sheet_name)
 
     # updated_active_data = enrich_with_linkedin_data(master_active_data, credentials_path, master_sheet_id, master_active_range_name)
 

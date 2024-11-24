@@ -109,6 +109,7 @@ def match_ats_type(company_name):
         ats_type_code = ats_type["ats_type_code"]
         ats_pattern = ats_type.get("domain_matching_url") 
         ats_homepage = ats_type.get("homepage")
+
         if not ats_pattern:
             continue
 
@@ -121,7 +122,7 @@ def match_ats_type(company_name):
 
     return None
 
-def update_ats_type_in_master_data(master_active_data, credentials_path, master_sheet_id, active_range_name):
+def update_ats_type_in_master_data(master_active_data, credentials_path, master_sheet_id, master_active_sheet_name):
     """
     Updates the ats_type for each company in master_active_data, only if ats_type is not already set.
     Updates the Google Sheet immediately for each matched ats_type.
@@ -149,13 +150,13 @@ def update_ats_type_in_master_data(master_active_data, credentials_path, master_
                 update_google_sheet_row(
                     credentials_path,
                     master_sheet_id,
-                    active_range_name,
+                    master_active_sheet_name,
                     row_index=index + 1, 
                     data=row_data
                 )
-                print(f"{GREEN}Google Sheet updated successfully for {company_name}.{RESET}")
             except Exception as e:
-                print(f"{RED}An error occurred during Google Sheet update: {e}{RESET}")
+                print(f"{RED}An error occurred during Google Sheet update for {company_name}: {e}{RESET}")
+
         else:
             print(f"{RED}No ATS type matched for {company_name}{RESET}")
     

@@ -27,7 +27,6 @@ def load_sheet_data(credentials_path, sheet_id, range_name):
 
     return data
 
-
 def update_google_sheet(credentials_path, sheet_id, range_name, data):
     data = data.fillna("").astype(str)
     data = data.iloc[:, :20]
@@ -54,6 +53,17 @@ def update_google_sheet(credentials_path, sheet_id, range_name, data):
     except Exception as e:
         print(f"{RED}An error occurred during update: {e}{RESET}")
 
+def get_column_letter(col_index):
+    """
+    Converts a column index (1-based) to an Excel-style column letter.
+    For example, 1 -> 'A', 27 -> 'AA'.
+    """
+    result = []
+    while col_index > 0:
+        col_index, remainder = divmod(col_index - 1, 26)
+        result.append(chr(65 + remainder))
+    return ''.join(reversed(result))
+
 def update_google_sheet_row(credentials_path, sheet_id, range_name, row_index, data):
     """
     Updates a specific row in a Google Sheet.
@@ -73,7 +83,10 @@ def update_google_sheet_row(credentials_path, sheet_id, range_name, row_index, d
         service = build("sheets", "v4", credentials=creds)
         sheet = service.spreadsheets()
 
-        range_to_update = f"{range_name}!A{row_index}:{chr(64 + len(data))}{row_index}"
+        start_column = "A"
+        end_column = get_column_letter(len(data)) 
+
+        range_to_update = f"{range_name}!{start_column}{row_index}:{end_column}{row_index}"
 
         body = {"values": [data]}
 
