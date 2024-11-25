@@ -1,5 +1,5 @@
 #  app/python/ai_processing/utils/validation_utils.py
-from app.python.ai_processing.utils.logger import RED, GREEN, RESET
+from app.python.ai_processing.utils.logger import BLUE, RED, GREEN, RESET
 from app.python.ai_processing.utils.spacy_utils import print_token_characters
 from spacy.scorer import Scorer
 from spacy.training import Example
@@ -32,8 +32,10 @@ def verify_data_consistency(validation_data):
             ), f"{RED}{print_token_characters(text)}{RESET}"
 
 def validate_entities(data, nlp):
+    fails = []
     for idx, item in enumerate(data):
         doc = nlp(item["text"])
+
         for entity in item["entities"]:
             start, end, label, expected_token = (
                 entity["start"], 
@@ -44,14 +46,16 @@ def validate_entities(data, nlp):
             spacy_token = doc.char_span(start, end)
             
             if spacy_token is None or expected_token != spacy_token.text:
+                fails.append(entity)
                 print(
                     f"Mismatch found in object {idx + 1}:\n"
                     f"  Label: {label}\n"
                     f"  Expected: '{expected_token}' (start={start}, end={end})\n"
                     f"  Actual: '{spacy_token.text if spacy_token else None}'\n"
-                )
-            else:
-                print(f"All pass")    
+                ) 
+    if fails:
+        print(f"{BLUE}failed entities: {fails}{RESET}")
+        print(f"{RED}Validation failed for {len(fails)} entities.{RESET}")
 
 def fuzzy_match(true_entities, pred_entities, tolerance=1):
     matched = []

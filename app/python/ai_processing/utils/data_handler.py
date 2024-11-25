@@ -8,7 +8,6 @@ from app.python.ai_processing.utils.logger import BLUE, RED, RESET
 project_root = os.path.abspath(
     os.path.join(os.path.dirname(__file__), "../../..","python", "ai_processing")
 )
-print(f"project root: {project_root}")
 
 def load_spacy_model(MODEL_SAVE_PATH, MAX_SEQ_LENGTH=None):
     """
