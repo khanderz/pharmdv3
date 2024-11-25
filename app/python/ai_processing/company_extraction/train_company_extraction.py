@@ -60,14 +60,14 @@ if "ner" not in nlp.pipe_names:
 
 else:
     ner = nlp.get_pipe("ner")
-    # print(f"{GREEN}NER pipe already exists in blank model: {nlp.pipe_names}{RESET}")
+    print(f"{GREEN}NER pipe already exists in blank model: {nlp.pipe_names}{RESET}")
 
-    # doc_bin, examples = handle_spacy_data(
-    #     SPACY_DATA_PATH,
-    #     CONVERTED_FILE,
-    #     FOLDER,
-    #     nlp,
-    # )
+    doc_bin, examples = handle_spacy_data(
+        SPACY_DATA_PATH,
+        CONVERTED_FILE,
+        FOLDER,
+        nlp,
+    )
 
 # if examples:
 #     for example in examples:
@@ -77,12 +77,12 @@ else:
 #             print(f"Entity: '{ent.text}', Label: '{ent.label_}'")
 
 # ------------------- TRAIN MODEL -------------------
-# train_spacy_model(MODEL_SAVE_PATH, nlp, examples)
+train_spacy_model(MODEL_SAVE_PATH, nlp, examples)
 
 
 # ------------------- VALIDATE TRAINER -------------------
-# evaluate_model(nlp, converted_data)
-validate_entities(converted_data, nlp)
+evaluate_model(nlp, converted_data)
+# validate_entities(converted_data, nlp)
 
 # ------------------- TEST EXAMPLES -------------------
 def convert_example_to_biluo(text):
@@ -123,5 +123,5 @@ test_texts = [
     "Seneca Family of Agencies provides unconditional care and a comprehensive continuum of mental health and support services for children and families facing trauma, including in-home wraparound, foster care, adoption, crisis response, and therapeutic programs."
 ]
 
-# for text in test_texts:
-#     inspect_company_predictions(text)
+for text in test_texts:
+    inspect_company_predictions(text)

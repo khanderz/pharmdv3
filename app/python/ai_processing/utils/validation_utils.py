@@ -54,8 +54,10 @@ def validate_entities(data, nlp):
                     f"  Actual: '{spacy_token.text if spacy_token else None}'\n"
                 ) 
     if fails:
-        print(f"{BLUE}failed entities: {fails}{RESET}")
+        # print(f"{BLUE}failed entities: {fails}{RESET}")
         print(f"{RED}Validation failed for {len(fails)} entities.{RESET}")
+    else:
+        print(f"{GREEN}Validation passed for all entities.{RESET}")
 
 def fuzzy_match(true_entities, pred_entities, tolerance=1):
     matched = []

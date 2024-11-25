@@ -38,7 +38,7 @@ transformer = LongformerModel.from_pretrained("allenai/longformer-base-4096")
 MAX_SEQ_LENGTH = 4096
 
 converted_data = load_data(CONVERTED_FILE, FOLDER)
-nlp = load_spacy_model(MODEL_SAVE_PATH, MAX_SEQ_LENGTH)
+nlp = load_spacy_model(MODEL_SAVE_PATH, MAX_SEQ_LENGTH, model_name="allenai/longformer-base-4096")
 
 if "ner" not in nlp.pipe_names:
     ner = nlp.add_pipe("ner")
