@@ -1,6 +1,6 @@
 #  app/python/ai_processing/utils/validation_utils.py
 from app.python.ai_processing.utils.logger import BLUE, RED, GREEN, RESET
-from app.python.ai_processing.utils.spacy_utils import print_token_characters
+from app.python.ai_processing.utils.utils import print_token_characters
 from spacy.scorer import Scorer
 from spacy.training import Example
 
@@ -11,7 +11,6 @@ def print_tokenization(doc):
         print(
             f"Token: '{token.text}', Start: {token.idx}, End: {token.idx + len(token.text)}"
         )
-
 
 def verify_data_consistency(validation_data):
     for entry in validation_data:
@@ -123,3 +122,72 @@ def print_label_token_pairs(data):
             label = entity["label"]
             token = text[entity["start"] : entity["end"]]
             print(f"{label:<15} {token}")
+
+# ------------------- IDENTIFY INCORRECT ENTITIES IN TRAIN_DATA_SPACY.JSON -------------------
+def validate_ner_data(data):
+    """
+    Validate the consistency of keys in a Named Entity Recognition (NER) dataset.
+    
+    Args:
+        data (list): A list of NER examples, each containing a 'text' key and an 'entities' key.
+    
+    Returns:
+        dict: A dictionary with the validation results, including errors and overall status.
+    """
+    required_keys = {'start', 'end', 'label', 'token'}
+    errors = []
+    
+    for i, example in enumerate(data):
+        if 'text' not in example or 'entities' not in example:
+            errors.append({
+                "example_index": i,
+                "error": "Missing 'text' or 'entities' key in example."
+            })
+            continue
+        
+        for j, entity in enumerate(example['entities']):
+            missing_keys = required_keys - entity.keys()
+            if missing_keys:
+                errors.append({
+                    "example_index": i,
+                    "entity_index": j,
+                    "missing_keys": list(missing_keys)
+                })
+    
+    return {
+        "is_valid": not errors,
+        "errors": errors
+    }
+
+def find_problematic_entry(data, example_index, entity_index):
+    """
+    Locate and return the problematic example and entity in the dataset.
+
+    Args:
+        data (list): The dataset to search through.
+        example_index (int): The index of the problematic example.
+        entity_index (int): The index of the problematic entity within the example.
+
+    Returns:
+        dict: The problematic example and entity, if found.
+    """
+    try:
+        example = data[example_index]
+        entity = example['entities'][entity_index]
+        return {"example": example, "entity": entity}
+    except IndexError:
+        return {"error": "Index out of bounds. Please check the indices and dataset."}
+
+#  ------------------EXAMPLE USAGE------------------
+# if not error["is_valid"]:
+#     for error in error["errors"]:
+#         if "example_index" in error and "entity_index" in error:
+#             example_index = error["example_index"]
+#             entity_index = error["entity_index"]
+
+#             problematic_entry = find_problematic_entry(converted_data, example_index, entity_index)
+#             print(f"Problematic Entry:\n{problematic_entry}")
+#         else:
+#             print(f"Error: {error}")
+# else:
+#     print("No validation errors found!")

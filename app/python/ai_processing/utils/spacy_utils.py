@@ -1,7 +1,5 @@
 # app/python/ai_processing/utils/spacy_utils.py
 
-import json
-import re
 import os
 import spacy
 import torch
@@ -9,11 +7,6 @@ from spacy.tokens import DocBin
 from spacy.training import Example
 from app.python.ai_processing.utils.data_handler import generate_path, hash_train_data, load_data
 from app.python.ai_processing.utils.logger import BLUE, RED, RESET
-from app.python.ai_processing.utils.utils import (
-    add_space_to_tokens,
-    print_side_by_side,
-    print_token_characters,
-)
 
 # ------------------- LOAD/CONVERT SPACY TO BILUO -------------------
 def handle_spacy_data(
@@ -128,7 +121,7 @@ def convert_to_spacy_format(
         text = entry["text"]
         entities = entry.get("entities", [])
         doc = nlp(text)
-
+        # print(f"entities: {entities}")
         example_entities = [
             (int(ent["start"]), int(ent["end"]), ent["label"]) for ent in entities
         ]
