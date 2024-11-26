@@ -34,7 +34,7 @@ SPACY_DATA_PATH = os.path.join(BASE_DIR, "data", "train.spacy")
 # updated_data = calculate_entity_indices(train_data)
 # print_data_with_entities(updated_data)
 
-converted_data = load_data(CONVERTED_FILE, FOLDER)
+# converted_data = load_data(CONVERTED_FILE, FOLDER)
 nlp = load_spacy_model(MODEL_SAVE_PATH)
 
 if "ner" not in nlp.pipe_names:
@@ -69,22 +69,22 @@ else:
         nlp,
     )
 
-# if examples:
-#     for example in examples:
-#         print(f"\nText: '{example.reference.text}'")
-#         print("Entities after initialization:")
-#         for ent in example.reference.ents:
-#             print(f"Entity: '{ent.text}', Label: '{ent.label_}'")
+# # if examples:
+# #     for example in examples:
+# #         print(f"\nText: '{example.reference.text}'")
+# #         print("Entities after initialization:")
+# #         for ent in example.reference.ents:
+# #             print(f"Entity: '{ent.text}', Label: '{ent.label_}'")
 
-# ------------------- TRAIN MODEL -------------------
-train_spacy_model(MODEL_SAVE_PATH, nlp, examples)
+# # ------------------- TRAIN MODEL -------------------
+# train_spacy_model(MODEL_SAVE_PATH, nlp, examples)
 
 
-# ------------------- VALIDATE TRAINER -------------------
-evaluate_model(nlp, converted_data)
+# # ------------------- VALIDATE TRAINER -------------------
+# evaluate_model(nlp, converted_data)
 # validate_entities(converted_data, nlp)
 
-# ------------------- TEST EXAMPLES -------------------
+# # ------------------- TEST EXAMPLES -------------------
 def convert_example_to_biluo(text):
     """Convert model predictions for the given text to BILUO format."""
     doc = nlp(text)
@@ -102,26 +102,27 @@ def inspect_company_predictions(text):
     """Inspect model predictions for companies text."""
     doc, biluo_tags = convert_example_to_biluo(text)
 
-    print("\nOriginal Text:")
-    print(f"'{text}'\n")
-    print("Token Predictions:")
-    print(f"{'Token':<15}{'Predicted Label':<20}{'BILUO Tag':<20}")
-    print("-" * 50)
+    # print("\nOriginal Text:")
+    # print(f"'{text}'\n")
+    # print("Token Predictions:")
+    # print(f"{'Token':<15}{'Predicted Label':<20}{'BILUO Tag':<20}")
+    # print("-" * 50)
 
-    for token, biluo_tag in zip(doc, biluo_tags):
-        predicted_label = token.ent_type_ if token.ent_type_ else "O"
-        print(f"{token.text:<15}{predicted_label:<20}{biluo_tag:<20}")
+    # for token, biluo_tag in zip(doc, biluo_tags):
+    #     predicted_label = token.ent_type_ if token.ent_type_ else "O"
+    #     print(f"{token.text:<15}{predicted_label:<20}{biluo_tag:<20}")
+    return doc, biluo_tags
 
 
-test_texts = [
-    "Ensysce Biosciences is a clinical stage biotechnology firm focused on developing innovative drug formulations that leverage nanotechnology to create safer prescription options aimed at reducing the risk of abuse and preventing overdose.",
-    "Everlywell provides a convenient and comprehensive home health testing experience.",
-    "Pathfinder® offers the world's first dynamic rigidizing overtube for endoscopy stability, managing loop formation and enhancing endoscope control during GI procedures.",
-    "Sight Sciences focuses on delivering innovative and clinically validated therapies to eyecare providers, aiming to address the root causes of common eye diseases through less invasive and more intuitive solutions.",
-    "Tempus is a leading technology company in precision medicine, utilizing AI to empower personalized cancer care through genomic sequencing and real-time data analysis.",
-    "TytoCare offers innovative telehealth solutions that enable high-quality primary care from the comfort of home.",
-    "Seneca Family of Agencies provides unconditional care and a comprehensive continuum of mental health and support services for children and families facing trauma, including in-home wraparound, foster care, adoption, crisis response, and therapeutic programs."
-]
+# test_texts = [
+#     "Ensysce Biosciences is a clinical stage biotechnology firm focused on developing innovative drug formulations that leverage nanotechnology to create safer prescription options aimed at reducing the risk of abuse and preventing overdose.",
+#     "Everlywell provides a convenient and comprehensive home health testing experience.",
+#     "Pathfinder® offers the world's first dynamic rigidizing overtube for endoscopy stability, managing loop formation and enhancing endoscope control during GI procedures.",
+#     "Sight Sciences focuses on delivering innovative and clinically validated therapies to eyecare providers, aiming to address the root causes of common eye diseases through less invasive and more intuitive solutions.",
+#     "Tempus is a leading technology company in precision medicine, utilizing AI to empower personalized cancer care through genomic sequencing and real-time data analysis.",
+#     "TytoCare offers innovative telehealth solutions that enable high-quality primary care from the comfort of home.",
+#     "Seneca Family of Agencies provides unconditional care and a comprehensive continuum of mental health and support services for children and families facing trauma, including in-home wraparound, foster care, adoption, crisis response, and therapeutic programs."
+# ]
 
-for text in test_texts:
-    inspect_company_predictions(text)
+# for text in test_texts:
+#     inspect_company_predictions(text)

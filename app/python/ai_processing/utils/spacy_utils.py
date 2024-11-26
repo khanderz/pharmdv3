@@ -251,13 +251,16 @@ def convert_to_spacy_format(
         text = entry["text"]
         entities = entry.get("entities", [])
         doc = nlp(text)
+
         example_entities = [
             (int(ent["start"]), int(ent["end"]), ent["label"]) for ent in entities
         ]
+
         spans = [
             doc.char_span(start, end, label=label)
             for start, end, label in example_entities
         ]
+
         spans = [span for span in spans if span is not None]
         doc.ents = spans
 
@@ -292,6 +295,7 @@ def convert_to_spacy_format(
 
             del batch_inputs, outputs, batch_embeddings
             torch.cuda.empty_cache()
+
 
     db.to_disk(SPACY_DATA_PATH)
     loaded_db = DocBin().from_disk(SPACY_DATA_PATH)

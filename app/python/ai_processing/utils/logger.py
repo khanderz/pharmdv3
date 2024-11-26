@@ -19,6 +19,10 @@ def configure_warnings():
         "ignore",
         message="Some weights of RobertaModel were not initialized from the model checkpoint",
     )
+    warnings.filterwarnings(
+        "ignore",
+        message="You should probably TRAIN this model on a down-stream task",
+    )
     warnings.simplefilter(action="ignore", category=FutureWarning)
     warnings.filterwarnings("ignore", category=UserWarning)
 

@@ -2,6 +2,7 @@
 import os
 from dotenv import load_dotenv
  
+from app.python.data_processing.companies.populate_hc_domain import process_and_update_sheet
 from app.python.data_processing.companies.source_ats_type import update_ats_type_in_master_data
 from companies.google_sheets_updater import load_sheet_data, update_google_sheet
 from companies.hubspot_functions import rename_hubspot_columns, fill_missing_values_with_hubspot
@@ -16,9 +17,12 @@ if __name__ == "__main__":
 
     master_sheet_id = os.getenv("MASTER_SHEET_ID")
     master_range_name = os.getenv("MASTER_RANGE_NAME")
+
     master_active_range_name = os.getenv("MASTER_ACTIVE_RANGE_NAME")
     master_active_sheet_name = os.getenv("MASTER_ACTIVE_SHEET_NAME")
+
     master_linkedin_issues_range_name = os.getenv("MASTER_LINKEDIN_ISSUE_RANGE_NAME")
+    master_linkedin_issues_sheet_name = os.getenv("MASTER_LINKEDIN_ISSUE_SHEET_NAME")
 
     # hubspot_sheet_id = os.getenv("HUBSPOT_SHEET_ID")
     # hubspot_range_name = os.getenv("HUBSPOT_RANGE_NAME")
@@ -45,7 +49,7 @@ if __name__ == "__main__":
     # master_linkedin_issue_data = remove_duplicates(master_linkedin_issue_data)
     # master_data = remove_duplicates(master_data)
 
-    updated_data = update_ats_type_in_master_data(master_active_data, credentials_path, master_sheet_id, master_active_sheet_name)
+    # updated_data = update_ats_type_in_master_data(master_active_data, credentials_path, master_sheet_id, master_active_sheet_name)
 
     # updated_active_data = enrich_with_linkedin_data(master_active_data, credentials_path, master_sheet_id, master_active_range_name)
 
@@ -54,3 +58,7 @@ if __name__ == "__main__":
     # update_google_sheet(credentials_path, master_sheet_id, master_active_range_name, master_active_data)
     # update_google_sheet(credentials_path, master_sheet_id, master_linkedin_issues_range_name, master_linkedin_issue_data)
     
+
+    # ----------------------------- AI MODELS -----------------------------
+
+    process_and_update_sheet(credentials_path, master_sheet_id, master_linkedin_issue_data, master_linkedin_issues_sheet_name)
