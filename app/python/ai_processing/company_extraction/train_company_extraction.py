@@ -89,7 +89,7 @@ else:
 # #             print(f"Entity: '{ent.text}', Label: '{ent.label_}'")
 
 # # ------------------- TRAIN MODEL -------------------
-# train_spacy_model(MODEL_SAVE_PATH, nlp, examples)
+train_spacy_model(MODEL_SAVE_PATH, nlp, examples)
 
 
 # # ------------------- VALIDATE TRAINER -------------------

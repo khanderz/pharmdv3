@@ -2,7 +2,7 @@
 import os
 from dotenv import load_dotenv
  
-from app.python.data_processing.companies.populate_hc_domain import process_and_update_sheet
+# from app.python.data_processing.companies.populate_hc_domain import process_and_update_sheet
 from app.python.data_processing.companies.source_ats_type import update_ats_type_in_master_data
 from companies.google_sheets_updater import load_sheet_data, update_google_sheet
 from companies.hubspot_functions import rename_hubspot_columns, fill_missing_values_with_hubspot
