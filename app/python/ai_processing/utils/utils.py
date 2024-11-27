@@ -154,24 +154,29 @@ def calculate_entity_indices(data):
     """
     nlp = spacy.blank("en")
 
+    updated_data = []
+
     for item in data:
         text = item["text"]
         doc = nlp(text)
         entities = []
+        token_to_label = {entity['token']: entity['label'] for entity in item['entities']}
 
         for token in doc:
+            label = token_to_label.get(token.text, "")
+
             entities.append(
                 {
                     "start": token.idx,
                     "end": token.idx + len(token),
-                    "label": "",
+                    "label": label,
                     "token": token.text,
                 }
             )
 
-        item["entities"] = entities
+        updated_data.append({"text": text, "entities": entities})
 
-    return data
+    return updated_data
 
 
 def print_data_with_entities(data):
