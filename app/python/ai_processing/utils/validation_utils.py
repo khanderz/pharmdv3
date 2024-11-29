@@ -32,6 +32,7 @@ def verify_data_consistency(validation_data):
 
 def validate_entities(data, nlp):
     fails = []
+    
     for idx, item in enumerate(data):
         doc = nlp(item["text"])
 
@@ -49,7 +50,7 @@ def validate_entities(data, nlp):
                 print(
                     f"Mismatch found in object {idx + 1}:\n"
                     f"  Label: {label}\n"
-                    f"  Expected: '{expected_token}' (start={start}, end={end})\n"
+                    f"  Expected: '{expected_token}' got: (start={start}, end={end})\n"
                     f"  Actual: '{spacy_token.text if spacy_token else None}'\n"
                 ) 
     if fails:

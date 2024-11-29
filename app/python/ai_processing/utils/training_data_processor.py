@@ -1,7 +1,6 @@
 #  app/python/ai_processing/utils/training_data_processor.py
 
 import json
-import re
 
 from app.python.ai_processing.utils.logger import BLUE, RESET
 
@@ -45,59 +44,50 @@ def fix_entity_offsets(training_data, tokenized_output):
                 train_end = entity.get('end', 0)
                 token = entity.get('token', '')
 
-                print(f"start {train_start} end {train_end} token {token}----------------------")
 
-                remaining_tokens = token.strip()
-                print(f"remaining_tokens {remaining_tokens}")
+            tokenized_sequence = []
+            remaining_tokens = token
+            print(f"remaining_tokens {remaining_tokens}")
 
-                token_start_index = None
-                token_end_index = None
+            token_start_index = None
+            token_end_index = None
+            
+            while remaining_tokens:  
+                token_found = False   
 
-                sub_tokens = remaining_tokens.split()
-                print(f"Sub-tokens: {sub_tokens}")
-                
-                matched_tokens = []
-                current_sub_token_index = 0
+                for tokenized_entity in tokenized_entities:
+                    token_text = tokenized_entity['token']
+                    token_start = tokenized_entity['start']
+                    token_end = tokenized_entity['end']
 
-                while remaining_tokens and current_sub_token_index < len(sub_tokens):
-                    token_found = False  
-                    print(f"Matching sub-token '{sub_tokens[current_sub_token_index]}' against remaining_tokens")
-                      
+                    print(f"tokenized_entity: {token_text}, token_start: {token_start}, token_end: {token_end}")
 
-                    for tokenized_entity in tokenized_entities:
-                        if tokenized_entity.get('token') == sub_tokens[current_sub_token_index]:
+                    if remaining_tokens.startswith(token_text):
+                        if token_start_index is None:
+                            token_start_index = token_start 
+                        tokenized_sequence.append(tokenized_entity)
+                        remaining_tokens = remaining_tokens.replace(token_text, "", 1)
+                        print(f"tokenized sequence: {tokenized_sequence}")
+                        print(f"remaining_tokens: {remaining_tokens}")
+                        token_found = True
+                        break  
 
-                            token_text = tokenized_entity['token'].strip()
-                            token_start = tokenized_entity['start']
+                if not token_found:
+                    print("No matching token found for remaining_tokens:", remaining_tokens)
+                    break 
 
-                            match = re.match(re.escape(sub_tokens[current_sub_token_index]), remaining_tokens)
-                            if match:
-                                if token_start_index is None:
-                                    token_start_index = token_start
+            if not remaining_tokens:
+                print("All tokens processed for current entity.")
+                if tokenized_sequence:
+                    token_end_index = tokenized_sequence[-1]['end']  
+                    entity['start'] = token_start_index
+                    entity['end'] = token_end_index
 
-                                matched_tokens.append(tokenized_entity)
-                                remaining_tokens = remaining_tokens[len(match.group(0)):].strip()  
-                                print(f"Matched token: {token_text}, remaining_tokens: {remaining_tokens}")
-
-
-                                token_found = True
-                                current_sub_token_index += 1
-                                break
-
-                    if not token_found:
-                        print(f"No matching token found for remaining_tokens: '{remaining_tokens}'")
-                        break
-
-                if current_sub_token_index >= len(sub_tokens) and not remaining_tokens:
-                    print("All tokens processed for current entity.")
-                    print(f"{BLUE} not remaining_tokens {remaining_tokens}{RESET}")
-                    if matched_tokens:
-                        token_end_index = matched_tokens[-1]['end']   
-                        entity['start'] = token_start_index
-                        entity['end'] = token_end_index
                 else:
                     print(f"{BLUE}Not all tokens processed, remaining tokens: {remaining_tokens} {RESET}")
-                print(f"{BLUE}new end and new start: {entity['start']} {entity['end']} {RESET}")
+
+            print(f"{BLUE}Updated entity: start {entity['start']}, end {entity['end']}{RESET}")
+
             updated_training_data.append({
                 'text': text,
                 'entities': entities
