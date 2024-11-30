@@ -206,7 +206,8 @@ specialties = {
       aliases: ['vitamins', 'nutritional support'] }
   ],
   occupational_health: [
-    { key: 'ERGONOMICS', value: 'Ergonomics', aliases: ['workplace ergonomics', 'ergonomic design'] },
+    { key: 'ERGONOMICS', value: 'Ergonomics',
+      aliases: ['workplace ergonomics', 'ergonomic design'] },
     { key: 'INDUSTRIAL_HYGIENE', value: 'Industrial Hygiene',
       aliases: ['workplace safety', 'occupational health'] },
     { key: 'OCCUPATIONAL_THERAPY', value: 'Occupational Therapy',

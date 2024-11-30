@@ -30,7 +30,8 @@ healthcare_domains = [
   { key: 'HEMATOLOGY', value: 'Hematology',
     aliases: %w[blood hematologic anemia hematology leukemia lymphoma hemophilia] },
   {
-    key: 'MENS_HEALTH', value: 'Men\'s Health', aliases: ['urology', 'prostate', 'erectile dysfunction', 'testosterone']
+    key: 'MENS_HEALTH', value: 'Men\'s Health', aliases: ['urology', 'prostate',
+                                                          'erectile dysfunction', 'testosterone']
   },
   { key: 'NEPHROLOGY', value: 'Nephrology',
     aliases: ['kidney', 'renal', 'nephrology', 'dialysis', 'kidney disease', 'chronic kidney disease', 'ckd', 'urinary', 'kidney', 'urological', 'prostate', 'kidney stones', 'incontinence'] },
@@ -38,8 +39,10 @@ healthcare_domains = [
     aliases: ['brain', 'neurological', 'neuroscience', 'neurodegenerative', 'epilepsy', 'parkinson\'s disease', 'Alzheimers', 'migraine'] },
   { key: 'NURSING', value: 'Nursing',
     aliases: ['nurse', 'nursing', 'nurse practitioners', 'patient care'] },
-  { key: 'NUTRITION', value: 'Nutrition', aliases: ['food', 'food label', 'nutritionist', 'weight']  },
-  { key: 'OCCUPATIONAL_HEALTH', value: 'Occupational Health', aliases: ['workplace health', 'occupational safety', 'industrial hygiene', 'ergonomics', 'work-related injuries', 'occupational therapy', 'workplace mental health', 'return-to-work programs'] },
+  { key: 'NUTRITION', value: 'Nutrition',
+    aliases: ['food', 'food label', 'nutritionist', 'weight'] },
+  { key: 'OCCUPATIONAL_HEALTH', value: 'Occupational Health',
+    aliases: ['workplace health', 'occupational safety', 'industrial hygiene', 'ergonomics', 'work-related injuries', 'occupational therapy', 'workplace mental health', 'return-to-work programs'] },
   { key: 'ONCOLOGY', value: 'Oncology',
     aliases: ['cancer', 'oncological', 'cancer treatment', 'chemotherapy', 'chemo', 'precision medicine', 'immuno-oncology', 'breast cancer', 'lung cancer', 'leukemia'] },
   { key: 'OPTOMETRY', value: 'Optometry',
@@ -69,7 +72,7 @@ healthcare_domains = [
   { key: 'SLEEP_HEALTH', value: 'Sleep Health',
     aliases: ['sleep health', 'sleep disorders', 'insomnia', 'sleep', 'sleep apnea', 'narcolepsy'] },
   { key: 'SOCIAL_WORK', value: 'Social Work',
-    aliases: ["social work", "community health", "social determinants of health", "case management", "social services", "family support", "counseling", "advocacy"]},
+    aliases: ['social work', 'community health', 'social determinants of health', 'case management', 'social services', 'family support', 'counseling', 'advocacy'] },
   { key: 'SPEECH_THERAPY', value: 'Speech Language Pathology',
     aliases: ['speech', 'language', 'communication', 'voice therapy', 'dysphagia', 'stuttering', 'aphasia'] },
   { key: 'SURGERY', value: 'Surgery',

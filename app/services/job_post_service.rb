@@ -50,6 +50,7 @@ class JobPostService
       puts "Error in salary extraction script: #{stderr} or status: #{status}"
     end
   end
+
   def self.extract_and_save_job_description(job_post)
     job_title = job_post.job_title.to_s
     job_description = job_post.job_description.to_s
