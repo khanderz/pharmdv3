@@ -12,6 +12,7 @@ def print_tokenization(doc):
             f"Token: '{token.text}', Start: {token.idx}, End: {token.idx + len(token.text)}"
         )
 
+
 def verify_data_consistency(validation_data):
     for entry in validation_data:
         # print(f"entry : {entry}")
@@ -30,21 +31,22 @@ def verify_data_consistency(validation_data):
                 text[start:end] == entity["token"]
             ), f"{RED}{print_token_characters(text)}{RESET}"
 
+
 def validate_entities(data, nlp):
     fails = []
-    
+
     for idx, item in enumerate(data):
         doc = nlp(item["text"])
 
         for entity in item["entities"]:
             start, end, label, expected_token = (
-                entity["start"], 
-                entity["end"], 
-                entity["label"], 
-                entity["token"]
+                entity["start"],
+                entity["end"],
+                entity["label"],
+                entity["token"],
             )
             spacy_token = doc.char_span(start, end)
-            
+
             if spacy_token is None or expected_token != spacy_token.text:
                 fails.append(entity)
                 print(
@@ -52,12 +54,13 @@ def validate_entities(data, nlp):
                     f"  Label: {label}\n"
                     f"  Expected: '{expected_token}' got: (start={start}, end={end})\n"
                     f"  Actual: '{spacy_token.text if spacy_token else None}'\n"
-                ) 
+                )
     if fails:
         # print(f"{BLUE}failed entities: {fails}{RESET}")
         print(f"{RED}Validation failed for {len(fails)} entities.{RESET}")
     else:
         print(f"{GREEN}Validation passed for all entities.{RESET}")
+
 
 def fuzzy_match(true_entities, pred_entities, tolerance=1):
     matched = []
@@ -124,41 +127,44 @@ def print_label_token_pairs(data):
             token = text[entity["start"] : entity["end"]]
             print(f"{label:<15} {token}")
 
+
 # ------------------- IDENTIFY INCORRECT ENTITIES IN TRAIN_DATA_SPACY.JSON -------------------
 def validate_ner_data(data):
     """
     Validate the consistency of keys in a Named Entity Recognition (NER) dataset.
-    
+
     Args:
         data (list): A list of NER examples, each containing a 'text' key and an 'entities' key.
-    
+
     Returns:
         dict: A dictionary with the validation results, including errors and overall status.
     """
-    required_keys = {'start', 'end', 'label', 'token'}
+    required_keys = {"start", "end", "label", "token"}
     errors = []
-    
+
     for i, example in enumerate(data):
-        if 'text' not in example or 'entities' not in example:
-            errors.append({
-                "example_index": i,
-                "error": "Missing 'text' or 'entities' key in example."
-            })
+        if "text" not in example or "entities" not in example:
+            errors.append(
+                {
+                    "example_index": i,
+                    "error": "Missing 'text' or 'entities' key in example.",
+                }
+            )
             continue
-        
-        for j, entity in enumerate(example['entities']):
+
+        for j, entity in enumerate(example["entities"]):
             missing_keys = required_keys - entity.keys()
             if missing_keys:
-                errors.append({
-                    "example_index": i,
-                    "entity_index": j,
-                    "missing_keys": list(missing_keys)
-                })
-    
-    return {
-        "is_valid": not errors,
-        "errors": errors
-    }
+                errors.append(
+                    {
+                        "example_index": i,
+                        "entity_index": j,
+                        "missing_keys": list(missing_keys),
+                    }
+                )
+
+    return {"is_valid": not errors, "errors": errors}
+
 
 def find_problematic_entry(data, example_index, entity_index):
     """
@@ -174,10 +180,11 @@ def find_problematic_entry(data, example_index, entity_index):
     """
     try:
         example = data[example_index]
-        entity = example['entities'][entity_index]
+        entity = example["entities"][entity_index]
         return {"example": example, "entity": entity}
     except IndexError:
         return {"error": "Index out of bounds. Please check the indices and dataset."}
+
 
 #  ------------------EXAMPLE USAGE------------------
 # if not error["is_valid"]:

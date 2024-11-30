@@ -18,18 +18,15 @@ JOB_DESCRIPTION_ENTITY_LABELS = [
     "CREDENTIALS",
     "EDUCATION",
     "EXPERIENCE",
-
     "JOB_ROLE",
     "JOB_SENIORITY",
     "JOB_DEPT",
     "JOB_TEAM",
-
     "COMMITMENT",
     "JOB_SETTING",
     "JOB_COUNTRY",
     "JOB_CITY",
     "JOB_STATE",
-
     "COMPENSATION",
     "RETIREMENT",
     "OFFICE_LIFE",
@@ -84,7 +81,9 @@ def generate_label_mappings(entity_type):
     elif entity_type == "job_role":
         ENTITY_LABELS = JOB_ROLE_ENTITY_LABELS
     else:
-        raise ValueError(f"Invalid entity type {entity_type}. Must pass entity type as argument.")
+        raise ValueError(
+            f"Invalid entity type {entity_type}. Must pass entity type as argument."
+        )
 
     label_list = ["O"]
     for label in ENTITY_LABELS:
@@ -94,6 +93,7 @@ def generate_label_mappings(entity_type):
     id_to_label = {i: label for i, label in enumerate(label_list)}
 
     return label_list, label_to_id, id_to_label
+
 
 # Utils
 def get_label_list(entity_type):

@@ -8,6 +8,7 @@ from app.python.ai_processing.utils.utils import (
     print_side_by_side,
     print_token_characters,
 )
+
 # -------------------- SpaCy Data Conversion --------------------
 no_space_entities = {"COMMITMENT", "CURRENCY", "SALARY_SINGLE"}
 punctuations = [".", ",", "!", "?", ";", ":", "'"]
@@ -162,6 +163,7 @@ def convert_biluo_to_tokens_and_labels(text, all_tokens, all_labels):
 
     # print(f"result: {result}")
     return result
+
 
 #  custom offsets BILUO tags from doc to text
 def custom_offsets_to_biluo_tags(spans, text):

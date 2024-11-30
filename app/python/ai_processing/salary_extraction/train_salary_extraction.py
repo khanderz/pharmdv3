@@ -40,9 +40,7 @@ if "ner" not in nlp.pipe_names:
         ner.add_label(label)
 
     spacy.tokens.Doc.set_extension("index", default=None, force=True)
-    doc_bin, examples = handle_spacy_data(
-        SPACY_DATA_PATH, CONVERTED_FILE, FOLDER, nlp
-    )
+    doc_bin, examples = handle_spacy_data(SPACY_DATA_PATH, CONVERTED_FILE, FOLDER, nlp)
 
     nlp.initialize(get_examples=lambda: examples)
 
@@ -53,9 +51,7 @@ else:
     ner = nlp.get_pipe("ner")
     print(f"{GREEN}NER pipe already exists in blank model: {nlp.pipe_names}{RESET}")
 
-    doc_bin, examples = handle_spacy_data(
-        SPACY_DATA_PATH, CONVERTED_FILE, FOLDER, nlp
-    )
+    doc_bin, examples = handle_spacy_data(SPACY_DATA_PATH, CONVERTED_FILE, FOLDER, nlp)
 
 # if examples:
 #     for example in examples:

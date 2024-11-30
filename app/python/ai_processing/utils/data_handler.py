@@ -6,18 +6,19 @@ import spacy
 from app.python.ai_processing.utils.logger import BLUE, RED, RESET
 
 project_root = os.path.abspath(
-    os.path.join(os.path.dirname(__file__), "../../..","python", "ai_processing")
+    os.path.join(os.path.dirname(__file__), "../../..", "python", "ai_processing")
 )
+
 
 def load_spacy_model(MODEL_SAVE_PATH, MAX_SEQ_LENGTH=None, model_name="roberta-base"):
     """
     Load an existing spaCy model or initialize a new transformer-based model.
-    
+
     Args:
         MODEL_SAVE_PATH (str): Path to the saved model.
         MAX_SEQ_LENGTH (int, optional): Maximum sequence length for the tokenizer. Defaults to 512 for RoBERTa.
         model_name (str, optional): Name of the Hugging Face transformer model. Defaults to RoBERTa.
-        
+
     Returns:
         spacy.Language: Loaded or initialized spaCy model.
     """
@@ -31,7 +32,9 @@ def load_spacy_model(MODEL_SAVE_PATH, MAX_SEQ_LENGTH=None, model_name="roberta-b
     else:
         print(f"{RED}No existing model found. Initializing new model...{RESET}")
 
-        default_max_length = 512 if "roberta" in model_name or "bert" in model_name else 4096
+        default_max_length = (
+            512 if "roberta" in model_name or "bert" in model_name else 4096
+        )
 
         nlp = spacy.blank("en")
         nlp.add_pipe(

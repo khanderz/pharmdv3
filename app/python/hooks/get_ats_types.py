@@ -2,6 +2,7 @@
 
 import requests
 
+
 def fetch_ats_types():
     """
     Fetches the ATS types and appends domain matching URLs to each entry.
@@ -30,7 +31,7 @@ def fetch_ats_types():
             "SMARTRECRUITERS": "https://careers.smartrecruiters.com/*",
             # "TALEO": "https://*.taleo.net", # redirects to auth
             # "WELLFOUND": "https://wellfound.com/company/*/jobs",
-            "WORKABLE": "https://apply.workable.com/*", # "https://apply.workable.com/*/#jobs",
+            "WORKABLE": "https://apply.workable.com/*",  # "https://apply.workable.com/*/#jobs",
             "YCOMBINATOR": "https://ycombinator.com/companies/*/jobs",
             "HRM_DIRECT": "https://*.hrmdirect.com",
             "SCREENLOOP": "https://app.screenloop.com/careers/*",
@@ -52,11 +53,11 @@ def fetch_ats_types():
             "LEVER": "https://www.lever.co/",
             # "MYWORKDAY": "https://www.workday.com/",
             "PINPOINTHQ": "https://www.pinpointhq.com/",
-            # "PROPRIETARY": None,   
+            # "PROPRIETARY": None,
             "RIPPLING": "https://www.rippling.com/",
             "SMARTRECRUITERS": "https://jobs.smartrecruiters.com/",
             # "TALEO": "https://www.oracle.com/taleo/",
-            # "WELLFOUND": "https://wellfound.com/",   
+            # "WELLFOUND": "https://wellfound.com/",
             "WORKABLE": "https://www.workable.com/",
             "YCOMBINATOR": "https://www.ycombinator.com/",
             "HRM_DIRECT": "https://www.hrmdirect.com/",
@@ -65,7 +66,9 @@ def fetch_ats_types():
         }
 
         for ats in ats_types:
-            ats["domain_matching_url"] = domain_matched_urls.get(ats["ats_type_code"], None)
+            ats["domain_matching_url"] = domain_matched_urls.get(
+                ats["ats_type_code"], None
+            )
             ats["homepage"] = ats_homepages.get(ats["ats_type_code"], None)
 
         return ats_types
@@ -73,7 +76,9 @@ def fetch_ats_types():
         print(f"Error fetching ATS types: {e}")
         return None
 
+
 ats_type_data = fetch_ats_types()
+
 
 def get_ats_type_by_code(ats_type_code):
     """

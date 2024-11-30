@@ -23,9 +23,12 @@ def load_sheet_data(credentials_path, sheet_id, range_name):
     if "company_name" in data.columns:
         data["company_name"] = data["company_name"].str.lower().str.strip()
     else:
-        print(f"{RED}Warning: 'company_name' column is missing from the loaded data.{RESET}")
+        print(
+            f"{RED}Warning: 'company_name' column is missing from the loaded data.{RESET}"
+        )
 
     return data
+
 
 def update_google_sheet(credentials_path, sheet_id, range_name, data):
     data = data.fillna("").astype(str)
@@ -53,6 +56,7 @@ def update_google_sheet(credentials_path, sheet_id, range_name, data):
     except Exception as e:
         print(f"{RED}An error occurred during update: {e}{RESET}")
 
+
 def get_column_letter(col_index):
     """
     Converts a column index (1-based) to an Excel-style column letter.
@@ -62,12 +66,13 @@ def get_column_letter(col_index):
     while col_index > 0:
         col_index, remainder = divmod(col_index - 1, 26)
         result.append(chr(65 + remainder))
-    return ''.join(reversed(result))
+    return "".join(reversed(result))
+
 
 def update_google_sheet_row(credentials_path, sheet_id, range_name, row_index, data):
     """
     Updates a specific row in a Google Sheet.
-    
+
     Args:
         credentials_path (str): Path to the Google service account JSON credentials file.
         sheet_id (str): ID of the Google Sheet.
@@ -84,9 +89,11 @@ def update_google_sheet_row(credentials_path, sheet_id, range_name, row_index, d
         sheet = service.spreadsheets()
 
         start_column = "A"
-        end_column = get_column_letter(len(data)) 
+        end_column = get_column_letter(len(data))
 
-        range_to_update = f"{range_name}!{start_column}{row_index+1}:{end_column}{row_index+1}"
+        range_to_update = (
+            f"{range_name}!{start_column}{row_index+1}:{end_column}{row_index+1}"
+        )
 
         body = {"values": [data]}
 

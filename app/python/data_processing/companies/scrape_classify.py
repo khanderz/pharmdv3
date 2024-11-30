@@ -2,8 +2,13 @@
 import requests
 from bs4 import BeautifulSoup
 import pandas as pd
-from app.python.data_processing.companies.google_sheets_updater import load_sheet_data, update_google_sheet
-from app.python.data_processing.companies.classify_domain import fetch_healthcare_domains_keywords
+from app.python.data_processing.companies.google_sheets_updater import (
+    load_sheet_data,
+    update_google_sheet,
+)
+from app.python.data_processing.companies.classify_domain import (
+    fetch_healthcare_domains_keywords,
+)
 
 ATS_TYPES_URL = "http://localhost:3000/api/ats_types"
 

@@ -5,8 +5,13 @@ import spacy
 import torch
 from spacy.tokens import DocBin
 from spacy.training import Example
-from app.python.ai_processing.utils.data_handler import generate_path, hash_train_data, load_data
+from app.python.ai_processing.utils.data_handler import (
+    generate_path,
+    hash_train_data,
+    load_data,
+)
 from app.python.ai_processing.utils.logger import BLUE, RED, RESET
+
 
 # ------------------- LOAD/CONVERT SPACY TO BILUO -------------------
 def handle_spacy_data(
@@ -30,9 +35,10 @@ def handle_spacy_data(
                 last_hash = f.read().strip()
                 print(f"{BLUE}Last hash for converted file found: {last_hash}{RESET}")
         except FileNotFoundError:
-            print(f"{RED}Warning: last_converted_file_hash.txt not found. Assuming no prior hash.{RESET}")
-        
-        
+            print(
+                f"{RED}Warning: last_converted_file_hash.txt not found. Assuming no prior hash.{RESET}"
+            )
+
         if current_hash == last_hash:
             print(
                 f"{BLUE}Training data has not changed. Loading existing data...{RESET}"
@@ -166,7 +172,6 @@ def convert_to_spacy_format(
             del batch_inputs, outputs, batch_embeddings
             torch.cuda.empty_cache()
 
-
     db.to_disk(SPACY_DATA_PATH)
     loaded_db = DocBin().from_disk(SPACY_DATA_PATH)
     loaded_docs = list(loaded_db.get_docs(nlp.vocab))
@@ -177,4 +182,3 @@ def convert_to_spacy_format(
         print(f"{BLUE}{len(loaded_docs)} documents saved/added to `doc_bin`.{RESET}")
 
     return db, examples
-

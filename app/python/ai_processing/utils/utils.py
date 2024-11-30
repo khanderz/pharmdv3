@@ -160,7 +160,9 @@ def calculate_entity_indices(data):
         text = item["text"]
         doc = nlp(text)
         entities = []
-        token_to_label = {entity['token']: entity['label'] for entity in item['entities']}
+        token_to_label = {
+            entity["token"]: entity["label"] for entity in item["entities"]
+        }
 
         for token in doc:
             label = token_to_label.get(token.text, "")

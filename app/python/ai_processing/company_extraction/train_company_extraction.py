@@ -15,8 +15,14 @@ from app.python.ai_processing.utils.logger import (
 from app.python.ai_processing.utils.spacy_utils import handle_spacy_data
 from app.python.ai_processing.utils.trainer import train_spacy_model
 from app.python.ai_processing.utils.training_data_processor import fix_entity_offsets
-from app.python.ai_processing.utils.utils import calculate_entity_indices, print_data_with_entities
-from app.python.ai_processing.utils.validation_utils import evaluate_model, validate_entities
+from app.python.ai_processing.utils.utils import (
+    calculate_entity_indices,
+    print_data_with_entities,
+)
+from app.python.ai_processing.utils.validation_utils import (
+    evaluate_model,
+    validate_entities,
+)
 from app.python.ai_processing.utils.data_handler import project_root
 from transformers import LongformerTokenizer, LongformerModel
 
@@ -43,7 +49,9 @@ MAX_SEQ_LENGTH = 4096
 # fix_entity_offsets(train_data, updated_data)
 
 converted_data = load_data(CONVERTED_FILE, FOLDER)
-nlp = load_spacy_model(MODEL_SAVE_PATH, MAX_SEQ_LENGTH, model_name="allenai/longformer-base-4096")
+nlp = load_spacy_model(
+    MODEL_SAVE_PATH, MAX_SEQ_LENGTH, model_name="allenai/longformer-base-4096"
+)
 
 if "ner" not in nlp.pipe_names:
     ner = nlp.add_pipe("ner")
@@ -98,6 +106,7 @@ train_spacy_model(MODEL_SAVE_PATH, nlp, examples)
 evaluate_model(nlp, converted_data)
 # validate_entities(converted_data, nlp)
 
+
 # ------------------- TEST EXAMPLES -------------------
 def convert_example_to_biluo(text):
     """Convert model predictions for the given text to BILUO format."""
@@ -146,7 +155,7 @@ test_texts = [
     "Tempus is a leading technology company in precision medicine, utilizing AI to empower personalized cancer care through genomic sequencing and real-time data analysis.",
     "TytoCare offers innovative telehealth solutions that enable high-quality primary care from the comfort of home.",
     "Seneca Family of Agencies provides unconditional care and a comprehensive continuum of mental health and support services for children and families facing trauma, including in-home wraparound, foster care, adoption, crisis response, and therapeutic programs.",
-    "a specialty pharmaceutical corporation dedicated to leading the way in the development and commercialization of infectious disease medicines for COVID-19, malaria, dengue, and other infectious diseases"
+    "a specialty pharmaceutical corporation dedicated to leading the way in the development and commercialization of infectious disease medicines for COVID-19, malaria, dengue, and other infectious diseases",
 ]
 
 for text in test_texts:

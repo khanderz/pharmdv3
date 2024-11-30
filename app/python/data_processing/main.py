@@ -1,13 +1,23 @@
 # app/python/data_processing/main.py
 import os
 from dotenv import load_dotenv
- 
+
 # from app.python.data_processing.companies.populate_hc_domain import process_and_update_sheet
-from app.python.data_processing.companies.populate_hc_domain import process_and_update_sheet
-from app.python.data_processing.companies.source_ats_type import update_ats_type_in_master_data
+from app.python.data_processing.companies.populate_hc_domain import (
+    process_and_update_sheet,
+)
+from app.python.data_processing.companies.source_ats_type import (
+    update_ats_type_in_master_data,
+)
 from companies.google_sheets_updater import load_sheet_data, update_google_sheet
-from companies.hubspot_functions import rename_hubspot_columns, fill_missing_values_with_hubspot
-from companies.linkedin_functions import filter_active_companies, enrich_with_linkedin_data
+from companies.hubspot_functions import (
+    rename_hubspot_columns,
+    fill_missing_values_with_hubspot,
+)
+from companies.linkedin_functions import (
+    filter_active_companies,
+    enrich_with_linkedin_data,
+)
 from companies.utils.cleaner import remove_duplicates
 from companies.zapier_functions import transfer_data
 
@@ -29,12 +39,21 @@ if __name__ == "__main__":
     linkedin_pw = os.getenv("LINKEDIN_PASSWORD")
 
     master_data = load_sheet_data(credentials_path, master_sheet_id, master_range_name)
-    master_active_data = load_sheet_data(credentials_path, master_sheet_id, master_active_range_name)
-    master_linkedin_issue_data = load_sheet_data(credentials_path, master_sheet_id, master_linkedin_issues_range_name)
+    master_active_data = load_sheet_data(
+        credentials_path, master_sheet_id, master_active_range_name
+    )
+    master_linkedin_issue_data = load_sheet_data(
+        credentials_path, master_sheet_id, master_linkedin_issues_range_name
+    )
 
     # filter_active_companies(master_data, master_sheet_id, master_active_range_name, credentials_path, master_linkedin_issues_range_name, master_range_name)
 
-    updated_data = update_ats_type_in_master_data(master_linkedin_issue_data, credentials_path, master_sheet_id, master_linkedin_issues_sheet_name)
+    updated_data = update_ats_type_in_master_data(
+        master_linkedin_issue_data,
+        credentials_path,
+        master_sheet_id,
+        master_linkedin_issues_sheet_name,
+    )
 
     # enrich_with_linkedin_data(master_linkedin_issue_data, credentials_path, master_sheet_id, master_linkedin_issues_sheet_name)
 
@@ -42,8 +61,7 @@ if __name__ == "__main__":
 
     # process_and_update_sheet(credentials_path, master_sheet_id, master_linkedin_issue_data, master_linkedin_issues_sheet_name)
 
-
-     # ----------------------------- HUBSPOT / ZAPIER -----------------------------
+    # ----------------------------- HUBSPOT / ZAPIER -----------------------------
 
     # hubspot_sheet_id = os.getenv("HUBSPOT_SHEET_ID")
     # hubspot_range_name = os.getenv("HUBSPOT_RANGE_NAME")
