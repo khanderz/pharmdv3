@@ -146,7 +146,7 @@ test_texts = [
     "Tempus is a leading technology company in precision medicine, utilizing AI to empower personalized cancer care through genomic sequencing and real-time data analysis.",
     "TytoCare offers innovative telehealth solutions that enable high-quality primary care from the comfort of home.",
     "Seneca Family of Agencies provides unconditional care and a comprehensive continuum of mental health and support services for children and families facing trauma, including in-home wraparound, foster care, adoption, crisis response, and therapeutic programs.",
-    "s a specialty pharmaceutical corporation dedicated to leading the way in the development and commercialization of infectious disease medicines for COVID-19, malaria, dengue, and other infectious diseases"
+    "a specialty pharmaceutical corporation dedicated to leading the way in the development and commercialization of infectious disease medicines for COVID-19, malaria, dengue, and other infectious diseases"
 ]
 
 for text in test_texts:
