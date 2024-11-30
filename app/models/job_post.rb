@@ -313,9 +313,9 @@ class JobPost < ApplicationRecord
     end
 
     # Helper methods -----------------------------------------------------------
-    def handle_country_record(country_code, country_name, company_id, job_url)
-      Country.find_or_adjudicate_country(country_code, country_name, company_id, job_url)
-    end
+    # def handle_country_record(country_code, country_name, company_id, job_url)
+    #   Country.find_or_adjudicate_country(country_code, country_name, company_id, job_url)
+    # end
 
     def parse_location(location_name)
       states = State.pluck(:state_code, :state_name).to_h
