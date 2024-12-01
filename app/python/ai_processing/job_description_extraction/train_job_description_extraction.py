@@ -13,6 +13,7 @@ from app.python.ai_processing.utils.logger import (
 )
 from app.python.ai_processing.utils.spacy_utils import handle_spacy_data
 from app.python.ai_processing.utils.trainer import train_spacy_model
+from app.python.ai_processing.utils.utils import calculate_entity_indices, print_data_with_entities
 from app.python.ai_processing.utils.validation_utils import (
     evaluate_model,
     validate_entities,
@@ -26,11 +27,13 @@ configure_logging()
 FOLDER = "job_description_extraction"
 BASE_DIR = os.path.join(project_root, FOLDER)
 
+TRAIN_DATA_FILE = "train_data.json"
 CONVERTED_FILE = "train_data_spacy.json"
 CONVERTED_FILE_PATH = os.path.join(BASE_DIR, "data", CONVERTED_FILE)
 MODEL_SAVE_PATH = os.path.join(BASE_DIR, "model", "spacy_job_description_ner_model")
 SPACY_DATA_PATH = os.path.join(BASE_DIR, "data", "train.spacy")
 
+# train_data = load_data(TRAIN_DATA_FILE, FOLDER)
 # updated_data = calculate_entity_indices(train_data)
 # print_data_with_entities(updated_data)
 
@@ -81,12 +84,12 @@ else:
         transformer,
     )
 
-if examples:
-    for example in examples:
-        print(f"\nText: '{example.reference.text}'")
-        print("Entities after initialization:")
-        for ent in example.reference.ents:
-            print(f"  - Text: '{ent.text}', Start: {ent.start_char}, End: {ent.end_char}, Label: {ent.label_}")
+# if examples:
+#     for example in examples:
+#         print(f"\nText: '{example.reference.text}'")
+#         print("Entities after initialization:")
+#         for ent in example.reference.ents:
+#             print(f"  - Text: '{ent.text}', Start: {ent.start_char}, End: {ent.end_char}, Label: {ent.label_}")
 
 # ------------------- TRAIN MODEL -------------------
 train_spacy_model(MODEL_SAVE_PATH, nlp, examples)
@@ -94,7 +97,7 @@ train_spacy_model(MODEL_SAVE_PATH, nlp, examples)
 
 # ------------------- VALIDATE TRAINER -------------------
 evaluate_model(nlp, converted_data)
-validate_entities(converted_data, nlp)
+# validate_entities(converted_data, nlp)
 
 
 # ------------------- TEST EXAMPLES -------------------
@@ -144,5 +147,5 @@ test_texts = [
     "The ideal candidate should hold a Master's degree in a relevant field.",
 ]
 
-for text in test_texts:
-    inspect_job_description_predictions(text)
+# for text in test_texts:
+#     inspect_job_description_predictions(text)

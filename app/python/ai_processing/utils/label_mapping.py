@@ -15,37 +15,33 @@ JOB_DESCRIPTION_ENTITY_LABELS = [
     "RESPONSIBILITIES",
     "QUALIFICATIONS",
     # "SKILLS",
+    
     "CREDENTIALS",
     "EDUCATION",
     "EXPERIENCE",
+
     "JOB_ROLE",
     "JOB_SENIORITY",
     "JOB_DEPT",
     "JOB_TEAM",
+
     "COMMITMENT",
     "JOB_SETTING",
+
     "JOB_COUNTRY",
     "JOB_CITY",
     "JOB_STATE",
+
     "COMPENSATION",
     "RETIREMENT",
     "OFFICE_LIFE",
     "PROFESSIONAL_DEVELOPMENT",
     "WELLNESS",
-    "CULTURE",
     "PARENTAL",
     "WORK_LIFE_BALANCE",
-    "DIVERSITY",
     "VISA_SPONSORSHIP",
     "ADDITIONAL_PERKS",
 ]
-
-#   {
-#     "start": ,
-#     "end": ,
-#     "label": "",
-#     "token": ""
-#   }
 
 JOB_LOCATION_ENTITY_LABELS = [
     "JOB_SETTING",
@@ -62,10 +58,8 @@ JOB_BENEFIT_ENTITY_LABELS = [
     "OFFICE_LIFE",
     "PROFESSIONAL_DEVELOPMENT",
     "WELLNESS",
-    "CULTURE",
     "PARENTAL",
     "WORK_LIFE_BALANCE",
-    "DIVERSITY",
     "VISA_SPONSORSHIP",
     "ADDITIONAL_PERKS",
 ]

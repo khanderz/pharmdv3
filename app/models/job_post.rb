@@ -297,9 +297,6 @@ class JobPost < ApplicationRecord
           job_internal_id: job['internal_job_id'],
           job_url_id: job['id'],
           job_internal_id_string: job.is_a?(Hash) && job.key?('internal_job_id') ? job['internal_job_id'].to_s : nil,
-          # job_salary_currency_id: handle_currency_record(job['salaryRange']&.dig('currency'),
-          #                                                company.id, job['absolute_url']),
-          # job_salary_interval_id: find_interval_id_by_name(job['salaryRange']&.dig('interval'))
         }
       end
     end

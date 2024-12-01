@@ -83,7 +83,7 @@ def convert_example_to_biluo(text):
     return doc, biluo_tags
 
 
-def inspect_model_predictions(text):
+def inspect_salary_model_predictions(text):
     """Inspect model predictions for the given text."""
     doc, biluo_tags = convert_example_to_biluo(text)
 
@@ -106,6 +106,6 @@ test_texts = [
     "Full-time position with a salary of 80,000 GBP.",
 ]
 
-for text in test_texts:
-    print(f"\nTesting text: '{text}'")
-    inspect_model_predictions(text)
+# for text in test_texts:
+#     print(f"\nTesting text: '{text}'")
+#     inspect_salary_model_predictions(text)

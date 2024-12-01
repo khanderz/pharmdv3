@@ -63,7 +63,7 @@ class JobPostService
 
     # -------------- 1. Combine job description text --------------
     combined_text = "#{job_title} #{job_description} #{job_qualifications} #{job_responsibilities} #{job_setting} #{job_additional}"
-    puts "combined text for job description extraction: #{combined_text}"
+    # puts "combined text for job description extraction: #{combined_text}"
     return if combined_text.empty?
 
     # -------------- 2. Send combined text to the Python model for extraction --------------
@@ -76,16 +76,12 @@ class JobPostService
     if status.success? && !stdout.strip.empty?
       job_description_data = JSON.parse(stdout)
 
-      # Assuming that job_description_data contains the entities extracted by your model.
       job_description_data.each do |entity|
-        # Assuming entity is in the format: { "entity_name": "value", "start_char": start_index, "end_char": end_index }
-        # Save these entities as per your business logic
-        # For example, you could store extracted entities in your model or use them directly
         puts "Extracted entity: #{entity['entity_name']} with value: #{entity['value']}"
       end
 
       # You may want to update the `job_post` with the extracted job description data
-      job_post.update(job_description_extracted: true)  # This is just an example update, adjust to your needs
+      job_post.update(job_description_extracted: true) 
     else
       puts "Error in job description extraction script: #{stderr} or status: #{status}"
     end
