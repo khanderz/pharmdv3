@@ -101,6 +101,16 @@ train_spacy_model(MODEL_SAVE_PATH, nlp, examples)
 evaluate_model(nlp, converted_data)
 # validate_entities(converted_data, nlp)
 
+# from sklearn.model_selection import KFold
+
+# kf = KFold(n_splits=5)
+# for train_idx, val_idx in kf.split(examples):
+#     train_data = [examples[i] for i in train_idx]
+#     val_data = [examples[i] for i in val_idx]
+
+#     train_spacy_model(MODEL_SAVE_PATH, nlp, train_data)
+
+#     evaluate_model(nlp, val_data)
 
 # ------------------- TEST EXAMPLES -------------------
 def convert_example_to_biluo(text):
@@ -153,5 +163,5 @@ test_texts = [
     "a specialty pharmaceutical corporation dedicated to leading the way in the development and commercialization of infectious disease medicines for COVID-19, malaria, dengue, and other infectious diseases",
 ]
 
-for text in test_texts:
-    inspect_company_predictions(text)
+# for text in test_texts:
+#     inspect_company_predictions(text)

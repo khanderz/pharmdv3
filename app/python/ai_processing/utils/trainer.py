@@ -10,9 +10,12 @@ if not Doc.has_extension("index"):
 def train_spacy_model(MODEL_SAVE_PATH, nlp, examples):
     """Train the spaCy model with the given examples."""
     print("\nStarting model training...")
-    optimizer = nlp.begin_training()
-    # optimizer = nlp.resume_training()
-    # print(f"examples: {examples}")
+    # optimizer = nlp.begin_training()
+    optimizer = nlp.resume_training()
+
+    best_loss = float('inf')
+    patience = 3 
+    epochs_without_improvement = 0
 
     for epoch in range(10):
         random.shuffle(examples)
@@ -25,8 +28,19 @@ def train_spacy_model(MODEL_SAVE_PATH, nlp, examples):
 
             nlp.update([example], drop=0.2, losses=losses, sgd=optimizer)
 
+        current_loss = losses.get('ner', 0)
+        if current_loss < best_loss:
+            best_loss = current_loss
+            epochs_without_improvement = 0
+        else:
+            epochs_without_improvement += 1
+
         print(f"\nEpoch {epoch + 1}, Losses: {losses}")
         print("----" * 10)
+
+        if epochs_without_improvement >= patience:
+            print("Early stopping triggered. No improvement after several epochs.")
+            break
 
     os.makedirs(MODEL_SAVE_PATH, exist_ok=True)
 

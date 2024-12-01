@@ -97,7 +97,7 @@ train_spacy_model(MODEL_SAVE_PATH, nlp, examples)
 
 # ------------------- VALIDATE TRAINER -------------------
 evaluate_model(nlp, converted_data)
-validate_entities(converted_data, nlp)
+# validate_entities(converted_data, nlp)
 
 
 # # ------------------- TEST EXAMPLES -------------------
