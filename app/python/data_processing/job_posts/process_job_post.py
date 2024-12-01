@@ -8,21 +8,69 @@ from app.python.ai_processing.utils.logger import BLUE, RED, RESET
 
 def process_job_post_descriptions(job_description):
     try:
-        _, biluo_tags = inspect_job_description_predictions(job_description)
-        job_description = [
-            token.ent_type_ for token, tag in zip(_, biluo_tags) if tag != "O"
-        ]
+        entity_data = inspect_job_description_predictions(job_description)
 
-        print(f"{job_description}")
+        if not entity_data:
+            raise ValueError("Entity data is empty or None")
 
-        job_description_str = ", ".join(set(job_description))
 
-        print(
-            f"{BLUE}Job description found for {job_description}: {job_description_str}{RESET}"
-        )
+        description = entity_data.get('DESCRIPTION', [])
+        responsibilities = entity_data.get('RESPONSIBILITIES', [])
+        qualifications = entity_data.get('QUALIFICATIONS', [])
+
+        credentials = entity_data.get('CREDENTIALS', [])
+        education = entity_data.get('EDUCATION', [])
+        experience = entity_data.get('EXPERIENCE', [])
+
+        job_role = entity_data.get('JOB_ROLE', [])
+        job_seniority = entity_data.get('JOB_SENIORITY', [])
+        job_dept = entity_data.get('JOB_DEPT', [])
+        job_team = entity_data.get('JOB_TEAM', [])
+
+        commitment = entity_data.get('COMMITMENT', [])
+        job_setting = entity_data.get('JOB_SETTING', [])
+
+        job_country = entity_data.get('JOB_COUNTRY', [])
+        job_city = entity_data.get('JOB_CITY', [])
+        job_state = entity_data.get('JOB_STATE', [])
+
+        compensation = entity_data.get('COMPENSATION', [])
+        retirement = entity_data.get('RETIREMENT', [])
+        office_life = entity_data.get('OFFICE_LIFE', [])
+        professional_development = entity_data.get('PROFESSIONAL_DEVELOPMENT', [])
+        wellness = entity_data.get('WELLNESS', [])
+        parental = entity_data.get('PARENTAL', [])
+        work_life_balance = entity_data.get('WORK_LIFE_BALANCE', [])
+        visa_sponsorship = entity_data.get('VISA_SPONSORSHIP', [])
+        additional_perks = entity_data.get('ADDITIONAL_PERKS', [])
+
+        print(f"Description: {description}")
+        print(f"Responsibilities: {responsibilities}")
+        print(f"Qualifications: {qualifications}")
+        print(f"Credentials: {credentials}")
+        print(f"Education: {education}")
+        print(f"Experience: {experience}")
+        print(f"Job Role: {job_role}")
+        print(f"Job Seniority: {job_seniority}")
+        print(f"Job Department: {job_dept}")
+        print(f"Job Team: {job_team}")
+        print(f"Commitment: {commitment}")
+        print(f"Job Setting: {job_setting}")
+        print(f"Job Country: {job_country}")
+        print(f"Job City: {job_city}")
+        print(f"Job State: {job_state}")
+        print(f"Compensation: {compensation}")
+        print(f"Retirement: {retirement}")
+        print(f"Office Life: {office_life}")
+        print(f"Professional Development: {professional_development}")
+        print(f"Wellness: {wellness}")
+        print(f"Parental: {parental}")
+        print(f"Work Life Balance: {work_life_balance}")
+        print(f"Visa Sponsorship: {visa_sponsorship}")
+        print(f"Additional Perks: {additional_perks}")
     except Exception as e:
         print(
-            f"{RED}An error occurred during Google Sheet update for {job_description}: {e}{RESET}"
+            f"{RED}An error occurred during Google Sheet update for {e}{RESET}"
         )
 
 job_description = """Your Impact: As a Senior Sales Director focused on EIQ's Workers Compensation & Disability product offerings, you are responsible for managing the entire sales life cycle from start to finish, including prospecting, identifying needs, presenting, defining solutions, establishing plans, structuring deals, and managing and growing our relationships with both prospects and customers within US and Canadian territories. You must be sales-driven, fast-moving, and have a strong customer focus. You are passionate about creating value for your customers, which ultimately leads to profitable business for both us and them. You know how to identify the right decision makers and influencers, how to listen, and how to ask the right questions. You have excellent communication skills--you know what to say and more importantly, how to say it.
