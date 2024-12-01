@@ -16,7 +16,8 @@ class JobPostService
     json_data = { text: salary_combined_text }.to_json
     encoded_data = Base64.strict_encode64(json_data)
 
-    command = "python3 app/python/salary_extraction/job_salary_processing.py '#{encoded_data}'"
+    # -------------- 2. Call Python model for salary extraction --------------
+    command = "python3 app/python/salary_extraction/train_salary_expections.py '#{encoded_data}'"
     stdout, stderr, status = Open3.capture3(command)
 
     if status.success? && !stdout.strip.empty?
@@ -45,6 +46,7 @@ class JobPostService
         end
       end
 
+      # -------------- 3. Update the job post with extracted salary data --------------
       job_post.update(update_data) unless update_data.empty?
     else
       puts "Error in salary extraction script: #{stderr} or status: #{status}"
@@ -59,8 +61,33 @@ class JobPostService
     job_setting = job_post.job_setting.to_s
     job_additional = job_post.job_additional.to_s
 
-    # -------------- 2. Extract job description from job description --------------
+    # -------------- 1. Combine job description text --------------
     combined_text = "#{job_title} #{job_description} #{job_qualifications} #{job_responsibilities} #{job_setting} #{job_additional}"
     puts "combined text for job description extraction: #{combined_text}"
+    return if combined_text.empty?
+
+    # -------------- 2. Send combined text to the Python model for extraction --------------
+    json_data = { text: combined_text }.to_json
+    encoded_data = Base64.strict_encode64(json_data)
+
+    command = "python3 app/python/ai_processing/job_description_extraction/train_job_description_extraction.py '#{encoded_data}'"
+    stdout, stderr, status = Open3.capture3(command)
+
+    if status.success? && !stdout.strip.empty?
+      job_description_data = JSON.parse(stdout)
+
+      # Assuming that job_description_data contains the entities extracted by your model.
+      job_description_data.each do |entity|
+        # Assuming entity is in the format: { "entity_name": "value", "start_char": start_index, "end_char": end_index }
+        # Save these entities as per your business logic
+        # For example, you could store extracted entities in your model or use them directly
+        puts "Extracted entity: #{entity['entity_name']} with value: #{entity['value']}"
+      end
+
+      # You may want to update the `job_post` with the extracted job description data
+      job_post.update(job_description_extracted: true)  # This is just an example update, adjust to your needs
+    else
+      puts "Error in job description extraction script: #{stderr} or status: #{status}"
+    end
   end
 end

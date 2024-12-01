@@ -2,7 +2,6 @@
 import os
 from dotenv import load_dotenv
 
-# from app.python.data_processing.companies.populate_hc_domain import process_and_update_sheet
 from app.python.data_processing.companies.source_ats_type import (
     update_ats_type_in_master_data,
 )
@@ -22,7 +21,7 @@ load_dotenv()
 
 if __name__ == "__main__":
     # ----------------------------- OS -----------------------------
-    
+
     credentials_path = os.getenv("GOOGLE_CREDENTIALS_PATH")
 
     master_sheet_id = os.getenv("MASTER_SHEET_ID")
@@ -60,6 +59,12 @@ if __name__ == "__main__":
         credentials_path, master_sheet_id, master_linkedin_pull_range_name
     )
 
+    greenhouse_data = load_sheet_data(
+        credentials_path, master_sheet_id, GREENHOUSE_SHEET_RANGE
+    )
+
+    lever_data = load_sheet_data(credentials_path, master_sheet_id, LEVER_SHEET_RANGE)
+
     # ----------------------------- DATA PROCESSING -----------------------------
 
     # filter_active_companies(master_data, master_sheet_id, master_active_range_name, credentials_path, master_linkedin_issues_range_name, master_range_name)
@@ -75,7 +80,9 @@ if __name__ == "__main__":
 
     # ----------------------------- AI MODELS -----------------------------
 
-    # process_and_update_sheet(credentials_path, master_sheet_id, master_linkedin_issue_data, master_linkedin_issues_sheet_name)
+    from app.python.data_processing.companies.populate_hc_domain import process_and_update_sheet
+    process_and_update_sheet(credentials_path, master_sheet_id, greenhouse_data, GREENHOUSE_SHEET_NAME)
+    process_and_update_sheet(credentials_path, master_sheet_id, lever_data, LEVER_SHEET_NAME)
 
     # ----------------------------- HUBSPOT / ZAPIER -----------------------------
 

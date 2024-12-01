@@ -14,7 +14,7 @@ from app.python.ai_processing.utils.logger import (
 )
 from app.python.ai_processing.utils.spacy_utils import handle_spacy_data
 from app.python.ai_processing.utils.trainer import train_spacy_model
-from app.python.ai_processing.utils.validation_utils import evaluate_model
+from app.python.ai_processing.utils.validation_utils import evaluate_model, validate_entities
 from app.python.ai_processing.utils.data_handler import project_root
 
 configure_warnings()
@@ -29,7 +29,6 @@ MODEL_SAVE_PATH = os.path.join(BASE_DIR, "model", "spacy_salary_ner_model")
 SPACY_DATA_PATH = os.path.join(BASE_DIR, "data", "train.spacy")
 
 converted_data = load_data(CONVERTED_FILE, FOLDER)
-
 nlp = load_spacy_model(MODEL_SAVE_PATH)
 
 if "ner" not in nlp.pipe_names:
@@ -68,11 +67,9 @@ train_spacy_model(MODEL_SAVE_PATH, nlp, examples)
 
 # ------------------- VALIDATE TRAINER -------------------
 evaluate_model(nlp, converted_data)
-
+# validate_entities(converted_data, nlp)
 
 # ------------------- TEST EXAMPLES -------------------
-
-
 def convert_example_to_biluo(text):
     """Convert model predictions for the given text to BILUO format."""
     doc = nlp(text)

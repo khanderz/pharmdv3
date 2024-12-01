@@ -14,11 +14,6 @@ from app.python.ai_processing.utils.logger import (
 )
 from app.python.ai_processing.utils.spacy_utils import handle_spacy_data
 from app.python.ai_processing.utils.trainer import train_spacy_model
-from app.python.ai_processing.utils.training_data_processor import fix_entity_offsets
-from app.python.ai_processing.utils.utils import (
-    calculate_entity_indices,
-    print_data_with_entities,
-)
 from app.python.ai_processing.utils.validation_utils import (
     evaluate_model,
     validate_entities,
@@ -104,7 +99,7 @@ train_spacy_model(MODEL_SAVE_PATH, nlp, examples)
 
 # ------------------- VALIDATE TRAINER -------------------
 evaluate_model(nlp, converted_data)
-# validate_entities(train_data, nlp)
+# validate_entities(converted_data, nlp)
 
 
 # ------------------- TEST EXAMPLES -------------------

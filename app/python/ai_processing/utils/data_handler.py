@@ -26,7 +26,7 @@ def load_spacy_model(MODEL_SAVE_PATH, MAX_SEQ_LENGTH=None, model_name="roberta-b
     full_path = os.path.join(project_root, MODEL_SAVE_PATH)
 
     if os.path.exists(full_path):
-        print(f"{BLUE}Loading existing model for further training...{RESET}")
+        print(f"{BLUE}Loading model {model_name} with length {MAX_SEQ_LENGTH} {RESET}")
         nlp = spacy.load(full_path)
 
     else:
@@ -36,6 +36,7 @@ def load_spacy_model(MODEL_SAVE_PATH, MAX_SEQ_LENGTH=None, model_name="roberta-b
             512 if "roberta" in model_name or "bert" in model_name else 4096
         )
 
+        print(f"{BLUE}creating model {model_name} with length {MAX_SEQ_LENGTH} {RESET}")
         nlp = spacy.blank("en")
         nlp.add_pipe(
             "transformer",
