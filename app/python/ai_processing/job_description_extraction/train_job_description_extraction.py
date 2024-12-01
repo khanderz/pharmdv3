@@ -81,12 +81,12 @@ else:
         transformer,
     )
 
-# if examples:
-#     for example in examples:
-#         print(f"\nText: '{example.reference.text}'")
-#         print("Entities after initialization:")
-#         for ent in example.reference.ents:
-#             print(f"  - Text: '{ent.text}', Start: {ent.start_char}, End: {ent.end_char}, Label: {ent.label_}")
+if examples:
+    for example in examples:
+        print(f"\nText: '{example.reference.text}'")
+        print("Entities after initialization:")
+        for ent in example.reference.ents:
+            print(f"  - Text: '{ent.text}', Start: {ent.start_char}, End: {ent.end_char}, Label: {ent.label_}")
 
 # ------------------- TRAIN MODEL -------------------
 train_spacy_model(MODEL_SAVE_PATH, nlp, examples)
@@ -94,7 +94,7 @@ train_spacy_model(MODEL_SAVE_PATH, nlp, examples)
 
 # ------------------- VALIDATE TRAINER -------------------
 evaluate_model(nlp, converted_data)
-# validate_entities(converted_data, nlp)
+validate_entities(converted_data, nlp)
 
 
 # ------------------- TEST EXAMPLES -------------------
