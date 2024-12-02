@@ -25,111 +25,76 @@ class Company < ApplicationRecord
 
   def self.seed_existing_companies(company, row, ats_type, countries, states, cities)
     changes_made = false
-    if company.operating_status != ActiveModel::Type::Boolean.new.cast(row['operating_status'])
-      company.operating_status = ActiveModel::Type::Boolean.new.cast(row['operating_status'])
-      changes_made = true
-    end
 
-    if company.linkedin_url != row['linkedin_url']
-      company.linkedin_url = row['linkedin_url']
-      changes_made = true
-    end
+    %w[operating_status linkedin_url year_founded acquired_by company_description ats_id logo_url company_url].each do |attribute|
+      next unless row[attribute].present?
 
-    if company.is_public != ActiveModel::Type::Boolean.new.cast(row['is_public'])
-      company.is_public = ActiveModel::Type::Boolean.new.cast(row['is_public'])
-      changes_made = true
-    end
+      casted_value = case attribute
+                     when 'operating_status'
+                       ActiveModel::Type::Boolean.new.cast(row[attribute])
+                     when 'year_founded'
+                       row[attribute].to_i
+                     else
+                       row[attribute]
+                     end
 
-    if company.year_founded != row['year_founded'].to_i
-      company.year_founded = row['year_founded'].to_i
-      changes_made = true
-    end
-
-    if company.acquired_by != row['acquired_by']
-      company.acquired_by = row['acquired_by']
-      changes_made = true
-    end
-
-    if company.company_description != row['company_description']
-      company.company_description = row['company_description']
-      changes_made = true
-    end
-
-    if company.ats_id != row['ats_id']
-      company.ats_id = row['ats_id']
-      changes_made = true
-    end
-
-    if ats_type && ats_type[:ats_type_code] != row['company_ats_type']
-      company.ats_type = ats_type
-      changes_made = true
-    end
-
-    if company.countries.pluck(:id).sort != countries.pluck(:id).sort
-      company.countries = countries
-      changes_made = true
-    end
-
-    if states.present? && company.states.pluck(:id).sort != states.pluck(:id).sort
-      company.states = states
-      changes_made = true
-    end
-
-    if company.cities.pluck(:id).sort != cities.pluck(:id).sort
-      company.cities = cities
-      changes_made = true
-    end
-
-    # Optional attributes
-    if row['company_size'].present?
-      company_size = CompanySize.find_by(size_range: row['company_size'])
-      if company_size && company.company_size&.size_range != company_size.size_range
-        company.company_size = company_size
-        changes_made = true
-      end
-    end
-    if row['last_funding_type'].present?
-      funding_type = FundingType.find_by(funding_type_name: row['last_funding_type'])
-      if funding_type && company.funding_type&.funding_type_name != funding_type.funding_type_name
-        company.funding_type = funding_type
+      if company[attribute] != casted_value
+        company[attribute] = casted_value
         changes_made = true
       end
     end
 
-    if row['logo_url'].present? && company.logo_url != row['logo_url']
-      company.logo_url = row['logo_url']
-      changes_made = true
-    end
+    # Update associations
+    changes_made ||= update_association(company, :ats_type, ats_type)
+    changes_made ||= update_collection(company, :countries, countries)
+    changes_made ||= update_collection(company, :states, states)
+    changes_made ||= update_collection(company, :cities, cities)
 
-    if row['company_url'].present? && company.company_url != row['company_url']
-      company.company_url = row['company_url']
-      changes_made = true
-    end
-    # Handling multiple healthcare domains
+    # Update optional attributes
+    changes_made ||= update_optional_association(company, :company_size, row['company_size'], CompanySize, :size_range)
+    changes_made ||= update_optional_association(company, :funding_type, row['last_funding_type'], FundingType, :funding_type_name)
+
+    # Update healthcare domains
     if row['healthcare_domains'].present?
       healthcare_domains = row['healthcare_domains'].split(',').map(&:strip)
-      domains = healthcare_domains.map do |domain_key|
-        HealthcareDomain.find_by(key: domain_key)
-      end.compact
-      if domains.present? && company.healthcare_domains.pluck(:id).sort != domains.pluck(:id).sort
-        company.healthcare_domains = domains
-        changes_made = true
-      end
+      domains = healthcare_domains.map { |domain_key| HealthcareDomain.find_by(key: domain_key) }.compact
+      changes_made ||= update_collection(company, :healthcare_domains, domains)
     else
       puts "No healthcare domains found for company: #{row['company_name']}"
     end
-    # Company specialties based on the found healthcare domains
-    if row['company_specialty'].present? && domains.present?
-      specialties = row['company_specialty'].split(',').map do |specialty_key|
-        CompanySpecialty.find_by(key: specialty_key.strip)
-      end.compact
-      if specialties.present? && company.company_specialties.pluck(:id).sort != specialties.pluck(:id).sort
-        company.company_specialties = specialties
-        changes_made = true
-      end
+
+    # Update specialties
+    if row['company_specialty'].present?
+      specialties = row['company_specialty'].split(',').map { |specialty_key| CompanySpecialty.find_by(key: specialty_key.strip) }.compact
+      changes_made ||= update_collection(company, :company_specialties, specialties)
     else
-      puts "No specialties found for company: #{row['company_name']} or no valid healthcare domains."
+      puts "No specialties found for company: #{row['company_name']}"
     end
+
     changes_made
+  end
+
+  private_class_method def self.update_association(company, association, new_value)
+    return false if company.send(association) == new_value
+
+    company.send("#{association}=", new_value)
+    true
+  end
+
+  private_class_method def self.update_optional_association(company, association, new_value_key, model_class, key_field)
+    return false unless new_value_key.present?
+
+    new_value = model_class.find_by(key_field => new_value_key)
+    return false if company.send(association) == new_value
+
+    company.send("#{association}=", new_value)
+    true
+  end
+
+  private_class_method def self.update_collection(company, association, new_values)
+    return false if new_values.blank? || company.send(association).pluck(:id).sort == new_values.pluck(:id).sort
+
+    company.send("#{association}=", new_values)
+    true
   end
 end
