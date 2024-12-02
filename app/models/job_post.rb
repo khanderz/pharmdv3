@@ -115,73 +115,50 @@ class JobPost < ApplicationRecord
     end
 
     def get_jobs(company)
-      if company.ats_type.ats_type_code == 'LEVER'
-        identifier = if company.ats_id.present?
-                       company.ats_id
-                     else
-                       company.company_name.gsub(' ',
-                                                 '').downcase
-                     end
-        url = "https://api.lever.co/v0/postings/#{identifier}"
-        uri = URI(url)
+      ats_type = company.ats_type
+      return puts "ATS type not supported for company: #{company.company_name}" unless ats_type
 
-        begin
-          response = Net::HTTP.get(uri)
-          jobs = JSON.parse(response)
+      if ats_type.post_match_url.nil?
+        puts "No post_match_url defined for ATS type: #{ats_type.ats_type_code}"
+        return
+      end
 
-          return jobs if jobs.is_a?(Array)
+      url = ats_type.post_match_url.gsub('{ats_id}', company.ats_id)
+      puts "Fetching jobs for company: #{company.company_name} using URL: #{url}"
 
-          company.error_details = 'failed to fetch Lever jobs'
-          company.resolved = false
-          company.save!
+      uri = URI(url)
 
-          Adjudication.create!(
-            adjudicatable_type: 'Company',
-            adjudicatable_id: company.id,
-            error_details: "failed to fetch Lever jobs for #{company.company_name}",
-            resolved: false
-          )
-          puts "Error message: #{jobs['message']},  cannot get Lever jobs for company #{company.company_name}. Logged to adjudications."
-
-          nil
-        rescue StandardError => e
-          error_message = "Exception occurred while fetching Lever jobs for #{company.company_name}: #{e.message}"
-          puts error_message
-
-          Adjudication.create!(
-            adjudicatable_type: 'Company',
-            adjudicatable_id: company.id,
-            error_details: error_message,
-            resolved: false
-          )
-
-          nil
-        end
-      elsif company.ats_type.ats_type_code == 'GREENHOUSE'
-        ats_id = company.ats_id
-        puts "Fetching Greenhouse jobs for company: #{company.company_name}"
-        url = "https://boards-api.greenhouse.io/v1/boards/#{ats_id}/jobs?content=true"
-        uri = URI(url)
+      begin
         response = Net::HTTP.get(uri)
         jobs = JSON.parse(response)
 
-        return jobs if jobs.is_a?(Hash)
+        return jobs if jobs.is_a?(Array) || jobs.is_a?(Hash)
 
-        company.error_details = 'failed to fetch Greenhouse jobs'
+        company.error_details = "Failed to fetch jobs from #{ats_type.ats_type_name}"
         company.resolved = false
         company.save!
 
         Adjudication.create!(
           adjudicatable_type: 'Company',
           adjudicatable_id: company.id,
-          error_details: "failed to fetch Greenhouse jobs for #{company.company_name}",
+          error_details: "Failed to fetch jobs for #{company.company_name} from #{ats_type.ats_type_name}",
           resolved: false
         )
-        puts "Error: #{jobs['message']}, cannot get Greenhouse jobs. Logged to adjudications."
+        puts "Error: Unexpected response for company #{company.company_name}. Logged to adjudications."
 
         nil
-      else
-        puts "ATS type #{ats_code} not supported for company: #{company.company_name}"
+      rescue StandardError => e
+        error_message = "Exception occurred while fetching jobs for #{company.company_name}: #{e.message}"
+        puts error_message
+
+        Adjudication.create!(
+          adjudicatable_type: 'Company',
+          adjudicatable_id: company.id,
+          error_details: error_message,
+          resolved: false
+        )
+
+        nil
       end
     end
 
