@@ -49,8 +49,6 @@ healthcare_domains = [
     aliases: ['eye care', 'vision health', 'ophthalmology', 'vision', 'ocular', 'glasses', 'cataract', 'glaucoma', 'macular degeneration'] },
   { key: 'ORTHOPEDICS', value: 'Orthopedics',
     aliases: ['bone', 'bones', 'musculoskeletal', 'orthopedic', 'joint replacement', 'arthritis', 'osteoporosis'] },
-  { key: 'PATHOLOGY', value: 'Pathology',
-    aliases: ['disease diagnosis', 'diagnosis', 'testing', 'lab', 'laboratory', 'pathology', 'biopsy', 'tumor analysis'] },
   { key: 'PEDIATRICS', value: 'Pediatrics',
     aliases: ['child', 'pediatric', 'childcare', 'children', 'developmental disorders'] },
   { key: 'PHARMA', value: 'Pharmaceuticals',

@@ -24,7 +24,6 @@ domains = {
   oncology: HealthcareDomain.find_by(key: 'ONCOLOGY'),
   optometry: HealthcareDomain.find_by(key: 'OPTOMETRY'),
   orthopedics: HealthcareDomain.find_by(key: 'ORTHOPEDICS'),
-  pathology: HealthcareDomain.find_by(key: 'PATHOLOGY'),
   pediatrics: HealthcareDomain.find_by(key: 'PEDIATRICS'),
   pharma: HealthcareDomain.find_by(key: 'PHARMA'),
   physical_therapy: HealthcareDomain.find_by(key: 'PHYSICAL_THERAPY'),
@@ -233,14 +232,6 @@ specialties = {
     { key: 'JOINT_REPLACEMENT', value: 'Joint Replacement',
       aliases: ['hip replacement', 'knee replacement'] },
     { key: 'SPINAL_SURGERY', value: 'Spinal Surgery', aliases: ['back surgery', 'spine care'] }
-  ],
-  pathology: [
-    { key: 'CLINICAL_PATHOLOGY', value: 'Clinical Pathology',
-      aliases: ['laboratory medicine', 'clinical labs'] },
-    { key: 'FORENSIC_PATHOLOGY', value: 'Forensic Pathology',
-      aliases: ['medical examiner', 'autopsy'] },
-    { key: 'MOLECULAR_PATHOLOGY', value: 'Molecular Pathology',
-      aliases: ['genomic pathology', 'molecular diagnostics'] }
   ],
   pediatrics: [
     { key: 'CHILD_DEVELOPMENT_SERVICES', value: 'Child Development Services',
