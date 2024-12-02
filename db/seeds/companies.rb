@@ -4,15 +4,27 @@ begin
   ActiveRecord::Base.transaction do
     credentials_path = ENV['GOOGLE_CREDENTIALS_PATH']
     sheet_id = ENV['MASTER_SHEET_ID']
-    range_name = ENV['MASTER_RANGE_NAME']
+    GH_range_name = ENV['GREENHOUSE_SHEET_RANGE']
+    L_range_name = ENV['LEVER_SHEET_RANGE']
 
-    data = GoogleSheetsService.fetch_data(credentials_path, sheet_id, range_name)
-    headers = data.shift.map(&:strip)
+    gh_data = GoogleSheetsService.fetch_data(credentials_path, sheet_id, gh_range_name)
+    l_data = GoogleSheetsService.fetch_data(credentials_path, sheet_id, l_range_name)
+
+    gh_headers = gh_data.shift.map(&:strip)
+    l_headers = l_data.shift.map(&:strip)
+
+    unless gh_headers == l_headers
+      raise "Headers mismatch between GREENHOUSE and LEVER sheets."
+    end
+
+    combined_data = gh_data + l_data
+    headers = gh_headers
 
     puts "#{Company.count} existing rows in the companies table"
 
-    data.each do |row|
+    combined_data.each do |row|
       row_data = Hash[headers.zip(row)]
+      puts "Processing row: #{row_data}"
       next unless row_data['company_name']
 
       company = Company.find_by(company_name: row['company_name'])

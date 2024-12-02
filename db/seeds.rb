@@ -26,7 +26,7 @@ load File.join(Rails.root, 'db', 'seeds', 'static', 'cities.rb')
 # 8. Funding types
 load File.join(Rails.root, 'db', 'seeds', 'static', 'funding_types.rb')
 
-# 9. Companies (depends on countries, states, cities, etc.)
+# 9. Companies 
 load File.join(Rails.root, 'db', 'seeds', 'companies.rb')
 
 # 10. Departments
@@ -54,6 +54,6 @@ load File.join(Rails.root, 'db', 'seeds', 'static', 'salary_intervals.rb')
 load File.join(Rails.root, 'db', 'seeds', 'static', 'job_seniority.rb')
 
 # 18. Job posts (depends on companies, job roles, etc.)
-load File.join(Rails.root, 'db', 'seeds', 'job_posts.rb')
+# load File.join(Rails.root, 'db', 'seeds', 'job_posts.rb')
 
 puts '*************Seeding completed**************'

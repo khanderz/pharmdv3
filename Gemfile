@@ -75,3 +75,6 @@ gem 'pycall', '~> 1.5.2'
 gem 'rubocop', '~> 1.67'
 
 gem 'bcrypt', '~> 3.1.7'
+
+gem 'google-apis-sheets_v4'
+gem 'googleauth'
