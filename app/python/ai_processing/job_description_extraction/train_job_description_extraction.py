@@ -104,81 +104,81 @@ evaluate_model(nlp, converted_data)
 
 
 # # ------------------- TEST EXAMPLES -------------------
-# def convert_example_to_biluo(text):
-#     """Convert model predictions for the given text to BILUO format."""
-#     tokens = tokenizer(
-#         text,
-#         max_length=MAX_SEQ_LENGTH,
-#         truncation=True,
-#         padding="max_length",
-#         return_tensors="pt",
-#     )
+def convert_example_to_biluo(text):
+    """Convert model predictions for the given text to BILUO format."""
+    tokens = tokenizer(
+        text,
+        max_length=MAX_SEQ_LENGTH,
+        truncation=True,
+        padding="max_length",
+        return_tensors="pt",
+    )
 
-#     decoded_text = tokenizer.decode(tokens["input_ids"][0], skip_special_tokens=True)
+    decoded_text = tokenizer.decode(tokens["input_ids"][0], skip_special_tokens=True)
 
-#     doc = nlp(decoded_text)
+    doc = nlp(decoded_text)
 
-#     iob_tags = [
-#         token.ent_iob_ + "-" + token.ent_type_ if token.ent_type_ else "O"
-#         for token in doc
-#     ]
-#     biluo_tags = iob_to_biluo(iob_tags)
+    iob_tags = [
+        token.ent_iob_ + "-" + token.ent_type_ if token.ent_type_ else "O"
+        for token in doc
+    ]
+    biluo_tags = iob_to_biluo(iob_tags)
 
-#     return doc, biluo_tags
+    return doc, biluo_tags
 
 
-# def inspect_job_description_predictions(text):
-#     """Inspect model predictions for job description text."""
-#     doc, biluo_tags = convert_example_to_biluo(text)
+def inspect_job_description_predictions(text):
+    """Inspect model predictions for job description text."""
+    doc, biluo_tags = convert_example_to_biluo(text)
 
-#     # print("\nOriginal Text:")
-#     # print(f"'{text}'\n")
-#     # print("Token Predictions:")
-#     # print(f"{'Token':<15}{'Predicted Label':<20}{'BILUO Tag':<20}")
-#     # print("-" * 50)
+    # print("\nOriginal Text:")
+    # print(f"'{text}'\n")
+    # print("Token Predictions:")
+    # print(f"{'Token':<15}{'Predicted Label':<20}{'BILUO Tag':<20}")
+    # print("-" * 50)
 
-#     entity_data = {}
-#     current_entity = None
-#     current_tokens = []
+    entity_data = {}
+    current_entity = None
+    current_tokens = []
 
-#     for token, biluo_tag in zip(doc, biluo_tags):
-#         if biluo_tag != "O":
-#             entity_label = biluo_tag.split('-')[-1]
+    for token, biluo_tag in zip(doc, biluo_tags):
+        if biluo_tag != "O":
+            entity_label = biluo_tag.split('-')[-1]
 
-#             if biluo_tag.startswith('B-'):
-#                 if current_entity:
-#                     if current_entity not in entity_data:
-#                         entity_data[current_entity] = []
-#                     entity_data[current_entity].append(" ".join(current_tokens))
+            if biluo_tag.startswith('B-'):
+                if current_entity:
+                    if current_entity not in entity_data:
+                        entity_data[current_entity] = []
+                    entity_data[current_entity].append(" ".join(current_tokens))
 
-#                 current_entity = entity_label
-#                 current_tokens = [token.text]
+                current_entity = entity_label
+                current_tokens = [token.text]
 
-#             elif biluo_tag.startswith('I-'):
-#                 current_tokens.append(token.text)
+            elif biluo_tag.startswith('I-'):
+                current_tokens.append(token.text)
 
-#             elif biluo_tag.startswith('L-'):
-#                 current_tokens.append(token.text)
-#                 if current_entity:
-#                     if current_entity not in entity_data:
-#                         entity_data[current_entity] = []
-#                     entity_data[current_entity].append(" ".join(current_tokens))
-#                 current_entity = None
-#                 current_tokens = []
-#         else:
-#             if current_entity:
-#                 if current_entity not in entity_data:
-#                     entity_data[current_entity] = []
-#                 entity_data[current_entity].append(" ".join(current_tokens))
-#                 current_entity = None
-#                 current_tokens = []
+            elif biluo_tag.startswith('L-'):
+                current_tokens.append(token.text)
+                if current_entity:
+                    if current_entity not in entity_data:
+                        entity_data[current_entity] = []
+                    entity_data[current_entity].append(" ".join(current_tokens))
+                current_entity = None
+                current_tokens = []
+        else:
+            if current_entity:
+                if current_entity not in entity_data:
+                    entity_data[current_entity] = []
+                entity_data[current_entity].append(" ".join(current_tokens))
+                current_entity = None
+                current_tokens = []
 
-#     if current_entity:
-#         if current_entity not in entity_data:
-#             entity_data[current_entity] = []
-#         entity_data[current_entity].append(" ".join(current_tokens))
+    if current_entity:
+        if current_entity not in entity_data:
+            entity_data[current_entity] = []
+        entity_data[current_entity].append(" ".join(current_tokens))
 
-#     return entity_data
+    return entity_data
 
 
 # test_texts = [

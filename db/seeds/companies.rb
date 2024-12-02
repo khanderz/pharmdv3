@@ -1,14 +1,14 @@
 # frozen_string_literal: true
 
+credentials_path = ENV['GOOGLE_CREDENTIALS_PATH']
+sheet_id = ENV['MASTER_SHEET_ID']
+GH_range_name = ENV['GREENHOUSE_SHEET_RANGE']
+L_range_name = ENV['LEVER_SHEET_RANGE']
+
 begin
   ActiveRecord::Base.transaction do
-    credentials_path = ENV['GOOGLE_CREDENTIALS_PATH']
-    sheet_id = ENV['MASTER_SHEET_ID']
-    GH_range_name = ENV['GREENHOUSE_SHEET_RANGE']
-    L_range_name = ENV['LEVER_SHEET_RANGE']
-
-    gh_data = GoogleSheetsService.fetch_data(credentials_path, sheet_id, gh_range_name)
-    l_data = GoogleSheetsService.fetch_data(credentials_path, sheet_id, l_range_name)
+    gh_data = GoogleSheetsService.fetch_data(credentials_path, sheet_id, GH_range_name)
+    l_data = GoogleSheetsService.fetch_data(credentials_path, sheet_id, L_range_name)
 
     gh_headers = gh_data.shift.map(&:strip)
     l_headers = l_data.shift.map(&:strip)

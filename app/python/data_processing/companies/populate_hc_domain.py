@@ -1,23 +1,21 @@
-from app.python.ai_processing.company_extraction.train_company_extraction import (
-    inspect_company_predictions,
-)
+from app.python.ai_processing.company_extraction.train_company_extraction import inspect_company_predictions
 from app.python.ai_processing.utils.logger import BLUE, GREEN, RED, RESET
+
 from app.python.data_processing.companies.google_sheets_updater import (
     update_google_sheet_row,
 )
 
-
 def process_and_update_sheet(
-    credentials_path, sheet_id, master_active_data, master_linkedin_issues_sheet_name
+    credentials_path, sheet_id, data, sheet_name
 ):
     if (
-        "company_description" not in master_active_data.columns
-        or "healthcare_domain" not in master_active_data.columns
+        "company_description" not in data.columns
+        or "healthcare_domain" not in data.columns
     ):
         print("Missing 'company_description' or 'healthcare_domain' column in sheet.")
         return
 
-    for index, row in master_active_data.iterrows():
+    for index, row in data.iterrows():
         company_name = row.get("company_name")
         company_description = row.get("company_description", "")
         healthcare_domains = row.get("healthcare_domain")
@@ -36,8 +34,8 @@ def process_and_update_sheet(
 
             healthcare_domains_str = ", ".join(set(healthcare_domains))
 
-            master_active_data.at[index, "healthcare_domain"] = healthcare_domains_str
-            updated_row = master_active_data.loc[index]
+            data.at[index, "healthcare_domain"] = healthcare_domains_str
+            updated_row = data.loc[index]
             row_data = updated_row.fillna("").astype(str).tolist()
 
             print(
@@ -46,7 +44,7 @@ def process_and_update_sheet(
             update_google_sheet_row(
                 credentials_path,
                 sheet_id,
-                master_linkedin_issues_sheet_name,
+                sheet_name,
                 row_index=index + 1,
                 data=row_data,
             )

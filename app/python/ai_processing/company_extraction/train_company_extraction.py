@@ -139,6 +139,7 @@ def convert_example_to_biluo(text):
 
 def inspect_company_predictions(text):
     """Inspect model predictions for companies text."""
+    print(f"{GREEN}Inspecting company predictions...{RESET}")
     doc, biluo_tags = convert_example_to_biluo(text)
 
     print("\nOriginal Text:")

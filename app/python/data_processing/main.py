@@ -2,20 +2,10 @@
 import os
 from dotenv import load_dotenv
 
-from app.python.data_processing.companies.source_ats_type import (
-    update_ats_type_in_master_data,
-)
-from companies.google_sheets_updater import load_sheet_data, update_google_sheet
-from companies.hubspot_functions import (
-    rename_hubspot_columns,
-    fill_missing_values_with_hubspot,
-)
-from companies.linkedin_functions import (
-    filter_active_companies,
-    enrich_with_linkedin_data,
-)
+from app.python.data_processing.companies.populate_hc_domain import process_and_update_sheet
+from companies.google_sheets_updater import load_sheet_data
+
 from companies.utils.cleaner import remove_duplicates
-from companies.zapier_functions import transfer_data
 
 load_dotenv()
 
@@ -25,19 +15,20 @@ if __name__ == "__main__":
     credentials_path = os.getenv("GOOGLE_CREDENTIALS_PATH")
 
     master_sheet_id = os.getenv("MASTER_SHEET_ID")
-    master_range_name = os.getenv("MASTER_RANGE_NAME")
 
-    master_active_range_name = os.getenv("MASTER_ACTIVE_RANGE_NAME")
-    master_active_sheet_name = os.getenv("MASTER_ACTIVE_SHEET_NAME")
+    # master_range_name = os.getenv("MASTER_RANGE_NAME")
 
-    master_linkedin_issues_range_name = os.getenv("MASTER_LINKEDIN_ISSUE_RANGE_NAME")
-    master_linkedin_issues_sheet_name = os.getenv("MASTER_LINKEDIN_ISSUE_SHEET_NAME")
+    # master_active_range_name = os.getenv("MASTER_ACTIVE_RANGE_NAME")
+    # master_active_sheet_name = os.getenv("MASTER_ACTIVE_SHEET_NAME")
 
-    master_linkedin_pull_range_name = os.getenv("MASTER_LINKEDIN_PULL_RANGE_NAME")
-    master_linkedin_pull_sheet_name = os.getenv("MASTER_LINKEDIN_PULL_SHEET_NAME")
+    # master_linkedin_issues_range_name = os.getenv("MASTER_LINKEDIN_ISSUE_RANGE_NAME")
+    # master_linkedin_issues_sheet_name = os.getenv("MASTER_LINKEDIN_ISSUE_SHEET_NAME")
 
-    linkedin_username = os.getenv("LINKEDIN_USERNAME")
-    linkedin_pw = os.getenv("LINKEDIN_PASSWORD")
+    # master_linkedin_pull_range_name = os.getenv("MASTER_LINKEDIN_PULL_RANGE_NAME")
+    # master_linkedin_pull_sheet_name = os.getenv("MASTER_LINKEDIN_PULL_SHEET_NAME")
+
+    # linkedin_username = os.getenv("LINKEDIN_USERNAME")
+    # linkedin_pw = os.getenv("LINKEDIN_PASSWORD")
 
     GREENHOUSE_SHEET_RANGE = os.getenv("GREENHOUSE_SHEET_RANGE")
     GREENHOUSE_SHEET_NAME = os.getenv("GREENHOUSE_SHEET_NAME")
@@ -47,17 +38,17 @@ if __name__ == "__main__":
 
     # ----------------------------- LOAD  -----------------------------
 
-    master_data = load_sheet_data(credentials_path, master_sheet_id, master_range_name)
-    master_active_data = load_sheet_data(
-        credentials_path, master_sheet_id, master_active_range_name
-    )
-    master_linkedin_issue_data = load_sheet_data(
-        credentials_path, master_sheet_id, master_linkedin_issues_range_name
-    )
+    # master_data = load_sheet_data(credentials_path, master_sheet_id, master_range_name)
+    # master_active_data = load_sheet_data(
+    #     credentials_path, master_sheet_id, master_active_range_name
+    # )
+    # master_linkedin_issue_data = load_sheet_data(
+    #     credentials_path, master_sheet_id, master_linkedin_issues_range_name
+    # )
 
-    master_linkedin_pull_data = load_sheet_data(
-        credentials_path, master_sheet_id, master_linkedin_pull_range_name
-    )
+    # master_linkedin_pull_data = load_sheet_data(
+    #     credentials_path, master_sheet_id, master_linkedin_pull_range_name
+    # )
 
     greenhouse_data = load_sheet_data(
         credentials_path, master_sheet_id, GREENHOUSE_SHEET_RANGE
@@ -80,20 +71,18 @@ if __name__ == "__main__":
 
     # ----------------------------- AI MODELS -----------------------------
 
-    from app.python.data_processing.companies.populate_hc_domain import (
-        process_and_update_sheet,
-    )
 
     process_and_update_sheet(
         credentials_path, master_sheet_id, greenhouse_data, GREENHOUSE_SHEET_NAME
     )
+
     process_and_update_sheet(
         credentials_path, master_sheet_id, lever_data, LEVER_SHEET_NAME
     )
 
-    from app.python.data_processing.job_posts.process_job_post import (
-        process_job_post_descriptions,
-    )
+    # from app.python.data_processing.job_posts.process_job_post import (
+    #     process_job_post_descriptions,
+    # )
 
     # ----------------------------- HUBSPOT / ZAPIER -----------------------------
 
