@@ -23,6 +23,14 @@ class Company < ApplicationRecord
   validates :company_name, presence: true, uniqueness: true
   validates :linkedin_url, uniqueness: true, allow_blank: true
 
+  def active_jobs
+    job_posts.where(job_active: true)
+  end
+
+  def inactive_jobs
+    job_posts.where(job_active: false)
+  end
+
   def self.seed_existing_companies(company, row, ats_type, countries, states, cities)
     changes_made = false
 
