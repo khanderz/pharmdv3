@@ -1,13 +1,14 @@
-from app.python.ai_processing.company_extraction.train_company_extraction import inspect_company_predictions
+from app.python.ai_processing.company_extraction.train_company_extraction import (
+    inspect_company_predictions,
+)
 from app.python.ai_processing.utils.logger import BLUE, GREEN, RED, RESET
 
 from app.python.data_processing.companies.google_sheets_updater import (
     update_google_sheet_row,
 )
 
-def process_and_update_sheet(
-    credentials_path, sheet_id, data, sheet_name
-):
+
+def process_and_update_sheet(credentials_path, sheet_id, data, sheet_name):
     if (
         "company_description" not in data.columns
         or "healthcare_domain" not in data.columns

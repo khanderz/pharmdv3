@@ -26,7 +26,10 @@ load File.join(Rails.root, 'db', 'seeds', 'static', 'cities.rb')
 # 8. Funding types
 load File.join(Rails.root, 'db', 'seeds', 'static', 'funding_types.rb')
 
-# 9. Companies 
+# 8b. Company types
+load File.join(Rails.root, 'db', 'seeds', 'static', 'company_types.rb')
+
+# 9. Companies
 load File.join(Rails.root, 'db', 'seeds', 'companies.rb')
 
 # 10. Departments

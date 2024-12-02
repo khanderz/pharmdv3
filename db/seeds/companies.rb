@@ -13,9 +13,7 @@ begin
     gh_headers = gh_data.shift.map(&:strip)
     l_headers = l_data.shift.map(&:strip)
 
-    unless gh_headers == l_headers
-      raise "Headers mismatch between GREENHOUSE and LEVER sheets."
-    end
+    raise 'Headers mismatch between GREENHOUSE and LEVER sheets.' unless gh_headers == l_headers
 
     combined_data = gh_data + l_data
     headers = gh_headers

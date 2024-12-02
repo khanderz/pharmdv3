@@ -143,9 +143,9 @@ def inspect_job_description_predictions(text):
 
     for token, biluo_tag in zip(doc, biluo_tags):
         if biluo_tag != "O":
-            entity_label = biluo_tag.split('-')[-1]
+            entity_label = biluo_tag.split("-")[-1]
 
-            if biluo_tag.startswith('B-'):
+            if biluo_tag.startswith("B-"):
                 if current_entity:
                     if current_entity not in entity_data:
                         entity_data[current_entity] = []
@@ -154,10 +154,10 @@ def inspect_job_description_predictions(text):
                 current_entity = entity_label
                 current_tokens = [token.text]
 
-            elif biluo_tag.startswith('I-'):
+            elif biluo_tag.startswith("I-"):
                 current_tokens.append(token.text)
 
-            elif biluo_tag.startswith('L-'):
+            elif biluo_tag.startswith("L-"):
                 current_tokens.append(token.text)
                 if current_entity:
                     if current_entity not in entity_data:

@@ -2,7 +2,9 @@
 import os
 from dotenv import load_dotenv
 
-from app.python.data_processing.companies.populate_hc_domain import process_and_update_sheet
+from app.python.data_processing.companies.populate_hc_domain import (
+    process_and_update_sheet,
+)
 from companies.google_sheets_updater import load_sheet_data
 
 from companies.utils.cleaner import remove_duplicates
@@ -70,7 +72,6 @@ if __name__ == "__main__":
     # enrich_with_linkedin_data(master_linkedin_pull_data, credentials_path, master_sheet_id, master_linkedin_pull_sheet_name)
 
     # ----------------------------- AI MODELS -----------------------------
-
 
     process_and_update_sheet(
         credentials_path, master_sheet_id, greenhouse_data, GREENHOUSE_SHEET_NAME
