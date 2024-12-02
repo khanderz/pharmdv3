@@ -32,7 +32,7 @@ def load_sheet_data(credentials_path, sheet_id, range_name):
 
 def update_google_sheet(credentials_path, sheet_id, range_name, data):
     data = data.fillna("").astype(str)
-    data = data.iloc[:, :20]
+    data = data.iloc[:, :19]
 
     values = [data.columns.tolist()] + data.values.tolist()
 

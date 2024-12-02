@@ -4,6 +4,7 @@ import requests
 from app.python.ai_processing.utils.logger import BLUE, GREEN, RED, RESET
 from app.python.data_processing.companies.google_sheets_updater import (
     update_google_sheet,
+    update_google_sheet_row,
 )
 from app.python.hooks.get_company_sizes import fetch_company_sizes
 from app.python.hooks.get_linkedin_data import fetch_company_data
@@ -21,6 +22,61 @@ def safely_parse_list(value):
 
     return [value] if value else []
 
+def seed_company_data(data, credentials_path, master_sheet_id, range_name):
+    """
+    Updates missing company_type and logo_url fields in the dataset and synchronizes with Google Sheets.
+    
+    Args:
+        data (pd.DataFrame): The dataset containing company information.
+        credentials_path (str): Path to Google Sheets API credentials.
+        master_sheet_id (str): Google Sheets ID.
+        range_name (str): Range name in the sheet to update.
+    """
+
+    for index, row in data.iterrows():
+        company_name = row.get("company_name", "").strip()
+
+        if not company_name:
+            print(f"{RED}No company name found for row {index}{RESET}")
+            continue
+
+        print(f"{BLUE}Fetching LinkedIn data for {company_name}...{RESET}")
+        linkedin_data = fetch_company_data(row.get("linkedin_url"))
+
+        if not linkedin_data or "error" in linkedin_data:
+            print(f"{RED}Failed to fetch data for {company_name}{RESET}")
+            continue
+
+        updated = False
+
+        if pd.isna(row.get("company_type")) or not row["company_type"]:
+            company_type = linkedin_data.get("company_type")
+            if company_type:
+                data.at[index, "company_type"] = company_type
+                updated = True
+
+        if pd.isna(row.get("logo_url")) or not row["logo_url"]:
+            logo_url = linkedin_data.get("profile_pic_url")
+            if logo_url:
+                data.at[index, "logo_url"] = logo_url
+                updated = True
+
+        if updated:
+            try:
+                print(f"{BLUE}Updating Google Sheet for {company_name}...{RESET}")
+                update_google_sheet_row(
+                    credentials_path,
+                    master_sheet_id,
+                    range_name,
+                    row_index=index + 1,
+                    data=data.loc[index].fillna("").astype(str).tolist(),
+                )
+            except Exception as e:
+                print(f"{RED}Error updating Google Sheet for {company_name}: {e}{RESET}")
+        else:
+            print(f"{BLUE}No updates needed for {company_name}. Skipping Google Sheet update.{RESET}")
+
+    print(f"{GREEN}Company data seeding completed successfully!{RESET}")
 
 def enrich_with_linkedin_data(
     master_active_data, credentials_path, master_sheet_id, active_range_name
@@ -64,16 +120,16 @@ def enrich_with_linkedin_data(
                 "profile_pic_url"
             )
 
-        if pd.isna(row.get("is_public")) or not row["is_public"]:
-            company_type = linkedin_data.get("companyType", {}).get("code")
-            if company_type == "PRIVATELY_HELD":
-                master_active_data.at[index, "is_public"] = False
-            elif company_type == "PUBLIC_COMPANY":
-                master_active_data.at[index, "is_public"] = True
-            else:
-                master_active_data.at[index, "is_public"] = False
+        # if pd.isna(row.get("is_public")) or not row["is_public"]:
+        #     company_type = linkedin_data.get("companyType", {}).get("code")
+        #     if company_type == "PRIVATELY_HELD":
+        #         master_active_data.at[index, "is_public"] = False
+        #     elif company_type == "PUBLIC_COMPANY":
+        #         master_active_data.at[index, "is_public"] = True
+        #     else:
+        #         master_active_data.at[index, "is_public"] = False
 
-            updated_attributes.append("is_public")
+        #     updated_attributes.append("is_public")
 
         if pd.isna(row.get("year_founded")) or not row["year_founded"]:
             master_active_data.at[index, "year_founded"] = linkedin_data.get(
