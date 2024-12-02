@@ -13,8 +13,8 @@ def train_spacy_model(MODEL_SAVE_PATH, nlp, examples):
     # optimizer = nlp.begin_training()
     optimizer = nlp.resume_training()
 
-    best_loss = float('inf')
-    patience = 3 
+    best_loss = float("inf")
+    patience = 3
     epochs_without_improvement = 0
 
     for epoch in range(10):
@@ -28,7 +28,7 @@ def train_spacy_model(MODEL_SAVE_PATH, nlp, examples):
 
             nlp.update([example], drop=0.2, losses=losses, sgd=optimizer)
 
-        current_loss = losses.get('ner', 0)
+        current_loss = losses.get("ner", 0)
         if current_loss < best_loss:
             best_loss = current_loss
             epochs_without_improvement = 0

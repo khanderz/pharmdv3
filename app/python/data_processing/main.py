@@ -80,12 +80,20 @@ if __name__ == "__main__":
 
     # ----------------------------- AI MODELS -----------------------------
 
-    from app.python.data_processing.companies.populate_hc_domain import process_and_update_sheet
-    process_and_update_sheet(credentials_path, master_sheet_id, greenhouse_data, GREENHOUSE_SHEET_NAME)
-    process_and_update_sheet(credentials_path, master_sheet_id, lever_data, LEVER_SHEET_NAME)
+    from app.python.data_processing.companies.populate_hc_domain import (
+        process_and_update_sheet,
+    )
 
-    from app.python.data_processing.job_posts.process_job_post  import process_job_post_descriptions
+    process_and_update_sheet(
+        credentials_path, master_sheet_id, greenhouse_data, GREENHOUSE_SHEET_NAME
+    )
+    process_and_update_sheet(
+        credentials_path, master_sheet_id, lever_data, LEVER_SHEET_NAME
+    )
 
+    from app.python.data_processing.job_posts.process_job_post import (
+        process_job_post_descriptions,
+    )
 
     # ----------------------------- HUBSPOT / ZAPIER -----------------------------
 

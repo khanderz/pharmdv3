@@ -14,7 +14,10 @@ from app.python.ai_processing.utils.logger import (
 )
 from app.python.ai_processing.utils.spacy_utils import handle_spacy_data
 from app.python.ai_processing.utils.trainer import train_spacy_model
-from app.python.ai_processing.utils.validation_utils import evaluate_model, validate_entities
+from app.python.ai_processing.utils.validation_utils import (
+    evaluate_model,
+    validate_entities,
+)
 from app.python.ai_processing.utils.data_handler import project_root
 
 configure_warnings()
@@ -68,6 +71,7 @@ train_spacy_model(MODEL_SAVE_PATH, nlp, examples)
 # ------------------- VALIDATE TRAINER -------------------
 evaluate_model(nlp, converted_data)
 # validate_entities(converted_data, nlp)
+
 
 # ------------------- TEST EXAMPLES -------------------
 def convert_example_to_biluo(text):

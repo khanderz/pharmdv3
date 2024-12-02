@@ -112,6 +112,7 @@ evaluate_model(nlp, converted_data)
 
 #     evaluate_model(nlp, val_data)
 
+
 # ------------------- TEST EXAMPLES -------------------
 def convert_example_to_biluo(text):
     """Convert model predictions for the given text to BILUO format."""

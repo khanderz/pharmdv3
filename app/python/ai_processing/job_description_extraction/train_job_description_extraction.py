@@ -13,7 +13,10 @@ from app.python.ai_processing.utils.logger import (
 )
 from app.python.ai_processing.utils.spacy_utils import handle_spacy_data
 from app.python.ai_processing.utils.trainer import train_spacy_model
-from app.python.ai_processing.utils.utils import calculate_entity_indices, print_data_with_entities
+from app.python.ai_processing.utils.utils import (
+    calculate_entity_indices,
+    print_data_with_entities,
+)
 from app.python.ai_processing.utils.validation_utils import (
     evaluate_model,
     validate_entities,
@@ -140,9 +143,9 @@ evaluate_model(nlp, converted_data)
 
 #     for token, biluo_tag in zip(doc, biluo_tags):
 #         if biluo_tag != "O":
-#             entity_label = biluo_tag.split('-')[-1]  
+#             entity_label = biluo_tag.split('-')[-1]
 
-#             if biluo_tag.startswith('B-'): 
+#             if biluo_tag.startswith('B-'):
 #                 if current_entity:
 #                     if current_entity not in entity_data:
 #                         entity_data[current_entity] = []
@@ -151,10 +154,10 @@ evaluate_model(nlp, converted_data)
 #                 current_entity = entity_label
 #                 current_tokens = [token.text]
 
-#             elif biluo_tag.startswith('I-'): 
+#             elif biluo_tag.startswith('I-'):
 #                 current_tokens.append(token.text)
 
-#             elif biluo_tag.startswith('L-'):  
+#             elif biluo_tag.startswith('L-'):
 #                 current_tokens.append(token.text)
 #                 if current_entity:
 #                     if current_entity not in entity_data:
