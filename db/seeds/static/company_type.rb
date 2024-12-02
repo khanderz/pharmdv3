@@ -1,6 +1,5 @@
 # frozen_string_literal: true
 
-# Seeding common company types
 company_types = [
   { company_type_code: 'EDUCATIONAL', company_type_name: 'Educational Institution' },
   { company_type_code: 'GOVERNMENT_AGENCY', company_type_name: 'Government Agency' },
