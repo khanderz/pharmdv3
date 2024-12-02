@@ -1,28 +1,37 @@
 # frozen_string_literal: true
 
 benefits = [
-  { benefit_name: 'Medical Insurance', benefit_category: 'WELLNESS',
-    aliases: ['Health Insurance', 'Healthcare'] },
-  { benefit_name: 'Dental Insurance', benefit_category: 'WELLNESS', aliases: ['Dental Coverage'] },
-  { benefit_name: 'Vision Insurance', benefit_category: 'WELLNESS', aliases: ['Vision Coverage'] },
   { benefit_name: '401k Match', benefit_category: 'RETIREMENT',
     aliases: ['Retirement Plan', 'Pension Match'] },
-  { benefit_name: 'Parental Leave', benefit_category: 'PARENTAL',
-    aliases: ['Maternity Leave', 'Paternity Leave'] },
-  { benefit_name: 'Flexible Hours', benefit_category: 'WORK_LIFE_BALANCE',
-    aliases: ['Flexible Scheduling'] },
-  { benefit_name: 'Remote Work', benefit_category: 'WORK_LIFE_BALANCE',
-    aliases: ['Work From Home'] },
-  { benefit_name: 'Professional Development', benefit_category: 'PROFESSIONAL_DEVELOPMENT',
-    aliases: ['Training Budget', 'Conference Budget'] },
+
+  { benefit_name: 'Commission Bonus', benefit_category: 'COMPENSATION',
+    aliases: ['Sales Bonus', 'Performance Bonus'] },
+  { benefit_name: 'Stock Options', benefit_category: 'COMPENSATION',
+    aliases: %w[Equity Shares] },
+
+  { benefit_name: 'Dental Insurance', benefit_category: 'WELLNESS', aliases: ['Dental Coverage'] },
+  { benefit_name: 'Medical Insurance', benefit_category: 'WELLNESS',
+    aliases: ['Health Insurance', 'Healthcare'] },
+  { benefit_name: 'Vision Insurance', benefit_category: 'WELLNESS', aliases: ['Vision Coverage'] },
   { benefit_name: 'Wellness Programs', benefit_category: 'WELLNESS',
     aliases: ['Gym Membership', 'Mental Health Support'] },
-  { benefit_name: 'Paid Time Off', benefit_category: 'WORK_LIFE_BALANCE',
-    aliases: ['Vacation Days', 'PTO'] },
-  { benefit_name: 'Stock Options', benefit_category: 'ADDITIONAL_PERKS',
-    aliases: %w[Equity Shares] },
+
+  { benefit_name: 'Parental Leave', benefit_category: 'PARENTAL',
+    aliases: ['Maternity Leave', 'Paternity Leave'] },
+
   { benefit_name: 'Commuter Benefits', benefit_category: 'ADDITIONAL_PERKS',
     aliases: ['Transit Reimbursement'] },
+
+  { benefit_name: 'Flexible Hours', benefit_category: 'WORK_LIFE_BALANCE',
+    aliases: ['Flexible Scheduling'] },
+  { benefit_name: 'Paid Time Off', benefit_category: 'WORK_LIFE_BALANCE',
+    aliases: ['Vacation Days', 'PTO'] },
+  { benefit_name: 'Remote Work', benefit_category: 'WORK_LIFE_BALANCE',
+    aliases: ['Work From Home'] },
+
+  { benefit_name: 'Professional Development', benefit_category: 'PROFESSIONAL_DEVELOPMENT',
+    aliases: ['Training Budget', 'Conference Budget'] },
+
   { benefit_name: 'Visa Sponsorship', benefit_category: 'VISA_SPONSORSHIP',
     aliases: ['Work Visa Support'] }
 ]
