@@ -94,24 +94,22 @@ class JobPost < ApplicationRecord
 
     def fetch_jobs(company)
       jobs = get_jobs(company)
-      ats_code = company.ats_type.ats_type_code
+      ats_type = company.ats_type
+      ats_code = ats_type.ats_type_code
 
-      if ats_code == 'LEVER'
-        if jobs.present?
-          active_job_ids = save_jobs(ats_code, company, jobs)
-          deactivate_old_jobs(company, active_job_ids)
-        end
-      elsif ats_code == 'GREENHOUSE'
-        if jobs && jobs['jobs']
-          jobs_mapped = jobs['jobs'].map { |job| job }
-          active_job_ids = save_jobs(ats_code, company, jobs_mapped)
-          deactivate_old_jobs(company, active_job_ids)
-        else
-          puts "No jobs found for #{company.company_name}"
-        end
+      return puts "No jobs found for #{company.company_name}" unless jobs.present?
+
+      if jobs.is_a?(Hash) && jobs.key?('jobs')
+        jobs_mapped = jobs['jobs']
+      elsif jobs.is_a?(Array)
+        jobs_mapped = jobs
       else
-        puts "ATS type #{ats_code} not supported for company: #{company.company_name}"
+        puts "Unexpected job format for #{company.company_name}. Skipping."
+        return
       end
+
+      active_job_ids = save_jobs(ats_code, company, jobs_mapped)
+      deactivate_old_jobs(company, active_job_ids)
     end
 
     def get_jobs(company)
