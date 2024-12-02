@@ -4,7 +4,8 @@ experiences = [
   { experience_code: 'ENTRY', experience_name: 'Entry Level', min_years: 0, max_years: 1 },
   { experience_code: 'MID', experience_name: 'Mid Level', min_years: 2, max_years: 5 },
   { experience_code: 'SENIOR', experience_name: 'Senior Level', min_years: 6, max_years: 10 },
-  { experience_code: 'EXECUTIVE', experience_name: 'Executive Level', min_years: 11, max_years: nil }
+  { experience_code: 'EXECUTIVE', experience_name: 'Executive Level', min_years: 11,
+    max_years: nil }
 ]
 
 seeded_count = 0

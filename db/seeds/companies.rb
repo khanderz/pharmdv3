@@ -18,9 +18,15 @@ begin
       company = Company.find_by(company_name: row['company_name'])
       company_name = row_data['company_name']
       ats_type = AtsType.find_by(ats_type_code: row_data['company_ats_type'])
-      company_countries = Array(row_data['company_countries']).flat_map { |value| value.is_a?(String) ? value.split(',').map(&:strip) : value }
-      company_states = Array(row_data['company_states']).flat_map { |value| value.is_a?(String) ? value.split(',').map(&:strip) : value }
-      company_cities = Array(row_data['company_cities']).flat_map { |value| value.is_a?(String) ? value.split(',').map(&:strip) : value }
+      company_countries = Array(row_data['company_countries']).flat_map do |value|
+        value.is_a?(String) ? value.split(',').map(&:strip) : value
+      end
+      company_states = Array(row_data['company_states']).flat_map do |value|
+        value.is_a?(String) ? value.split(',').map(&:strip) : value
+      end
+      company_cities = Array(row_data['company_cities']).flat_map do |value|
+        value.is_a?(String) ? value.split(',').map(&:strip) : value
+      end
 
       countries = company_countries.map do |country_name|
         Country.find_by(country_code: country_name) ||
@@ -66,7 +72,8 @@ begin
 
       if company
         puts "-----UPDATING #{company_name}"
-        changes_made = Company.seed_existing_companies(company, row, ats_type, countries, states, cities)
+        changes_made = Company.seed_existing_companies(company, row, ats_type, countries, states,
+                                                       cities)
 
         if changes_made
           company.save!
@@ -88,7 +95,7 @@ begin
           ats_id: row_data['ats_id'],
           logo_url: row_data['logo_url'],
           company_description: row_data['company_description'],
-          company_tagline: row_data['company_tagline'],
+          company_tagline: row_data['company_tagline']
         )
 
         new_company.countries = countries
@@ -109,12 +116,16 @@ begin
 
         # Handle multiple healthcare domains
         healthcare_domains = row_data['healthcare_domains']&.split(',')&.map(&:strip) || []
-        domains = healthcare_domains.map { |domain_key| HealthcareDomain.find_by(key: domain_key) }.compact
+        domains = healthcare_domains.map do |domain_key|
+          HealthcareDomain.find_by(key: domain_key)
+        end.compact
         new_company.healthcare_domains = domains
 
         # Handle company specialties based on domains
         specialties = row_data['company_specialty']&.split(',')&.map(&:strip) || []
-        specialties_mapped = specialties.map { |specialty_key| CompanySpecialty.find_by(key: specialty_key) }.compact
+        specialties_mapped = specialties.map do |specialty_key|
+          CompanySpecialty.find_by(key: specialty_key)
+        end.compact
         new_company.company_specialties = specialties_mapped
 
         if new_company.save

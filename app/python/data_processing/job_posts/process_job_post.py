@@ -13,36 +13,35 @@ def process_job_post_descriptions(job_description):
         if not entity_data:
             raise ValueError("Entity data is empty or None")
 
+        description = entity_data.get("DESCRIPTION", [])
+        responsibilities = entity_data.get("RESPONSIBILITIES", [])
+        qualifications = entity_data.get("QUALIFICATIONS", [])
 
-        description = entity_data.get('DESCRIPTION', [])
-        responsibilities = entity_data.get('RESPONSIBILITIES', [])
-        qualifications = entity_data.get('QUALIFICATIONS', [])
+        credentials = entity_data.get("CREDENTIALS", [])
+        education = entity_data.get("EDUCATION", [])
+        experience = entity_data.get("EXPERIENCE", [])
 
-        credentials = entity_data.get('CREDENTIALS', [])
-        education = entity_data.get('EDUCATION', [])
-        experience = entity_data.get('EXPERIENCE', [])
+        job_role = entity_data.get("JOB_ROLE", [])
+        job_seniority = entity_data.get("JOB_SENIORITY", [])
+        job_dept = entity_data.get("JOB_DEPT", [])
+        job_team = entity_data.get("JOB_TEAM", [])
 
-        job_role = entity_data.get('JOB_ROLE', [])
-        job_seniority = entity_data.get('JOB_SENIORITY', [])
-        job_dept = entity_data.get('JOB_DEPT', [])
-        job_team = entity_data.get('JOB_TEAM', [])
+        commitment = entity_data.get("COMMITMENT", [])
+        job_setting = entity_data.get("JOB_SETTING", [])
 
-        commitment = entity_data.get('COMMITMENT', [])
-        job_setting = entity_data.get('JOB_SETTING', [])
+        job_country = entity_data.get("JOB_COUNTRY", [])
+        job_city = entity_data.get("JOB_CITY", [])
+        job_state = entity_data.get("JOB_STATE", [])
 
-        job_country = entity_data.get('JOB_COUNTRY', [])
-        job_city = entity_data.get('JOB_CITY', [])
-        job_state = entity_data.get('JOB_STATE', [])
-
-        compensation = entity_data.get('COMPENSATION', [])
-        retirement = entity_data.get('RETIREMENT', [])
-        office_life = entity_data.get('OFFICE_LIFE', [])
-        professional_development = entity_data.get('PROFESSIONAL_DEVELOPMENT', [])
-        wellness = entity_data.get('WELLNESS', [])
-        parental = entity_data.get('PARENTAL', [])
-        work_life_balance = entity_data.get('WORK_LIFE_BALANCE', [])
-        visa_sponsorship = entity_data.get('VISA_SPONSORSHIP', [])
-        additional_perks = entity_data.get('ADDITIONAL_PERKS', [])
+        compensation = entity_data.get("COMPENSATION", [])
+        retirement = entity_data.get("RETIREMENT", [])
+        office_life = entity_data.get("OFFICE_LIFE", [])
+        professional_development = entity_data.get("PROFESSIONAL_DEVELOPMENT", [])
+        wellness = entity_data.get("WELLNESS", [])
+        parental = entity_data.get("PARENTAL", [])
+        work_life_balance = entity_data.get("WORK_LIFE_BALANCE", [])
+        visa_sponsorship = entity_data.get("VISA_SPONSORSHIP", [])
+        additional_perks = entity_data.get("ADDITIONAL_PERKS", [])
 
         print(f"Description: {description}")
         print(f"Responsibilities: {responsibilities}")
@@ -69,9 +68,8 @@ def process_job_post_descriptions(job_description):
         print(f"Visa Sponsorship: {visa_sponsorship}")
         print(f"Additional Perks: {additional_perks}")
     except Exception as e:
-        print(
-            f"{RED}An error occurred during Google Sheet update for {e}{RESET}"
-        )
+        print(f"{RED}An error occurred during Google Sheet update for {e}{RESET}")
+
 
 job_description = """Your Impact: As a Senior Sales Director focused on EIQ's Workers Compensation & Disability product offerings, you are responsible for managing the entire sales life cycle from start to finish, including prospecting, identifying needs, presenting, defining solutions, establishing plans, structuring deals, and managing and growing our relationships with both prospects and customers within US and Canadian territories. You must be sales-driven, fast-moving, and have a strong customer focus. You are passionate about creating value for your customers, which ultimately leads to profitable business for both us and them. You know how to identify the right decision makers and influencers, how to listen, and how to ask the right questions. You have excellent communication skills--you know what to say and more importantly, how to say it.
 
@@ -109,7 +107,6 @@ We also have a flexible vacation policy and are closed for winter break at the e
 Office Life: Catered lunches, happy hours, and pet-friendly office space. $500 for your in home office setup and $200/year for upgrades every year after your initial setup
 Growth & Training: $1,000/year for each employee for professional development, as well as upskilling opportunities internally
 Sponsorship: We are open to sponsoring candidates currently in the U.S. who need to transfer their active H1-B visa"""
-
 
 
 # from app.python.ai_processing.salary_extraction.train_salary_extraction import (

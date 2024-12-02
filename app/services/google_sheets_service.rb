@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # app/services/google_sheets_service.rb
 
 require 'google/apis/sheets_v4'

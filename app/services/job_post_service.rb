@@ -81,7 +81,7 @@ class JobPostService
       end
 
       # You may want to update the `job_post` with the extracted job description data
-      job_post.update(job_description_extracted: true) 
+      job_post.update(job_description_extracted: true)
     else
       puts "Error in job description extraction script: #{stderr} or status: #{status}"
     end

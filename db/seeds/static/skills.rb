@@ -1,10 +1,14 @@
 # frozen_string_literal: true
 
 skills = [
-  { skill_code: 'ANALYSIS', skill_name: 'Analytical Thinking', aliases: ['data analysis', 'reviewing data', 'critical thinking'] },
-  { skill_code: 'COMMUNICATION', skill_name: 'Communication', aliases: ['verbal communication', 'written communication', 'articulate communication'] },
-  { skill_code: 'LEADERSHIP', skill_name: 'Leadership', aliases: ['team leadership', 'managing teams', 'cross-functional collaboration'] },
-  { skill_code: 'PROGRAMMING', skill_name: 'Programming', aliases: ['software development', 'coding'] }
+  { skill_code: 'ANALYSIS', skill_name: 'Analytical Thinking',
+    aliases: ['data analysis', 'reviewing data', 'critical thinking'] },
+  { skill_code: 'COMMUNICATION', skill_name: 'Communication',
+    aliases: ['verbal communication', 'written communication', 'articulate communication'] },
+  { skill_code: 'LEADERSHIP', skill_name: 'Leadership',
+    aliases: ['team leadership', 'managing teams', 'cross-functional collaboration'] },
+  { skill_code: 'PROGRAMMING', skill_name: 'Programming',
+    aliases: ['software development', 'coding'] }
 ]
 
 specific_skills = [
@@ -12,7 +16,8 @@ specific_skills = [
   { skill_code: 'JAVA', skill_name: 'Java', aliases: ['Java programming'] },
   { skill_code: 'JAVASCRIPT', skill_name: 'JavaScript', aliases: ['JS', 'frontend development'] },
   { skill_code: 'RUBY', skill_name: 'Ruby', aliases: ['Ruby programming'] },
-  { skill_code: 'SQL', skill_name: 'SQL', aliases: ['Structured Query Language', 'database management'] }
+  { skill_code: 'SQL', skill_name: 'SQL',
+    aliases: ['Structured Query Language', 'database management'] }
 ]
 
 all_skills = (skills + specific_skills).sort_by { |skill| skill[:skill_code] }
@@ -35,9 +40,9 @@ all_skills.each do |skill|
     end
 
     if skill[:aliases] && skill_record.aliases != skill[:aliases]
-        skill_record.aliases = skill[:aliases]
-        updates_made = true
-        puts "Updated aliases for skill #{skill[:skill_code]}."
+      skill_record.aliases = skill[:aliases]
+      updates_made = true
+      puts "Updated aliases for skill #{skill[:skill_code]}."
     end
 
     if updates_made

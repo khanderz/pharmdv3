@@ -34,7 +34,8 @@ class Company < ApplicationRecord
   def self.seed_existing_companies(company, row, ats_type, countries, states, cities)
     changes_made = false
 
-    %w[operating_status linkedin_url year_founded acquired_by company_description ats_id logo_url company_url].each do |attribute|
+    %w[operating_status linkedin_url year_founded acquired_by company_description ats_id logo_url
+       company_url].each do |attribute|
       next unless row[attribute].present?
 
       casted_value = case attribute
@@ -59,13 +60,17 @@ class Company < ApplicationRecord
     changes_made ||= update_collection(company, :cities, cities)
 
     # Update optional attributes
-    changes_made ||= update_optional_association(company, :company_size, row['company_size'], CompanySize, :size_range)
-    changes_made ||= update_optional_association(company, :funding_type, row['last_funding_type'], FundingType, :funding_type_name)
+    changes_made ||= update_optional_association(company, :company_size, row['company_size'],
+                                                 CompanySize, :size_range)
+    changes_made ||= update_optional_association(company, :funding_type, row['last_funding_type'],
+                                                 FundingType, :funding_type_name)
 
     # Update healthcare domains
     if row['healthcare_domains'].present?
       healthcare_domains = row['healthcare_domains'].split(',').map(&:strip)
-      domains = healthcare_domains.map { |domain_key| HealthcareDomain.find_by(key: domain_key) }.compact
+      domains = healthcare_domains.map do |domain_key|
+        HealthcareDomain.find_by(key: domain_key)
+      end.compact
       changes_made ||= update_collection(company, :healthcare_domains, domains)
     else
       puts "No healthcare domains found for company: #{row['company_name']}"
@@ -73,7 +78,9 @@ class Company < ApplicationRecord
 
     # Update specialties
     if row['company_specialty'].present?
-      specialties = row['company_specialty'].split(',').map { |specialty_key| CompanySpecialty.find_by(key: specialty_key.strip) }.compact
+      specialties = row['company_specialty'].split(',').map do |specialty_key|
+        CompanySpecialty.find_by(key: specialty_key.strip)
+      end.compact
       changes_made ||= update_collection(company, :company_specialties, specialties)
     else
       puts "No specialties found for company: #{row['company_name']}"
@@ -100,7 +107,9 @@ class Company < ApplicationRecord
   end
 
   private_class_method def self.update_collection(company, association, new_values)
-    return false if new_values.blank? || company.send(association).pluck(:id).sort == new_values.pluck(:id).sort
+    if new_values.blank? || company.send(association).pluck(:id).sort == new_values.pluck(:id).sort
+      return false
+    end
 
     company.send("#{association}=", new_values)
     true

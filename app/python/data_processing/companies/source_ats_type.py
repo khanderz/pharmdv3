@@ -144,7 +144,9 @@ def update_ats_type_in_master_data(
     Updates the Google Sheet immediately for each matched ats_type.
     """
 
-    print(f"{BLUE} setting ats type for sheet name : {master_active_sheet_name} {RESET}")
+    print(
+        f"{BLUE} setting ats type for sheet name : {master_active_sheet_name} {RESET}"
+    )
 
     for index, row in master_active_data.iterrows():
         company_name = row["company_name"]
