@@ -33,7 +33,6 @@ class Company < ApplicationRecord
 
   def self.seed_existing_companies(company, row, ats_type, countries, states, cities)
     changes_made = false
-
     %w[operating_status linkedin_url year_founded acquired_by company_description ats_id logo_url
        company_url].each do |attribute|
       next unless row[attribute].present?
@@ -46,25 +45,21 @@ class Company < ApplicationRecord
                      else
                        row[attribute]
                      end
-
       if company[attribute] != casted_value
         company[attribute] = casted_value
         changes_made = true
       end
     end
-
     # Update associations
     changes_made ||= update_association(company, :ats_type, ats_type)
     changes_made ||= update_collection(company, :countries, countries)
     changes_made ||= update_collection(company, :states, states)
     changes_made ||= update_collection(company, :cities, cities)
-
     # Update optional attributes
     changes_made ||= update_optional_association(company, :company_size, row['company_size'],
                                                  CompanySize, :size_range)
     changes_made ||= update_optional_association(company, :funding_type, row['last_funding_type'],
                                                  FundingType, :funding_type_name)
-
     # Update healthcare domains
     if row['healthcare_domains'].present?
       healthcare_domains = row['healthcare_domains'].split(',').map(&:strip)
@@ -75,7 +70,6 @@ class Company < ApplicationRecord
     else
       puts "No healthcare domains found for company: #{row['company_name']}"
     end
-
     # Update specialties
     if row['company_specialty'].present?
       specialties = row['company_specialty'].split(',').map do |specialty_key|
@@ -85,7 +79,6 @@ class Company < ApplicationRecord
     else
       puts "No specialties found for company: #{row['company_name']}"
     end
-
     changes_made
   end
 

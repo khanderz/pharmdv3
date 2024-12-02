@@ -3,7 +3,13 @@
 one:
   ats_type_code: MyString
   ats_type_name: MyString
+  domain_matched_url: MyString
+  redirect_url: MyString
+  post_match_url: MyString
 
 two:
   ats_type_code: MyString
   ats_type_name: MyString
+  domain_matched_url: MyString
+  redirect_url: MyString
+  post_match_url: MyString

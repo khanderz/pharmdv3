@@ -3,9 +3,7 @@
 one:
   job_post: one
   skill: one
-  skill_category: MyString
 
 two:
   job_post: two
   skill: two
-  skill_category: MyString

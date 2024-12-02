@@ -2,8 +2,8 @@
 
 one:
   job_post: one
-  country: one
+  education: one
 
 two:
   job_post: two
-  country: two
+  education: two

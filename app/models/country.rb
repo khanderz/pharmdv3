@@ -6,6 +6,7 @@ class Country < ApplicationRecord
   has_many :job_post_countries, dependent: :destroy
   has_many :job_posts, through: :job_post_countries
   has_many :adjudications, as: :adjudicatable, dependent: :destroy
+
   validates :country_code, presence: true,
                            uniqueness: true
 
@@ -29,7 +30,6 @@ class Country < ApplicationRecord
       puts "--------Country with code '#{country_code}' or name '#{country_name}' not found. Logged to adjudications."
       return nil
     end
-
     country
   end
 end

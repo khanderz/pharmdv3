@@ -1,0 +1,13 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  experience_code: MyString
+  experience_name: MyString
+  min_years: 1
+  max_years: 1
+
+two:
+  experience_code: MyString
+  experience_name: MyString
+  min_years: 1
+  max_years: 1

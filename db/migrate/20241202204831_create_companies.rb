@@ -10,14 +10,18 @@ class CreateCompanies < ActiveRecord::Migration[7.1]
       t.references :funding_type, null: true, foreign_key: true
       t.string :linkedin_url
       t.string :company_url
-      t.boolean :is_public
+      t.references :company_type, null: true, foreign_key: true
       t.integer :year_founded
       t.string :acquired_by
       t.text :company_description
       t.string :ats_id
+      t.string :logo_url
+      t.string :company_tagline
+      t.boolean :is_completely_remote
       t.text :error_details
       t.bigint :reference_id
       t.boolean :resolved
+
       t.timestamps
     end
     add_index :companies, :company_name, unique: true

@@ -7,14 +7,15 @@ one:
   credential: MyString
   resume:
   photo: MyString
-  last_login: 2024-10-28 18:33:38
+  last_login: 2024-12-02 14:52:39
   password_digest: MyString
   salt: MyString
   reset_password_token: MyString
-  reset_password_sent_at: 2024-10-28 18:33:38
+  reset_password_sent_at: 2024-12-02 14:52:39
   provider: MyString
   uid: MyString
   access_token: MyString
+  membership_type: one
 
 two:
   first_name: MyString
@@ -23,11 +24,12 @@ two:
   credential: MyString
   resume:
   photo: MyString
-  last_login: 2024-10-28 18:33:38
+  last_login: 2024-12-02 14:52:39
   password_digest: MyString
   salt: MyString
   reset_password_token: MyString
-  reset_password_sent_at: 2024-10-28 18:33:38
+  reset_password_sent_at: 2024-12-02 14:52:39
   provider: MyString
   uid: MyString
   access_token: MyString
+  membership_type: two

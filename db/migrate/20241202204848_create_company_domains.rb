@@ -8,5 +8,7 @@ class CreateCompanyDomains < ActiveRecord::Migration[7.1]
 
       t.timestamps
     end
+    add_index :company_domains, %i[company_id healthcare_domain_id], unique: true,
+                                                                     name: 'index_company_domains_on_company_and_healthcare_domain'
   end
 end

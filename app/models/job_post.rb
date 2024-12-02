@@ -23,7 +23,6 @@ class JobPost < ApplicationRecord
   validates :job_url, uniqueness: true
   validates :job_salary_min, :job_salary_max, numericality: { greater_than_or_equal_to: 0 },
                                               allow_nil: true
-
   # Shared methods -----------------------------------------------------------
   def self.deactivate_old_jobs(company, active_job_ids)
     deactivated_count = JobPost.where(company: company).where.not(id: active_job_ids).update_all(job_active: false)
@@ -33,7 +32,6 @@ class JobPost < ApplicationRecord
   def self.process_existing_or_new_job(company, job_url, job_post_data)
     locations = job_post_data[:job_locations]
     existing_job = JobPost.find_by(job_url: job_url)
-
     if existing_job
       if existing_job.attributes.except('id', 'created_at', 'updated_at') == job_post_data
         puts "Job post already exists and is unchanged for URL: #{job_url}"
@@ -74,7 +72,6 @@ class JobPost < ApplicationRecord
 
   def self.update_job_locations(job_post, locations)
     # print("update_job_locations/Job Post: #{job_post}, Locations: #{locations}\n")
-
     job_post.countries = Country.where(country_name: locations[:countries]) if locations[:countries]
     job_post.states = State.where(state_name: locations[:states]) if locations[:states]
     job_post.cities = City.where(city_name: locations[:cities]) if locations[:cities]
@@ -88,75 +85,89 @@ class JobPost < ApplicationRecord
       job['absolute_url']
     end
   end
-
   class << self
     private
 
     def fetch_jobs(company)
       jobs = get_jobs(company)
-      ats_type = company.ats_type
-      ats_code = ats_type.ats_type_code
-
-      return puts "No jobs found for #{company.company_name}" unless jobs.present?
-
-      if jobs.is_a?(Hash) && jobs.key?('jobs')
-        jobs_mapped = jobs['jobs']
-      elsif jobs.is_a?(Array)
-        jobs_mapped = jobs
+      ats_code = company.ats_type.ats_type_code
+      if ats_code == 'LEVER'
+        if jobs.present?
+          active_job_ids = save_jobs(ats_code, company, jobs)
+          deactivate_old_jobs(company, active_job_ids)
+        end
+      elsif ats_code == 'GREENHOUSE'
+        if jobs && jobs['jobs']
+          jobs_mapped = jobs['jobs'].map { |job| job }
+          active_job_ids = save_jobs(ats_code, company, jobs_mapped)
+          deactivate_old_jobs(company, active_job_ids)
+        else
+          puts "No jobs found for #{company.company_name}"
+        end
       else
-        puts "Unexpected job format for #{company.company_name}. Skipping."
-        return
+        puts "ATS type #{ats_code} not supported for company: #{company.company_name}"
       end
-
-      active_job_ids = save_jobs(ats_code, company, jobs_mapped)
-      deactivate_old_jobs(company, active_job_ids)
     end
 
     def get_jobs(company)
-      ats_type = company.ats_type
-      return puts "ATS type not supported for company: #{company.company_name}" unless ats_type
+      if company.ats_type.ats_type_code == 'LEVER'
+        identifier = if company.ats_id.present?
+                       company.ats_id
+                     else
+                       company.company_name.gsub(' ',
+                                                 '').downcase
+                     end
+        url = "https://api.lever.co/v0/postings/#{identifier}"
+        uri = URI(url)
+        begin
+          response = Net::HTTP.get(uri)
+          jobs = JSON.parse(response)
+          return jobs if jobs.is_a?(Array)
 
-      if ats_type.post_match_url.nil?
-        puts "No post_match_url defined for ATS type: #{ats_type.ats_type_code}"
-        return
-      end
-
-      url = ats_type.post_match_url.gsub('{ats_id}', company.ats_id)
-      puts "Fetching jobs for company: #{company.company_name} using URL: #{url}"
-
-      uri = URI(url)
-
-      begin
+          company.error_details = 'failed to fetch Lever jobs'
+          company.resolved = false
+          company.save!
+          Adjudication.create!(
+            adjudicatable_type: 'Company',
+            adjudicatable_id: company.id,
+            error_details: "failed to fetch Lever jobs for #{company.company_name}",
+            resolved: false
+          )
+          puts "Error message: #{jobs['message']},  cannot get Lever jobs for company #{company.company_name}. Logged to adjudications."
+          nil
+        rescue StandardError => e
+          error_message = "Exception occurred while fetching Lever jobs for #{company.company_name}: #{e.message}"
+          puts error_message
+          Adjudication.create!(
+            adjudicatable_type: 'Company',
+            adjudicatable_id: company.id,
+            error_details: error_message,
+            resolved: false
+          )
+          nil
+        end
+      elsif company.ats_type.ats_type_code == 'GREENHOUSE'
+        ats_id = company.ats_id
+        puts "Fetching Greenhouse jobs for company: #{company.company_name}"
+        url = "https://boards-api.greenhouse.io/v1/boards/#{ats_id}/jobs?content=true"
+        uri = URI(url)
         response = Net::HTTP.get(uri)
         jobs = JSON.parse(response)
+        return jobs if jobs.is_a?(Hash)
 
-        return jobs if jobs.is_a?(Array) || jobs.is_a?(Hash)
-
-        company.error_details = "Failed to fetch jobs from #{ats_type.ats_type_name}"
+        company.error_details = 'failed to fetch Greenhouse jobs'
         company.resolved = false
         company.save!
-
         Adjudication.create!(
           adjudicatable_type: 'Company',
           adjudicatable_id: company.id,
-          error_details: "Failed to fetch jobs for #{company.company_name} from #{ats_type.ats_type_name}",
+          error_details: "failed to fetch Greenhouse jobs for #{company.company_name}",
           resolved: false
         )
-        puts "Error: Unexpected response for company #{company.company_name}. Logged to adjudications."
-
+        puts "Error: #{jobs['message']}, cannot get Greenhouse jobs. Logged to adjudications."
         nil
-      rescue StandardError => e
-        error_message = "Exception occurred while fetching jobs for #{company.company_name}: #{e.message}"
-        puts error_message
-
-        Adjudication.create!(
-          adjudicatable_type: 'Company',
-          adjudicatable_id: company.id,
-          error_details: error_message,
-          resolved: false
-        )
-
-        nil
+      else
+        puts "ATS type #{ats_code} not supported for company: #{company.company_name}"
       end
     end
 
@@ -177,20 +188,16 @@ class JobPost < ApplicationRecord
       active_job_ids = []
       job_count = 0
       build_count = 0
-
       jobs.each do |job|
         job_role_params = get_job_role_params(ats_code, job)
         role_name, department_names, team_names = job_role_params
         job_role = JobRole.find_or_create_with_department_and_team(role_name, department_names,
                                                                    team_names)
         job_url = get_job_url(ats_code, job)
-
         mapped_data = map_ats_data_return(ats_code, job, company)
         job_count += 1
-
         job_post_data = build_job_post_data(company, mapped_data, job_role)
         build_count += 1
-
         active_job_ids << process_existing_or_new_job(company, job_url, job_post_data)
       end
       puts "Mapped #{job_count} jobs from #{ats_code}"
@@ -206,15 +213,12 @@ class JobPost < ApplicationRecord
                                   'duties/responsibilities:'].include?(list['text'].to_s.downcase)
                                end&.dig('content')&.gsub('</li><li>', "\n")&.gsub(%r{</?[^>]*>}, '')
                              end
-
       job_qualifications = if job['lists']
                              job['lists'].find do |list|
                                list['text'].to_s.downcase.include?('qualifications')
                              end&.dig('content')&.gsub('</li><li>', "\n")&.gsub(%r{</?[^>]*>}, '')
                            end
-
       location_info = parse_location(job['categories']&.dig('location') || job['categories']&.dig('allLocations') || '')
-
       if ats == 'LEVER'
         job_data = {
           job_title: job['text'],
@@ -235,7 +239,6 @@ class JobPost < ApplicationRecord
           job_salary_max: job['salaryRange'] ? job['salaryRange']['max'] : nil,
           job_salary_min: job['salaryRange'] ? job['salaryRange']['min'] : nil
         }
-
         # Conditionally add salary currency and interval IDs if salary min/max values exist
         if job_data[:job_salary_min].present? && job_data[:job_salary_max].present?
           job_data[:job_salary_currency_id] =
@@ -244,12 +247,9 @@ class JobPost < ApplicationRecord
           job_data[:job_salary_interval_id] =
             find_interval_id_by_name(job['salaryRange']&.dig('interval'))
         end
-
         job_data
-
       elsif ats == 'GREENHOUSE'
         location_info = parse_location(job['location']['name'])
-
         job_setting_data = find_job_setting_by_location(location_info[:location],
                                                         location_info[:is_remote])
         {
@@ -288,18 +288,15 @@ class JobPost < ApplicationRecord
     # def handle_country_record(country_code, country_name, company_id, job_url)
     #   Country.find_or_adjudicate_country(country_code, country_name, company_id, job_url)
     # end
-
     def parse_location(location_name)
       states = State.pluck(:state_code, :state_name).to_h
       cities = City.pluck(:city_name, :aliases).flatten
       countries = Country.pluck(:country_code, :country_name, :aliases).map do |code, name, aliases|
         { code: code, name: name, aliases: aliases || [] }
       end
-
       location = location_name
       is_remote = location_name.downcase.include?('remote')
       location = location.gsub(/\sor.*/i, '') if location_name.downcase.include?('or')
-
       state_match = states.keys.find { |code| location.include?(code) } ||
                     states.values.find { |name| location.include?(name) }
       city_match = cities.find { |city| location.include?(city) }
@@ -307,7 +304,6 @@ class JobPost < ApplicationRecord
         location.include?(country[:code]) || location.include?(country[:name]) ||
           country[:aliases].any? { |alias_name| location.include?(alias_name) }
       end
-
       {
         countries: country_match ? [country_match[:name]] : [],
         states: state_match ? [state_match] : [],

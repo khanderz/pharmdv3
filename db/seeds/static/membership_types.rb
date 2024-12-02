@@ -5,7 +5,7 @@ membership_types = [
     name: 'Basic',
     description: 'Basic membership with limited features',
     price: 0.0,
-    duration: 30 
+    duration: 30
   },
   {
     name: 'Pro',

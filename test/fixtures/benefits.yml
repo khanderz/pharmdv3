@@ -1,0 +1,11 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  benefit_name: MyString
+  benefit_category: MyString
+  aliases: MyString
+
+two:
+  benefit_name: MyString
+  benefit_category: MyString
+  aliases: MyString

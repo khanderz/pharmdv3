@@ -17,6 +17,7 @@ class CreateUsers < ActiveRecord::Migration[7.1]
       t.string :provider
       t.string :uid
       t.string :access_token
+      t.references :membership_type, null: false, foreign_key: true
 
       t.timestamps
     end

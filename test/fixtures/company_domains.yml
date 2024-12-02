@@ -3,7 +3,9 @@
 one:
   company: one
   healthcare_domain: one
+  --indexes: MyString
 
 two:
   company: two
   healthcare_domain: two
+  --indexes: MyString

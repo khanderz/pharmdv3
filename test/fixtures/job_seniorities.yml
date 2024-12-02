@@ -1,0 +1,11 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  job_seniority_code: MyString
+  job_seniority_label: MyString
+  aliases: MyString
+
+two:
+  job_seniority_code: MyString
+  job_seniority_label: MyString
+  aliases: MyString

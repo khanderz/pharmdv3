@@ -3,21 +3,16 @@
 class User < ApplicationRecord
   has_many :saved_job_posts, dependent: :destroy
   has_many :saved_companies, dependent: :destroy
-
   has_many :user_skills, dependent: :destroy
   has_many :skills, through: :user_skills
-
   has_many :user_resources, dependent: :destroy
   has_many :resources, through: :user_resources
-
   has_many :user_healthcare_domains, dependent: :destroy
   has_many :healthcare_domains, through: :user_healthcare_domains
-
   has_many :user_company_specialties, dependent: :destroy
   has_many :company_specialties, through: :user_company_specialties
-
+  belongs_to :membership_type, optional: true
   has_secure_password
-
   def self.authenticate(email, password)
     user = find_by(email: email)
     user&.authenticate(password) ? user : nil
