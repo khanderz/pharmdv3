@@ -8,18 +8,27 @@ from app.python.data_processing.companies.google_sheets_updater import (
 )
 from collections import Counter
 
-def process_predictions(tokens, biluo_tags, company_name, max_domains=5, min_frequency=2):
+
+def process_predictions(
+    tokens, biluo_tags, company_name, max_domains=5, min_frequency=2
+):
     domain_counts = Counter(
         token.ent_type_ for token, tag in zip(tokens, biluo_tags) if tag != "O"
     )
 
     print(f"Domain Counts: {domain_counts}")
 
-    filtered_domains = [domain for domain, count in domain_counts.items() if count >= min_frequency]
+    filtered_domains = [
+        domain for domain, count in domain_counts.items() if count >= min_frequency
+    ]
 
     if not filtered_domains:
-        print(f"{RED}No domains met the frequency criteria for {company_name}. Falling back to top domains.{RESET}")
-        filtered_domains = [domain for domain, _ in domain_counts.most_common(max_domains)]
+        print(
+            f"{RED}No domains met the frequency criteria for {company_name}. Falling back to top domains.{RESET}"
+        )
+        filtered_domains = [
+            domain for domain, _ in domain_counts.most_common(max_domains)
+        ]
 
     top_domains = filtered_domains[:max_domains]
 
@@ -29,6 +38,7 @@ def process_predictions(tokens, biluo_tags, company_name, max_domains=5, min_fre
         print(f"{BLUE}Top domains for {company_name}: {', '.join(top_domains)}{RESET}")
 
     return top_domains
+
 
 def process_and_update_sheet(credentials_path, sheet_id, data, sheet_name):
     if (
@@ -57,7 +67,7 @@ def process_and_update_sheet(credentials_path, sheet_id, data, sheet_name):
         except Exception as e:
             print(
                 f"{RED}An error occurred during Google Sheet update for {company_name}: {e}{RESET}"
-            )    
+            )
         #     domain_counts = Counter(
         #         token.ent_type_ for token, tag in zip(tokens, biluo_tags) if tag != "O"
         #     )

@@ -22,10 +22,11 @@ def safely_parse_list(value):
 
     return [value] if value else []
 
+
 def seed_company_data(data, credentials_path, master_sheet_id, range_name):
     """
     Updates missing company_type and logo_url fields in the dataset and synchronizes with Google Sheets.
-    
+
     Args:
         data (pd.DataFrame): The dataset containing company information.
         credentials_path (str): Path to Google Sheets API credentials.
@@ -72,11 +73,16 @@ def seed_company_data(data, credentials_path, master_sheet_id, range_name):
                     data=data.loc[index].fillna("").astype(str).tolist(),
                 )
             except Exception as e:
-                print(f"{RED}Error updating Google Sheet for {company_name}: {e}{RESET}")
+                print(
+                    f"{RED}Error updating Google Sheet for {company_name}: {e}{RESET}"
+                )
         else:
-            print(f"{BLUE}No updates needed for {company_name}. Skipping Google Sheet update.{RESET}")
+            print(
+                f"{BLUE}No updates needed for {company_name}. Skipping Google Sheet update.{RESET}"
+            )
 
     print(f"{GREEN}Company data seeding completed successfully!{RESET}")
+
 
 def enrich_with_linkedin_data(
     master_active_data, credentials_path, master_sheet_id, active_range_name

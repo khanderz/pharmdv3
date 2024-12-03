@@ -15,7 +15,7 @@ def load_spacy_model(
     MAX_SEQ_LENGTH=None,
     model_name="roberta-base",
     scispacy_model_name=None,
-):    
+):
     """
     Load an existing spaCy or SciSpacy model, or initialize a new transformer-based model.
 
@@ -45,7 +45,9 @@ def load_spacy_model(
             512 if "roberta" in model_name or "bert" in model_name else 4096
         )
 
-        print(f"{BLUE}creating model {model_name} with length {MAX_SEQ_LENGTH} scispacy_model_name: {scispacy_model_name}  {RESET}")
+        print(
+            f"{BLUE}creating model {model_name} with length {MAX_SEQ_LENGTH} scispacy_model_name: {scispacy_model_name}  {RESET}"
+        )
         nlp = spacy.blank("en")
         nlp.add_pipe(
             "transformer",

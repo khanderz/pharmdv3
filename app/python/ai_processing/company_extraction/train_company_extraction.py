@@ -47,10 +47,10 @@ converted_data = load_data(CONVERTED_FILE, FOLDER)
 scispacy_model_name = "en_core_sci_sm"
 
 nlp = load_spacy_model(
-    MODEL_SAVE_PATH, 
-    MAX_SEQ_LENGTH,     
-    model_name="scispacy", 
-    scispacy_model_name=scispacy_model_name
+    MODEL_SAVE_PATH,
+    MAX_SEQ_LENGTH,
+    model_name="scispacy",
+    scispacy_model_name=scispacy_model_name,
 )
 
 if "ner" not in nlp.pipe_names:
@@ -105,6 +105,7 @@ train_spacy_model(MODEL_SAVE_PATH, nlp, examples)
 # ------------------- VALIDATE TRAINER -------------------
 evaluate_model(nlp, converted_data)
 # validate_entities(converted_data, nlp)
+
 
 # ------------------- TEST EXAMPLES -------------------
 def convert_example_to_biluo(text):
