@@ -28,6 +28,7 @@ decorator==5.1.1
 defusedxml==0.7.1
 dill==0.3.8
 docopt==0.6.2
+en_core_sci_lg @ file:///Users/khanderz/Downloads/en_core_sci_lg-0.5.4.tar.gz#sha256=a2bfde10824958d51cd016b4142563373d553e24767d79b1abf8699596e31a5b
 en_core_sci_sm @ https://s3-us-west-2.amazonaws.com/ai2-s2-scispacy/releases/v0.5.4/en_core_sci_sm-0.5.4.tar.gz#sha256=a54a114ee11dab7cf6db8cf69ef485145011537f45f3c16c71338c48fd6f070b
 exceptiongroup==1.2.2
 executing==2.1.0
@@ -85,6 +86,7 @@ nbclient==0.10.0
 nbconvert==7.16.4
 nbformat==5.10.4
 networkx==3.2.1
+nmslib==2.1.1
 numpy==1.26.4
 oauthlib==3.2.2
 opt_einsum==3.4.0
@@ -107,11 +109,13 @@ prompt_toolkit==3.0.48
 propcache==0.2.0
 proto-plus==1.25.0
 protobuf==5.28.3
+psutil==6.1.0
 ptyprocess==0.7.0
 pure_eval==0.2.3
 pyarrow==18.0.0
 pyasn1==0.6.1
 pyasn1_modules==0.4.1
+pybind11==2.6.1
 pydantic==1.10.19
 pydantic_core==2.23.4
 Pygments==2.18.0
@@ -146,6 +150,7 @@ spacy==3.7.5
 spacy-alignments==0.9.1
 spacy-legacy==3.0.12
 spacy-loggers==1.0.5
+spacy-lookups-data==1.0.5
 spacy-transformers==1.2.1
 srsly==2.4.8
 stack-data==0.6.3
