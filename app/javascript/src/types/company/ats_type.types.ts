@@ -1,28 +1,32 @@
-export enum AtsTypeEnum {
-  ASHBYHQ = 'AshbyHQ',
-  BAMBOOHR = 'BambooHR',
-  BREEZYHR = 'BreezyHR',
-  BUILTIN = 'BuiltIn',
-  DOVER = 'Dover',
-  EIGHTFOLD = 'Eightfold',
-  FOUNTAIN = 'Fountain',
-  GREENHOUSE = 'Greenhouse',
-  ICIMS = 'iCIMS',
-  JAZZHR = 'JazzHR',
-  LEVER = 'Lever',
-  MYWORKDAY = 'MyWorkday',
-  PINPOINTHQ = 'PinpointHQ',
-  PROPRIETARY = 'Proprietary',
-  RIPPLING = 'Rippling',
-  SMARTRECRUITERS = 'SmartRecruiters',
-  TALEO = 'Taleo',
-  WELLFOUND = 'Wellfound',
-  WORKABLE = 'Workable',
-  YCOMBINATOR = 'YCombinator',
-}
+import { useState, useEffect } from 'react';
+import { useAtsTypes } from '@javascript/hooks';
+
+const [atsTypes, setAtsTypes] = useState<
+  {
+    id: number;
+    ats_type_code: string;
+    ats_type_name: string;
+    domain_matched_url?: string;
+    redirect_url?: string;
+    post_match_url?: string;
+  }[]
+>([]);
+
+const { atsTypes: allAtsTypes } = useAtsTypes();
+
+useEffect(() => {
+  if (allAtsTypes) {
+    setAtsTypes(allAtsTypes);
+  }
+}, [allAtsTypes]);
+
+export type AtsTypes = (typeof atsTypes)[number];
 
 export interface AtsType {
-  ats_type_id: number;
-  ats_type_code: keyof typeof AtsTypeEnum;
-  ats_type_name: (typeof AtsTypeEnum)[keyof typeof AtsTypeEnum];
+  id: number;
+  ats_type_code: AtsTypes['ats_type_code'];
+  ats_type_name: AtsTypes['ats_type_name'];
+  domain_matched_url?: AtsTypes['domain_matched_url'];
+  redirect_url?: AtsTypes['redirect_url'];
+  post_match_url?: AtsTypes['post_match_url'];
 }

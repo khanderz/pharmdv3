@@ -6,6 +6,7 @@ import { DirectoryTable } from './DirectoryTable';
 import { LicenseInfo } from '@mui/x-license-pro';
 import { Company } from './Directory.types';
 import { useApiKey } from '../../../hooks/get_api_var';
+import { useCompanies } from '../../../hooks/get_companies';
 
 export const Directory = () => {
   const { key } = useApiKey();
@@ -16,80 +17,31 @@ export const Directory = () => {
     }
   }, [key]);
 
-  const [state, setState] = useState<JSX.Element | null>(null);
-
-  const [items, setItems] = useState<Company[]>([]);
-
-  // const fetchItems = async () => {
-  //   const response = await fetch('/companies')
-  //   const newItems = await response.json()
-
-  //   if (newItems.loading) {
-  //     setState(loadingState)
-  //   }
-
-  //   if (newItems.length > 0) {
-  //     setItems(newItems)
-  //   }
-
-  //   if (newItems.catch) {
-  //     newItems.catch((error: Error) => {
-  //       const errorState = <Typography> {error.message} </Typography>
-  //       setState(errorState)
-  //     })
-  //   }
-  // }
-
-  // useMemo(() => {
-  //   fetchItems()
-  // }, [])
-
+  const { companies, loading, error } = useCompanies();
+  console.log({ companies });
   // useEffect(() => {
-  //   setState(<DirectoryTable data={items} rows={items.length} />)
-  // }, [items])
-  // useEffect(() => {
-  //   const interval = setInterval(() => {
-  //     fetchItems()
-  //   }, 1000)
+  //   setCompanies(companiesData);
+  //   setLoading(loadingReturn);
+  //   setError(errorReturn);
+  // }, [companiesData, loadingReturn, errorReturn]);
 
-  //   return () => clearInterval(interval)
-  // }, [items])
+  if (loading) {
+    return <Typography>Loading...</Typography>;
+  }
 
-  const [companies, setCompanies] = useState([]);
-
-  // useEffect(() => {
-  //   const fetchCompanies = async () => {
-  //     try {
-  //       const response = await fetch('/companies.json');
-  //       const data = await response.json();
-  //       setCompanies(data);
-  //     } catch (error) {
-  //       console.error("Error fetching companies:", error);
-  //     }
-  //   };
-
-  //   fetchCompanies();
-  // }, []);
-
-  const loadingState = <Typography> Loading... </Typography>;
+  if (error) {
+    return <Typography>Error: {error.message}</Typography>;
+  }
 
   return (
     <Box>
       <Container>
         <Grid>
-          hello
-          {/* <TabContext value="Companies">
-            <TabList variant="fullWidth">
-              {TABNAMES.map((name) => (
-                <Tab label={name} value={name} key={name} />
-              ))}
-            </TabList>
-          </TabContext>
-          {items.length === 0 ? (
-            loadingState
+          {companies?.length === 0 ? (
+            <Typography>No companies found.</Typography>
           ) : (
-            state
-          )} */}
+            <DirectoryTable data={companies} rows={companies?.length} />
+          )}
         </Grid>
       </Container>
     </Box>

@@ -79,9 +79,9 @@ if __name__ == "__main__":
         credentials_path, master_sheet_id, greenhouse_data, GREENHOUSE_SHEET_NAME
     )
 
-    # process_and_update_sheet(
-    #     credentials_path, master_sheet_id, lever_data, LEVER_SHEET_NAME
-    # )
+    process_and_update_sheet(
+        credentials_path, master_sheet_id, lever_data, LEVER_SHEET_NAME
+    )
 
     # from app.python.data_processing.job_posts.process_job_post import (
     #     process_job_post_descriptions,

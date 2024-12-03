@@ -14,6 +14,7 @@ from app.python.ai_processing.utils.logger import (
 )
 from app.python.ai_processing.utils.spacy_utils import handle_spacy_data
 from app.python.ai_processing.utils.trainer import train_spacy_model
+from app.python.ai_processing.utils.utils import calculate_entity_indices, print_data_with_entities
 from app.python.ai_processing.utils.validation_utils import (
     evaluate_model,
     validate_entities,
@@ -38,10 +39,9 @@ transformer = LongformerModel.from_pretrained("allenai/longformer-base-4096")
 
 MAX_SEQ_LENGTH = 4096
 
-# train_data = load_data(TRAIN_DATA_FILE, FOLDER)
+train_data = load_data(TRAIN_DATA_FILE, FOLDER)
 # updated_data = calculate_entity_indices(train_data)
 # print_data_with_entities(updated_data)
-# fix_entity_offsets(train_data, updated_data)
 
 converted_data = load_data(CONVERTED_FILE, FOLDER)
 
@@ -103,7 +103,7 @@ train_spacy_model(MODEL_SAVE_PATH, nlp, examples, resume=True)
 
 # ------------------- VALIDATE TRAINER -------------------
 evaluate_model(nlp, converted_data)
-# validate_entities(converted_data, nlp)
+# validate_entities(train_data, nlp)
 
 
 # ------------------- TEST EXAMPLES -------------------
@@ -147,16 +147,16 @@ def inspect_company_predictions(text):
     return doc, biluo_tags
 
 
-test_texts = [
-    "Ensysce Biosciences is a clinical stage biotechnology firm focused on developing innovative drug formulations that leverage nanotechnology to create safer prescription options aimed at reducing the risk of abuse and preventing overdose.",
-    "Everlywell provides a convenient and comprehensive home health testing experience.",
-    "Pathfinder® offers the world's first dynamic rigidizing overtube for endoscopy stability, managing loop formation and enhancing endoscope control during GI procedures.",
-    "Sight Sciences focuses on delivering innovative and clinically validated therapies to eyecare providers, aiming to address the root causes of common eye diseases through less invasive and more intuitive solutions.",
-    "Tempus is a leading technology company in precision medicine, utilizing AI to empower personalized cancer care through genomic sequencing and real-time data analysis.",
-    "TytoCare offers innovative telehealth solutions that enable high-quality primary care from the comfort of home.",
-    "Seneca Family of Agencies provides unconditional care and a comprehensive continuum of mental health and support services for children and families facing trauma, including in-home wraparound, foster care, adoption, crisis response, and therapeutic programs.",
-    "a specialty pharmaceutical corporation dedicated to leading the way in the development and commercialization of infectious disease medicines for COVID-19, malaria, dengue, and other infectious diseases",
-]
+# test_texts = [
+#     "Ensysce Biosciences is a clinical stage biotechnology firm focused on developing innovative drug formulations that leverage nanotechnology to create safer prescription options aimed at reducing the risk of abuse and preventing overdose.",
+#     "Everlywell provides a convenient and comprehensive home health testing experience.",
+#     "Pathfinder® offers the world's first dynamic rigidizing overtube for endoscopy stability, managing loop formation and enhancing endoscope control during GI procedures.",
+#     "Sight Sciences focuses on delivering innovative and clinically validated therapies to eyecare providers, aiming to address the root causes of common eye diseases through less invasive and more intuitive solutions.",
+#     "Tempus is a leading technology company in precision medicine, utilizing AI to empower personalized cancer care through genomic sequencing and real-time data analysis.",
+#     "TytoCare offers innovative telehealth solutions that enable high-quality primary care from the comfort of home.",
+#     "Seneca Family of Agencies provides unconditional care and a comprehensive continuum of mental health and support services for children and families facing trauma, including in-home wraparound, foster care, adoption, crisis response, and therapeutic programs.",
+#     "a specialty pharmaceutical corporation dedicated to leading the way in the development and commercialization of infectious disease medicines for COVID-19, malaria, dengue, and other infectious diseases",
+# ]
 
 # for text in test_texts:
 #     inspect_company_predictions(text)

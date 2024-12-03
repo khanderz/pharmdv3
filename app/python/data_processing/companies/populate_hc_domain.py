@@ -7,6 +7,8 @@ from app.python.data_processing.companies.google_sheets_updater import (
     update_google_sheet_row,
 )
 from collections import Counter
+from googleapiclient.errors import HttpError
+import time
 
 
 def process_predictions(
@@ -43,6 +45,23 @@ def process_predictions(
 
     return top_domains
 
+def retry_with_backoff(func, max_retries=10, *args, **kwargs):
+    """Retry a function with exponential backoff."""
+    delay = 1
+    for attempt in range(max_retries):
+        try:
+            return func(*args, **kwargs)
+        except HttpError as e:
+            if e.resp.status == 429 and "RATE_LIMIT_EXCEEDED" in str(e):
+                print(
+                    f"{RED}Rate limit exceeded. Retrying in {delay} seconds... (Attempt {attempt + 1}/{max_retries}){RESET}"
+                )
+                time.sleep(delay)
+                delay = min(delay * 2, 60)  
+            else:
+                raise
+    raise Exception(f"{RED}Max retries exceeded. Could not complete the operation.{RESET}")
+
 
 def process_and_update_sheet(credentials_path, sheet_id, data, sheet_name):
     if (
@@ -55,7 +74,7 @@ def process_and_update_sheet(credentials_path, sheet_id, data, sheet_name):
     for index, row in data.iterrows():
         company_name = row.get("company_name")
         company_description = row.get("company_description", "")
-        healthcare_domains = row.get("healthcare_domain")
+        # healthcare_domains = row.get("healthcare_domain")
 
         if not company_description:
             print(
@@ -80,11 +99,12 @@ def process_and_update_sheet(credentials_path, sheet_id, data, sheet_name):
             )
 
 
-            update_google_sheet_row(
-                credentials_path,
-                sheet_id,
-                sheet_name,
-                row_index=index + 1, 
+            retry_with_backoff(
+                update_google_sheet_row,
+                credentials_path=credentials_path,
+                sheet_id=sheet_id,
+                range_name=sheet_name,
+                row_index=index + 1,   
                 data=row_data,
             )
             print(f"{GREEN}HC domain processed for {company_name}.{RESET}")

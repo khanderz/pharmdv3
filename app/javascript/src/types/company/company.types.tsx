@@ -10,23 +10,23 @@ export interface Company extends Adjudicated {
   id: number;
   company_name: string;
   operating_status: boolean;
-  company_description: string;
-  linkedin_url: string;
-  is_public: boolean;
-  year_founded: number;
-  acquired_by: string;
 
+  ats_type_id: AtsType['id'];
   company_size_id?: CompanySize['id'];
   funding_type_id?: FundingType['id'];
-  city_id?: City['id'];
-  state_id?: State['id'];
-  country_id: Country['id'];
+
+  linkedin_url?: string;
+  company_url?: string;
+  company_type_id?: number;
+  year_founded?: number;
+  acquired_by?: string;
 
   ats_id: string;
-  ats_type: AtsType;
+  logo_url?: string;
+  company_tagline?: string;
+  is_completely_remote?: boolean;
+  company_description: string;
 
-  company_specialties: CompanySpecialty[];
-  company_domains: CompanyDomain[];
   created_at: Date;
   updated_at: Date;
 }
@@ -34,6 +34,5 @@ export interface Company extends Adjudicated {
 export interface CompanyDomain {
   id: number;
   company_id: Company['id'];
-  healthcare_domain: HealthcareDomain;
-  healthcare_domain_id: number;
+  healthcare_domain_id: HealthcareDomain['id'];
 }

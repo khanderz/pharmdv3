@@ -11,6 +11,7 @@ domains = {
   ent: HealthcareDomain.find_by(key: 'ENT'),
   epidemiology: HealthcareDomain.find_by(key: 'EPIDEMIOLOGY'),
   environmental_health: HealthcareDomain.find_by(key: 'ENVIRONMENTAL_HEALTH'),
+  fitness: HealthcareDomain.find_by(key: 'FITNESS'),
   gastroenterology: HealthcareDomain.find_by(key: 'GASTROENTEROLOGY'),
   genetics: HealthcareDomain.find_by(key: 'GENETICS'),
   geriatrics: HealthcareDomain.find_by(key: 'GERIATRICS'),
