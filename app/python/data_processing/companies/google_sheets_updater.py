@@ -4,6 +4,7 @@ from googleapiclient.discovery import build
 import pandas as pd
 
 from app.python.ai_processing.utils.logger import GREEN, RED, RESET
+from googleapiclient.errors import HttpError
 
 
 def load_sheet_data(credentials_path, sheet_id, range_name):
@@ -111,3 +112,32 @@ def update_google_sheet_row(credentials_path, sheet_id, range_name, row_index, d
         print(f"{GREEN}{result.get('updatedCells')} cells updated.{RESET}")
     except Exception as e:
         print(f"{RED}An error occurred during update: {e}{RESET}")
+
+
+def batch_update_google_sheet(credentials_path, sheet_id, updates):
+    """
+    Perform a batch update to the Google Sheet.
+
+    Args:
+        credentials_path (str): Path to the service account JSON credentials.
+        sheet_id (str): The ID of the Google Sheet.
+        updates (list): A list of dictionaries containing the range and values to update.
+
+    Example:
+        updates = [
+            {"range": "Sheet1!A2:B2", "values": [["Value1", "Value2"]]},
+            {"range": "Sheet1!A3:B3", "values": [["Value3", "Value4"]]},
+        ]
+    """
+    try:
+        creds = service_account.Credentials.from_service_account_file(credentials_path)
+        service = build("sheets", "v4", credentials=creds)
+        body = {"data": updates, "valueInputOption": "RAW"}
+
+        response = service.spreadsheets().values().batchUpdate(
+            spreadsheetId=sheet_id, body=body
+        ).execute()
+
+        print(f"Batch update completed: {response.get('totalUpdatedCells')} cells updated.")
+    except HttpError as e:
+        print(f"An error occurred during batch update: {e}")

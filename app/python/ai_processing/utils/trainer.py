@@ -20,7 +20,7 @@ def train_spacy_model(MODEL_SAVE_PATH, nlp, examples, resume=False):
     patience = 3
     epochs_without_improvement = 0
 
-    for epoch in range(35):
+    for epoch in range(50):
         random.shuffle(examples)
         losses = {}
 

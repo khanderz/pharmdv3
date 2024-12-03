@@ -29,6 +29,9 @@ healthcare_domains = [
     aliases: ['genomics', 'gene therapy', 'genetic counseling', 'genomic', 'gene', 'reproductive technology', 'hereditary', 'cystic fibrosis'] },
   { key: 'GERIATRICS', value: 'Geriatrics',
     aliases: %w[elder elderly senior geriatric aging dementia osteoporosis arthritis] },
+    { key: 'HEALTH_INSURANCE', value: 'Health Insurance',
+      aliases: ['medicaid', 'medicare']
+  },
   { key: 'HEMATOLOGY', value: 'Hematology',
     aliases: %w[blood hematologic anemia hematology leukemia lymphoma hemophilia] },
   {

@@ -8,12 +8,12 @@ Rails.application.routes.draw do
   get 'mui', to: 'companies#mui'
 
   resources :companies
-  resources :healthcare_domains, defaults: { format: :json }
+  resources :healthcare_domains, defaults: { format: :json } # When you need full CRUD operations with JSON responses
   resources :company_specialties, defaults: { format: :json }
   resources :cities, defaults: { format: :json }
   resources :countries, defaults: { format: :json }
   resources :states, defaults: { format: :json }
-  resources :company_sizes, only: [:index]
+  resources :company_sizes, only: [:index] # When you only need to list records
 
   resources :job_posts, defaults: { format: :json }
   resources :job_salary_currencies, only: [:index]
@@ -24,6 +24,7 @@ Rails.application.routes.draw do
   resources :departments, defaults: { format: :json }
   resources :teams, defaults: { format: :json }
   resources :job_roles, defaults: { format: :json }
+  resources :funding_types, only: [:index]
 
   get 'api/ats_types', to: 'ats_types#index'
 

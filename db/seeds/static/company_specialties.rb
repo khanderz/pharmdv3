@@ -15,6 +15,7 @@ domains = {
   gastroenterology: HealthcareDomain.find_by(key: 'GASTROENTEROLOGY'),
   genetics: HealthcareDomain.find_by(key: 'GENETICS'),
   geriatrics: HealthcareDomain.find_by(key: 'GERIATRICS'),
+  health_insurance: HealthcareDomain.find_by(key: 'HEALTH_INSURANCE'),
   hematology: HealthcareDomain.find_by(key: 'HEMATOLOGY'),
   mens_health: HealthcareDomain.find_by(key: 'MENS_HEALTH'),
   nephrology: HealthcareDomain.find_by(key: 'NEPHROLOGY'),

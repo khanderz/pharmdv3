@@ -31,8 +31,40 @@ export interface Company extends Adjudicated {
   updated_at: Date;
 }
 
+export interface CompanySpecialization {
+  id: number;
+  company_id: Company['id'];
+  company_specialty_id: CompanySpecialty['id'];
+  created_at: Date;
+  updated_at: Date;
+}
+
 export interface CompanyDomain {
   id: number;
   company_id: Company['id'];
   healthcare_domain_id: HealthcareDomain['id'];
+}
+
+export interface CompanyCity {
+  id: number;
+  company_id: Company['id'];
+  city_id: City['id'];
+  created_at: Date;
+  updated_at: Date;
+}
+
+export interface CompanyCountry {
+  id: number;
+  company_id: Company['id'];
+  country_id: Country['id'];
+  created_at: Date;
+  updated_at: Date;
+}
+
+export interface CompanyState {
+  id: number;
+  company_id: Company['id'];
+  state_id: State['id'];
+  created_at: Date;
+  updated_at: Date;
 }
