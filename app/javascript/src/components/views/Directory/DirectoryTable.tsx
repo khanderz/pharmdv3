@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import {
-  DataGridPremium,
+  DataGridPro,
   GridRowParams,
   MuiEvent,
   useGridApiRef,
-  DataGridPremiumProps,
-} from '@mui/x-data-grid-premium';
+  DataGridProProps,
+} from '@mui/x-data-grid-pro';
+
 import {
   Box,
   Table,
@@ -17,8 +18,9 @@ import {
   Typography,
 } from '@mui/material';
 import { TableProps } from './DirectoryTable.types';
-import { CompanyRowProps, getTableData } from '../../../hooks/get_table_data';
+import { getTableData } from '../../../hooks/get_table_data';
 import { dataHeaders } from '../../../hooks/get_table_headers';
+import { Company } from '@customtypes/company';
 // import {
 //   Jobs,
 //   TABLEHEADERS,
@@ -55,12 +57,12 @@ export const DirectoryTable = ({
   const getDetailPanelHeight = React.useCallback(() => 400, []);
 
   return (
-    <Box sx={{ height: 400, width: '100%' }}>
-      <DataGridPremium
+    <Box>
+      <DataGridPro
         rows={tableData}
         apiRef={apiRef}
         columns={renderDataHeaders}
-        getRowId={(row: CompanyRowProps) => row.id}
+        getRowId={(row: Company) => row.id}
         onRowClick={(
           params: GridRowParams<any>,
           event: MuiEvent<React.MouseEvent<Element, MouseEvent>>

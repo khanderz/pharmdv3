@@ -1,23 +1,14 @@
-import { Company } from '../components/Directory/Directory.types';
+import { Company } from '@customtypes/company/company.types';
 
 interface TableDataProps {
   data: Array<Company>;
   dataAccessors: Array<string>;
 }
 
-export interface CompanyRowProps {
-  id: Company['companyId'];
-  companyName: Company['companyName'];
-  companyType: Company['companyType'];
-  companyAtsType: Company['companyAtsType'];
-  companySize: Company['companySize'];
-  operatingStatus: Company['operatingStatus'];
-}
-
 export const getTableData = ({
   data,
   dataAccessors,
-}: TableDataProps): Array<CompanyRowProps> => {
+}: TableDataProps): Array<Company> => {
   function snakeToCamel(obj: any): any {
     if (Array.isArray(obj)) {
       return obj.map((item) => snakeToCamel(item));
@@ -36,13 +27,12 @@ export const getTableData = ({
   const parsedData = snakeToCamel(data);
 
   const TableData = parsedData?.map((value: any) => {
-    const row: CompanyRowProps = {
-      id: value?.companyId || 0,
-      companyName: '',
-      companyType: '',
-      companyAtsType: '',
-      companySize: 0,
-      operatingStatus: false,
+    const row: Company = {
+      id: value?.id || 0,
+      companyName: value?.companyName || '',
+      companyType: value?.companyType || '',
+      companySize: value?.companySize || 0,
+      operatingStatus: value?.operatingStatus || false,
     };
     dataAccessors?.forEach((key: string, indexNumber: number) => {
       (row as any)[key] = value[key];

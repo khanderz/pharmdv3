@@ -17,7 +17,7 @@
     "@mui/icons-material": "^6.1.5",
     "@mui/lab": "^6.0.0-beta.13",
     "@mui/material": "^6.1.5",
-    "@mui/x-data-grid-premium": "^7.22.0",
+    "@mui/x-data-grid-pro": "^7.23.0",
     "@mui/x-license-pro": "^6.10.2",
     "@types/babel__core": "7",
     "@types/react": "^18.3.12",

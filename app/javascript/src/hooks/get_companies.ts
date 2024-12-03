@@ -3,6 +3,7 @@ import { Company } from '@customtypes/company';
 
 const test_companies = [
   {
+    id: 1,
     company_name: 'Tech Innovators Inc',
     operating_status: true,
     ats_type_id: 1,
@@ -26,6 +27,7 @@ const test_companies = [
     updated_at: '2024-12-03T12:00:00Z',
   },
   {
+    id: 2,
     company_name: 'Green Solutions',
     operating_status: true,
     ats_type_id: 2,
@@ -49,6 +51,7 @@ const test_companies = [
     updated_at: '2024-12-03T12:00:00Z',
   },
   {
+    id: 3,
     company_name: 'Wellness First',
     operating_status: true,
     ats_type_id: 3,

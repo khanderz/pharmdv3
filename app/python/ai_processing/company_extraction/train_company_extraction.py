@@ -98,7 +98,7 @@ else:
 #             print(f"Entity: '{ent.text}', Label: '{ent.label_}'")
 
 # ------------------- TRAIN MODEL -------------------
-train_spacy_model(MODEL_SAVE_PATH, nlp, examples, resume=False)
+train_spacy_model(MODEL_SAVE_PATH, nlp, examples, resume=True)
 
 
 # ------------------- VALIDATE TRAINER -------------------
@@ -135,15 +135,15 @@ def inspect_company_predictions(text):
     print(f"{GREEN}Inspecting company predictions...{RESET}")
     doc, biluo_tags = convert_example_to_biluo(text)
 
-    print("\nOriginal Text:")
-    print(f"'{text}'\n")
-    print("Token Predictions:")
-    print(f"{'Token':<15}{'Predicted Label':<20}{'BILUO Tag':<20}")
-    print("-" * 50)
+    # print("\nOriginal Text:")
+    # print(f"'{text}'\n")
+    # print("Token Predictions:")
+    # print(f"{'Token':<15}{'Predicted Label':<20}{'BILUO Tag':<20}")
+    # print("-" * 50)
 
-    for token, biluo_tag in zip(doc, biluo_tags):
-        predicted_label = token.ent_type_ if token.ent_type_ else "O"
-        print(f"{token.text:<15}{predicted_label:<20}{biluo_tag:<20}")
+    # for token, biluo_tag in zip(doc, biluo_tags):
+    #     predicted_label = token.ent_type_ if token.ent_type_ else "O"
+    #     print(f"{token.text:<15}{predicted_label:<20}{biluo_tag:<20}")
     return doc, biluo_tags
 
 
@@ -158,5 +158,5 @@ test_texts = [
     "a specialty pharmaceutical corporation dedicated to leading the way in the development and commercialization of infectious disease medicines for COVID-19, malaria, dengue, and other infectious diseases",
 ]
 
-for text in test_texts:
-    inspect_company_predictions(text)
+# for text in test_texts:
+#     inspect_company_predictions(text)

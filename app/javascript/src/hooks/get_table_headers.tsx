@@ -45,14 +45,14 @@ export const dataHeaders = ({ open }: TableHeaderProps): GridColDef[] => {
       headerAlign: 'center' as GridAlignment,
       align: 'center',
     },
-    {
-      headerName: 'Company ATS Type',
-      field: 'companyAtsType',
-      flex: 1,
-      type: 'string',
-      headerAlign: 'center' as GridAlignment,
-      align: 'center',
-    },
+    // {
+    //   headerName: 'Company ATS Type',
+    //   field: 'companyAtsType',
+    //   flex: 1,
+    //   type: 'string',
+    //   headerAlign: 'center' as GridAlignment,
+    //   align: 'center',
+    // },
     {
       headerName: 'Company Size',
       field: 'companySize',
