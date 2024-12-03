@@ -12,10 +12,9 @@ import {
   Tooltip,
   Avatar,
 } from '@mui/material';
-// @ts-ignore
 import logo from '../../logo2.png';
 
-const pages = ['Directory', 'Pathfinder', 'Admin'];
+const pages = ['Search', 'Directory'];
 const settings = ['Profile', 'Account', 'Dashboard', 'Logout'];
 
 function NavBar() {
@@ -80,7 +79,7 @@ function NavBar() {
                 onClick={handleCloseNavMenu}
                 href={`/${page.toLowerCase()}`}
                 sx={{
-                  my: 2,
+                  m: 2,
                   color: 'primary.contrastText',
                   display: 'block',
                   letterSpacing: '0.05em',

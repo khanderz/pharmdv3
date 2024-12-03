@@ -3,6 +3,7 @@
 Rails.application.routes.draw do
   root to: 'home#index'
 
+  get 'search', to: 'search#search'
   get 'directory', to: 'directory#directory'
   get 'mui', to: 'companies#mui'
 

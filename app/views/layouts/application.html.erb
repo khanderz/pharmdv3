@@ -18,17 +18,10 @@
 
 
     </head>
-  <body style="margin:0;padding:0">
-    <!-- Global container for the React app -->
-    <div id="app-container">
-      <!-- React component NavBar is rendered here, wrapped by ThemeProvider -->
-      <%= react_component("NavBar", prerender: false) %>
-
-      <!-- Containers for dynamically loaded components -->
-      <div id="directory-container"></div> <!-- For DirectoryBundle -->
-
-      <!-- SearchPage content (or other content based on routes) will be injected here -->
-      <%= yield %>
-    </div>
-  </body>
+    <body data-controller="<%= controller_name %>" data-action="<%= action_name %>">
+    <div id="app-container"></div>
+    <div id="directory-container"></div> <!-- For DirectoryBundle -->
+    <div id="search-container"></div>    <!-- For SearchPageBundle -->
+    <%= yield %>
+     </body>  
 </html>

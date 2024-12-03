@@ -10,8 +10,8 @@ if not Doc.has_extension("index"):
 def train_spacy_model(MODEL_SAVE_PATH, nlp, examples):
     """Train the spaCy model with the given examples."""
     print("\nStarting model training...")
-    # optimizer = nlp.begin_training()
-    optimizer = nlp.resume_training()
+    optimizer = nlp.begin_training()
+    # optimizer = nlp.resume_training()
 
     best_loss = float("inf")
     patience = 3

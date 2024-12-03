@@ -10,6 +10,7 @@ import { FiltersProvider } from '../src/providers/FiltersProvider';
 ReactOnRails.register({ NavBar });
 
 document.addEventListener('DOMContentLoaded', () => {
+  const controllerName = document.body.getAttribute('data-controller');
   const container = document.getElementById('app-container');
 
   if (container) {
@@ -19,36 +20,59 @@ document.addEventListener('DOMContentLoaded', () => {
       <ThemeProvider theme={theme}>
         <FiltersProvider>
           <NavBar />
-          <SearchPage />
+          {/* <SearchPage /> */}
         </FiltersProvider>
       </ThemeProvider>
     );
   }
 
-  const controllerName = document.body.getAttribute('data-controller');
-
   if (controllerName === 'directory') {
-    import('../bundles/DirectoryBundle')
-      .then((DirectoryModule) => {
-        const Directory = DirectoryModule.default;
+    import('../bundles/DirectoryBundle').then((DirectoryModule) => {
+      const Directory = DirectoryModule.default;
 
-        ReactOnRails.register({ Directory });
+      ReactOnRails.register({ Directory });
 
-        const directoryContainer = document.getElementById(
-          'directory-container'
+      const directoryContainer = document.getElementById('directory-container');
+
+      if (directoryContainer) {
+        const directoryRoot = createRoot(directoryContainer);
+
+        directoryRoot.render(
+          <ThemeProvider theme={theme}>
+            <FiltersProvider>
+              <Directory />
+            </FiltersProvider>
+          </ThemeProvider>
         );
+      }
+    });
+  }
 
-        if (directoryContainer) {
-          const directoryRoot = createRoot(directoryContainer);
-          directoryRoot.render(<Directory />);
+  if (controllerName === 'search') {
+    import('../bundles/SearchPageBundle')
+      .then((SearchPageModule) => {
+        const SearchPage = SearchPageModule.default;
+
+        ReactOnRails.register({ SearchPage });
+
+        const searchContainer = document.getElementById('search-container');
+
+        if (searchContainer) {
+          const searchRoot = createRoot(searchContainer);
+
+          searchRoot.render(
+            <ThemeProvider theme={theme}>
+              <FiltersProvider>
+                <SearchPage />
+              </FiltersProvider>
+            </ThemeProvider>
+          );
         } else {
-          console.error('Directory container not found!');
+          console.error('Search container not found!');
         }
-
-        ReactOnRails.reactOnRailsPageLoaded();
       })
       .catch((error) => {
-        console.error('Error loading DirectoryBundle:', error);
+        console.error('Error loading SearchPageBundle:', error);
       });
   }
 });

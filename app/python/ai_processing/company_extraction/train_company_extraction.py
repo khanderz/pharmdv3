@@ -44,7 +44,7 @@ MAX_SEQ_LENGTH = 4096
 # fix_entity_offsets(train_data, updated_data)
 
 converted_data = load_data(CONVERTED_FILE, FOLDER)
-scispacy_model_name = "en_core_sci_lg"
+scispacy_model_name = "en_core_sci_sm"
 
 nlp = load_spacy_model(
     MODEL_SAVE_PATH, 
@@ -158,5 +158,5 @@ test_texts = [
     "a specialty pharmaceutical corporation dedicated to leading the way in the development and commercialization of infectious disease medicines for COVID-19, malaria, dengue, and other infectious diseases",
 ]
 
-# for text in test_texts:
-#     inspect_company_predictions(text)
+for text in test_texts:
+    inspect_company_predictions(text)

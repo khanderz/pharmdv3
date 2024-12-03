@@ -7,10 +7,4 @@ class HomeController < ApplicationController
   def index
     render 'home/index'
   end
-
-  def route_to_directory; end
-
-  def route_to_pathfinder; end
-
-  def route_to_admin_page; end
 end
