@@ -24,6 +24,7 @@ domains = {
   oncology: HealthcareDomain.find_by(key: 'ONCOLOGY'),
   optometry: HealthcareDomain.find_by(key: 'OPTOMETRY'),
   orthopedics: HealthcareDomain.find_by(key: 'ORTHOPEDICS'),
+  pain_mgmt: HealthcareDomain.find_by(key: 'PAIN_MGMT'),
   pediatrics: HealthcareDomain.find_by(key: 'PEDIATRICS'),
   pharma: HealthcareDomain.find_by(key: 'PHARMA'),
   physical_therapy: HealthcareDomain.find_by(key: 'PHYSICAL_THERAPY'),
@@ -36,6 +37,7 @@ domains = {
   sleep_health: HealthcareDomain.find_by(key: 'SLEEP_HEALTH'),
   speech_therapy: HealthcareDomain.find_by(key: 'SPEECH_THERAPY'),
   surgery: HealthcareDomain.find_by(key: 'SURGERY'),
+  veterinary: HealthcareDomain.find_by(key: 'VETERINARY'),
   womens_health: HealthcareDomain.find_by(key: 'WOMENS_HEALTH')
 }
 
@@ -233,6 +235,12 @@ specialties = {
       aliases: ['hip replacement', 'knee replacement'] },
     { key: 'SPINAL_SURGERY', value: 'Spinal Surgery', aliases: ['back surgery', 'spine care'] }
   ],
+  pain_mgmt: [
+    { key: 'CHRONIC_PAIN_TREATMENT', value: 'Chronic Pain Treatment',
+      aliases: ['long-term pain relief', 'chronic pain care'] },
+      { key: 'SUBSTANCE_ABUSE_TREATMENT', value: 'Substance Abuse Treatment',
+      aliases: ['addiction care', 'rehab'] }
+],
   pediatrics: [
     { key: 'CHILD_DEVELOPMENT_SERVICES', value: 'Child Development Services',
       aliases: ['developmental care', 'child growth'] },
@@ -359,6 +367,12 @@ specialties = {
       aliases: ['laparoscopic surgery', 'keyhole surgery'] },
     { key: 'PLASTIC_SURGERY', value: 'Plastic Surgery',
       aliases: ['cosmetic surgery', 'reconstructive surgery'] }
+  ],
+  veterinary: [
+    { key: 'ANIMAL_SURGERY', value: 'Animal Surgery',
+      aliases: ['pet surgery', 'animal operation'] },
+    { key: 'PET_WELLNESS', value: 'Pet Wellness',
+      aliases: ['animal health', 'pet care', 'pet insurance'] }
   ],
   womens_health: [
     { key: 'MATERNAL_HEALTH', value: 'Maternal Health',

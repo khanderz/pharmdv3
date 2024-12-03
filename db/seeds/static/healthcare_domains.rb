@@ -51,6 +51,7 @@ healthcare_domains = [
     aliases: ['bone', 'bones', 'musculoskeletal', 'orthopedic', 'joint replacement', 'arthritis', 'osteoporosis'] },
   { key: 'PEDIATRICS', value: 'Pediatrics',
     aliases: ['child', 'pediatric', 'childcare', 'children', 'developmental disorders'] },
+    { key: 'PAIN_MGMT', value: 'Pain Management', aliases: ['pain', 'chronic pain', 'multimodal pain management', 'substance use disoder', 'opioid use disorder', 'narcotics', 'opioid abuse', 'substance abuse']},
   { key: 'PHARMA', value: 'Pharmaceuticals',
     aliases: ['pharmacy', 'medication', 'drug development', 'pharmacology', 'medicinal chemistry', 'drugs', 'drug', 'biomanufacturing', 'antibodies', 'monoclonal', 'vaccines', 'biologics'] },
   { key: 'PHYSICAL_THERAPY', value: 'Physical Therapy',
@@ -75,6 +76,7 @@ healthcare_domains = [
     aliases: ['speech', 'language', 'communication', 'voice therapy', 'dysphagia', 'stuttering', 'aphasia'] },
   { key: 'SURGERY', value: 'Surgery',
     aliases: ['surgical', 'operative', 'operations', 'procedures', 'surgery', 'minimally invasive', 'heart surgery', 'organ transplant'] },
+    { key: 'VETERINARY', value: 'Veterinary', aliases: ['animal', 'pets', 'animals' ] },
   {
     key: 'WOMENS_HEALTH', value: 'Women\'s Health',
     aliases: ['gynecology', 'obstetrics', 'pregnancy', 'menstrual', 'menopause', 'breast health', 'reproductive health', 'pelvic health', 'prenatal', 'contraception', 'hormone therapy', 'pap smear', 'mammogram', 'maternity', 'pregnant', 'childbirth']
