@@ -7,17 +7,20 @@ if not Doc.has_extension("index"):
     Doc.set_extension("index", default=None)
 
 
-def train_spacy_model(MODEL_SAVE_PATH, nlp, examples):
+def train_spacy_model(MODEL_SAVE_PATH, nlp, examples, resume=False):
     """Train the spaCy model with the given examples."""
-    print("\nStarting model training...")
-    optimizer = nlp.begin_training()
-    # optimizer = nlp.resume_training()
+    if resume:
+        print("\nResuming training from the last saved model...")
+        optimizer = nlp.resume_training()
+    else:
+        print("\nStarting new model training...")
+        optimizer = nlp.begin_training()
 
     best_loss = float("inf")
     patience = 3
     epochs_without_improvement = 0
 
-    for epoch in range(10):
+    for epoch in range(35):
         random.shuffle(examples)
         losses = {}
 

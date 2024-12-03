@@ -98,7 +98,7 @@ else:
 #             print(f"Entity: '{ent.text}', Label: '{ent.label_}'")
 
 # ------------------- TRAIN MODEL -------------------
-train_spacy_model(MODEL_SAVE_PATH, nlp, examples)
+train_spacy_model(MODEL_SAVE_PATH, nlp, examples, resume=True)
 
 
 # ------------------- VALIDATE TRAINER -------------------
@@ -158,5 +158,5 @@ test_texts = [
     "a specialty pharmaceutical corporation dedicated to leading the way in the development and commercialization of infectious disease medicines for COVID-19, malaria, dengue, and other infectious diseases",
 ]
 
-for text in test_texts:
-    inspect_company_predictions(text)
+# for text in test_texts:
+#     inspect_company_predictions(text)

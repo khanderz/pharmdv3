@@ -31,12 +31,9 @@ def load_spacy_model(
     full_path = os.path.join(project_root, MODEL_SAVE_PATH)
 
     if os.path.exists(full_path):
-        print(f"{BLUE}Loading model {model_name} with length {MAX_SEQ_LENGTH} {RESET}")
         nlp = spacy.load(full_path)
 
-    if model_name.lower() == "scispacy":
-        print(f"{GREEN}Loading SciSpacy model: {scispacy_model_name}...{RESET}")
-
+    if model_name.lower() == "scispacy":        
         return spacy.load(scispacy_model_name)
 
     else:

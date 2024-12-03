@@ -147,7 +147,7 @@ def convert_to_spacy_format(
     if tokenizer and MAX_SEQ_LENGTH and longformer_model:
         print(f"Processing embeddings for {len(examples)} examples...")
         batch_size = 8
-        print(f" tokenizer {tokenizer}, length {MAX_SEQ_LENGTH}, longformer_model {longformer_model}")
+ 
         for i in range(0, len(examples), batch_size):
             batch_docs = examples[i : i + batch_size]
             batch_texts = [example.reference.text for example in batch_docs]
