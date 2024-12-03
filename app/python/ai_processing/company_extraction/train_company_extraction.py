@@ -44,8 +44,13 @@ MAX_SEQ_LENGTH = 4096
 # fix_entity_offsets(train_data, updated_data)
 
 converted_data = load_data(CONVERTED_FILE, FOLDER)
+scispacy_model_name = "en_core_sci_lg"
+
 nlp = load_spacy_model(
-    MODEL_SAVE_PATH, MAX_SEQ_LENGTH, model_name="allenai/longformer-base-4096"
+    MODEL_SAVE_PATH, 
+    MAX_SEQ_LENGTH,     
+    model_name="scispacy", 
+    scispacy_model_name=scispacy_model_name
 )
 
 if "ner" not in nlp.pipe_names:
@@ -100,18 +105,6 @@ train_spacy_model(MODEL_SAVE_PATH, nlp, examples)
 # ------------------- VALIDATE TRAINER -------------------
 evaluate_model(nlp, converted_data)
 # validate_entities(converted_data, nlp)
-
-# from sklearn.model_selection import KFold
-
-# kf = KFold(n_splits=5)
-# for train_idx, val_idx in kf.split(examples):
-#     train_data = [examples[i] for i in train_idx]
-#     val_data = [examples[i] for i in val_idx]
-
-#     train_spacy_model(MODEL_SAVE_PATH, nlp, train_data)
-
-#     evaluate_model(nlp, val_data)
-
 
 # ------------------- TEST EXAMPLES -------------------
 def convert_example_to_biluo(text):

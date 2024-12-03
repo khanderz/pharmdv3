@@ -2,10 +2,10 @@
 import os
 from dotenv import load_dotenv
 
-from app.python.data_processing.companies.linkedin_functions import enrich_with_linkedin_data, seed_company_data
-# from app.python.data_processing.companies.populate_hc_domain import (
-#     process_and_update_sheet,
-# )
+# from app.python.data_processing.companies.linkedin_functions import enrich_with_linkedin_data, seed_company_data
+from app.python.data_processing.companies.populate_hc_domain import (
+    process_and_update_sheet,
+)
 from companies.google_sheets_updater import load_sheet_data
 
 from companies.utils.cleaner import remove_duplicates
@@ -70,14 +70,14 @@ if __name__ == "__main__":
     #     master_linkedin_issues_sheet_name,
     # )
 
-    seed_company_data(greenhouse_data, credentials_path, master_sheet_id, GREENHOUSE_SHEET_NAME)
-    seed_company_data(lever_data, credentials_path, master_sheet_id, LEVER_SHEET_NAME)
+    # seed_company_data(greenhouse_data, credentials_path, master_sheet_id, GREENHOUSE_SHEET_NAME)
+    # seed_company_data(lever_data, credentials_path, master_sheet_id, LEVER_SHEET_NAME)
 
     # ----------------------------- AI MODELS -----------------------------
 
-    # process_and_update_sheet(
-    #     credentials_path, master_sheet_id, greenhouse_data, GREENHOUSE_SHEET_NAME
-    # )
+    process_and_update_sheet(
+        credentials_path, master_sheet_id, greenhouse_data, GREENHOUSE_SHEET_NAME
+    )
 
     # process_and_update_sheet(
     #     credentials_path, master_sheet_id, lever_data, LEVER_SHEET_NAME

@@ -3,31 +3,40 @@ import hashlib
 import json
 import os
 import spacy
-from app.python.ai_processing.utils.logger import BLUE, RED, RESET
+from app.python.ai_processing.utils.logger import BLUE, GREEN, RED, RESET
 
 project_root = os.path.abspath(
     os.path.join(os.path.dirname(__file__), "../../..", "python", "ai_processing")
 )
 
 
-def load_spacy_model(MODEL_SAVE_PATH, MAX_SEQ_LENGTH=None, model_name="roberta-base"):
+def load_spacy_model(
+    MODEL_SAVE_PATH,
+    MAX_SEQ_LENGTH=None,
+    model_name="roberta-base",
+    scispacy_model_name=None,
+):    
     """
-    Load an existing spaCy model or initialize a new transformer-based model.
+    Load an existing spaCy or SciSpacy model, or initialize a new transformer-based model.
 
     Args:
         MODEL_SAVE_PATH (str): Path to the saved model.
         MAX_SEQ_LENGTH (int, optional): Maximum sequence length for the tokenizer. Defaults to 512 for RoBERTa.
-        model_name (str, optional): Name of the Hugging Face transformer model. Defaults to RoBERTa.
+        model_name (str, optional): Name of the Hugging Face transformer model. Defaults to "roberta-base".
+        scispacy_model_name (str, optional): Name of the SciSpacy model. Defaults to "en_core_sci_lg".
 
     Returns:
-        spacy.Language: Loaded or initialized spaCy model.
+        spacy.Language: Loaded or initialized spaCy or SciSpacy model.
     """
-
     full_path = os.path.join(project_root, MODEL_SAVE_PATH)
 
     if os.path.exists(full_path):
         print(f"{BLUE}Loading model {model_name} with length {MAX_SEQ_LENGTH} {RESET}")
         nlp = spacy.load(full_path)
+
+    if model_name.lower() == "scispacy":
+        print(f"{GREEN}Loading SciSpacy model: {scispacy_model_name}...{RESET}")
+        return spacy.load(scispacy_model_name)
 
     else:
         print(f"{RED}No existing model found. Initializing new model...{RESET}")
@@ -36,7 +45,7 @@ def load_spacy_model(MODEL_SAVE_PATH, MAX_SEQ_LENGTH=None, model_name="roberta-b
             512 if "roberta" in model_name or "bert" in model_name else 4096
         )
 
-        print(f"{BLUE}creating model {model_name} with length {MAX_SEQ_LENGTH} {RESET}")
+        print(f"{BLUE}creating model {model_name} with length {MAX_SEQ_LENGTH} scispacy_model_name: {scispacy_model_name}  {RESET}")
         nlp = spacy.blank("en")
         nlp.add_pipe(
             "transformer",
