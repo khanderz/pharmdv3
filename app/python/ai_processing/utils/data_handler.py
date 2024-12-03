@@ -36,6 +36,7 @@ def load_spacy_model(
 
     if model_name.lower() == "scispacy":
         print(f"{GREEN}Loading SciSpacy model: {scispacy_model_name}...{RESET}")
+
         return spacy.load(scispacy_model_name)
 
     else:

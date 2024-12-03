@@ -11,35 +11,47 @@ import {
   Button,
   Tooltip,
   Avatar,
+  Drawer,
+  List,
+  ListItem,
+  ListItemButton,
+  ListItemText,
 } from '@mui/material';
+import MenuIcon from '@mui/icons-material/Menu';
 import logo from '../../logo2.png';
 
 const pages = ['Search', 'Directory'];
 const settings = ['Profile', 'Account', 'Dashboard', 'Logout'];
 
 function NavBar() {
-  const [anchorElNav, setAnchorElNav] = useState<null | HTMLElement>(null);
   const [anchorElUser, setAnchorElUser] = useState<null | HTMLElement>(null);
+  const [anchorMobileEl, setAnchorMobileEl] = useState<null | HTMLElement>(
+    null
+  );
 
-  const handleOpenNavMenu = (event: MouseEvent<HTMLElement>) => {
-    setAnchorElNav(event.currentTarget);
-  };
   const handleOpenUserMenu = (event: MouseEvent<HTMLElement>) => {
     setAnchorElUser(event.currentTarget);
-  };
-
-  const handleCloseNavMenu = () => {
-    setAnchorElNav(null);
   };
 
   const handleCloseUserMenu = () => {
     setAnchorElUser(null);
   };
 
+  const handleOpenMobileMenu = (event: MouseEvent<HTMLElement>) => {
+    setAnchorMobileEl(event.currentTarget);
+  };
+
+  const handleCloseMobileMenu = () => {
+    setAnchorMobileEl(null);
+  };
+
+  console.log({ anchorElUser });
+  console.log({ anchorMobileEl });
+
   return (
     <AppBar position="static" sx={{ boxShadow: 'none' }}>
       <Container>
-        <Toolbar sx={{ justifyContent: 'space-around', width: '100%' }}>
+        <Toolbar sx={{ justifyContent: 'space-between' }}>
           <Button
             href="/"
             sx={{
@@ -66,9 +78,10 @@ function NavBar() {
               PharmDs in IT
             </Typography>
           </Button>
+
+          {/* Desktop Navigation */}
           <Box
             sx={{
-              flexGrow: 1,
               display: { xs: 'none', md: 'flex' },
               justifyContent: 'center',
             }}
@@ -76,7 +89,6 @@ function NavBar() {
             {pages.map((page) => (
               <Button
                 key={page}
-                onClick={handleCloseNavMenu}
                 href={`/${page.toLowerCase()}`}
                 sx={{
                   m: 2,
@@ -90,7 +102,42 @@ function NavBar() {
             ))}
           </Box>
 
-          <Box sx={{ flexGrow: 0, marginRight: 5 }}>
+          {/* Mobile Menu Icon */}
+          <IconButton
+            edge="start"
+            color="inherit"
+            aria-label="menu"
+            onClick={handleOpenMobileMenu}
+            sx={{ display: { xs: 'flex', md: 'none' } }}
+          >
+            <Tooltip title="Open navigation menu">
+              <MenuIcon />
+            </Tooltip>
+          </IconButton>
+
+          {/* Mobile Navigation Menu */}
+          <Menu
+            sx={{ mt: '45px' }}
+            anchorEl={anchorMobileEl}
+            anchorOrigin={{
+              vertical: 'top',
+              horizontal: 'right',
+            }}
+            transformOrigin={{
+              vertical: 'top',
+              horizontal: 'right',
+            }}
+            open={Boolean(anchorMobileEl)}
+            onClose={handleCloseMobileMenu}
+          >
+            {pages.map((page) => (
+              <MenuItem key={page} onClick={handleCloseMobileMenu}>
+                <Button href={`/${page.toLowerCase()}`}>{page}</Button>
+              </MenuItem>
+            ))}
+          </Menu>
+
+          <Box>
             <Tooltip title="Open settings">
               <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
                 <Avatar alt="Remy Sharp" /> {/*TODO change icon  */}
@@ -114,11 +161,7 @@ function NavBar() {
             >
               {settings.map((setting) => (
                 <MenuItem key={setting} onClick={handleCloseUserMenu}>
-                  <Button
-                    key={setting}
-                    onClick={handleCloseNavMenu}
-                    href={`/${setting.toLowerCase()}`}
-                  >
+                  <Button key={setting} href={`/${setting.toLowerCase()}`}>
                     {setting}
                   </Button>
                 </MenuItem>

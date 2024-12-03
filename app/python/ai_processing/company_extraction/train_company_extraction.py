@@ -44,13 +44,12 @@ MAX_SEQ_LENGTH = 4096
 # fix_entity_offsets(train_data, updated_data)
 
 converted_data = load_data(CONVERTED_FILE, FOLDER)
-scispacy_model_name = "en_core_sci_sm"
 
 nlp = load_spacy_model(
     MODEL_SAVE_PATH,
     MAX_SEQ_LENGTH,
     model_name="scispacy",
-    scispacy_model_name=scispacy_model_name,
+    scispacy_model_name="en_core_sci_sm",
 )
 
 if "ner" not in nlp.pipe_names:

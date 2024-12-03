@@ -147,11 +147,11 @@ def convert_to_spacy_format(
     if tokenizer and MAX_SEQ_LENGTH and longformer_model:
         print(f"Processing embeddings for {len(examples)} examples...")
         batch_size = 8
-
+        print(f" tokenizer {tokenizer}, length {MAX_SEQ_LENGTH}, longformer_model {longformer_model}")
         for i in range(0, len(examples), batch_size):
             batch_docs = examples[i : i + batch_size]
             batch_texts = [example.reference.text for example in batch_docs]
-
+            print(f"Processing batch {i + 1} - {i + len(batch_docs)}...")
             batch_inputs = tokenizer(
                 batch_texts,
                 max_length=MAX_SEQ_LENGTH,
@@ -168,10 +168,10 @@ def convert_to_spacy_format(
                     (ent.start_char, ent.end_char, ent.label_) for ent in doc.ents
                 ]
                 examples[i + j] = Example.from_dict(doc, {"entities": entities})
-
+        
             del batch_inputs, outputs, batch_embeddings
             torch.cuda.empty_cache()
-
+    print(f"---------------CONVERSION COMPLETE.")
     db.to_disk(SPACY_DATA_PATH)
     loaded_db = DocBin().from_disk(SPACY_DATA_PATH)
     loaded_docs = list(loaded_db.get_docs(nlp.vocab))
