@@ -106,6 +106,13 @@ def find_or_create_city(city_name, company_name)
   end
 end
 
+def find_company_size(size_range)
+  CompanySize.find_by(size_range: size_range) || begin
+    puts "#{RED}Invalid company size: '#{size_range}'#{RESET}"
+    nil
+  end
+end
+
 def update_join_tables(company, countries, states, cities, domains, specialties)
   changes_made = false
 
@@ -120,7 +127,7 @@ def update_join_tables(company, countries, states, cities, domains, specialties)
   if existing_countries != new_countries
     CompanyCountry.where(company_id: company.id).destroy_all
     countries.each do |country|
-      CompanyCountry.create!(company_id: company.id, country_id: country.id)
+      CompanyCountry.find_or_create_by!(company_id: company.id, country_id: country.id)
     end
     changes_made = true
   end
@@ -130,7 +137,7 @@ def update_join_tables(company, countries, states, cities, domains, specialties)
   if existing_states != new_states
     CompanyState.where(company_id: company.id).destroy_all
     states.each do |state|
-      CompanyState.create!(company_id: company.id, state_id: state.id)
+      CompanyState.find_or_create_by!(company_id: company.id, state_id: state.id)
     end
     changes_made = true
   end
@@ -140,7 +147,7 @@ def update_join_tables(company, countries, states, cities, domains, specialties)
   if existing_cities != new_cities
     CompanyCity.where(company_id: company.id).destroy_all
     cities.each do |city|
-      CompanyCity.create!(company_id: company.id, city_id: city.id)
+      CompanyCity.find_or_create_by!(company_id: company.id, city_id: city.id)
     end
     changes_made = true
   end
@@ -150,7 +157,7 @@ def update_join_tables(company, countries, states, cities, domains, specialties)
   if existing_domains != new_domains
     CompanyDomain.where(company_id: company.id).destroy_all
     domains.each do |domain|
-      CompanyDomain.create!(company_id: company.id, healthcare_domain_id: domain.id)
+      CompanyDomain.find_or_create_by!(company_id: company.id, healthcare_domain_id: domain.id)
     end
     changes_made = true
   end
@@ -160,7 +167,7 @@ def update_join_tables(company, countries, states, cities, domains, specialties)
   if existing_specialties != new_specialties
     CompanySpecialization.where(company_id: company.id).destroy_all
     specialties.each do |specialty|
-      CompanySpecialization.create!(company_id: company.id, company_specialty_id: specialty.id)
+      CompanySpecialization.find_or_create_by!(company_id: company.id, company_specialty_id: specialty.id)
     end
     changes_made = true
   end
@@ -172,6 +179,9 @@ def update_existing_company(company, row_data, ats_type, countries, states, citi
   changes_made = false
   changed_attributes = {}
 
+  company_size = find_company_size(row_data['company_size'])
+
+
   company.assign_attributes(
     linkedin_url: row_data['linkedin_url'],
     company_url: row_data['company_url'],
@@ -182,7 +192,8 @@ def update_existing_company(company, row_data, ats_type, countries, states, citi
     logo_url: row_data['logo_url'],
     company_description: row_data['company_description'],
     company_tagline: row_data['company_tagline'],
-    ats_type: ats_type
+    ats_type: ats_type,
+    company_size_id: company_size&.id
   )
 
   if company.changed?
@@ -195,20 +206,16 @@ def update_existing_company(company, row_data, ats_type, countries, states, citi
   changes_made ||= join_table_changes
 
   if changes_made
-    if changed_attributes[:company]
-      puts "#{BLUE}Attribute changes for #{company.company_name}: #{changed_attributes[:company]}#{RESET}"
-    end
-
-    if join_table_changes
-      puts "#{BLUE}Join table changes made for #{company.company_name}#{RESET}"
-    end
-
+    puts "#{BLUE}Updated #{company.company_name}#{RESET}"
+    puts "#{BLUE}Attribute changes: #{changed_attributes[:company]}#{RESET}" if changed_attributes[:company]
   else
     puts "#{RED}#{company.company_name} has no changes.#{RESET}"
   end
 end
 
 def create_new_company(row_data, ats_type, countries, states, cities, domains, specialties)
+  company_size = find_company_size(row_data['company_size'])
+
   new_company = Company.new(
     company_name: row_data['company_name'],
     linkedin_url: row_data['linkedin_url'],
@@ -220,14 +227,15 @@ def create_new_company(row_data, ats_type, countries, states, cities, domains, s
     logo_url: row_data['logo_url'],
     company_description: row_data['company_description'],
     company_tagline: row_data['company_tagline'],
-    ats_type: ats_type
+    ats_type: ats_type,
+    company_size_id: company_size&.id
   )
 
   if new_company.save
     update_join_tables(new_company, countries, states, cities, domains, specialties)
-    puts "Added new company: #{new_company.company_name}."
+    puts "#{GREEN}Added new company: #{new_company.company_name}.#{RESET}"
   else
-    puts "Failed to save new company: #{new_company.company_name}. Errors: #{new_company.errors.full_messages.join(', ')}"
+    puts "#{RED}Failed to save new company: #{new_company.company_name}. Errors: #{new_company.errors.full_messages.join(', ')}#{RESET}"
   end
 end
 
