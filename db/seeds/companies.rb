@@ -12,7 +12,7 @@ def normalize_location_data(data)
       data = data.gsub(/[\[\]']/, '')
       data.split(',').map(&:strip)
     else
-      [data.strip] 
+      [data.strip]
     end
   when Array
     data.flatten.map(&:to_s).map(&:strip).compact
@@ -22,8 +22,172 @@ def normalize_location_data(data)
 end
 
 def resolve_location(locations)
-  return nil if locations.empty? 
+  return nil if locations.empty?
   locations.size == 1 ? locations.first : locations
+end
+
+def log_adjudication(entity_type, entity_name, company_name, adjudicatable)
+  raise ArgumentError, "Adjudicatable must be persisted" unless adjudicatable.persisted?
+
+  adjudication = Adjudication.create!(
+    adjudicatable_type: adjudicatable.class.name,
+    adjudicatable_id: adjudicatable.id,
+    error_details: "#{entity_type} '#{entity_name}' not found for Company #{company_name}",
+    resolved: false
+  )
+
+  puts "Logged adjudication for #{entity_type}: #{entity_name}, company: #{company_name}"
+  adjudication
+rescue ActiveRecord::RecordInvalid => e
+  puts "Failed to create adjudication for #{entity_type} '#{entity_name}' and company '#{company_name}': #{e.message}"
+  nil
+end
+
+def find_or_create_country(country_name, company_name)
+  Country.where(
+    'LOWER(country_code) = ? OR LOWER(country_name) = ? OR LOWER(?) = ANY(aliases)',
+    country_name.downcase, country_name.downcase, country_name.downcase
+  ).first || begin
+    puts "Creating new country: #{country_name}"
+    country = Country.create!(
+      country_code: country_name,
+      country_name: country_name,
+      error_details: "Country '#{country_name}' not found for Company #{company_name}",
+      resolved: false
+    )
+    log_adjudication('Country', country_name, company_name, country)
+    country
+  end
+end
+
+def find_or_create_state(state_name, company_name)
+  State.where(
+    'LOWER(state_name) = ? OR LOWER(state_code) = ?',
+    state_name.downcase, state_name.downcase
+  ).first || begin
+    puts "State not found for company: #{company_name} or name/code: #{state_name}"
+    state = State.create!(
+      state_name: state_name,
+      error_details: "State '#{state_name}' not found for Company #{company_name}",
+      resolved: false
+    )
+    if state.persisted?
+      log_adjudication('State', state_name, company_name, state)
+    else
+      puts "Failed to persist state: #{state_name}. Adjudication cannot be created."
+    end
+    state
+  end
+end
+
+def find_or_create_city(city_name, company_name)
+  City.where(
+    'LOWER(city_name) = ? OR LOWER(?) = ANY(aliases)',
+    city_name.downcase, city_name.downcase
+  ).first || begin
+    puts "Creating new city: #{city_name}"
+    city = City.create!(
+      city_name: city_name,
+      error_details: "City '#{city_name}' not found for Company #{company_name}",
+      resolved: false
+    )
+    if city.persisted?
+      log_adjudication('City', city_name, company_name, city)
+    else
+      puts "Failed to persist city: #{city_name}. Adjudication cannot be created."
+    end
+    city
+  end
+end
+
+
+def update_join_tables(company, countries, states, cities, domains, specialties)
+  countries.each do |country|
+    CompanyCountry.find_or_create_by!(company_id: company.id, country_id: country.id)
+  end
+
+  states.each do |state|
+    CompanyState.find_or_create_by!(company_id: company.id, state_id: state.id)
+  end
+
+  cities.each do |city|
+    CompanyCity.find_or_create_by!(company_id: company.id, city_id: city.id)
+  end
+
+  domains.each do |domain|
+    CompanyDomain.find_or_create_by!(company_id: company.id, healthcare_domain_id: domain.id)
+  end
+
+  specialties.each do |specialty|
+    CompanySpecialization.find_or_create_by!(company_id: company.id, company_specialty_id: specialty.id)
+  end
+end
+
+def update_existing_company(company, row_data, ats_type, countries, states, cities, domains, specialties)
+  changes_made = false
+
+  company.assign_attributes(
+    linkedin_url: row_data['linkedin_url'],
+    company_url: row_data['company_url'],
+    year_founded: row_data['year_founded'].to_i,
+    operating_status: ActiveModel::Type::Boolean.new.cast(row_data['operating_status']),
+    acquired_by: row_data['acquired_by'],
+    ats_id: row_data['ats_id'],
+    logo_url: row_data['logo_url'],
+    company_description: row_data['company_description'],
+    company_tagline: row_data['company_tagline'],
+    ats_type: ats_type
+  )
+
+  if company.changed?
+    changes_made = true
+    company.save!
+  end
+
+  update_join_tables(company, countries, states, cities, domains, specialties)
+  puts changes_made ? "Updated #{company.company_name}" : "#{company.company_name} has no changes."
+end
+
+def create_new_company(row_data, ats_type, countries, states, cities, domains, specialties)
+  new_company = Company.new(
+    company_name: row_data['company_name'],
+    linkedin_url: row_data['linkedin_url'],
+    company_url: row_data['company_url'],
+    year_founded: row_data['year_founded'].to_i,
+    operating_status: ActiveModel::Type::Boolean.new.cast(row_data['operating_status']),
+    acquired_by: row_data['acquired_by'],
+    ats_id: row_data['ats_id'],
+    logo_url: row_data['logo_url'],
+    company_description: row_data['company_description'],
+    company_tagline: row_data['company_tagline'],
+    ats_type: ats_type
+  )
+
+  if new_company.save
+    update_join_tables(new_company, countries, states, cities, domains, specialties)
+    puts "Added new company: #{new_company.company_name}."
+  else
+    puts "Failed to save new company: #{new_company.company_name}. Errors: #{new_company.errors.full_messages.join(', ')}"
+  end
+end
+
+def process_company_data(row_data, headers)
+  company_name = row_data['company_name']
+  return unless company_name.present?
+
+  company = Company.find_by(company_name: company_name)
+  ats_type = AtsType.find_by(ats_type_code: row_data['company_ats_type'])
+  countries = normalize_location_data(row_data['company_countries']).map { |name| find_or_create_country(name, company_name) }
+  states = normalize_location_data(row_data['company_states']).map { |name| find_or_create_state(name, company_name) }
+  cities = normalize_location_data(row_data['company_cities']).map { |name| find_or_create_city(name, company_name) }
+  domains = (row_data['healthcare_domains'] || '').split(',').map(&:strip).map { |key| HealthcareDomain.find_by(key: key) }.compact
+  specialties = (row_data['company_specialty'] || '').split(',').map(&:strip).map { |key| CompanySpecialty.find_by(key: key) }.compact
+
+  if company
+    update_existing_company(company, row_data, ats_type, countries, states, cities, domains, specialties)
+  else
+    create_new_company(row_data, ats_type, countries, states, cities, domains, specialties)
+  end
 end
 
 begin
@@ -37,164 +201,10 @@ begin
     raise 'Headers mismatch between GREENHOUSE and LEVER sheets.' unless gh_headers == l_headers
 
     combined_data = gh_data + l_data
-    headers = gh_headers
-
-    puts "#{Company.count} existing rows in the companies table"
 
     combined_data.each do |row|
-      row_data = Hash[headers.zip(row)]
-      # puts "Processing row: #{row_data}"
-      next unless row_data['company_name']
-
-      company_name = row_data['company_name']
-      company = Company.find_by(company_name: company_name)
-      ats_type = AtsType.find_by(ats_type_code: row_data['company_ats_type'])
-      company_countries = normalize_location_data(row_data['company_countries'])
-      company_states = normalize_location_data(row_data['company_states'])
-      company_cities = normalize_location_data(row_data['company_cities'])
-
-      countries = company_countries.map do |country_name|
-        existing_country = Country.where(
-          'LOWER(country_code) = ? OR LOWER(country_name) = ? OR LOWER(?) = ANY(aliases)',
-          country_name.downcase, country_name.downcase, country_name.downcase
-        ).first
-      
-        if existing_country
-          puts("Found existing country: #{existing_country.country_name}")
-          existing_country
-        else
-          puts "Creating new country: #{country_name}"
-          new_country = Country.create!(
-            country_code: country_name,
-            country_name: country_name,
-            error_details: "Country '#{country_name}' not found for Company #{company_name}",
-            resolved: false
-          )
-          new_country.save!
-          puts("new country created: #{new_country.country_name}")
-      
-          Adjudication.create!(
-            adjudicatable_type: 'Country',
-            adjudicatable_id: new_country.id,
-            error_details: "Country '#{country_name}' not found for Company #{company_name}",
-            resolved: false
-          )
-          puts "Country not found for company: #{company_name} or country code/name: #{country_name}. Logged to adjudications."
-          new_country
-        end
-      end.compact
-
-      countries = resolve_location(countries)      
-
-      states = company_states.map do |state_name|
-        State.where('LOWER(state_name) = ? OR LOWER(state_code) = ?', 
-                    state_name.downcase, state_name.downcase).first ||
-          begin
-            puts("State not found for company: #{company_name} or name/code: #{state_name}")
-            nil  
-          end
-      end.compact
-
-      states = resolve_location(states)
-
-      cities = company_cities.map do |city_name|
-        puts("city_name: #{city_name}")
-        existing_city = City.where(
-          'LOWER(city_name) = ? OR LOWER(?) = ANY(aliases)',
-          city_name.downcase, city_name.downcase
-        ).first
-      
-        if existing_city
-          puts("Found existing city: #{existing_city.city_name}")
-          existing_city  
-        else
-          puts "Creating new city: #{city_name}"
-          new_city = City.create!(
-            city_name: city_name,
-            error_details: "City '#{city_name}' not found for Company #{company_name}",
-            resolved: false
-          )
-          new_city.save!
-          puts("new city created: #{new_city.city_name}")
-      
-          Adjudication.create!(
-            adjudicatable_type: 'City',
-            adjudicatable_id: new_city.id,
-            error_details: "City '#{city_name}' not found for Company #{company_name}",
-            resolved: false
-          )
-          puts "City not found for company: #{company_name} or name/alias: #{city_name}. Logged to adjudications."
-          new_city
-        end
-      end.compact
-
-      cities = resolve_location(cities)
-      
-
-      if company
-        puts "-----UPDATING #{company_name}"
-        changes_made = Company.seed_existing_companies(company, row, ats_type, countries, states,
-                                                       cities)
-
-        if changes_made
-          company.save!
-          puts "Updated #{company.company_name} with changes."
-        else
-          puts "#{company.company_name} has no changes."
-        end
-      else
-        puts "-----CREATING #{company_name}"
-
-        new_company = Company.new(
-          company_name: company_name,
-          linkedin_url: row_data['linkedin_url'],
-          company_url: row_data['company_url'],
-          # is_public: ActiveModel::Type::Boolean.new.cast(row_data['is_public']),
-          year_founded: row_data['year_founded'].to_i,
-          operating_status: ActiveModel::Type::Boolean.new.cast(row_data['operating_status']),
-          acquired_by: row_data['acquired_by'],
-          ats_id: row_data['ats_id'],
-          logo_url: row_data['logo_url'],
-          company_description: row_data['company_description'],
-          company_tagline: row_data['company_tagline']
-        )
-
-        new_company.countries = countries
-        new_company.states = states if states.present?
-        new_company.cities = cities if cities.present?
-        new_company.ats_type = ats_type if ats_type
-
-        # Optional attributes
-        if row_data['company_size'].present?
-          company_size = CompanySize.find_by(size_range: row_data['company_size'])
-          new_company.company_size = company_size if company_size
-        end
-
-        if row_data['last_funding_type'].present?
-          funding_type = FundingType.find_by(funding_type_name: row_data['last_funding_type'])
-          new_company.funding_type = funding_type if funding_type
-        end
-
-        # Handle multiple healthcare domains
-        healthcare_domains = row_data['healthcare_domains']&.split(',')&.map(&:strip) || []
-        domains = healthcare_domains.map do |domain_key|
-          HealthcareDomain.find_by(key: domain_key)
-        end.compact
-        new_company.healthcare_domains = domains
-
-        # Handle company specialties based on domains
-        specialties = row_data['company_specialty']&.split(',')&.map(&:strip) || []
-        specialties_mapped = specialties.map do |specialty_key|
-          CompanySpecialty.find_by(key: specialty_key)
-        end.compact
-        new_company.company_specialties = specialties_mapped
-
-        if new_company.save
-          puts "Added new company: #{new_company.company_name}."
-        else
-          puts "Failed to save new company: #{new_company.company_name}. Errors: #{new_company.errors.full_messages.join(', ')}"
-        end
-      end
+      row_data = Hash[gh_headers.zip(row)]
+      process_company_data(row_data, gh_headers)
     end
 
     puts "There are now #{Company.count} rows in the companies table."

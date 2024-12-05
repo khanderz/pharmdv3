@@ -1,7 +1,9 @@
 # Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
 
 one:
+  funding_type_code: MyString
   funding_type_name: MyString
 
 two:
+  funding_type_code: MyString
   funding_type_name: MyString

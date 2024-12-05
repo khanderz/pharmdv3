@@ -1,6 +1,4 @@
-# frozen_string_literal: true
-
-require 'test_helper'
+require "test_helper"
 
 class UserSkillTest < ActiveSupport::TestCase
   # test "the truth" do

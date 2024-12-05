@@ -32,7 +32,9 @@ cities = [
   { city_name: 'San Diego' },
   { city_name: 'San Francisco',
     aliases: ['SOMA', 'Mission District', 'Financial District', 'Nob Hill', 'Castro',
-              'Pacific Heights'] },
+              'Pacific Heights'
+              # , 'South San Fransisco'
+              ] },
   { city_name: 'San Jose' },
   { city_name: 'Seattle',
     aliases: ['Capitol Hill', 'Belltown', 'Ballard', 'Fremont', 'Queen Anne', 'South Lake Union'] },

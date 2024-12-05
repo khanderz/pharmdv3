@@ -1,12 +1,10 @@
-# frozen_string_literal: true
 
+# frozen_string_literal: true
 class Company < ApplicationRecord
   has_paper_trail ignore: [:updated_at]
-
   belongs_to :ats_type
   belongs_to :company_size, optional: true
   belongs_to :funding_type, optional: true
-
   has_many :company_cities, dependent: :destroy
   has_many :cities, through: :company_cities, dependent: :destroy
   has_many :company_states, dependent: :destroy
@@ -19,24 +17,19 @@ class Company < ApplicationRecord
   has_many :job_posts, dependent: :destroy
   has_many :company_specializations
   has_many :company_specialties, through: :company_specializations
-
   validates :company_name, presence: true, uniqueness: true
   validates :linkedin_url, uniqueness: true, allow_blank: true
-
   def active_jobs
     job_posts.where(job_active: true)
   end
-
   def inactive_jobs
     job_posts.where(job_active: false)
   end
-
   def self.seed_existing_companies(company, row, ats_type, countries, states, cities)
     changes_made = false
     %w[operating_status linkedin_url year_founded acquired_by company_description ats_id logo_url
        company_url].each do |attribute|
       next unless row[attribute].present?
-
       casted_value = case attribute
                      when 'operating_status'
                        ActiveModel::Type::Boolean.new.cast(row[attribute])
@@ -81,29 +74,22 @@ class Company < ApplicationRecord
     end
     changes_made
   end
-
   private_class_method def self.update_association(company, association, new_value)
     return false if company.send(association) == new_value
-
     company.send("#{association}=", new_value)
     true
   end
-
   private_class_method def self.update_optional_association(company, association, new_value_key, model_class, key_field)
     return false unless new_value_key.present?
-
     new_value = model_class.find_by(key_field => new_value_key)
     return false if company.send(association) == new_value
-
     company.send("#{association}=", new_value)
     true
   end
-
   private_class_method def self.update_collection(company, association, new_values)
     if new_values.blank? || company.send(association).pluck(:id).sort == new_values.pluck(:id).sort
       return false
     end
-
     company.send("#{association}=", new_values)
     true
   end

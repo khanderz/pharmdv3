@@ -4,12 +4,12 @@ one:
   role_name: MyString
   aliases: MyString
   error_details: MyText
-  reference_id:
+  reference_id: 
   resolved: false
 
 two:
   role_name: MyString
   aliases: MyString
   error_details: MyText
-  reference_id:
+  reference_id: 
   resolved: false

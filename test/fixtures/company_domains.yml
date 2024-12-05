@@ -1,11 +1,9 @@
 # Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
 
 one:
-  company: one
-  healthcare_domain: one
-  --indexes: MyString
+   company: one
+   healthcare_domain: one
 
 two:
-  company: two
-  healthcare_domain: two
-  --indexes: MyString
+   company: two
+   healthcare_domain: two
