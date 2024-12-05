@@ -1,5 +1,10 @@
 # frozen_string_literal: true
 
+RED = "\033[31m"
+GREEN = "\033[32m"
+BLUE = "\033[34m"
+RESET = "\033[0m"
+
 credentials_path = ENV['GOOGLE_CREDENTIALS_PATH']
 sheet_id = ENV['MASTER_SHEET_ID']
 GH_range_name = ENV['GREENHOUSE_SHEET_RANGE']
@@ -38,9 +43,10 @@ def log_adjudication(entity_type, entity_name, company_name, adjudicatable)
 
   puts "Logged adjudication for #{entity_type}: #{entity_name}, company: #{company_name}"
   adjudication
-rescue ActiveRecord::RecordInvalid => e
-  puts "Failed to create adjudication for #{entity_type} '#{entity_name}' and company '#{company_name}': #{e.message}"
-  nil
+  
+  rescue ActiveRecord::RecordInvalid => e
+    puts "Failed to create adjudication for #{entity_type} '#{entity_name}' and company '#{company_name}': #{e.message}"
+    nil
 end
 
 def find_or_create_country(country_name, company_name)
@@ -100,31 +106,71 @@ def find_or_create_city(city_name, company_name)
   end
 end
 
-
 def update_join_tables(company, countries, states, cities, domains, specialties)
-  countries.each do |country|
-    CompanyCountry.find_or_create_by!(company_id: company.id, country_id: country.id)
+  changes_made = false
+
+  countries = countries.uniq { |country| country.id }
+  states = states.uniq { |state| state.id }
+  cities = cities.uniq { |city| city.id }
+  domains = domains.uniq { |domain| domain.id }
+  specialties = specialties.uniq { |specialty| specialty.id }
+
+  existing_countries = CompanyCountry.where(company_id: company.id).pluck(:country_id).sort
+  new_countries = countries.map(&:id).sort
+  if existing_countries != new_countries
+    CompanyCountry.where(company_id: company.id).destroy_all
+    countries.each do |country|
+      CompanyCountry.create!(company_id: company.id, country_id: country.id)
+    end
+    changes_made = true
   end
 
-  states.each do |state|
-    CompanyState.find_or_create_by!(company_id: company.id, state_id: state.id)
+  existing_states = CompanyState.where(company_id: company.id).pluck(:state_id).sort
+  new_states = states.map(&:id).sort
+  if existing_states != new_states
+    CompanyState.where(company_id: company.id).destroy_all
+    states.each do |state|
+      CompanyState.create!(company_id: company.id, state_id: state.id)
+    end
+    changes_made = true
   end
 
-  cities.each do |city|
-    CompanyCity.find_or_create_by!(company_id: company.id, city_id: city.id)
+  existing_cities = CompanyCity.where(company_id: company.id).pluck(:city_id).sort
+  new_cities = cities.map(&:id).sort
+  if existing_cities != new_cities
+    CompanyCity.where(company_id: company.id).destroy_all
+    cities.each do |city|
+      CompanyCity.create!(company_id: company.id, city_id: city.id)
+    end
+    changes_made = true
   end
 
-  domains.each do |domain|
-    CompanyDomain.find_or_create_by!(company_id: company.id, healthcare_domain_id: domain.id)
+  existing_domains = CompanyDomain.where(company_id: company.id).pluck(:healthcare_domain_id).sort
+  new_domains = domains.map(&:id).sort
+  if existing_domains != new_domains
+    CompanyDomain.where(company_id: company.id).destroy_all
+    domains.each do |domain|
+      CompanyDomain.create!(company_id: company.id, healthcare_domain_id: domain.id)
+    end
+    changes_made = true
   end
 
-  specialties.each do |specialty|
-    CompanySpecialization.find_or_create_by!(company_id: company.id, company_specialty_id: specialty.id)
+  existing_specialties = CompanySpecialization.where(company_id: company.id).pluck(:company_specialty_id).sort
+  new_specialties = specialties.map(&:id).sort
+  if existing_specialties != new_specialties
+    CompanySpecialization.where(company_id: company.id).destroy_all
+    specialties.each do |specialty|
+      CompanySpecialization.create!(company_id: company.id, company_specialty_id: specialty.id)
+    end
+    changes_made = true
   end
+
+  changes_made
 end
 
 def update_existing_company(company, row_data, ats_type, countries, states, cities, domains, specialties)
   changes_made = false
+  changed_attributes = {}
 
   company.assign_attributes(
     linkedin_url: row_data['linkedin_url'],
@@ -141,11 +187,25 @@ def update_existing_company(company, row_data, ats_type, countries, states, citi
 
   if company.changed?
     changes_made = true
+    changed_attributes[:company] = company.changes
     company.save!
   end
 
-  update_join_tables(company, countries, states, cities, domains, specialties)
-  puts changes_made ? "Updated #{company.company_name}" : "#{company.company_name} has no changes."
+  join_table_changes = update_join_tables(company, countries, states, cities, domains, specialties)
+  changes_made ||= join_table_changes
+
+  if changes_made
+    if changed_attributes[:company]
+      puts "#{BLUE}Attribute changes for #{company.company_name}: #{changed_attributes[:company]}#{RESET}"
+    end
+
+    if join_table_changes
+      puts "#{BLUE}Join table changes made for #{company.company_name}#{RESET}"
+    end
+
+  else
+    puts "#{RED}#{company.company_name} has no changes.#{RESET}"
+  end
 end
 
 def create_new_company(row_data, ats_type, countries, states, cities, domains, specialties)
@@ -177,11 +237,18 @@ def process_company_data(row_data, headers)
 
   company = Company.find_by(company_name: company_name)
   ats_type = AtsType.find_by(ats_type_code: row_data['company_ats_type'])
+  
   countries = normalize_location_data(row_data['company_countries']).map { |name| find_or_create_country(name, company_name) }
   states = normalize_location_data(row_data['company_states']).map { |name| find_or_create_state(name, company_name) }
   cities = normalize_location_data(row_data['company_cities']).map { |name| find_or_create_city(name, company_name) }
-  domains = (row_data['healthcare_domains'] || '').split(',').map(&:strip).map { |key| HealthcareDomain.find_by(key: key) }.compact
-  specialties = (row_data['company_specialty'] || '').split(',').map(&:strip).map { |key| CompanySpecialty.find_by(key: key) }.compact
+
+  domains = (row_data['healthcare_domain'] || '').split(',').map(&:strip).map do |key|
+    HealthcareDomain.find_or_create_by!(key: key)
+  end
+
+  specialties = (row_data['company_specialty'] || '').split(',').map(&:strip).map do |key|
+    CompanySpecialty.find_or_create_by!(key: key)
+  end
 
   if company
     update_existing_company(company, row_data, ats_type, countries, states, cities, domains, specialties)
