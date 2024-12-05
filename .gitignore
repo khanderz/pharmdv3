@@ -39,6 +39,7 @@ config/local_env.yml
 venv/
 env/
 __pycache__/
+myenv/
 
 .pycall_cache
 
