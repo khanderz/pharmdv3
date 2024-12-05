@@ -5,6 +5,8 @@ from app.python.ai_processing.utils.logger import BLUE, GREEN, RED, RESET
 from app.python.data_processing.companies.google_sheets_updater import (
     update_google_sheet,
     update_google_sheet_row,
+    batch_update_google_sheet,
+    get_column_letter,
 )
 from app.python.hooks.get_company_sizes import fetch_company_sizes
 from app.python.hooks.get_linkedin_data import fetch_company_data
@@ -277,8 +279,6 @@ def enrich_with_linkedin_data(
 
     return master_active_data
 
-
-
 def filter_active_companies(
     master_data,
     master_sheet_id,
@@ -405,3 +405,48 @@ def filter_active_companies(
         credentials_path, master_sheet_id, master_range_name, master_data
     )
     print(f"{BLUE}Master data sheet updated with all changes.{RESET}")
+
+def update_companies_to_google_sheet(
+    credentials_path, sheet_id, sheet_range, filtered_companies
+):
+    """
+    Updates a Google Sheet with filtered companies' LinkedIn data in batches.
+
+    Args:
+        credentials_path (str): Path to the Google service account JSON credentials file.
+        sheet_id (str): ID of the Google Sheet.
+        sheet_range (str): Name of the sheet or range (e.g., 'Sheet1').
+        filtered_companies (list[dict]): List of companies to process and update.
+    """
+    company_size_data = fetch_company_sizes()  
+    batch_updates = []
+
+    for company in filtered_companies:
+        company_name = company.get("company_name")
+        linkedin_url = company.get("linkedin_url")
+
+        if not company_name or not linkedin_url:
+            print(f"{RED}Skipping company with missing name or LinkedIn URL.{RESET}")
+            continue
+
+
+        row, updated_attributes = map_linkedin_data_to_newcompany(company, linkedin_data)
+
+        if updated_attributes:
+            print(f"{GREEN}Updated attributes for {company_name}: {', '.join(updated_attributes)}{RESET}")
+
+            batch_updates.append(
+                {
+                    "range": f"{sheet_range}!A{row['row_index']}:Z{row['row_index']}",
+                    "values": [list(row.values())],  # Convert the row dict to a list
+                }
+            )
+
+    if batch_updates:
+        try:
+            print(f"{BLUE}Performing batch update for {len(batch_updates)} companies...{RESET}")
+            batch_update_google_sheet(credentials_path, sheet_id, batch_updates)
+        except Exception as e:
+            print(f"{RED}Batch update failed: {e}{RESET}")
+    else:
+        print(f"{RED}No updates to perform. Check the filtered companies list.{RESET}")

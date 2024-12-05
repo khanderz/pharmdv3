@@ -53,11 +53,11 @@ if __name__ == "__main__":
     #     credentials_path, master_sheet_id, master_linkedin_pull_range_name
     # )
 
-    greenhouse_data = load_sheet_data(
-        credentials_path, master_sheet_id, GREENHOUSE_SHEET_RANGE
-    )
+    # greenhouse_data = load_sheet_data(
+    #     credentials_path, master_sheet_id, GREENHOUSE_SHEET_RANGE
+    # )
 
-    lever_data = load_sheet_data(credentials_path, master_sheet_id, LEVER_SHEET_RANGE)
+    # lever_data = load_sheet_data(credentials_path, master_sheet_id, LEVER_SHEET_RANGE)
 
     # ----------------------------- DATA PROCESSING -----------------------------
 
@@ -75,13 +75,13 @@ if __name__ == "__main__":
 
     # ----------------------------- AI MODELS -----------------------------
 
-    process_and_update_sheet(
-        credentials_path, master_sheet_id, greenhouse_data, GREENHOUSE_SHEET_NAME
-    )
+    # process_and_update_sheet(
+    #     credentials_path, master_sheet_id, greenhouse_data, GREENHOUSE_SHEET_NAME
+    # )
 
-    process_and_update_sheet(
-        credentials_path, master_sheet_id, lever_data, LEVER_SHEET_NAME
-    )
+    # process_and_update_sheet(
+    #     credentials_path, master_sheet_id, lever_data, LEVER_SHEET_NAME
+    # )
 
     # from app.python.data_processing.job_posts.process_job_post import (
     #     process_job_post_descriptions,
@@ -103,3 +103,33 @@ if __name__ == "__main__":
 
     # master_data = remove_duplicates(master_data)
     # update_google_sheet(credentials_path, master_sheet_id, master_range_name, master_data)
+
+    # ----------------------------- PROXYCURL -----------------------------
+    query_params = {
+        'country': 'US',
+        'region': 'United States',
+        # 'city': 'new AND york',
+        'type': 'PRIVATELY_HELD',
+        'follower_count_min': '100',
+        # 'follower_count_max': '1000',
+        # 'name': 'google OR apple',
+        'industry': 'technology',
+        # 'employee_count_max': '1000',
+        # 'employee_count_min': '1000',
+        # 'description': 'medical device',
+        'founded_after_year': '2019',
+        # 'founded_before_year': '1999',
+        # 'funding_amount_max': '1000000',
+        # 'funding_amount_min': '1000000',
+        # 'funding_raised_after': '2019-12-30',
+        # 'funding_raised_before': '2019-12-30',
+        # 'public_identifier_in_list': 'stripe,amazon',
+        # 'public_identifier_not_in_list': 'stripe,amazon',
+        # 'page_size': '10',
+        'enrich_profiles': 'enrich',
+        'use_cache': 'if-present',
+    }
+
+    results = search_companies(query_params)
+    filtered_companies = filter_healthcare_companies(results)
+    update_companies_to_google_sheet(credentials_path, sheet_id, sheet_range, filtered_companies)

@@ -119,31 +119,4 @@ def filter_healthcare_companies(search_response):
     except Exception as e:
         return {"error": f"Unexpected error: {str(e)}"}
 
-if __name__ == "__main__":
-    query_params = {
-        'country': 'US',
-        'region': 'United States',
-        # 'city': 'new AND york',
-        'type': 'PRIVATELY_HELD',
-        'follower_count_min': '100',
-        # 'follower_count_max': '1000',
-        # 'name': 'google OR apple',
-        'industry': 'technology',
-        # 'employee_count_max': '1000',
-        # 'employee_count_min': '1000',
-        # 'description': 'medical device',
-        'founded_after_year': '2019',
-        # 'founded_before_year': '1999',
-        # 'funding_amount_max': '1000000',
-        # 'funding_amount_min': '1000000',
-        # 'funding_raised_after': '2019-12-30',
-        # 'funding_raised_before': '2019-12-30',
-        # 'public_identifier_in_list': 'stripe,amazon',
-        # 'public_identifier_not_in_list': 'stripe,amazon',
-        # 'page_size': '10',
-        'enrich_profiles': 'enrich',
-        'use_cache': 'if-present',
-    }
 
-    results = search_companies(query_params)
-    print(results)
