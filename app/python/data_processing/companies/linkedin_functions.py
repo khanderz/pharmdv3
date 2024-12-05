@@ -83,6 +83,155 @@ def seed_company_data(data, credentials_path, master_sheet_id, range_name):
 
     print(f"{GREEN}Company data seeding completed successfully!{RESET}")
 
+def map_linkedin_data_to_newcompany(row, linkedin_data):
+    """
+    Map LinkedIn data to a single company's attributes.
+    """
+    company_size_data = fetch_company_sizes()
+    updated_attributes = []
+
+    row["company_name"] = linkedin_data.get("name")
+    row["linkedin_url"] = linkedin_data.get("linkedin_profile_url")
+    
+    row["company_url"] = linkedin_data.get("website")
+    updated_attributes.append("company_url")
+
+    row["company_type"] = linkedin_data.get("company_type")
+    updated_attributes.append("company_type")
+
+    row["year_founded"] = linkedin_data.get("founded_year")
+    updated_attributes.append("year_founded")
+
+    row["logo_url"] = linkedin_data.get("profile_pic_url")
+    updated_attributes.append("logo_url")
+
+    row["company_description"] = linkedin_data.get("description")
+    updated_attributes.append("company_description")
+
+    if linkedin_data.get("tagline") is not None:
+        row["company_tagline"] = linkedin_data.get("tagline")
+        updated_attributes.append("company_tagline")
+
+    confirmed_locations = linkedin_data.get("locations", [])
+    if confirmed_locations:
+        company_countries = set(safely_parse_list(row.get("company_countries", [])))
+        company_states = set(safely_parse_list(row.get("company_states", [])))
+        company_cities = set(safely_parse_list(row.get("company_cities", [])))
+
+        for location in confirmed_locations:
+            if location.get("country"):
+                company_countries.add(location["country"])
+            if location.get("state"):
+                company_states.add(location["state"])
+            if location.get("city"):
+                company_cities.add(location["city"])
+
+        row["company_countries"] = list(company_countries)
+        row["company_states"] = list(company_states)
+        row["company_cities"] = list(company_cities)
+
+        updated_attributes.extend(["company_countries", "company_states", "company_cities"])
+
+    if company_size_data:
+        staff_count = linkedin_data.get("company_size_on_linkedin")
+        if staff_count is not None:
+            for size in company_size_data:
+                size_range = size["size_range"]
+                try:
+                    if "+" in size_range:
+                        min_size = int(size_range.replace("+", "").strip())
+                        max_size = float("inf")
+                    else:
+                        min_size, max_size = map(int, size_range.split("-"))
+                except ValueError:
+                    continue
+
+                if min_size <= staff_count <= max_size:
+                    row["company_size"] = size_range
+                    updated_attributes.append("company_size")
+                    break
+
+    return row, updated_attributes
+
+
+def map_linkedin_data_to_company(row, linkedin_data):
+    """
+    Map LinkedIn data to a single company's attributes.
+    """
+    company_size_data = fetch_compa
+    ny_sizes()
+    updated_attributes = []
+
+    if pd.isna(row.get("company_url")) or not row["company_url"]:
+        row["company_url"] = linkedin_data.get("website")
+        updated_attributes.append("company_url")
+
+    if pd.isna(row.get("logo_url")) or not row["logo_url"]:
+        row["logo_url"] = linkedin_data.get("profile_pic_url")
+        updated_attributes.append("logo_url")
+
+    if pd.isna(row.get("company_type")) or not row["company_type"]:
+        company_type = linkedin_data.get("company_type")
+        if company_type:
+            row["company_type"] = company_type
+            updated_attributes.append("company_type")
+
+    if pd.isna(row.get("year_founded")) or not row["year_founded"]:
+        row["year_founded"] = linkedin_data.get("founded_year")
+        updated_attributes.append("year_founded")
+
+    row["company_description"] = linkedin_data.get("description")
+    updated_attributes.append("company_description")
+
+    if linkedin_data.get("tagline") is not None:
+        row["company_tagline"] = linkedin_data.get("tagline")
+        updated_attributes.append("company_tagline")
+
+    confirmed_locations = linkedin_data.get("locations", [])
+    if confirmed_locations:
+        for location in confirmed_locations:
+            country = location.get("country")
+            state = location.get("state")
+            city = location.get("city")
+
+            current_countries = safely_parse_list(row.get("company_countries"))
+            if country and country not in current_countries:
+                current_countries.append(country)
+                row["company_countries"] = current_countries
+                updated_attributes.append("company_countries")
+
+            current_states = safely_parse_list(row.get("company_states"))
+            if state and state not in current_states:
+                current_states.append(state)
+                row["company_states"] = current_states
+                updated_attributes.append("company_states")
+
+            current_cities = safely_parse_list(row.get("company_cities"))
+            if city and city not in current_cities:
+                current_cities.append(city)
+                row["company_cities"] = current_cities
+                updated_attributes.append("company_cities")
+
+    if company_size_data:
+        staff_count = linkedin_data.get("company_size_on_linkedin")
+        if staff_count is not None:
+            for size in company_size_data:
+                size_range = size["size_range"]
+                try:
+                    if "+" in size_range:
+                        min_size = int(size_range.replace("+", "").strip())
+                        max_size = float("inf")
+                    else:
+                        min_size, max_size = map(int, size_range.split("-"))
+                except ValueError:
+                    continue
+
+                if min_size <= staff_count <= max_size:
+                    row["company_size"] = size_range
+                    updated_attributes.append("company_size")
+                    break
+
+    return row, updated_attributes
 
 def enrich_with_linkedin_data(
     master_active_data, credentials_path, master_sheet_id, active_range_name
@@ -90,8 +239,6 @@ def enrich_with_linkedin_data(
     """
     Enrich data with LinkedIn company details using the LinkedIn API hook.
     """
-
-    company_size_data = fetch_company_sizes()
 
     for index, row in master_active_data.iterrows():
         company_name = row["company_name"]
@@ -105,107 +252,13 @@ def enrich_with_linkedin_data(
         )
 
         linkedin_url = row.get("linkedin_url")
-
         linkedin_data = fetch_company_data(linkedin_url)
 
         if not linkedin_data or "error" in linkedin_data:
             print(f"{RED}Failed to fetch data for {company_name}{RESET}")
             continue
 
-        updated_attributes = []
-
-        # if pd.isna(row.get("last_funding_type")) or not row["last_funding_type"]:
-        #     master_active_data.at[index, "last_funding_type"] = linkedin_data.get("fundingType")
-
-        if pd.isna(row.get("company_url")) or not row["company_url"]:
-            master_active_data.at[index, "company_url"] = linkedin_data.get("website")
-            updated_attributes.append("company_url")
-
-        if pd.isna(row.get("logo_url")) or not row["logo_url"]:
-            master_active_data.at[index, "logo_url"] = linkedin_data.get(
-                "profile_pic_url"
-            )
-
-        # if pd.isna(row.get("is_public")) or not row["is_public"]:
-        #     company_type = linkedin_data.get("companyType", {}).get("code")
-        #     if company_type == "PRIVATELY_HELD":
-        #         master_active_data.at[index, "is_public"] = False
-        #     elif company_type == "PUBLIC_COMPANY":
-        #         master_active_data.at[index, "is_public"] = True
-        #     else:
-        #         master_active_data.at[index, "is_public"] = False
-
-        #     updated_attributes.append("is_public")
-
-        if pd.isna(row.get("year_founded")) or not row["year_founded"]:
-            master_active_data.at[index, "year_founded"] = linkedin_data.get(
-                "founded_year"
-            )
-            updated_attributes.append("year_founded")
-
-        master_active_data.at[index, "company_description"] = linkedin_data.get(
-            "description"
-        )
-        updated_attributes.append("company_description")
-
-        if linkedin_data.get("tagline") is not None:
-            master_active_data.at[index, "company_tagline"] = linkedin_data.get(
-                "tagline"
-            )
-            updated_attributes.append("company_tagline")
-
-        confirmed_locations = linkedin_data.get("locations", [])
-        if confirmed_locations:
-            for location in confirmed_locations:
-                country = location.get("country")
-                state = location.get("state")
-                city = location.get("city")
-
-                current_countries = safely_parse_list(row.get("company_countries"))
-                if country and country not in current_countries:
-                    current_countries.append(country)
-                    master_active_data.at[index, "company_countries"] = (
-                        current_countries
-                    )
-                    updated_attributes.append("company_countries")
-
-                current_states = safely_parse_list(row.get("company_states"))
-                if state and state not in current_states:
-                    current_states.append(state)
-                    master_active_data.at[index, "company_states"] = current_states
-                    updated_attributes.append("company_states")
-
-                current_cities = safely_parse_list(row.get("company_cities"))
-                if city and city not in current_cities:
-                    current_cities.append(city)
-                    master_active_data.at[index, "company_cities"] = current_cities
-                    updated_attributes.append("company_cities")
-
-        if company_size_data is None:
-            print(
-                f"{RED}Error: Unable to fetch company size data. Skipping company size update.{RESET}"
-            )
-        else:
-            staff_count = linkedin_data.get("company_size_on_linkedin")
-            if staff_count is not None:
-                for size in company_size_data:
-                    size_range = size["size_range"]
-                    try:
-                        if "+" in size_range:
-                            min_size = int(size_range.replace("+", "").strip())
-                            max_size = float("inf")
-                        else:
-                            min_size, max_size = map(int, size_range.split("-"))
-                    except ValueError:
-                        print(
-                            f"{RED}Unexpected size_range format: '{size_range}' for company size data. Skipping.{RESET}"
-                        )
-                        continue
-
-                    if min_size <= staff_count <= max_size:
-                        master_active_data.at[index, "company_size"] = size_range
-                        updated_attributes.append("company_size")
-                        break
+        row, updated_attributes = map_linkedin_data_to_company(row, linkedin_data)
 
         if updated_attributes:
             print(
@@ -222,11 +275,8 @@ def enrich_with_linkedin_data(
         except Exception as e:
             print(f"{RED}An error occurred during Google Sheet update: {e}{RESET}")
 
-    # print(f"{GREEN}Summary of Updates:{RESET}")
-    # for company, attributes in updates_summary.items():
-    #     print(f"{BLUE}{company}{RESET}: Updated attributes - {', '.join(attributes)}")
-
     return master_active_data
+
 
 
 def filter_active_companies(

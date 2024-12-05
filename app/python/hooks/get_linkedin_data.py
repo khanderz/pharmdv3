@@ -39,9 +39,6 @@ def fetch_company_data(linkedin_url, retries=3, backoff_factor=2):
                 )
                 time.sleep(backoff_factor**attempt)
             else:
-                print(
-                    f"Failed to fetch company data for {linkedin_url}. Status Code: {response.status_code}, Response: {response.text}"
-                )
                 return {"error": f"Company fetch error: {response.text}"}
 
         return {"error": f"Failed after {retries} retries."}
@@ -54,6 +51,7 @@ def fetch_company_data(linkedin_url, retries=3, backoff_factor=2):
 # Example usage
 # linkedin_url = "https://www.linkedin.com/company/23andme/"
 # result = fetch_company_data(linkedin_url)
+
 
 def search_companies(params, retries=3, backoff_factor=2):
     """
@@ -85,37 +83,64 @@ def search_companies(params, retries=3, backoff_factor=2):
                 print(f"Retryable error ({response.status_code}) encountered. Retrying in {backoff_factor ** attempt} seconds...")
                 time.sleep(backoff_factor ** attempt)
             else:
-                print(f"Failed request. Status Code: {response.status_code}. Response: {response.text}")
                 return {"error": f"Search failed with status {response.status_code}: {response.text}"}
 
         return {"error": f"Failed after {retries} retries."}
 
     except Exception as e:
         return {"error": f"Unexpected error: {str(e)}"}
+        
+def filter_healthcare_companies(search_response):
+    """
+    Filters the search response to include only companies with 'healthcare' in their specialties.
 
-# Example usage
+    Args:
+        search_response (dict): The JSON response from the company search API.
+
+    Returns:
+        list: A list of filtered companies with 'healthcare' in their specialties.
+    """
+    try:
+        results = search_response.get("results", [])
+        if not results:
+            return {"message": "No results found in the search response."}
+
+        healthcare_companies = []
+        for company in results:
+            specialties = company.get("profile", {}).get("specialities", [])
+            if "healthcare" in [s.lower() for s in specialties]:
+                healthcare_companies.append(company)
+
+        if not healthcare_companies:
+            return {"message": "No companies with 'healthcare' in specialties."}
+
+        return healthcare_companies
+
+    except Exception as e:
+        return {"error": f"Unexpected error: {str(e)}"}
+
 if __name__ == "__main__":
     query_params = {
         'country': 'US',
         'region': 'United States',
-        'city': 'new AND york',
+        # 'city': 'new AND york',
         'type': 'PRIVATELY_HELD',
-        'follower_count_min': '1000',
-        'follower_count_max': '1000',
-        'name': 'google OR apple',
+        'follower_count_min': '100',
+        # 'follower_count_max': '1000',
+        # 'name': 'google OR apple',
         'industry': 'technology',
-        'employee_count_max': '1000',
-        'employee_count_min': '1000',
-        'description': 'medical device',
-        'founded_after_year': '1999',
-        'founded_before_year': '1999',
-        'funding_amount_max': '1000000',
-        'funding_amount_min': '1000000',
-        'funding_raised_after': '2019-12-30',
-        'funding_raised_before': '2019-12-30',
-        'public_identifier_in_list': 'stripe,amazon',
-        'public_identifier_not_in_list': 'stripe,amazon',
-        'page_size': '10',
+        # 'employee_count_max': '1000',
+        # 'employee_count_min': '1000',
+        # 'description': 'medical device',
+        'founded_after_year': '2019',
+        # 'founded_before_year': '1999',
+        # 'funding_amount_max': '1000000',
+        # 'funding_amount_min': '1000000',
+        # 'funding_raised_after': '2019-12-30',
+        # 'funding_raised_before': '2019-12-30',
+        # 'public_identifier_in_list': 'stripe,amazon',
+        # 'public_identifier_not_in_list': 'stripe,amazon',
+        # 'page_size': '10',
         'enrich_profiles': 'enrich',
         'use_cache': 'if-present',
     }
