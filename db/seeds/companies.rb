@@ -5,6 +5,27 @@ sheet_id = ENV['MASTER_SHEET_ID']
 GH_range_name = ENV['GREENHOUSE_SHEET_RANGE']
 L_range_name = ENV['LEVER_SHEET_RANGE']
 
+def normalize_location_data(data)
+  case data
+  when String
+    if data.strip.start_with?('[') && data.strip.end_with?(']')
+      data = data.gsub(/[\[\]']/, '')
+      data.split(',').map(&:strip)
+    else
+      [data.strip] 
+    end
+  when Array
+    data.flatten.map(&:to_s).map(&:strip).compact
+  else
+    []
+  end
+end
+
+def resolve_location(locations)
+  return nil if locations.empty? 
+  locations.size == 1 ? locations.first : locations
+end
+
 begin
   ActiveRecord::Base.transaction do
     gh_data = GoogleSheetsService.fetch_data(credentials_path, sheet_id, GH_range_name)
@@ -22,63 +43,93 @@ begin
 
     combined_data.each do |row|
       row_data = Hash[headers.zip(row)]
-      puts "Processing row: #{row_data}"
+      # puts "Processing row: #{row_data}"
       next unless row_data['company_name']
 
-      company = Company.find_by(company_name: row['company_name'])
       company_name = row_data['company_name']
+      company = Company.find_by(company_name: company_name)
       ats_type = AtsType.find_by(ats_type_code: row_data['company_ats_type'])
-      company_countries = Array(row_data['company_countries']).flat_map do |value|
-        value.is_a?(String) ? value.split(',').map(&:strip) : value
-      end
-      company_states = Array(row_data['company_states']).flat_map do |value|
-        value.is_a?(String) ? value.split(',').map(&:strip) : value
-      end
-      company_cities = Array(row_data['company_cities']).flat_map do |value|
-        value.is_a?(String) ? value.split(',').map(&:strip) : value
-      end
+      company_countries = normalize_location_data(row_data['company_countries'])
+      company_states = normalize_location_data(row_data['company_states'])
+      company_cities = normalize_location_data(row_data['company_cities'])
 
       countries = company_countries.map do |country_name|
-        Country.find_by(country_code: country_name) ||
-          Country.find_by(country_name: country_name) ||
-          Country.where('? = ANY(aliases)', country_name).first ||
-          Country.create!(
+        existing_country = Country.where(
+          'LOWER(country_code) = ? OR LOWER(country_name) = ? OR LOWER(?) = ANY(aliases)',
+          country_name.downcase, country_name.downcase, country_name.downcase
+        ).first
+      
+        if existing_country
+          puts("Found existing country: #{existing_country.country_name}")
+          existing_country
+        else
+          puts "Creating new country: #{country_name}"
+          new_country = Country.create!(
             country_code: country_name,
             country_name: country_name,
             error_details: "Country '#{country_name}' not found for Company #{company_name}",
             resolved: false
-          ).tap do |new_country|
-            Adjudication.create!(
-              adjudicatable_type: 'Company',
-              adjudicatable_id: new_country.id,
-              error_details: "Country '#{country_name}' not found for Company #{company_name}",
-              resolved: false
-            )
-            puts "Country not found for company: #{company_name} or country code/name: #{country_name}. Logged to adjudications."
+          )
+          new_country.save!
+          puts("new country created: #{new_country.country_name}")
+      
+          Adjudication.create!(
+            adjudicatable_type: 'Country',
+            adjudicatable_id: new_country.id,
+            error_details: "Country '#{country_name}' not found for Company #{company_name}",
+            resolved: false
+          )
+          puts "Country not found for company: #{company_name} or country code/name: #{country_name}. Logged to adjudications."
+          new_country
+        end
+      end.compact
+
+      countries = resolve_location(countries)      
+
+      states = company_states.map do |state_name|
+        State.where('LOWER(state_name) = ? OR LOWER(state_code) = ?', 
+                    state_name.downcase, state_name.downcase).first ||
+          begin
+            puts("State not found for company: #{company_name} or name/code: #{state_name}")
+            nil  
           end
       end.compact
 
-      states = company_states.map do |state_name|
-        State.find_by(state_name: state_name) || State.find_by(state_code: state_name) ||
-          puts("State not found for company: #{company_name} or name/code: #{state_name}")
-      end.compact
+      states = resolve_location(states)
 
       cities = company_cities.map do |city_name|
-        City.find_by(city_name: city_name) || City.where('? = ANY(aliases)', city_name).first ||
-          City.create!(
+        puts("city_name: #{city_name}")
+        existing_city = City.where(
+          'LOWER(city_name) = ? OR LOWER(?) = ANY(aliases)',
+          city_name.downcase, city_name.downcase
+        ).first
+      
+        if existing_city
+          puts("Found existing city: #{existing_city.city_name}")
+          existing_city  
+        else
+          puts "Creating new city: #{city_name}"
+          new_city = City.create!(
             city_name: city_name,
             error_details: "City '#{city_name}' not found for Company #{company_name}",
             resolved: false
-          ).tap do |new_city|
-            Adjudication.create!(
-              adjudicatable_type: 'Company',
-              adjudicatable_id: new_city.id,
-              error_details: "City '#{city_name}' not found for Company #{company_name}",
-              resolved: false
-            )
-            puts "City not found for company: #{company_name} or name/alias: #{city_name}. Logged to adjudications."
-          end
+          )
+          new_city.save!
+          puts("new city created: #{new_city.city_name}")
+      
+          Adjudication.create!(
+            adjudicatable_type: 'City',
+            adjudicatable_id: new_city.id,
+            error_details: "City '#{city_name}' not found for Company #{company_name}",
+            resolved: false
+          )
+          puts "City not found for company: #{company_name} or name/alias: #{city_name}. Logged to adjudications."
+          new_city
+        end
       end.compact
+
+      cities = resolve_location(cities)
+      
 
       if company
         puts "-----UPDATING #{company_name}"
