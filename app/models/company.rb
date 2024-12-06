@@ -2,9 +2,11 @@
 # frozen_string_literal: true
 class Company < ApplicationRecord
   has_paper_trail ignore: [:updated_at]
+
   belongs_to :ats_type
   belongs_to :company_size, optional: true
   belongs_to :funding_type, optional: true
+
   has_many :company_cities, dependent: :destroy
   has_many :cities, through: :company_cities, dependent: :destroy
   has_many :company_states, dependent: :destroy
@@ -17,8 +19,13 @@ class Company < ApplicationRecord
   has_many :job_posts, dependent: :destroy
   has_many :company_specializations
   has_many :company_specialties, through: :company_specializations
+  
   validates :company_name, presence: true, uniqueness: true
   validates :linkedin_url, uniqueness: true, allow_blank: true
+
+  scope :with_size, ->(size) { where(company_size_id: size.id) }
+
+
   def active_jobs
     job_posts.where(job_active: true)
   end

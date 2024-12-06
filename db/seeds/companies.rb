@@ -4,6 +4,7 @@ RED = "\033[31m"
 GREEN = "\033[32m"
 BLUE = "\033[34m"
 RESET = "\033[0m"
+ORANGE = "\033[38;2;255;165;0m"
 
 credentials_path = ENV['GOOGLE_CREDENTIALS_PATH']
 sheet_id = ENV['MASTER_SHEET_ID']
@@ -41,11 +42,11 @@ def log_adjudication(entity_type, entity_name, company_name, adjudicatable)
     resolved: false
   )
 
-  puts "Logged adjudication for #{entity_type}: #{entity_name}, company: #{company_name}"
+  puts "#{ORANGE}Logged adjudication for #{entity_type}: #{entity_name}, company: #{company_name}#{RESET}"
   adjudication
   
   rescue ActiveRecord::RecordInvalid => e
-    puts "Failed to create adjudication for #{entity_type} '#{entity_name}' and company '#{company_name}': #{e.message}"
+    puts "#{RED}Failed to create adjudication for #{entity_type} '#{entity_name}' and company '#{company_name}': #{e.message}#{RESET}"
     nil
 end
 
@@ -106,11 +107,60 @@ def find_or_create_city(city_name, company_name)
   end
 end
 
-def find_company_size(size_range)
-  CompanySize.find_by(size_range: size_range) || begin
-    puts "#{RED}Invalid company size: '#{size_range}'#{RESET}"
-    nil
+def find_company_size(size_range, current_company_size)
+  if size_range.to_s.match?(/^\d+$/)
+    size = size_range.to_i
+
+    range = CompanySize.all.find do |company_size|
+      lower, upper = company_size.size_range.split('-').map(&:to_i)
+      upper = Float::INFINITY if company_size.size_range.include?('+')
+      size.between?(lower, upper)
+    end
+
+    if range
+      if current_company_size == range
+        puts "#{BLUE}Company size '#{size_range}' matches the current size. Skipping update.#{RESET}"
+        return current_company_size  
+      else
+        range
+      end
+    else
+      puts "#{RED}Invalid numeric company size: '#{size_range}' (No matching range found in CompanySize table)#{RESET}"
+      nil
+    end
+  else
+    matching_company_size = CompanySize.find_by(size_range: size_range)
+
+    if matching_company_size
+      if current_company_size == matching_company_size
+        puts "#{BLUE}Company size '#{size_range}' matches the current size. Skipping update.#{RESET}"
+        return current_company_size  
+      else
+        matching_company_size
+      end
+    else
+      puts "#{RED}Invalid company size: '#{size_range}'#{RESET}"
+      nil
+    end
   end
+end
+
+def find_funding_type(funding_type_name, company_name, company)
+  if funding_type_name.blank?
+    return nil
+  end
+
+  funding_type = FundingType.where('LOWER(funding_type_name) = ?', funding_type_name.downcase).first
+  unless funding_type
+    puts "#{RED}Invalid funding type: '#{funding_type_name}' for company: #{company_name}#{RESET}"
+    log_adjudication(
+      'FundingType',
+      funding_type_name,
+      company_name,
+      company
+    )
+  end
+  funding_type
 end
 
 def update_join_tables(company, countries, states, cities, domains, specialties)
@@ -176,45 +226,59 @@ def update_join_tables(company, countries, states, cities, domains, specialties)
 end
 
 def update_existing_company(company, row_data, ats_type, countries, states, cities, domains, specialties)
-  changes_made = false
-  changed_attributes = {}
+  ActiveRecord::Base.transaction do
+    changes_made = false
+    changed_attributes = {}
+    current_company_size = company.company_size
 
-  company_size = find_company_size(row_data['company_size'])
+    company_size = find_company_size(row_data['company_size'], current_company_size)
+    funding_type = find_funding_type(row_data['last_funding_type'], company.company_name, company)
 
+    if company_size && company_size.id != current_company_size&.id
+      company.assign_attributes(company_size_id: company_size.id)
+    end
 
-  company.assign_attributes(
-    linkedin_url: row_data['linkedin_url'],
-    company_url: row_data['company_url'],
-    year_founded: row_data['year_founded'].to_i,
-    operating_status: ActiveModel::Type::Boolean.new.cast(row_data['operating_status']),
-    acquired_by: row_data['acquired_by'],
-    ats_id: row_data['ats_id'],
-    logo_url: row_data['logo_url'],
-    company_description: row_data['company_description'],
-    company_tagline: row_data['company_tagline'],
-    ats_type: ats_type,
-    company_size_id: company_size&.id
-  )
+    company.assign_attributes(
+      linkedin_url: row_data['linkedin_url'],
+      company_url: row_data['company_url'],
+      year_founded: row_data['year_founded'].to_i,
+      operating_status: ActiveModel::Type::Boolean.new.cast(row_data['operating_status']),
+      acquired_by: row_data['acquired_by'],
+      ats_id: row_data['ats_id'],
+      logo_url: row_data['logo_url'],
+      company_description: row_data['company_description'],
+      company_tagline: row_data['company_tagline'],
+      ats_type: ats_type,
+      funding_type_id: funding_type&.id
+    )
 
-  if company.changed?
-    changes_made = true
-    changed_attributes[:company] = company.changes
-    company.save!
-  end
+    if company.changed?
+      changes_made = true
+      changed_attributes[:company] = company.changes
+      puts "Attempting to save company: #{company.company_name} with changes: #{changed_attributes[:company]}"
 
-  join_table_changes = update_join_tables(company, countries, states, cities, domains, specialties)
-  changes_made ||= join_table_changes
+      company.save!
+    end
 
-  if changes_made
-    puts "#{BLUE}Updated #{company.company_name}#{RESET}"
-    puts "#{BLUE}Attribute changes: #{changed_attributes[:company]}#{RESET}" if changed_attributes[:company]
-  else
-    puts "#{RED}#{company.company_name} has no changes.#{RESET}"
+    join_table_changes = update_join_tables(company, countries, states, cities, domains, specialties)
+    changes_made ||= join_table_changes
+
+    if changes_made
+      puts "#{BLUE}Updated #{company.company_name}#{RESET}"
+      puts "#{BLUE}Attribute changes: #{changed_attributes[:company]}#{RESET}" if changed_attributes[:company]
+    else
+      puts "#{company.company_name} has no changes."
+    end
+  rescue ActiveRecord::RecordInvalid => e
+    puts "#{RED}Error saving company #{company.company_name}: #{e.message}#{RESET}"
+    raise ActiveRecord::Rollback
   end
 end
 
+
 def create_new_company(row_data, ats_type, countries, states, cities, domains, specialties)
   company_size = find_company_size(row_data['company_size'])
+  funding_type = find_funding_type(row_data['last_funding_type'], company.company_name, company)
 
   new_company = Company.new(
     company_name: row_data['company_name'],
@@ -228,7 +292,8 @@ def create_new_company(row_data, ats_type, countries, states, cities, domains, s
     company_description: row_data['company_description'],
     company_tagline: row_data['company_tagline'],
     ats_type: ats_type,
-    company_size_id: company_size&.id
+    company_size_id: company_size&.id,
+    funding_type_id: funding_type&.id
   )
 
   if new_company.save
@@ -240,28 +305,33 @@ def create_new_company(row_data, ats_type, countries, states, cities, domains, s
 end
 
 def process_company_data(row_data, headers)
-  company_name = row_data['company_name']
-  return unless company_name.present?
+  ActiveRecord::Base.transaction do
+    company_name = row_data['company_name']
+    return unless company_name.present?
 
-  company = Company.find_by(company_name: company_name)
-  ats_type = AtsType.find_by(ats_type_code: row_data['company_ats_type'])
-  
-  countries = normalize_location_data(row_data['company_countries']).map { |name| find_or_create_country(name, company_name) }
-  states = normalize_location_data(row_data['company_states']).map { |name| find_or_create_state(name, company_name) }
-  cities = normalize_location_data(row_data['company_cities']).map { |name| find_or_create_city(name, company_name) }
+    company = Company.find_by(company_name: company_name)
+    ats_type = AtsType.find_by(ats_type_code: row_data['company_ats_type'])
 
-  domains = (row_data['healthcare_domain'] || '').split(',').map(&:strip).map do |key|
-    HealthcareDomain.find_or_create_by!(key: key)
-  end
+    countries = normalize_location_data(row_data['company_countries']).map { |name| find_or_create_country(name, company_name) }
+    states = normalize_location_data(row_data['company_states']).map { |name| find_or_create_state(name, company_name) }
+    cities = normalize_location_data(row_data['company_cities']).map { |name| find_or_create_city(name, company_name) }
 
-  specialties = (row_data['company_specialty'] || '').split(',').map(&:strip).map do |key|
-    CompanySpecialty.find_or_create_by!(key: key)
-  end
+    domains = (row_data['healthcare_domain'] || '').split(',').map(&:strip).map do |key|
+      HealthcareDomain.find_or_create_by!(key: key)
+    end
 
-  if company
-    update_existing_company(company, row_data, ats_type, countries, states, cities, domains, specialties)
-  else
-    create_new_company(row_data, ats_type, countries, states, cities, domains, specialties)
+    specialties = (row_data['company_specialty'] || '').split(',').map(&:strip).map do |key|
+      CompanySpecialty.find_or_create_by!(key: key)
+    end
+
+    if company
+      update_existing_company(company, row_data, ats_type, countries, states, cities, domains, specialties)
+    else
+      create_new_company(row_data, ats_type, countries, states, cities, domains, specialties)
+    end
+  rescue ActiveRecord::RecordInvalid => e
+    puts "#{RED}Transaction failed while processing company data for #{row_data['company_name']}: #{e.message}#{RESET}"
+    raise ActiveRecord::Rollback
   end
 end
 
