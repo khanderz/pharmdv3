@@ -163,6 +163,24 @@ def find_funding_type(funding_type_name, company_name, company)
   funding_type
 end
 
+def find_or_create_company_type(company_type_name, company_name, company)
+  return nil if company_type_name.blank?
+
+  company_type = CompanyType.find_by('LOWER(company_type_code) = ?', company_type_name.downcase)
+
+  unless company_type
+    puts "#{RED}Invalid company type: '#{company_type_name}' for company: #{company_name}#{RESET}"
+    log_adjudication(
+      'CompanyType',
+      company_type_name,
+      company_name,
+      company
+    )
+  end
+
+  company_type
+end
+
 def update_join_tables(company, countries, states, cities, domains, specialties)
   changes_made = false
 
@@ -230,12 +248,23 @@ def update_existing_company(company, row_data, ats_type, countries, states, citi
     changes_made = false
     changed_attributes = {}
     current_company_size = company.company_size
+    current_funding_type = company.funding_type
+    current_company_type = company.company_type
 
     company_size = find_company_size(row_data['company_size'], current_company_size)
     funding_type = find_funding_type(row_data['last_funding_type'], company.company_name, company)
+    company_type = find_or_create_company_type(row_data['company_type_id'], company.company_name, company)
 
     if company_size && company_size.id != current_company_size&.id
       company.assign_attributes(company_size_id: company_size.id)
+    end
+
+    if funding_type && funding_type.id != current_funding_type&.id
+      company.assign_attributes(funding_type_id: funding_type.id)
+    end
+
+    if company_type && company_type.id != current_company_type&.id
+      company.assign_attributes(company_type_id: company_type.id)
     end
 
     company.assign_attributes(
@@ -248,9 +277,8 @@ def update_existing_company(company, row_data, ats_type, countries, states, citi
       logo_url: row_data['logo_url'],
       company_description: row_data['company_description'],
       company_tagline: row_data['company_tagline'],
-      ats_type: ats_type,
-      funding_type_id: funding_type&.id
-    )
+      ats_type: ats_type
+      )
 
     if company.changed?
       changes_made = true
@@ -279,6 +307,7 @@ end
 def create_new_company(row_data, ats_type, countries, states, cities, domains, specialties)
   company_size = find_company_size(row_data['company_size'])
   funding_type = find_funding_type(row_data['last_funding_type'], company.company_name, company)
+  company_type = find_or_create_company_type(row_data['company_type_id'], row_data['company_name'], nil)
 
   new_company = Company.new(
     company_name: row_data['company_name'],
@@ -293,7 +322,8 @@ def create_new_company(row_data, ats_type, countries, states, cities, domains, s
     company_tagline: row_data['company_tagline'],
     ats_type: ats_type,
     company_size_id: company_size&.id,
-    funding_type_id: funding_type&.id
+    funding_type_id: funding_type&.id,
+    company_type_id: company_type&.id
   )
 
   if new_company.save
