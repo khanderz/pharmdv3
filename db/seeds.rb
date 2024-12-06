@@ -54,9 +54,9 @@ load File.join(Rails.root, 'db', 'seeds', 'static', 'currency.rb')
 load File.join(Rails.root, 'db', 'seeds', 'static', 'salary_intervals.rb')
 
 # 17. Job Seniority Levels
-load File.join(Rails.root, 'db', 'seeds', 'static', 'job_seniority.rb')
+load File.join(Rails.root, 'db', 'seeds', 'static', 'job_seniorities.rb')
 
 # 18. Job posts (depends on companies, job roles, etc.)
-# load File.join(Rails.root, 'db', 'seeds', 'job_posts.rb')
+load File.join(Rails.root, 'db', 'seeds', 'job_posts.rb')
 
 puts '*************Seeding completed**************'
