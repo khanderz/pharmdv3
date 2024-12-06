@@ -1,7 +1,7 @@
 # app/services/job_fetcher.rb
 
-RED = "\033[31m"
-RESET = "\033[0m"
+# RED = "\033[31m"
+# RESET = "\033[0m"
 
 class JobFetcher
   def self.fetch(company)

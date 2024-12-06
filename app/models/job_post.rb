@@ -1,10 +1,10 @@
 # frozen_string_literal: true
 
-RED = "\033[31m"
-GREEN = "\033[32m"
-BLUE = "\033[34m"
-RESET = "\033[0m"
-ORANGE = "\033[38;2;255;165;0m"
+# RED = "\033[31m"
+# GREEN = "\033[32m"
+# BLUE = "\033[34m"
+# RESET = "\033[0m"
+# ORANGE = "\033[38;2;255;165;0m"
 
 class JobPost < ApplicationRecord
   has_paper_trail
@@ -56,6 +56,10 @@ class JobPost < ApplicationRecord
 
   def salary_needs_extraction?
     job_salary_min.nil? && job_salary_max.nil?
+  end
+
+  def self.parse_datetime(datetime)
+    DateTime.parse(datetime).strftime('%Y-%m-%d') if datetime
   end
 
   # Class Methods

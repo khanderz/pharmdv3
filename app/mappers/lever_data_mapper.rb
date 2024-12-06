@@ -7,10 +7,9 @@ class LeverDataMapper
         job_url: job['hostedUrl'],
         job_description: job['descriptionBodyPlain'],
         job_responsibilities: extract_list(job, 'responsibilities:'),
-        job_qualifications: extract_list(job, 'requirements:'),
         job_additional: job['additionalPlain'],
-        job_posted: parse_datetime(job['createdAt']),
-        job_updated: parse_datetime(job['updatedAt']),
+        job_posted: JobPost.parse_datetime(job['createdAt']),
+        job_updated: JobPost.parse_datetime(job['updatedAt']),
         job_internal_id_string: job['id'],
         job_salary_min: job['salaryRange']&.dig('min'),
         job_salary_max: job['salaryRange']&.dig('max'),
@@ -25,10 +24,6 @@ class LeverDataMapper
       }
     end
   
-    def self.url(company, job)
-      job['hostedUrl']
-    end
-  
     private
   
     def self.extract_list(job, key)
@@ -36,10 +31,6 @@ class LeverDataMapper
       return unless list
   
       list['content'].gsub('</li><li>', "\n").gsub(%r{</?[^>]*>}, '')
-    end
-  
-    def self.parse_datetime(timestamp)
-      Time.at(timestamp / 1000).strftime('%Y-%m-%d') if timestamp
     end
   
     def self.parse_location(location)

@@ -12,7 +12,7 @@ class Department < ApplicationRecord
       department = Department.find_by('LOWER(dept_name) = ? OR LOWER(?) = ANY (SELECT LOWER(unnest(aliases)))',
                                       department_name.downcase, department_name.downcase)
       if department
-        puts "Department #{department_name} found in existing records."
+        puts "#{GREEN}Department #{department_name} found in existing records.#{RESET}"
       else
         department = Department.create!(
           dept_name: department_name,
@@ -25,7 +25,7 @@ class Department < ApplicationRecord
           error_details: "Department #{department_name} for #{relation} not found in existing records",
           resolved: false
         )
-        puts "Department #{department_name} created and logged to adjudications with adjudicatable_type #{adjudicatable_type}."
+        puts "#{RED}Department #{department_name} created and logged to adjudications with adjudicatable_type #{adjudicatable_type}.#{RESET}"
       end
       department
     end
