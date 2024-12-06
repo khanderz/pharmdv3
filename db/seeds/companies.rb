@@ -249,11 +249,11 @@ def update_existing_company(company, row_data, ats_type, countries, states, citi
     changed_attributes = {}
     current_company_size = company.company_size
     current_funding_type = company.funding_type
-    current_company_type = company.company_type
+    current_company_type = company.company_type_id
 
     company_size = find_company_size(row_data['company_size'], current_company_size)
     funding_type = find_funding_type(row_data['last_funding_type'], company.company_name, company)
-    company_type = find_or_create_company_type(row_data['company_type_id'], company.company_name, company)
+    company_type = find_or_create_company_type(row_data['company_type'], company.company_name, company)
 
     if company_size && company_size.id != current_company_size&.id
       company.assign_attributes(company_size_id: company_size.id)
