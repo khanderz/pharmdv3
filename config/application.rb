@@ -15,6 +15,7 @@ module Pharmdv3
 
     config.eager_load_paths << Rails.root.join('lib')
     config.autoload_paths += %W[#{config.root}/app/mappers #{config.root}/app/services]
+    # config.autoload_paths << Rails.root.join('lib')
 
     Dotenv::Rails.load if Rails.env.development? || Rails.env.test?
 

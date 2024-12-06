@@ -1,4 +1,8 @@
 # app/python/ai_processing/job_description_extraction/train_job_description_extraction.py
+import base64
+import json
+import sys
+import warnings
 import spacy
 import os
 from spacy.training import iob_to_biluo
@@ -45,47 +49,47 @@ transformer = LongformerModel.from_pretrained("allenai/longformer-base-4096")
 
 MAX_SEQ_LENGTH = 4096
 
-converted_data = load_data(CONVERTED_FILE, FOLDER)
+# converted_data = load_data(CONVERTED_FILE, FOLDER)
 nlp = load_spacy_model(
     MODEL_SAVE_PATH, MAX_SEQ_LENGTH, model_name="allenai/longformer-base-4096"
 )
 
-if "ner" not in nlp.pipe_names:
-    ner = nlp.add_pipe("ner")
-    print(f"{RED}Added NER pipe to blank model: {nlp.pipe_names}{RESET}")
+# if "ner" not in nlp.pipe_names:
+#     ner = nlp.add_pipe("ner")
+#     print(f"{RED}Added NER pipe to blank model: {nlp.pipe_names}{RESET}")
 
-    for label in get_label_list(entity_type="job_description"):
-        ner.add_label(label)
+#     for label in get_label_list(entity_type="job_description"):
+#         ner.add_label(label)
 
-    spacy.tokens.Doc.set_extension("index", default=None, force=True)
-    doc_bin, examples = handle_spacy_data(
-        SPACY_DATA_PATH,
-        CONVERTED_FILE,
-        FOLDER,
-        nlp,
-        tokenizer,
-        MAX_SEQ_LENGTH,
-        transformer,
-    )
+#     spacy.tokens.Doc.set_extension("index", default=None, force=True)
+#     doc_bin, examples = handle_spacy_data(
+#         SPACY_DATA_PATH,
+#         CONVERTED_FILE,
+#         FOLDER,
+#         nlp,
+#         tokenizer,
+#         MAX_SEQ_LENGTH,
+#         transformer,
+#     )
 
-    nlp.initialize(get_examples=lambda: examples)
+#     nlp.initialize(get_examples=lambda: examples)
 
-    os.makedirs(MODEL_SAVE_PATH, exist_ok=True)
-    nlp.to_disk(MODEL_SAVE_PATH)
-    print(f"{GREEN}Model saved to {MODEL_SAVE_PATH} with NER component added.{RESET}")
-else:
-    ner = nlp.get_pipe("ner")
-    print(f"{GREEN}NER pipe already exists in blank model: {nlp.pipe_names}{RESET}")
+#     os.makedirs(MODEL_SAVE_PATH, exist_ok=True)
+#     nlp.to_disk(MODEL_SAVE_PATH)
+#     print(f"{GREEN}Model saved to {MODEL_SAVE_PATH} with NER component added.{RESET}")
+# else:
+#     ner = nlp.get_pipe("ner")
+#     print(f"{GREEN}NER pipe already exists in blank model: {nlp.pipe_names}{RESET}")
 
-    doc_bin, examples = handle_spacy_data(
-        SPACY_DATA_PATH,
-        CONVERTED_FILE,
-        FOLDER,
-        nlp,
-        tokenizer,
-        MAX_SEQ_LENGTH,
-        transformer,
-    )
+#     doc_bin, examples = handle_spacy_data(
+#         SPACY_DATA_PATH,
+#         CONVERTED_FILE,
+#         FOLDER,
+#         nlp,
+#         tokenizer,
+#         MAX_SEQ_LENGTH,
+#         transformer,
+#     )
 
 # if examples:
 #     for example in examples:
@@ -95,11 +99,11 @@ else:
 #             print(f"  - Text: '{ent.text}', Start: {ent.start_char}, End: {ent.end_char}, Label: {ent.label_}")
 
 # ------------------- TRAIN MODEL -------------------
-train_spacy_model(MODEL_SAVE_PATH, nlp, examples)
+# train_spacy_model(MODEL_SAVE_PATH, nlp, examples)
 
 
 # ------------------- VALIDATE TRAINER -------------------
-evaluate_model(nlp, converted_data)
+# evaluate_model(nlp, converted_data)
 # validate_entities(converted_data, nlp)
 
 
@@ -191,3 +195,24 @@ def inspect_job_description_predictions(text):
 
 # for text in test_texts:
 #     inspect_job_description_predictions(text)
+
+if __name__ == "__main__":
+    warnings.filterwarnings("ignore")
+
+    print("\nRunning job description extraction model inspection script...", file=sys.stderr)
+    try:
+        encoded_data = sys.argv[1]
+        input_data = json.loads(base64.b64decode(encoded_data).decode("utf-8"))
+
+        text = input_data.get("text", "")
+        if not text:
+            raise ValueError("No text provided for prediction.")
+
+        predictions = inspect_job_description_predictions(text)
+
+        print(json.dumps({"status": "success", "entities": predictions}))
+    except Exception as e:
+        error_response = {"status": "error", "message": str(e)}
+        print(json.dumps(error_response))
+        sys.exit(1)
+

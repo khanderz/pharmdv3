@@ -105,8 +105,8 @@ class JobPost < ApplicationRecord
         update_job_locations(existing_job, locations)
       end
 
-      existing_job.extract_and_save_salary
-      existing_job.extract_and_save_job_description
+      # existing_job.extract_and_save_salary
+      # existing_job.extract_and_save_job_description
 
       puts "#{ORANGE}Updated job post for URL: #{existing_job.job_url}#{RESET}"
     rescue StandardError => e
@@ -118,13 +118,14 @@ class JobPost < ApplicationRecord
 
       if new_job_post.save
         ai_updated = update_salary_and_location_with_ai(new_job_post, job_post_data, locations)
+        puts "AI updated: #{ai_updated}"
 
         unless ai_updated
           update_job_locations(new_job_post, locations)
         end
 
-        new_job_post.extract_and_save_salary
-        new_job_post.extract_and_save_job_description
+        # new_job_post.extract_and_save_salary
+        # new_job_post.extract_and_save_job_description
 
         puts "#{GREEN}#{company.company_name} job post added#{RESET}"
       else
@@ -133,10 +134,10 @@ class JobPost < ApplicationRecord
     end
 
     def update_salary_and_location_with_ai(job_post, job_post_data, locations)
-      ai_salary_updated = JobPostService.update_salary_with_ai(job_post)
-      ai_location_updated = JobPostService.update_location_with_ai(job_post, locations)
+      ai_salary_updated = JobPostService.extract_and_save_salary(job_post)
+      # ai_location_updated = JobPostService.update_location_with_ai(job_post, locations)
 
-      ai_salary_updated || ai_location_updated
+      # ai_salary_updated || ai_location_updated
     end
 
     def update_job_locations(job_post, locations)

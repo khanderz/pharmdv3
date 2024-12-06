@@ -4,7 +4,6 @@ class GreenhouseDataMapper
   def self.map(job, company)
     location_input = extract_location(job)
     location_info = LocationMapper.new.match_location(location_input, job, company)
-    puts "Location info: #{location_info} greenhouse"
 
     job_post_data = {
       job_title: job['title'],
@@ -51,8 +50,8 @@ class GreenhouseDataMapper
   private
 
   def self.update_with_ai(job_post_data, job, location_info)
-    ai_salary_data = JobPostService.extract_and_save_salary(job)
-    ai_location_data = JobPostService.extract_location_with_ai(location_info)
+    ai_salary_data = JobPostService.extract_and_save_job_description_and_salary(job)
+    # ai_location_data = JobPostService.extract_and_save_salary(location_info)
 
     updated = false
 
@@ -65,10 +64,10 @@ class GreenhouseDataMapper
       updated = true
     end
 
-    if ai_location_data
-      job_post_data[:job_setting] = ai_location_data[:location_type]
-      updated = true
-    end
+    # if ai_location_data
+    #   job_post_data[:job_setting] = ai_location_data[:location_type]
+    #   updated = true
+    # end
 
     updated
   end

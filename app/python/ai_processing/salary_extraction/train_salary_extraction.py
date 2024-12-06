@@ -1,5 +1,6 @@
-# app/python/salary_extraction/train_salary_expections.py
+# app/python/ai_processing/salary_extraction/train_salary_extraction.py
 
+import base64
 import spacy
 import os
 from spacy.training import iob_to_biluo
@@ -31,29 +32,29 @@ CONVERTED_FILE_PATH = os.path.join(BASE_DIR, "data", CONVERTED_FILE)
 MODEL_SAVE_PATH = os.path.join(BASE_DIR, "model", "spacy_salary_ner_model")
 SPACY_DATA_PATH = os.path.join(BASE_DIR, "data", "train.spacy")
 
-converted_data = load_data(CONVERTED_FILE, FOLDER)
+# converted_data = load_data(CONVERTED_FILE, FOLDER)
 nlp = load_spacy_model(MODEL_SAVE_PATH)
 
-if "ner" not in nlp.pipe_names:
-    ner = nlp.add_pipe("ner")
-    print(f"{RED}Added NER pipe to blank model: {nlp.pipe_names}{RESET}")
+# if "ner" not in nlp.pipe_names:
+#     ner = nlp.add_pipe("ner")
+#     print(f"{RED}Added NER pipe to blank model: {nlp.pipe_names}{RESET}")
 
-    for label in get_label_list(entity_type="salary"):
-        ner.add_label(label)
+#     for label in get_label_list(entity_type="salary"):
+#         ner.add_label(label)
 
-    spacy.tokens.Doc.set_extension("index", default=None, force=True)
-    doc_bin, examples = handle_spacy_data(SPACY_DATA_PATH, CONVERTED_FILE, FOLDER, nlp)
+#     spacy.tokens.Doc.set_extension("index", default=None, force=True)
+#     doc_bin, examples = handle_spacy_data(SPACY_DATA_PATH, CONVERTED_FILE, FOLDER, nlp)
 
-    nlp.initialize(get_examples=lambda: examples)
+#     nlp.initialize(get_examples=lambda: examples)
 
-    os.makedirs(MODEL_SAVE_PATH, exist_ok=True)
-    nlp.to_disk(MODEL_SAVE_PATH)
-    print(f"{GREEN}Model saved to {MODEL_SAVE_PATH} with NER component added.{RESET}")
-else:
-    ner = nlp.get_pipe("ner")
-    print(f"{GREEN}NER pipe already exists in blank model: {nlp.pipe_names}{RESET}")
+#     os.makedirs(MODEL_SAVE_PATH, exist_ok=True)
+#     nlp.to_disk(MODEL_SAVE_PATH)
+#     print(f"{GREEN}Model saved to {MODEL_SAVE_PATH} with NER component added.{RESET}")
+# else:
+#     ner = nlp.get_pipe("ner")
+#     print(f"{GREEN}NER pipe already exists in blank model: {nlp.pipe_names}{RESET}")
 
-    doc_bin, examples = handle_spacy_data(SPACY_DATA_PATH, CONVERTED_FILE, FOLDER, nlp)
+#     doc_bin, examples = handle_spacy_data(SPACY_DATA_PATH, CONVERTED_FILE, FOLDER, nlp)
 
 # if examples:
 #     for example in examples:
@@ -65,11 +66,11 @@ else:
 #             )
 
 # ------------------- TRAIN MODEL -------------------
-train_spacy_model(MODEL_SAVE_PATH, nlp, examples)
+# train_spacy_model(MODEL_SAVE_PATH, nlp, examples, resume=True)
 
 
 # ------------------- VALIDATE TRAINER -------------------
-evaluate_model(nlp, converted_data)
+# evaluate_model(nlp, converted_data)
 # validate_entities(converted_data, nlp)
 
 
@@ -100,6 +101,8 @@ def inspect_salary_model_predictions(text):
         predicted_label = token.ent_type_ if token.ent_type_ else "O"
         print(f"{token.text:<15}{predicted_label:<20}{biluo_tag:<20}")
 
+    return doc, biluo_tags
+
 
 test_texts = [
     "The annual salary is expected to be $120,000 USD.",
@@ -113,3 +116,42 @@ test_texts = [
 # for text in test_texts:
 #     print(f"\nTesting text: '{text}'")
 #     inspect_salary_model_predictions(text)
+
+import json
+import sys
+
+def inspect_salary_predictions_from_input(input_text):
+    # print(f"\nInspecting salary predictions for input text: '{input_text}'")
+    doc, biluo_tags = inspect_salary_model_predictions(input_text)
+    result = {
+        "status": "success",
+        "predictions": [
+            {
+                "token": token.text,
+                "predicted_label": token.ent_type_ if token.ent_type_ else "O",
+                "biluo_tag": biluo_tag,
+            }
+            for token, biluo_tag in zip(doc, biluo_tags)
+        ],
+    }
+    return result
+
+if __name__ == "__main__":
+    print("\nRunning salary extraction model inspection script...")
+    try:
+        encoded_data = sys.argv[1]
+        input_data = json.loads(base64.b64decode(encoded_data).decode("utf-8"))
+        print(f"Decoded Input Data: {input_data}")
+
+        text = input_data.get("text", "")
+
+        if not text:
+            raise ValueError("No text provided for prediction.")
+        
+        # print(f"\nInspecting salary predictions for input text: '{text}'")
+        predictions = inspect_salary_predictions_from_input(text)
+        # print(json.dumps(predictions))
+    except Exception as e:
+        error_response = {"status": "error", "message": str(e)}
+        print(json.dumps(error_response))
+        sys.exit(1)

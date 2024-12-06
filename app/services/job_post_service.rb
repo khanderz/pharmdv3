@@ -1,101 +1,118 @@
 # frozen_string_literal: true
 
-# app/services/job_post_service.rb
 require 'open3'
 require 'json'
 require 'base64'
+require 'base64'
+require 'python_script_parser'
 
 class JobPostService
-  def self.extract_and_save_salary(job_post)
-    combined_text = combine_salary_text(job_post)
-    return if combined_text.empty?
-
-    salary_data = call_python_model(
-      script_path: 'app/python/salary_extraction/train_salary_expections.py',
-      input_text: combined_text
-    )
-
-    return unless salary_data
-
-    update_data = prepare_salary_update_data(salary_data, job_post)
-    job_post.update(update_data) unless update_data.empty?
-  end
-
-  def self.extract_and_save_job_description(job_post)
-    combined_text = combine_job_description_text(job_post)
-    return if combined_text.empty?
-
-    job_description_data = call_python_model(
+  def self.extract_and_save_job_description_and_salary(job_post)
+    puts "Extracting job description entities..."
+    job_description_data = call_inspect_job_description_predictions(
       script_path: 'app/python/ai_processing/job_description_extraction/train_job_description_extraction.py',
-      input_text: combined_text
+      input_text: job_post['content']
     )
+    # puts "entities: #{job_description_data['entities']}"
 
-    return unless job_description_data
+    return unless job_description_data && job_description_data['status'] == 'success'
 
-    job_post.update(job_description_extracted: true)
-    log_extracted_entities(job_description_data)
+    # compensation_texts = job_description_data['entities']['COMPENSATION']
+    # if compensation_texts.nil? || compensation_texts.empty?
+    #   puts "#{RED}No compensation data found for job post ID #{job_post.id}.#{RESET}"
+    #   return
+    # end
+
+    # compensation_texts.each do |compensation_text|
+    #   extract_and_save_salary(job_post, compensation_text)
+    # end
   end
 
   private
 
-  def self.combine_salary_text(job_post)
-    "#{job_post.job_description} #{job_post.job_additional}".strip
+  def self.extract_and_save_salary(job_post, compensation_text)
+    puts "Extracting salary from compensation text: #{compensation_text}..."
+    salary_data = call_inspect_salary_predictions(
+      script_path: 'app/python/ai_processing/salary_extraction/train_salary_extraction.py',
+      input_text: compensation_text
+    )
+
+    return unless salary_data && salary_data['status'] == 'success'
+
+    update_data = prepare_salary_update_data(salary_data['predictions'], job_post)
+    job_post.update(update_data) unless update_data.empty?
   end
 
-  def self.combine_job_description_text(job_post)
-    [
-      job_post.job_title,
-      job_post.job_description,
-      job_post.job_qualifications,
-      job_post.job_responsibilities,
-      job_post.job_setting,
-      job_post.job_additional
-    ].compact.join(' ').strip
+  def self.print_entities(response)
+    puts "Extracted Entities and Values:"
+    response['entities'].each do |entity_type, values|
+      puts "#{entity_type}:"
+      values.each { |value| puts "  - #{value}" }
+    end
   end
 
-  def self.call_python_model(script_path:, input_text:)
-    encoded_data = Base64.strict_encode64({ text: input_text }.to_json)
+  def self.call_inspect_job_description_predictions(script_path:, input_text:)
+    input_json = { text: input_text }.to_json
+    encoded_data = Base64.strict_encode64(input_json)
     command = "python3 #{script_path} '#{encoded_data}'"
 
     stdout, stderr, status = Open3.capture3(command)
+    # puts "Job description extraction command executed with status: #{status.exitstatus}"
+    # puts "STDOUT: #{stdout}"
+    # puts "STDERR: #{stderr}"
+
     if status.success? && !stdout.strip.empty?
-      JSON.parse(stdout)
+      response = PythonScriptParser.parse_output(stdout)
+      print_entities(response) if response['status'] == 'success' && response['entities']
+      response
+
     else
       puts "Error in script #{script_path}: #{stderr} (Status: #{status})"
       nil
     end
-  rescue JSON::ParserError => e
-    puts "Failed to parse Python script output: #{e.message}"
-    nil
   end
 
-  def self.prepare_salary_update_data(salary_data, job_post)
-    update_data = {}
-    update_data[:job_salary_min] = salary_data['min_salary'].to_i if salary_data['min_salary']
-    update_data[:job_salary_max] = salary_data['max_salary'].to_i if salary_data['max_salary']
+  def self.call_inspect_salary_predictions(script_path:, input_text:)
+    input_json = { text: input_text }.to_json
+    encoded_data = Base64.strict_encode64(input_json)
+    command = "python3 #{script_path} '#{encoded_data}'"
 
-    if update_data[:job_salary_min] || update_data[:job_salary_max]
-      interval = salary_data['interval']
-      currency_code = salary_data['currency']
+    stdout, stderr, status = Open3.capture3(command)
+    # puts "Salary extraction command executed with status: #{status.exitstatus}"
+    # puts "STDOUT: #{stdout}"
+    # puts "STDERR: #{stderr}"
 
-      update_data[:job_salary_interval_id] = find_salary_interval_id(interval) if interval
-      update_data[:job_salary_currency_id] = find_salary_currency_id(currency_code, job_post) if currency_code
+    if status.success? && !stdout.strip.empty?
+      PythonScriptParser.parse_output(stdout)
+    else
+      puts "Error in script #{script_path}: #{stderr} (Status: #{status})"
+      nil
     end
+  end
+
+  def self.prepare_salary_update_data(predictions, job_post)
+    update_data = {}
+
+    min_salary = predictions.find { |p| p['predicted_label'] == 'SALARY_MIN' }
+    max_salary = predictions.find { |p| p['predicted_label'] == 'SALARY_MAX' }
+    single_salary = predictions.find { |p| p['predicted_label'] == 'SALARY_SINGLE' }
+    currency = predictions.find { |p| p['predicted_label'] == 'CURRENCY' }
+    interval = predictions.find { |p| p['predicted_label'] == 'INTERVAL' }
+
+    update_data[:job_salary_min] = min_salary['token'].to_i if min_salary
+    update_data[:job_salary_max] = max_salary['token'].to_i if max_salary
+    update_data[:job_salary_single] = single_salary['token'].to_i if single_salary
+    update_data[:job_salary_currency_id] = find_salary_currency_id(currency['token'], job_post) if currency
+    update_data[:job_salary_interval_id] = find_salary_interval_id(interval['token']) if interval
 
     update_data
-  end
-
-  def self.find_salary_interval_id(interval)
-    JobSalaryInterval.find_by(interval: interval)&.id
   end
 
   def self.find_salary_currency_id(currency_code, job_post)
     JobSalaryCurrency.find_or_adjudicate_currency(currency_code, job_post.company_id, job_post.job_url)&.id
   end
 
-  def self.log_extracted_entities(entities)
-    entities.each do |entity|
-      puts "Extracted entity: #{entity['entity_name']} with value: #{entity['value']}"
-    end
+  def self.find_salary_interval_id(interval)
+    JobSalaryInterval.find_by(interval: interval)&.id
   end
 end

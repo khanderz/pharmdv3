@@ -9,62 +9,51 @@ project_root = os.path.abspath(
     os.path.join(os.path.dirname(__file__), "../../..", "python", "ai_processing")
 )
 
-
 def load_spacy_model(
     MODEL_SAVE_PATH,
     MAX_SEQ_LENGTH=None,
     model_name="roberta-base",
     scispacy_model_name=None,
 ):
-    """
-    Load an existing spaCy or SciSpacy model, or initialize a new transformer-based model.
-
-    Args:
-        MODEL_SAVE_PATH (str): Path to the saved model.
-        MAX_SEQ_LENGTH (int, optional): Maximum sequence length for the tokenizer. Defaults to 512 for RoBERTa.
-        model_name (str, optional): Name of the Hugging Face transformer model. Defaults to "roberta-base".
-        scispacy_model_name (str, optional): Name of the SciSpacy model. Defaults to "en_core_sci_lg".
-
-    Returns:
-        spacy.Language: Loaded or initialized spaCy or SciSpacy model.
-    """
     full_path = os.path.join(project_root, MODEL_SAVE_PATH)
 
-    if os.path.exists(full_path):
-        nlp = spacy.load(full_path)
+    nlp = None 
 
-    if model_name.lower() == "scispacy":        
-        return spacy.load(scispacy_model_name)
+    if os.path.exists(os.path.join(full_path, "meta.json")):
+        try:
+            print(f"{GREEN}Loading existing model from {full_path}...{RESET}")
+            nlp = spacy.load(full_path)
+            return nlp
+        except Exception as e:
+            print(f"{RED}Error loading spaCy model: {str(e)}{RESET}")
 
-    else:
-        print(f"{RED}No existing model found. Initializing new model...{RESET}")
+    print(f"{RED}No existing model found. Initializing new model...{RESET}")
 
-        default_max_length = (
-            512 if "roberta" in model_name or "bert" in model_name else 4096
-        )
-
-        print(
-            f"{BLUE}creating model {model_name} with length {MAX_SEQ_LENGTH} scispacy_model_name: {scispacy_model_name}  {RESET}"
-        )
-        nlp = spacy.blank("en")
-        nlp.add_pipe(
-            "transformer",
-            config={
-                "model": {
-                    "@architectures": "spacy-transformers.TransformerModel.v1",
-                    "name": model_name,
-                    "tokenizer_config": {
-                        "max_length": MAX_SEQ_LENGTH or default_max_length,
-                        "truncation": True,
-                        "padding": "max_length",
-                    },
-                    "get_spans": {"@span_getters": "spacy-transformers.doc_spans.v1"},
-                }
-            },
-            last=True,
-        )
-
+    default_max_length = (
+        512 if "roberta" in model_name or "bert" in model_name else 4096
+    )
+    print(
+        f"{BLUE}Creating model {model_name} with length {MAX_SEQ_LENGTH or default_max_length} scispacy_model_name: {scispacy_model_name}{RESET}"
+    )
+    nlp = spacy.blank("en")
+    nlp.add_pipe(
+        "transformer",
+        config={
+            "model": {
+                "@architectures": "spacy-transformers.TransformerModel.v1",
+                "name": model_name,
+                "tokenizer_config": {
+                    "max_length": MAX_SEQ_LENGTH or default_max_length,
+                    "truncation": True,
+                    "padding": "max_length",
+                },
+                "get_spans": {"@span_getters": "spacy-transformers.doc_spans.v1"},
+            }
+        },
+        last=True,
+    )
     return nlp
+
 
 
 def generate_path(file_name, folder):

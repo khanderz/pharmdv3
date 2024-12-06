@@ -55,7 +55,7 @@ class LeverDataMapper
 
   def self.update_with_ai(job_post_data, job, location_info)
     ai_salary_data = JobPostService.extract_and_save_salary(job)
-    ai_location_data = JobPostService.extract_location_with_ai(location_info)
+    # ai_location_data = JobPostService.extract_and_save_salary(location_info)
 
     updated = false
 
@@ -68,10 +68,10 @@ class LeverDataMapper
       updated = true
     end
 
-    if ai_location_data
-      job_post_data[:job_setting] = ai_location_data[:location_type]
-      updated = true
-    end
+    # if ai_location_data
+    #   job_post_data[:job_setting] = ai_location_data[:location_type]
+    #   updated = true
+    # end
 
     updated
   end

@@ -2,7 +2,6 @@
 
 class LocationMapper
     def match_location(input, job, company, countryInput=nil)
-        puts "Location: #{input}, country input: #{countryInput}"
 
         if input.strip.casecmp?('Remote')
             return {
