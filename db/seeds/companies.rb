@@ -35,20 +35,34 @@ end
 def log_adjudication(entity_type, entity_name, company_name, adjudicatable)
   raise ArgumentError, "Adjudicatable must be persisted" unless adjudicatable.persisted?
 
+  error_details = "#{entity_type} '#{entity_name}' not found for Company #{company_name}"
+
+  existing_adjudication = Adjudication.find_by(
+    adjudicatable_type: adjudicatable.class.name,
+    adjudicatable_id: adjudicatable.id,
+    error_details: error_details
+  )
+
+  if existing_adjudication
+    puts "#{BLUE}Adjudication already exists for #{entity_type}: #{entity_name}, company: #{company_name}. Skipping creation.#{RESET}"
+    return existing_adjudication
+  end
+
   adjudication = Adjudication.create!(
     adjudicatable_type: adjudicatable.class.name,
     adjudicatable_id: adjudicatable.id,
-    error_details: "#{entity_type} '#{entity_name}' not found for Company #{company_name}",
+    error_details: error_details,
     resolved: false
   )
 
   puts "#{ORANGE}Logged adjudication for #{entity_type}: #{entity_name}, company: #{company_name}#{RESET}"
   adjudication
-  
-  rescue ActiveRecord::RecordInvalid => e
-    puts "#{RED}Failed to create adjudication for #{entity_type} '#{entity_name}' and company '#{company_name}': #{e.message}#{RESET}"
-    nil
+
+rescue ActiveRecord::RecordInvalid => e
+  puts "#{RED}Failed to create adjudication for #{entity_type} '#{entity_name}' and company '#{company_name}': #{e.message}#{RESET}"
+  nil
 end
+
 
 def find_or_create_country(country_name, company_name)
   Country.where(
@@ -119,7 +133,6 @@ def find_company_size(size_range, current_company_size)
 
     if range
       if current_company_size == range
-        puts "#{BLUE}Company size '#{size_range}' matches the current size. Skipping update.#{RESET}"
         return current_company_size  
       else
         range
@@ -133,7 +146,6 @@ def find_company_size(size_range, current_company_size)
 
     if matching_company_size
       if current_company_size == matching_company_size
-        puts "#{BLUE}Company size '#{size_range}' matches the current size. Skipping update.#{RESET}"
         return current_company_size  
       else
         matching_company_size
@@ -263,7 +275,7 @@ def update_existing_company(company, row_data, ats_type, countries, states, citi
       company.assign_attributes(funding_type_id: funding_type.id)
     end
 
-    if company_type && company_type.id != current_company_type&.id
+    if company_type && company_type.id != current_company_type
       company.assign_attributes(company_type_id: company_type.id)
     end
 
@@ -302,7 +314,6 @@ def update_existing_company(company, row_data, ats_type, countries, states, citi
     raise ActiveRecord::Rollback
   end
 end
-
 
 def create_new_company(row_data, ats_type, countries, states, cities, domains, specialties)
   company_size = find_company_size(row_data['company_size'])
