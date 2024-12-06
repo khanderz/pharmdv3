@@ -3,9 +3,9 @@ class JobDataMapper
       ats_code = company.ats_type.ats_type_code
       case ats_code
       when 'LEVER'
-        LeverDataMapper.map(job)
+        LeverDataMapper.map(job, company)
       when 'GREENHOUSE'
-        GreenhouseDataMapper.map(job)
+        GreenhouseDataMapper.map(job, company)
       end
     end
   

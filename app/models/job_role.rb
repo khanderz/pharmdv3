@@ -34,6 +34,7 @@ class JobRole < ApplicationRecord
         )
         puts "Adjudication created for new job role: #{cleaned_job_title}."
       end
+      job_role
     end
   end
   
