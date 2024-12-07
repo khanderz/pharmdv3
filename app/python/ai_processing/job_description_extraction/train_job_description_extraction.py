@@ -3,9 +3,12 @@ import base64
 import json
 import sys
 import warnings
+from bs4 import BeautifulSoup
 import spacy
+from html import unescape 
 import os
 from spacy.training import iob_to_biluo
+from app.python.ai_processing.utils.description_splitter import recursive_html_decode
 from app.python.ai_processing.utils.label_mapping import get_label_list
 from app.python.ai_processing.utils.data_handler import load_data, load_spacy_model
 from app.python.ai_processing.utils.logger import (
@@ -49,47 +52,47 @@ transformer = LongformerModel.from_pretrained("allenai/longformer-base-4096")
 
 MAX_SEQ_LENGTH = 4096
 
-# converted_data = load_data(CONVERTED_FILE, FOLDER)
+converted_data = load_data(CONVERTED_FILE, FOLDER)
 nlp = load_spacy_model(
     MODEL_SAVE_PATH, MAX_SEQ_LENGTH, model_name="allenai/longformer-base-4096"
 )
 
-# if "ner" not in nlp.pipe_names:
-#     ner = nlp.add_pipe("ner")
-#     print(f"{RED}Added NER pipe to blank model: {nlp.pipe_names}{RESET}")
+if "ner" not in nlp.pipe_names:
+    ner = nlp.add_pipe("ner")
+    print(f"{RED}Added NER pipe to blank model: {nlp.pipe_names}{RESET}")
 
-#     for label in get_label_list(entity_type="job_description"):
-#         ner.add_label(label)
+    for label in get_label_list(entity_type="job_description"):
+        ner.add_label(label)
 
-#     spacy.tokens.Doc.set_extension("index", default=None, force=True)
-#     doc_bin, examples = handle_spacy_data(
-#         SPACY_DATA_PATH,
-#         CONVERTED_FILE,
-#         FOLDER,
-#         nlp,
-#         tokenizer,
-#         MAX_SEQ_LENGTH,
-#         transformer,
-#     )
+    spacy.tokens.Doc.set_extension("index", default=None, force=True)
+    doc_bin, examples = handle_spacy_data(
+        SPACY_DATA_PATH,
+        CONVERTED_FILE,
+        FOLDER,
+        nlp,
+        tokenizer,
+        MAX_SEQ_LENGTH,
+        transformer,
+    )
 
-#     nlp.initialize(get_examples=lambda: examples)
+    nlp.initialize(get_examples=lambda: examples)
 
-#     os.makedirs(MODEL_SAVE_PATH, exist_ok=True)
-#     nlp.to_disk(MODEL_SAVE_PATH)
-#     print(f"{GREEN}Model saved to {MODEL_SAVE_PATH} with NER component added.{RESET}")
-# else:
-#     ner = nlp.get_pipe("ner")
-#     print(f"{GREEN}NER pipe already exists in blank model: {nlp.pipe_names}{RESET}")
+    os.makedirs(MODEL_SAVE_PATH, exist_ok=True)
+    nlp.to_disk(MODEL_SAVE_PATH)
+    print(f"{GREEN}Model saved to {MODEL_SAVE_PATH} with NER component added.{RESET}")
+else:
+    ner = nlp.get_pipe("ner")
+    print(f"{GREEN}NER pipe already exists in blank model: {nlp.pipe_names}{RESET}")
 
-#     doc_bin, examples = handle_spacy_data(
-#         SPACY_DATA_PATH,
-#         CONVERTED_FILE,
-#         FOLDER,
-#         nlp,
-#         tokenizer,
-#         MAX_SEQ_LENGTH,
-#         transformer,
-#     )
+    doc_bin, examples = handle_spacy_data(
+        SPACY_DATA_PATH,
+        CONVERTED_FILE,
+        FOLDER,
+        nlp,
+        tokenizer,
+        MAX_SEQ_LENGTH,
+        transformer,
+    )
 
 # if examples:
 #     for example in examples:
@@ -99,11 +102,11 @@ nlp = load_spacy_model(
 #             print(f"  - Text: '{ent.text}', Start: {ent.start_char}, End: {ent.end_char}, Label: {ent.label_}")
 
 # ------------------- TRAIN MODEL -------------------
-# train_spacy_model(MODEL_SAVE_PATH, nlp, examples)
+train_spacy_model(MODEL_SAVE_PATH, nlp, examples, resume=True)
 
 
 # ------------------- VALIDATE TRAINER -------------------
-# evaluate_model(nlp, converted_data)
+evaluate_model(nlp, converted_data)
 # validate_entities(converted_data, nlp)
 
 
@@ -131,15 +134,16 @@ def convert_example_to_biluo(text):
     return doc, biluo_tags
 
 
+
 def inspect_job_description_predictions(text):
     """Inspect model predictions for job description text."""
-    doc, biluo_tags = convert_example_to_biluo(text)
+    decoded_text = recursive_html_decode(text)
+    print(f"\nOriginal Text: '{decoded_text}'\n")   
+    doc, biluo_tags = convert_example_to_biluo(decoded_text)
 
-    # print("\nOriginal Text:")
-    # print(f"'{text}'\n")
-    # print("Token Predictions:")
-    # print(f"{'Token':<15}{'Predicted Label':<20}{'BILUO Tag':<20}")
-    # print("-" * 50)
+    print("Token Predictions:")
+    print(f"{'Token':<15}{'Predicted Label':<20}{'BILUO Tag':<20}")
+    print("-" * 50)
 
     entity_data = {}
     current_entity = None
@@ -177,6 +181,7 @@ def inspect_job_description_predictions(text):
                 current_entity = None
                 current_tokens = []
 
+        print(f"{token.text:<15}{token.ent_type_ if token.ent_type_ else 'O':<20}{biluo_tag:<20}")
     if current_entity:
         if current_entity not in entity_data:
             entity_data[current_entity] = []
@@ -193,26 +198,30 @@ def inspect_job_description_predictions(text):
 #     "The ideal candidate should hold a Master's degree in a relevant field.",
 # ]
 
-# for text in test_texts:
-#     inspect_job_description_predictions(text)
+test_texts = [
+    """&lt;div class=&quot;content-intro&quot;&gt;&lt;p&gt;&lt;strong&gt;&lt;em&gt;Attention recruitment agencies:&lt;/em&gt;&lt;/strong&gt;&lt;em&gt; 4DMT is a clinical-stage biotherapeutics company harnessing the power of directed evolution for targeted genetic medicines. We seek to unlock the full potential of gene therapy using our platform, Therapeutic Vector Evolution (TVE), which combines the power of directed evolution with our approximately one billion synthetic AAV capsid-derived sequences to invent evolved vectors for use in our products. We believe key features of our targeted and evolved vectors will help us create targeted product candidates with improved therapeutic profiles. These profiles will allow us to treat a broad range of large market diseases, unlike most current genetic medicines that generally focus on rare or small market diseases. &amp;nbsp;&lt;/p&gt;\n&lt;p&gt;Company Differentiators:&amp;nbsp;&lt;/p&gt;\n&lt;p&gt;• &amp;nbsp; &amp;nbsp;Fully integrated clinical-phase company with internal manufacturing&lt;br&gt;• &amp;nbsp; &amp;nbsp;Demonstrated ability to move rapidly from idea to IND&lt;br&gt;• &amp;nbsp; &amp;nbsp;Five candidate products in the clinic and two declared pre-clinical programs&lt;br&gt;• &amp;nbsp; &amp;nbsp;Robust technology and IP foundation, including our TVE and manufacturing platforms&lt;br&gt;• &amp;nbsp; &amp;nbsp;Initial product safety and efficacy data substantiates the value of our platforms&lt;br&gt;• &amp;nbsp; &amp;nbsp;Opportunities to expand to other indications and modalities within genetic medicine&lt;/p&gt;&lt;/div&gt;&lt;p&gt;&lt;strong&gt;Position Summary:&amp;nbsp;&lt;/strong&gt;&amp;nbsp;&lt;/p&gt;\n&lt;p&gt;The Associate Director of Clinical Quality Assurance (CQA) will be responsible for supporting Quality Assurance oversight of 4DMT sponsored clinical studies, ensuring studies are executed in compliance with all applicable international regulatory requirements for Good Clinical Practice (GCP).&amp;nbsp;&amp;nbsp;This position reports to the Senior Director, GCP Compliance and Quality Systems and contributes to the development, implementation, and successful execution of the CQA mission, objectives, and strategic plan.&lt;/p&gt;\n&lt;p&gt;&lt;strong&gt;Responsibilities:&lt;/strong&gt;&amp;nbsp;&lt;/p&gt;\n&lt;p&gt;&lt;strong&gt;Provide Quality oversight for multiple 4DMT Clinical Studies, including the following study-specific activities:&lt;/strong&gt;&lt;/p&gt;\n&lt;ul&gt;\n&lt;li&gt;Partner with Clinical stakeholder to support timely identification, escalation, investigation, documentation, and resolution of GCP-related quality events, acting at all times with an appropriate sense of urgency.&lt;/li&gt;\n&lt;li&gt;Provide GCP guidance to clinical study teams, including via attendance at Study team meetings, with support from Sr. Director GCP Compliance.&lt;/li&gt;\n&lt;li&gt;Ensure principles of Risk Management are applied to Clinical Studies per ICH E6&lt;/li&gt;\n&lt;li&gt;Coordinate GCP Compliance audits of high-risk clinical vendors/sites, including clinical investigator sites.&lt;/li&gt;\n&lt;li&gt;Ensure audit findings are communicated to audit stakeholders and collaborate with auditees and vendors to track, review, approve, and assess the adequacy of&lt;/li&gt;\n&lt;li&gt;Perform Clinical Document reviews, ensuring the quality, accuracy and completeness of various documents, including as applicable Clinical Protocols, IBs, DSURs, Module 2.6 Tabulated and Written Summaries, and Integrated&lt;/li&gt;\n&lt;/ul&gt;\n&lt;p&gt;&lt;strong&gt;Support investigation and management of specific Clinical Study Quality Events as assigned:&lt;/strong&gt;&lt;/p&gt;\n&lt;ul&gt;\n&lt;li&gt;Monitor, track, and facilitate the completion of formal corrective and preventive actions (CAPAs) to address identified&amp;nbsp;Clinical Study Quality Events, including potential serious breaches of GCP.&amp;nbsp;&lt;/li&gt;\n&lt;/ul&gt;\n&lt;p&gt;&lt;strong&gt;Support a quality-focused work environment in Clinical that fosters learning, respect, open communication, collaboration, integration, and teamwork:&lt;/strong&gt;&lt;/p&gt;\n&lt;ul&gt;\n&lt;li&gt;Drive the development and continuous improvement of the Clinical Quality Management System through the development / refinement of Clinical QA processes / initiatives as assigned&lt;/li&gt;\n&lt;/ul&gt;\n&lt;p&gt;&lt;strong&gt;Partner with GMP Quality and Clinical Operations teams to facilitate the investigation of clinical supply quality issues such as temperature excursions, product complaints and deviations reported from clinical sites.&lt;/strong&gt;&lt;/p&gt;\n&lt;p&gt;&lt;strong&gt;&amp;nbsp;&lt;/strong&gt;&lt;/p&gt;\n&lt;p&gt;&lt;strong&gt;&lt;u&gt;QUALIFICATIONS:&amp;nbsp;&lt;/u&gt;&lt;/strong&gt;&lt;/p&gt;\n&lt;ul&gt;\n&lt;li&gt;B.S./B.A. in a science or related life science field or equivalent; advanced scientific degree preferred.&lt;/li&gt;\n&lt;li&gt;8+ years working within a regulated environment such as Regulatory, Quality, Pharmacovigilance or Clinical Development / Operations within the Biotech or similar industry&lt;/li&gt;\n&lt;li&gt;Proven experience with GCP Quality Management Systems, audit support, and quality oversight of global clinical studies, including knowledge of quality investigation / root cause analysis techniques&lt;/li&gt;\n&lt;li&gt;Minimum of 4 years of experience in a role including responsibility for providing GCP oversight of clinical study activities, preferably at a clinical study sponsor&lt;/li&gt;\n&lt;li&gt;In-depth understanding of GCP requirements for investigational products&lt;/li&gt;\n&lt;li&gt;Extensive practical experience and understanding of clinical quality assurance as applied throughout the clinical development life-cycle&lt;/li&gt;\n&lt;li&gt;Excellent communication skills, both oral and written&lt;/li&gt;\n&lt;li&gt;Excellent interpersonal skills, collaborative approach essential&lt;/li&gt;\n&lt;li&gt;Comfortable in a fast-paced small company environment with minimal direction and able to adjust workload based upon changing priorities&lt;/li&gt;\n&lt;/ul&gt;\n&lt;p&gt;Base salary compensation range: $152,000 - $199,000&lt;/p&gt;\n&lt;p&gt;"""]
 
-if __name__ == "__main__":
-    warnings.filterwarnings("ignore")
+for text in test_texts:
+    inspect_job_description_predictions(text)
 
-    print("\nRunning job description extraction model inspection script...", file=sys.stderr)
-    try:
-        encoded_data = sys.argv[1]
-        input_data = json.loads(base64.b64decode(encoded_data).decode("utf-8"))
+# if __name__ == "__main__":
+#     warnings.filterwarnings("ignore")
 
-        text = input_data.get("text", "")
-        if not text:
-            raise ValueError("No text provided for prediction.")
+#     print("\nRunning job description extraction model inspection script...", file=sys.stderr)
+#     try:
+#         encoded_data = sys.argv[1]
+#         input_data = json.loads(base64.b64decode(encoded_data).decode("utf-8"))
 
-        predictions = inspect_job_description_predictions(text)
+#         text = input_data.get("text", "")
 
-        print(json.dumps({"status": "success", "entities": predictions}))
-    except Exception as e:
-        error_response = {"status": "error", "message": str(e)}
-        print(json.dumps(error_response))
-        sys.exit(1)
+#         if not text:
+#             raise ValueError("No text provided for prediction.")
+
+#         predictions = inspect_job_description_predictions(text)
+
+#         print(json.dumps({"status": "success", "entities": predictions}))
+#     except Exception as e:
+#         error_response = {"status": "error", "message": str(e)}
+#         print(json.dumps(error_response))
+#         sys.exit(1)
 
