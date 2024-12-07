@@ -47,42 +47,42 @@ nlp = load_spacy_model(
     MODEL_SAVE_PATH, MAX_SEQ_LENGTH, model_name="allenai/longformer-base-4096"
 )
 
-if "ner" not in nlp.pipe_names:
-    ner = nlp.add_pipe("ner")
-    print(f"{RED}Added NER pipe to blank model: {nlp.pipe_names}{RESET}")
+# if "ner" not in nlp.pipe_names:
+#     ner = nlp.add_pipe("ner")
+#     print(f"{RED}Added NER pipe to blank model: {nlp.pipe_names}{RESET}")
 
-    for label in get_label_list(entity_type="job_qualification"):
-        ner.add_label(label)
+#     for label in get_label_list(entity_type="job_qualification"):
+#         ner.add_label(label)
 
-    spacy.tokens.Doc.set_extension("index", default=None, force=True)
-    doc_bin, examples = handle_spacy_data(
-        SPACY_DATA_PATH,
-        CONVERTED_FILE,
-        FOLDER,
-        nlp,
-        tokenizer,
-        MAX_SEQ_LENGTH,
-        transformer,
-    )
+#     spacy.tokens.Doc.set_extension("index", default=None, force=True)
+#     doc_bin, examples = handle_spacy_data(
+#         SPACY_DATA_PATH,
+#         CONVERTED_FILE,
+#         FOLDER,
+#         nlp,
+#         tokenizer,
+#         MAX_SEQ_LENGTH,
+#         transformer,
+#     )
 
-    nlp.initialize(get_examples=lambda: examples)
+#     nlp.initialize(get_examples=lambda: examples)
 
-    os.makedirs(MODEL_SAVE_PATH, exist_ok=True)
-    nlp.to_disk(MODEL_SAVE_PATH)
-    print(f"{GREEN}Model saved to {MODEL_SAVE_PATH} with NER component added.{RESET}")
-else:
-    ner = nlp.get_pipe("ner")
-    print(f"{GREEN}NER pipe already exists in blank model: {nlp.pipe_names}{RESET}")
+#     os.makedirs(MODEL_SAVE_PATH, exist_ok=True)
+#     nlp.to_disk(MODEL_SAVE_PATH)
+#     print(f"{GREEN}Model saved to {MODEL_SAVE_PATH} with NER component added.{RESET}")
+# else:
+#     ner = nlp.get_pipe("ner")
+#     print(f"{GREEN}NER pipe already exists in blank model: {nlp.pipe_names}{RESET}")
 
-    doc_bin, examples = handle_spacy_data(
-        SPACY_DATA_PATH,
-        CONVERTED_FILE,
-        FOLDER,
-        nlp,
-        tokenizer,
-        MAX_SEQ_LENGTH,
-        transformer,
-    )
+#     doc_bin, examples = handle_spacy_data(
+#         SPACY_DATA_PATH,
+#         CONVERTED_FILE,
+#         FOLDER,
+#         nlp,
+#         tokenizer,
+#         MAX_SEQ_LENGTH,
+#         transformer,
+#     )
 
 # ------------------- TRAIN MODEL -------------------
 # train_spacy_model(MODEL_SAVE_PATH, nlp, examples, resume=True)

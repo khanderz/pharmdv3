@@ -1,8 +1,11 @@
 # app/python/ai_processing/salary_extraction/train_salary_extraction.py
 
 import base64
+import warnings
 import spacy
 import os
+import json
+import sys
 from spacy.training import iob_to_biluo
 from app.python.ai_processing.utils.label_mapping import get_label_list
 from app.python.ai_processing.utils.data_handler import load_data, load_spacy_model
@@ -92,68 +95,89 @@ def inspect_salary_model_predictions(text):
     """Inspect model predictions for the given text."""
     doc, biluo_tags = convert_example_to_biluo(text)
 
-    print("\nOriginal Text:")
-    print(f"'{text}'\n")
-    print("Token Predictions:")
-    print(f"{'Token':<15}{'Predicted Label':<20}{'BILUO Tag':<20}")
-    print("-" * 50)
+    entity_data = {}
+    current_entity = None
+    current_tokens = []
+
     for token, biluo_tag in zip(doc, biluo_tags):
-        predicted_label = token.ent_type_ if token.ent_type_ else "O"
-        print(f"{token.text:<15}{predicted_label:<20}{biluo_tag:<20}")
+        if biluo_tag != "O":
+            entity_label = biluo_tag.split("-")[-1]
+            # print(f"Token: {token.text}, Predicted Label: {entity_label}, BILUO Tag: {biluo_tag}", file=sys.stderr)
 
-    return doc, biluo_tags
+            if biluo_tag.startswith("B-"):
+                if current_entity:
+                    if current_entity not in entity_data:
+                        entity_data[current_entity] = []
+                    entity_data[current_entity].append(" ".join(current_tokens))
+
+                current_entity = entity_label
+                current_tokens = [token.text]
+
+            elif biluo_tag.startswith("I-"):
+                current_tokens.append(token.text)
+
+            elif biluo_tag.startswith("L-"):
+                current_tokens.append(token.text)
+                if current_entity:
+                    if current_entity not in entity_data:
+                        entity_data[current_entity] = []
+                    entity_data[current_entity].append(" ".join(current_tokens))
+                current_entity = None
+                current_tokens = []
+
+            elif biluo_tag.startswith("U-"):
+                if entity_label not in entity_data:
+                    entity_data[entity_label] = []
+                entity_data[entity_label].append(token.text)
+        else:
+            if current_entity:
+                if current_entity not in entity_data:
+                    entity_data[current_entity] = []
+                entity_data[current_entity].append(" ".join(current_tokens))
+                current_entity = None
+                current_tokens = []
+
+    if current_entity:
+        if current_entity not in entity_data:
+            entity_data[current_entity] = []
+        entity_data[current_entity].append(" ".join(current_tokens))
+
+    return entity_data
 
 
-test_texts = [
-    "The annual salary is expected to be $120,000 USD.",
-    "Compensation ranges from €50,000 to €70,000 annually.",
-    "Base pay in Canada is CAD 60,000 per year.",
-    "This position offers a minimum salary of £45,000.",
-    "Contractor role with hourly rate of 25 AUD.",
-    "Full-time position with a salary of 80,000 GBP.",
-]
+# test_texts = [
+#     "The annual salary is expected to be $120,000 USD.",
+#     "Compensation ranges from €50,000 to €70,000 annually.",
+#     "Base pay in Canada is CAD 60,000 per year.",
+#     "This position offers a minimum salary of £45,000.",
+#     "Contractor role with hourly rate of 25 AUD.",
+#     "Full-time position with a salary of 80,000 GBP.",
+# ]
 
 # for text in test_texts:
 #     print(f"\nTesting text: '{text}'")
 #     inspect_salary_model_predictions(text)
 
-import json
-import sys
-
-
-def inspect_salary_predictions_from_input(input_text):
-    # print(f"\nInspecting salary predictions for input text: '{input_text}'")
-    doc, biluo_tags = inspect_salary_model_predictions(input_text)
-    result = {
-        "status": "success",
-        "predictions": [
-            {
-                "token": token.text,
-                "predicted_label": token.ent_type_ if token.ent_type_ else "O",
-                "biluo_tag": biluo_tag,
-            }
-            for token, biluo_tag in zip(doc, biluo_tags)
-        ],
-    }
-    return result
 
 
 if __name__ == "__main__":
-    print("\nRunning salary extraction model inspection script...")
+    warnings.filterwarnings("ignore")
+    print("\nRunning salary extraction model inspection script...", file=sys.stderr)
     try:
         encoded_data = sys.argv[1]
         input_data = json.loads(base64.b64decode(encoded_data).decode("utf-8"))
-        print(f"Decoded Input Data: {input_data}")
-
         text = input_data.get("text", "")
 
-        if not text:
-            raise ValueError("No text provided for prediction.")
+        # print(f"Input Text: {text}", file=sys.stderr)
+        predictions = inspect_salary_model_predictions(text)
+        print(f"Predictions: {predictions}", file=sys.stderr)
+        output = {
+            "status": "success" if predictions else "failure",
+            "entities": predictions,
+        }
 
-        # print(f"\nInspecting salary predictions for input text: '{text}'")
-        predictions = inspect_salary_predictions_from_input(text)
-        # print(json.dumps(predictions))
+        sys.stdout.write(json.dumps(output) + "\n")
     except Exception as e:
         error_response = {"status": "error", "message": str(e)}
-        print(json.dumps(error_response))
+        sys.stdout.write(json.dumps(error_response) + "\n")
         sys.exit(1)

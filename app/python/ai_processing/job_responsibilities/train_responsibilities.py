@@ -1,6 +1,9 @@
 #  app/python/ai_processing/job_responsibilities/train_responsibilities.py
 
+import base64
+import json
 import os
+import sys
 import spacy
 from spacy.training import iob_to_biluo
 from app.python.ai_processing.utils.description_splitter import recursive_html_decode
@@ -43,48 +46,48 @@ nlp = load_spacy_model(
     MODEL_SAVE_PATH, MAX_SEQ_LENGTH, model_name="allenai/longformer-base-4096"
 )
 
-if "ner" not in nlp.pipe_names:
-    ner = nlp.add_pipe("ner")
-    print(f"{RED}Added NER pipe to blank model: {nlp.pipe_names}{RESET}")
+# if "ner" not in nlp.pipe_names:
+#     ner = nlp.add_pipe("ner")
+#     print(f"{RED}Added NER pipe to blank model: {nlp.pipe_names}{RESET}")
 
-    for label in get_label_list(entity_type="job_responsibility"):
-        ner.add_label(label)
+#     for label in get_label_list(entity_type="job_responsibility"):
+#         ner.add_label(label)
 
-    spacy.tokens.Doc.set_extension("index", default=None, force=True)
-    doc_bin, examples = handle_spacy_data(
-        SPACY_DATA_PATH,
-        CONVERTED_FILE,
-        FOLDER,
-        nlp,
-        tokenizer,
-        MAX_SEQ_LENGTH,
-        transformer,
-    )
+#     spacy.tokens.Doc.set_extension("index", default=None, force=True)
+#     doc_bin, examples = handle_spacy_data(
+#         SPACY_DATA_PATH,
+#         CONVERTED_FILE,
+#         FOLDER,
+#         nlp,
+#         tokenizer,
+#         MAX_SEQ_LENGTH,
+#         transformer,
+#     )
 
-    nlp.initialize(get_examples=lambda: examples)
+#     nlp.initialize(get_examples=lambda: examples)
 
-    os.makedirs(MODEL_SAVE_PATH, exist_ok=True)
-    nlp.to_disk(MODEL_SAVE_PATH)
-    print(f"{GREEN}Model saved to {MODEL_SAVE_PATH} with NER component added.{RESET}")
-else:
-    ner = nlp.get_pipe("ner")
-    print(f"{GREEN}NER pipe already exists in blank model: {nlp.pipe_names}{RESET}")
+#     os.makedirs(MODEL_SAVE_PATH, exist_ok=True)
+#     nlp.to_disk(MODEL_SAVE_PATH)
+#     print(f"{GREEN}Model saved to {MODEL_SAVE_PATH} with NER component added.{RESET}")
+# else:
+#     ner = nlp.get_pipe("ner")
+#     print(f"{GREEN}NER pipe already exists in blank model: {nlp.pipe_names}{RESET}")
 
-    doc_bin, examples = handle_spacy_data(
-        SPACY_DATA_PATH,
-        CONVERTED_FILE,
-        FOLDER,
-        nlp,
-        tokenizer,
-        MAX_SEQ_LENGTH,
-        transformer,
-    )
+#     doc_bin, examples = handle_spacy_data(
+#         SPACY_DATA_PATH,
+#         CONVERTED_FILE,
+#         FOLDER,
+#         nlp,
+#         tokenizer,
+#         MAX_SEQ_LENGTH,
+#         transformer,
+#     )
 
 # ------------------- TRAIN MODEL -------------------
-train_spacy_model(MODEL_SAVE_PATH, nlp, examples, resume=True)
+# train_spacy_model(MODEL_SAVE_PATH, nlp, examples, resume=True)
 
 # ------------------- VALIDATE TRAINER -------------------
-evaluate_model(nlp, converted_data)
+# evaluate_model(nlp, converted_data)
 # validate_entities(converted_data, nlp)
 
 
@@ -114,9 +117,8 @@ def convert_example_to_biluo(text):
 
 def inspect_job_responsibility_predictions(text):
     """Inspect model predictions for job responsibility text."""
-    decoded_text = recursive_html_decode(text)
-    print(f"\nOriginal Text: '{decoded_text}'\n")
-    doc, biluo_tags = convert_example_to_biluo(decoded_text)
+
+    doc, biluo_tags = convert_example_to_biluo(text)
 
     print("Token Predictions:")
     print(f"{'Token':<15}{'Predicted Label':<20}{'BILUO Tag':<20}")
@@ -167,3 +169,26 @@ def inspect_job_responsibility_predictions(text):
         entity_data[current_entity].append(" ".join(current_tokens))
 
     return entity_data
+
+if __name__ == "__main__":
+    warnings.filterwarnings("ignore")
+    print("\nRunning job responsibilities extraction model inspection script...", file=sys.stderr)
+    
+    try:
+        encoded_input = sys.argv[1]
+        input_data = json.loads(base64.b64decode(encoded_input).decode("utf-8"))
+        text = input_data.get("text", "")
+
+
+        entity_data = inspect_job_responsibility_predictions(text)
+
+        output = {
+            "status": "success" if entity_data else "failure",
+            "entities": entity_data,
+        }
+
+        print(json.dumps(output))
+    except Exception as e:
+        error_response = {"status": "error", "message": str(e)}
+        print(json.dumps(error_response))
+        sys.exit(1)

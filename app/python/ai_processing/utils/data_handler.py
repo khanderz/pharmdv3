@@ -22,7 +22,7 @@ def load_spacy_model(
 
     if os.path.exists(os.path.join(full_path, "meta.json")):
         try:
-            print(f"{GREEN}Loading existing model from {full_path}...{RESET}")
+            # print(f"{GREEN}Loading existing model from {full_path}...{RESET}")
             nlp = spacy.load(full_path)
             return nlp
         except Exception as e:

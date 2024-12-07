@@ -34,10 +34,13 @@ class JobPostService
     summary = structured_data['summary']
     responsibilities = structured_data['responsibilities']
     qualifications = structured_data['qualifications']
-    benefits = structured_data['benefits']
+    benefits = structured_data['benefits'] || qualifications
 
-    processed_qualifications = extract_and_save_job_qualifications(job_post, qualifications)
-    puts "processed_qualifications: #{processed_qualifications}"
+    # processed_descriptions = extract_and_save_descriptions(job_post, summary)
+    # processed_qualifications = extract_and_save_job_qualifications(job_post, qualifications)
+    # processed_responsibilities = extract_and_save_responsibilities(job_post, responsibilities)
+    processed_benefits = extract_and_save_benefits(job_post, benefits)
+
     # puts "description: #{description}"
     # puts "*" * 50
     # puts "summary: #{summary}"
@@ -47,7 +50,6 @@ class JobPostService
     # puts "qualifications: #{qualifications}"
     # puts "*" * 50
     # puts "benefits: #{benefits}"
-
   end
 
   def self.preprocess_job_description(job_description)
@@ -77,23 +79,58 @@ class JobPostService
     nil
   end
 
+  def self.extract_and_save_descriptions(job_post, descriptions)
+    descriptions_data = call_inspect_predictions(
+      script_path: 'app/python/ai_processing/job_description_extraction/train_job_description_extraction.py',
+      input_text: descriptions
+    )
+
+    puts "descriptions_data: #{descriptions_data}"
+  end 
+
+  def self.extract_and_save_responsibilities(job_post, responsibilities)
+    responsibilities_data = call_inspect_predictions(
+      script_path: 'app/python/ai_processing/job_responsibilities/train_responsibilities.py',
+      input_text: responsibilities
+    )
+
+    puts "responsibilities_data: #{responsibilities_data}"
+  end
+
   def self.extract_and_save_job_qualifications(job_post, qualifications_text)
     # puts "Extracting qualifications from text: #{qualifications_text}..."
     
-    qualification_data = call_inspect_qualifications_predictions(
+    qualification_data = call_inspect_predictions(
       script_path: 'app/python/ai_processing/job_qualifications/train_qualifications.py',
       input_text: qualifications_text
     )
     
-    puts "qualification_data: #{qualification_data}"
-    if qualification_data && qualification_data['status'] == 'success'
-      update_qualifications(job_post, qualification_data['entities'])
-    else
-      puts "#{RED}Failed to extract qualifications.#{RESET}"
-    end
+    # puts "qualification_data: #{qualification_data}"
+    # if qualification_data && qualification_data['status'] == 'success'
+    #   update_qualifications(job_post, qualification_data['entities'])
+    # else
+    #   puts "#{RED}Failed to extract qualifications.#{RESET}"
+    # end
   end
   
-  def self.call_inspect_qualifications_predictions(script_path:, input_text:)
+  def self.extract_and_save_benefits(job_post, benefits)
+    benefits_data = call_inspect_predictions(
+      script_path: 'app/python/ai_processing/job_benefits/train_benefits.py',
+      input_text: benefits
+    )
+
+    parsed_benefits = benefits_data['entities']
+
+    compensation_data = call_inspect_predictions(
+      script_path: 'app/python/ai_processing//salary_extraction/train_salary_extraction.py',
+      input_text: benefits
+    )
+
+    puts "benefits_data: #{parsed_benefits}"
+    puts "compensation_data: #{compensation_data}"
+  end
+
+  def self.call_inspect_predictions(script_path:, input_text:)
     input_json = { text: input_text }.to_json
     encoded_data = Base64.strict_encode64(input_json)
     command = "python3 #{script_path} '#{encoded_data}'"
