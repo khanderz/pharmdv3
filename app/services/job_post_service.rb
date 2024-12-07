@@ -6,25 +6,83 @@ require 'base64'
 require 'python_script_parser'
 
 class JobPostService
+  def self.print_entities(response)
+    puts 'Extracted Entities and Values:'
+    response['entities'].each do |entity_type, values|
+      puts "#{entity_type}:"
+      values.each { |value| puts "  - #{value}" }
+    end
+  end
+
   def self.extract_and_save_job_description_and_salary(job_post)
-    puts 'Extracting job description entities...'
-    job_description_data = call_inspect_job_description_predictions(
-      script_path: 'app/python/ai_processing/job_description_extraction/train_job_description_extraction.py',
-      input_text: job_post['content']
-    )
-    # puts "entities: #{job_description_data['entities']}"
+    puts 'Preprocessing job description...'
 
-    nil unless job_description_data && job_description_data['status'] == 'success'
+    structured_data = preprocess_job_description(job_post['content'])
 
-    # compensation_texts = job_description_data['entities']['COMPENSATION']
+    unless structured_data
+      puts "#{RED}Failed to preprocess job description.#{RESCUE}"
+      return
+    end
+
+    description = structured_data['description']
+    summary = structured_data['summary']
+    responsibilities = structured_data['responsibilities']
+    qualifications = structured_data['qualifications']
+    benefits = structured_data['benefits']
+
+    puts "description: #{description}"
+    puts "*" * 50
+    puts "summary: #{summary}"
+    puts "*" * 50
+    puts "responsibilities: #{responsibilities}"
+    puts "*" * 50
+    puts "qualifications: #{qualifications}"
+    puts "*" * 50
+    puts "benefits: #{benefits}"
+
+    # puts 'Extracting job description entities...'
+    # job_description_data = call_inspect_job_description_predictions(
+    #   script_path: 'app/python/ai_processing/job_description_extraction/train_job_description_extraction.py',
+    #   input_text: responsibilities || job_post['content']
+    # )
+
+    # return unless job_description_data && job_description_data['status'] == 'success'
+
+    # compensation_texts = job_description_data.dig('entities', 'COMPENSATION')
     # if compensation_texts.nil? || compensation_texts.empty?
-    #   puts "#{RED}No compensation data found for job post ID #{job_post.id}.#{RESET}"
+    #   puts "No compensation data found for job post ID #{job_post.id}."
     #   return
     # end
 
     # compensation_texts.each do |compensation_text|
     #   extract_and_save_salary(job_post, compensation_text)
     # end
+  end
+
+  def self.preprocess_job_description(job_description)
+    puts 'Running description splitter...'
+
+    python_script_path = 'app/python/ai_processing/utils/description_splitter.py'
+    input_json = { text: job_description }.to_json
+    encoded_data = Base64.strict_encode64(input_json)
+    command = "python3 #{python_script_path} '#{encoded_data}'"
+
+    stdout, stderr, status = Open3.capture3(command)
+
+    if status.success? && !stdout.strip.empty?
+      begin
+        result = JSON.parse(stdout)
+        puts 'Preprocessing successful. Structured data:'
+        result.each { |key, value| puts "#{key.capitalize}: #{value[0..100]}..." if value } 
+        return result
+      rescue JSON::ParserError => e
+        puts "#{RED}Error parsing JSON from description splitter: #{e.message}#{RESCUE}"
+      end
+    else
+      puts "#{RED}Error running description splitter: #{stderr} (Status: #{status.exitstatus})#{RESCUE}"
+    end
+
+    nil
   end
 
   def self.extract_and_save_salary(job_post, compensation_text)
@@ -38,14 +96,6 @@ class JobPostService
 
     update_data = prepare_salary_update_data(salary_data['predictions'], job_post)
     job_post.update(update_data) unless update_data.empty?
-  end
-
-  def self.print_entities(response)
-    puts 'Extracted Entities and Values:'
-    response['entities'].each do |entity_type, values|
-      puts "#{entity_type}:"
-      values.each { |value| puts "  - #{value}" }
-    end
   end
 
   def self.call_inspect_job_description_predictions(script_path:, input_text:)
