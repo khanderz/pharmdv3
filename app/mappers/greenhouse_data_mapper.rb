@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # app/mappers/greenhouse_data_mapper.rb
 
 class GreenhouseDataMapper
@@ -18,7 +20,8 @@ class GreenhouseDataMapper
       job_internal_id: job['internal_job_id'],
       job_applyUrl: job['absolute_url'],
 
-      department_id: Department.find_department(job['departments'][0]['name'], 'JobPost', job['absolute_url']).id,
+      department_id: Department.find_department(job['departments'][0]['name'], 'JobPost',
+                                                job['absolute_url']).id,
       team_id: nil,
 
       job_commitment_id: nil,
@@ -47,9 +50,7 @@ class GreenhouseDataMapper
     job_post_data
   end
 
-  private
-
-  def self.update_with_ai(job_post_data, job, location_info)
+  def self.update_with_ai(job_post_data, job, _location_info)
     ai_salary_data = JobPostService.extract_and_save_job_description_and_salary(job)
     # ai_location_data = JobPostService.extract_and_save_salary(location_info)
 
@@ -87,6 +88,6 @@ class GreenhouseDataMapper
   def self.match_section(content, start_keyword, end_keyword)
     return unless content
 
-    content.match(/#{start_keyword}[:\-](.*?)#{end_keyword}[:\-]/m)&.captures&.first&.strip
+    content.match(/#{start_keyword}[:-](.*?)#{end_keyword}[:-]/m)&.captures&.first&.strip
   end
 end

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class CreateJobSeniorities < ActiveRecord::Migration[7.1]
   def change
     create_table :job_seniorities do |t|

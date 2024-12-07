@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # app/services/lever_api_service.rb
 require 'net/http'
 require 'json'
@@ -14,8 +16,6 @@ class LeverApiService
 
     parse_response(response, company)
   end
-
-  private
 
   def self.make_request(url)
     uri = URI(url)

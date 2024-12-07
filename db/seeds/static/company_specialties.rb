@@ -240,9 +240,9 @@ specialties = {
   pain_mgmt: [
     { key: 'CHRONIC_PAIN_TREATMENT', value: 'Chronic Pain Treatment',
       aliases: ['long-term pain relief', 'chronic pain care'] },
-      { key: 'SUBSTANCE_ABUSE_TREATMENT', value: 'Substance Abuse Treatment',
+    { key: 'SUBSTANCE_ABUSE_TREATMENT', value: 'Substance Abuse Treatment',
       aliases: ['addiction care', 'rehab'] }
-],
+  ],
   pediatrics: [
     { key: 'CHILD_DEVELOPMENT_SERVICES', value: 'Child Development Services',
       aliases: ['developmental care', 'child growth'] },

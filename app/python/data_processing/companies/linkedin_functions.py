@@ -85,6 +85,7 @@ def seed_company_data(data, credentials_path, master_sheet_id, range_name):
 
     print(f"{GREEN}Company data seeding completed successfully!{RESET}")
 
+
 def map_linkedin_data_to_newcompany(row, linkedin_data):
     """
     Map LinkedIn data to a single company's attributes.
@@ -94,7 +95,7 @@ def map_linkedin_data_to_newcompany(row, linkedin_data):
 
     row["company_name"] = linkedin_data.get("name")
     row["linkedin_url"] = linkedin_data.get("linkedin_profile_url")
-    
+
     row["company_url"] = linkedin_data.get("website")
     updated_attributes.append("company_url")
 
@@ -132,7 +133,9 @@ def map_linkedin_data_to_newcompany(row, linkedin_data):
         row["company_states"] = list(company_states)
         row["company_cities"] = list(company_cities)
 
-        updated_attributes.extend(["company_countries", "company_states", "company_cities"])
+        updated_attributes.extend(
+            ["company_countries", "company_states", "company_cities"]
+        )
 
     if company_size_data:
         staff_count = linkedin_data.get("company_size_on_linkedin")
@@ -235,6 +238,7 @@ def map_linkedin_data_to_company(row, linkedin_data):
 
     return row, updated_attributes
 
+
 def enrich_with_linkedin_data(
     master_active_data, credentials_path, master_sheet_id, active_range_name
 ):
@@ -278,6 +282,7 @@ def enrich_with_linkedin_data(
             print(f"{RED}An error occurred during Google Sheet update: {e}{RESET}")
 
     return master_active_data
+
 
 def filter_active_companies(
     master_data,
@@ -406,6 +411,7 @@ def filter_active_companies(
     )
     print(f"{BLUE}Master data sheet updated with all changes.{RESET}")
 
+
 def update_companies_to_google_sheet(
     credentials_path, sheet_id, sheet_range, filtered_companies
 ):
@@ -418,7 +424,7 @@ def update_companies_to_google_sheet(
         sheet_range (str): Name of the sheet or range (e.g., 'Sheet1').
         filtered_companies (list[dict]): List of companies to process and update.
     """
-    company_size_data = fetch_company_sizes()  
+    company_size_data = fetch_company_sizes()
     batch_updates = []
 
     for company in filtered_companies:
@@ -429,11 +435,14 @@ def update_companies_to_google_sheet(
             print(f"{RED}Skipping company with missing name or LinkedIn URL.{RESET}")
             continue
 
-
-        row, updated_attributes = map_linkedin_data_to_newcompany(company, linkedin_data)
+        row, updated_attributes = map_linkedin_data_to_newcompany(
+            company, linkedin_data
+        )
 
         if updated_attributes:
-            print(f"{GREEN}Updated attributes for {company_name}: {', '.join(updated_attributes)}{RESET}")
+            print(
+                f"{GREEN}Updated attributes for {company_name}: {', '.join(updated_attributes)}{RESET}"
+            )
 
             batch_updates.append(
                 {
@@ -444,7 +453,9 @@ def update_companies_to_google_sheet(
 
     if batch_updates:
         try:
-            print(f"{BLUE}Performing batch update for {len(batch_updates)} companies...{RESET}")
+            print(
+                f"{BLUE}Performing batch update for {len(batch_updates)} companies...{RESET}"
+            )
             batch_update_google_sheet(credentials_path, sheet_id, batch_updates)
         except Exception as e:
             print(f"{RED}Batch update failed: {e}{RESET}")

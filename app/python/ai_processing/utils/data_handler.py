@@ -9,6 +9,7 @@ project_root = os.path.abspath(
     os.path.join(os.path.dirname(__file__), "../../..", "python", "ai_processing")
 )
 
+
 def load_spacy_model(
     MODEL_SAVE_PATH,
     MAX_SEQ_LENGTH=None,
@@ -17,7 +18,7 @@ def load_spacy_model(
 ):
     full_path = os.path.join(project_root, MODEL_SAVE_PATH)
 
-    nlp = None 
+    nlp = None
 
     if os.path.exists(os.path.join(full_path, "meta.json")):
         try:
@@ -53,7 +54,6 @@ def load_spacy_model(
         last=True,
     )
     return nlp
-
 
 
 def generate_path(file_name, folder):

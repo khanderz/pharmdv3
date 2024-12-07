@@ -134,10 +134,15 @@ def batch_update_google_sheet(credentials_path, sheet_id, updates):
         service = build("sheets", "v4", credentials=creds)
         body = {"data": updates, "valueInputOption": "RAW"}
 
-        response = service.spreadsheets().values().batchUpdate(
-            spreadsheetId=sheet_id, body=body
-        ).execute()
+        response = (
+            service.spreadsheets()
+            .values()
+            .batchUpdate(spreadsheetId=sheet_id, body=body)
+            .execute()
+        )
 
-        print(f"Batch update completed: {response.get('totalUpdatedCells')} cells updated.")
+        print(
+            f"Batch update completed: {response.get('totalUpdatedCells')} cells updated."
+        )
     except HttpError as e:
         print(f"An error occurred during batch update: {e}")

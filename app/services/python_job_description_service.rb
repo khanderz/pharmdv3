@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # app/services/python_job_description_service.rb
 require 'open3'
 require 'python_script_parser'
@@ -14,7 +16,7 @@ class PythonJobDescriptionService
       PythonScriptParser.parse_output(stdout)
     else
       Rails.logger.error("Python script failed with error: #{stderr}")
-      raise "Python script execution failed"
+      raise 'Python script execution failed'
     end
   end
 end

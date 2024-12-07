@@ -5,6 +5,7 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
+
 def fetch_company_data(linkedin_url, retries=3, backoff_factor=2):
     """
     Fetch company data from LinkedIn using the Proxycurl API, with retry logic
@@ -69,7 +70,9 @@ def search_companies(params, retries=3, backoff_factor=2):
     try:
         api_key = os.getenv("PROXYCURL_API_KEY")
         if not api_key:
-            raise ValueError("Proxycurl API key is missing. Set PROXYCURL_API_KEY in your environment variables.")
+            raise ValueError(
+                "Proxycurl API key is missing. Set PROXYCURL_API_KEY in your environment variables."
+            )
 
         headers = {"Authorization": f"Bearer {api_key}"}
         api_endpoint = "https://nubela.co/proxycurl/api/v2/search/company"
@@ -80,16 +83,21 @@ def search_companies(params, retries=3, backoff_factor=2):
             if response.status_code == 200:
                 return response.json()
             elif response.status_code in [503, 504]:
-                print(f"Retryable error ({response.status_code}) encountered. Retrying in {backoff_factor ** attempt} seconds...")
-                time.sleep(backoff_factor ** attempt)
+                print(
+                    f"Retryable error ({response.status_code}) encountered. Retrying in {backoff_factor ** attempt} seconds..."
+                )
+                time.sleep(backoff_factor**attempt)
             else:
-                return {"error": f"Search failed with status {response.status_code}: {response.text}"}
+                return {
+                    "error": f"Search failed with status {response.status_code}: {response.text}"
+                }
 
         return {"error": f"Failed after {retries} retries."}
 
     except Exception as e:
         return {"error": f"Unexpected error: {str(e)}"}
-        
+
+
 def filter_healthcare_companies(search_response):
     """
     Filters the search response to include only companies with 'healthcare' in their specialties.
@@ -118,5 +126,3 @@ def filter_healthcare_companies(search_response):
 
     except Exception as e:
         return {"error": f"Unexpected error: {str(e)}"}
-
-

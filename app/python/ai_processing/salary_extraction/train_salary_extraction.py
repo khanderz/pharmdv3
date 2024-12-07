@@ -120,6 +120,7 @@ test_texts = [
 import json
 import sys
 
+
 def inspect_salary_predictions_from_input(input_text):
     # print(f"\nInspecting salary predictions for input text: '{input_text}'")
     doc, biluo_tags = inspect_salary_model_predictions(input_text)
@@ -136,6 +137,7 @@ def inspect_salary_predictions_from_input(input_text):
     }
     return result
 
+
 if __name__ == "__main__":
     print("\nRunning salary extraction model inspection script...")
     try:
@@ -147,7 +149,7 @@ if __name__ == "__main__":
 
         if not text:
             raise ValueError("No text provided for prediction.")
-        
+
         # print(f"\nInspecting salary predictions for input text: '{text}'")
         predictions = inspect_salary_predictions_from_input(text)
         # print(json.dumps(predictions))

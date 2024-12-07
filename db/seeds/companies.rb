@@ -29,11 +29,12 @@ end
 
 def resolve_location(locations)
   return nil if locations.empty?
+
   locations.size == 1 ? locations.first : locations
 end
 
 def log_adjudication(entity_type, entity_name, company_name, adjudicatable)
-  raise ArgumentError, "Adjudicatable must be persisted" unless adjudicatable.persisted?
+  raise ArgumentError, 'Adjudicatable must be persisted' unless adjudicatable.persisted?
 
   error_details = "#{entity_type} '#{entity_name}' not found for Company #{company_name}"
 
@@ -57,12 +58,10 @@ def log_adjudication(entity_type, entity_name, company_name, adjudicatable)
 
   puts "#{ORANGE}Logged adjudication for #{entity_type}: #{entity_name}, company: #{company_name}#{RESET}"
   adjudication
-
 rescue ActiveRecord::RecordInvalid => e
   puts "#{RED}Failed to create adjudication for #{entity_type} '#{entity_name}' and company '#{company_name}': #{e.message}#{RESET}"
   nil
 end
-
 
 def find_or_create_country(country_name, company_name)
   Country.where(
@@ -132,11 +131,10 @@ def find_company_size(size_range, current_company_size)
     end
 
     if range
-      if current_company_size == range
-        return current_company_size  
-      else
-        range
-      end
+      return current_company_size if current_company_size == range
+
+      range
+
     else
       puts "#{RED}Invalid numeric company size: '#{size_range}' (No matching range found in CompanySize table)#{RESET}"
       nil
@@ -145,11 +143,10 @@ def find_company_size(size_range, current_company_size)
     matching_company_size = CompanySize.find_by(size_range: size_range)
 
     if matching_company_size
-      if current_company_size == matching_company_size
-        return current_company_size  
-      else
-        matching_company_size
-      end
+      return current_company_size if current_company_size == matching_company_size
+
+      matching_company_size
+
     else
       puts "#{RED}Invalid company size: '#{size_range}'#{RESET}"
       nil
@@ -158,9 +155,7 @@ def find_company_size(size_range, current_company_size)
 end
 
 def find_funding_type(funding_type_name, company_name, company)
-  if funding_type_name.blank?
-    return nil
-  end
+  return nil if funding_type_name.blank?
 
   funding_type = FundingType.where('LOWER(funding_type_name) = ?', funding_type_name.downcase).first
   unless funding_type
@@ -196,11 +191,11 @@ end
 def update_join_tables(company, countries, states, cities, domains, specialties)
   changes_made = false
 
-  countries = countries.uniq { |country| country.id }
-  states = states.uniq { |state| state.id }
-  cities = cities.uniq { |city| city.id }
-  domains = domains.uniq { |domain| domain.id }
-  specialties = specialties.uniq { |specialty| specialty.id }
+  countries = countries.uniq(&:id)
+  states = states.uniq(&:id)
+  cities = cities.uniq(&:id)
+  domains = domains.uniq(&:id)
+  specialties = specialties.uniq(&:id)
 
   existing_countries = CompanyCountry.where(company_id: company.id).pluck(:country_id).sort
   new_countries = countries.map(&:id).sort
@@ -247,7 +242,8 @@ def update_join_tables(company, countries, states, cities, domains, specialties)
   if existing_specialties != new_specialties
     CompanySpecialization.where(company_id: company.id).destroy_all
     specialties.each do |specialty|
-      CompanySpecialization.find_or_create_by!(company_id: company.id, company_specialty_id: specialty.id)
+      CompanySpecialization.find_or_create_by!(company_id: company.id,
+                                               company_specialty_id: specialty.id)
     end
     changes_made = true
   end
@@ -255,7 +251,8 @@ def update_join_tables(company, countries, states, cities, domains, specialties)
   changes_made
 end
 
-def update_existing_company(company, row_data, ats_type, countries, states, cities, domains, specialties)
+def update_existing_company(company, row_data, ats_type, countries, states, cities, domains,
+                            specialties)
   ActiveRecord::Base.transaction do
     changes_made = false
     changed_attributes = {}
@@ -265,7 +262,8 @@ def update_existing_company(company, row_data, ats_type, countries, states, citi
 
     company_size = find_company_size(row_data['company_size'], current_company_size)
     funding_type = find_funding_type(row_data['last_funding_type'], company.company_name, company)
-    company_type = find_or_create_company_type(row_data['company_type'], company.company_name, company)
+    company_type = find_or_create_company_type(row_data['company_type'], company.company_name,
+                                               company)
 
     if company_size && company_size.id != current_company_size&.id
       company.assign_attributes(company_size_id: company_size.id)
@@ -290,7 +288,7 @@ def update_existing_company(company, row_data, ats_type, countries, states, citi
       company_description: row_data['company_description'],
       company_tagline: row_data['company_tagline'],
       ats_type: ats_type
-      )
+    )
 
     if company.changed?
       changes_made = true
@@ -300,12 +298,15 @@ def update_existing_company(company, row_data, ats_type, countries, states, citi
       company.save!
     end
 
-    join_table_changes = update_join_tables(company, countries, states, cities, domains, specialties)
+    join_table_changes = update_join_tables(company, countries, states, cities, domains,
+                                            specialties)
     changes_made ||= join_table_changes
 
     if changes_made
       puts "#{BLUE}Updated #{company.company_name}#{RESET}"
-      puts "#{BLUE}Attribute changes: #{changed_attributes[:company]}#{RESET}" if changed_attributes[:company]
+      if changed_attributes[:company]
+        puts "#{BLUE}Attribute changes: #{changed_attributes[:company]}#{RESET}"
+      end
     else
       puts "#{company.company_name} has no changes."
     end
@@ -318,7 +319,8 @@ end
 def create_new_company(row_data, ats_type, countries, states, cities, domains, specialties)
   company_size = find_company_size(row_data['company_size'])
   funding_type = find_funding_type(row_data['last_funding_type'], company.company_name, company)
-  company_type = find_or_create_company_type(row_data['company_type_id'], row_data['company_name'], nil)
+  company_type = find_or_create_company_type(row_data['company_type_id'], row_data['company_name'],
+                                             nil)
 
   new_company = Company.new(
     company_name: row_data['company_name'],
@@ -345,7 +347,7 @@ def create_new_company(row_data, ats_type, countries, states, cities, domains, s
   end
 end
 
-def process_company_data(row_data, headers)
+def process_company_data(row_data, _headers)
   ActiveRecord::Base.transaction do
     company_name = row_data['company_name']
     return unless company_name.present?
@@ -353,9 +355,15 @@ def process_company_data(row_data, headers)
     company = Company.find_by(company_name: company_name)
     ats_type = AtsType.find_by(ats_type_code: row_data['company_ats_type'])
 
-    countries = normalize_location_data(row_data['company_countries']).map { |name| find_or_create_country(name, company_name) }
-    states = normalize_location_data(row_data['company_states']).map { |name| find_or_create_state(name, company_name) }
-    cities = normalize_location_data(row_data['company_cities']).map { |name| find_or_create_city(name, company_name) }
+    countries = normalize_location_data(row_data['company_countries']).map do |name|
+      find_or_create_country(name, company_name)
+    end
+    states = normalize_location_data(row_data['company_states']).map do |name|
+      find_or_create_state(name, company_name)
+    end
+    cities = normalize_location_data(row_data['company_cities']).map do |name|
+      find_or_create_city(name, company_name)
+    end
 
     domains = (row_data['healthcare_domain'] || '').split(',').map(&:strip).map do |key|
       HealthcareDomain.find_or_create_by!(key: key)
@@ -366,7 +374,8 @@ def process_company_data(row_data, headers)
     end
 
     if company
-      update_existing_company(company, row_data, ats_type, countries, states, cities, domains, specialties)
+      update_existing_company(company, row_data, ats_type, countries, states, cities, domains,
+                              specialties)
     else
       create_new_company(row_data, ats_type, countries, states, cities, domains, specialties)
     end

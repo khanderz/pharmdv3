@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # app/services/greenhouse_api_service.rb
 require 'net/http'
 require 'json'
@@ -15,8 +17,6 @@ class GreenhouseApiService
 
     parse_response(response, company)
   end
-
-  private
 
   def self.make_request(url)
     uri = URI(url)

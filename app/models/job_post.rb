@@ -40,7 +40,8 @@ class JobPost < ApplicationRecord
 
   validates :job_title, presence: true
   validates :job_url, uniqueness: true
-  validates :job_salary_min, :job_salary_max, numericality: { greater_than_or_equal_to: 0 }, allow_nil: true
+  validates :job_salary_min, :job_salary_max, numericality: { greater_than_or_equal_to: 0 },
+                                              allow_nil: true
 
   scope :active, -> { where(job_active: true) }
   scope :inactive, -> { where(job_active: false) }
@@ -113,16 +114,14 @@ class JobPost < ApplicationRecord
       log_job_error(existing_job, company, e.message)
     end
 
-    def create_new_job(company, job_post_data, job_url, locations)
+    def create_new_job(company, job_post_data, _job_url, locations)
       new_job_post = new(job_post_data)
 
       if new_job_post.save
         ai_updated = update_salary_and_location_with_ai(new_job_post, job_post_data, locations)
         puts "AI updated: #{ai_updated}"
 
-        unless ai_updated
-          update_job_locations(new_job_post, locations)
-        end
+        update_job_locations(new_job_post, locations) unless ai_updated
 
         # new_job_post.extract_and_save_salary
         # new_job_post.extract_and_save_job_description
@@ -133,7 +132,7 @@ class JobPost < ApplicationRecord
       end
     end
 
-    def update_salary_and_location_with_ai(job_post, job_post_data, locations)
+    def update_salary_and_location_with_ai(job_post, _job_post_data, _locations)
       ai_salary_updated = JobPostService.extract_and_save_salary(job_post)
       # ai_location_updated = JobPostService.update_location_with_ai(job_post, locations)
 
@@ -155,10 +154,10 @@ class JobPost < ApplicationRecord
         job_post.states = [state].compact if state
       end
 
-      if locations[:city_name]
-        city = City.find_by(city_name: locations[:city_name])
-        job_post.cities = [city].compact if city
-      end
+      return unless locations[:city_name]
+
+      city = City.find_by(city_name: locations[:city_name])
+      job_post.cities = [city].compact if city
     end
 
     def log_job_error(job_post, company, error_message)

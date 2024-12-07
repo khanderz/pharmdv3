@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class LeverDataMapper
   def self.map(job, company)
     location_info = LocationMatcher.match_location(
@@ -22,7 +24,8 @@ class LeverDataMapper
       job_internal_id_string: job['id'],
       job_applyUrl: job['applyUrl'],
 
-      department_id: Department.find_department(job['categories']['department'], 'JobPost', job['hosted_url']).id,
+      department_id: Department.find_department(job['categories']['department'], 'JobPost',
+                                                job['hosted_url']).id,
       team_id: Team.find_team(job['categories']['team'], 'JobPost', job['hosted_url']).id,
 
       job_commitment_id: JobCommitment.find_job_commitment(job['categories']&.dig('commitment')),
@@ -51,9 +54,7 @@ class LeverDataMapper
     job_post_data
   end
 
-  private
-
-  def self.update_with_ai(job_post_data, job, location_info)
+  def self.update_with_ai(job_post_data, job, _location_info)
     ai_salary_data = JobPostService.extract_and_save_salary(job)
     # ai_location_data = JobPostService.extract_and_save_salary(location_info)
 

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # app/services/job_fetcher.rb
 
 # RED = "\033[31m"

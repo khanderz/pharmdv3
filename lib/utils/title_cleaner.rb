@@ -4,13 +4,15 @@
 module Utils
   class TitleCleaner
     def self.clean_title(title)
-      return '' if title.nil? 
+      return '' if title.nil?
 
-      cleaned_title = title.gsub(/\(.*?\)/, '') 
-                           .split(/[-,]/).first.strip 
+      cleaned_title = title.gsub(/\(.*?\)/, '')
+                           .split(/[-,]/).first.strip
 
       # Get state names and codes from the database, excluding nil values
-      states = State.all.pluck(:state_code, :state_name).flatten.compact.map { |s| Regexp.escape(s) }
+      states = State.all.pluck(:state_code, :state_name).flatten.compact.map do |s|
+        Regexp.escape(s)
+      end
       state_pattern = /\b(#{states.join('|')})\b/i # Create a pattern with state codes and names
 
       cleaned_title.gsub!(state_pattern, '')

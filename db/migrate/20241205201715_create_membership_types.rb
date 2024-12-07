@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class CreateMembershipTypes < ActiveRecord::Migration[7.1]
   def change
     create_table :membership_types do |t|

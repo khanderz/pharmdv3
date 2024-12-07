@@ -12,9 +12,7 @@ from googleapiclient.errors import HttpError
 import time
 
 
-def process_predictions(
-    tokens, biluo_tags, max_domains=3, min_frequency=2
-):
+def process_predictions(tokens, biluo_tags, max_domains=3, min_frequency=2):
     domain_counts = Counter(
         token.ent_type_ for token, tag in zip(tokens, biluo_tags) if tag != "O"
     )
@@ -29,12 +27,11 @@ def process_predictions(
         ]
 
     top_domains = sorted(
-        filtered_domains,
-        key=lambda domain: domain_counts[domain],
-        reverse=True
+        filtered_domains, key=lambda domain: domain_counts[domain], reverse=True
     )[:max_domains]
 
     return top_domains
+
 
 def retry_with_backoff(func, max_retries=10, *args, **kwargs):
     """Retry a function with exponential backoff."""
@@ -48,10 +45,11 @@ def retry_with_backoff(func, max_retries=10, *args, **kwargs):
                     f"{RED}Rate limit exceeded. Retrying in {delay} seconds... (Attempt {attempt + 1}/{max_retries}){RESET}"
                 )
                 time.sleep(delay)
-                delay = min(delay * 2, 60)  
+                delay = min(delay * 2, 60)
             else:
                 raise
     return False
+
 
 def process_and_update_sheet(credentials_path, sheet_id, data, sheet_name):
     if (
@@ -85,7 +83,7 @@ def process_and_update_sheet(credentials_path, sheet_id, data, sheet_name):
 
         try:
             tokens, biluo_tags = inspect_company_predictions(company_description)
-            top_domains =    process_predictions(tokens, biluo_tags)
+            top_domains = process_predictions(tokens, biluo_tags)
             healthcare_domains_str = ", ".join(top_domains)
 
             data.at[index, "healthcare_domain"] = healthcare_domains_str
@@ -99,7 +97,9 @@ def process_and_update_sheet(credentials_path, sheet_id, data, sheet_name):
 
             start_column = "A"
             end_column = chr(65 + len(row_data) - 1)
-            range_to_update = f"{sheet_name}!{start_column}{index + 2}:{end_column}{index + 2}"
+            range_to_update = (
+                f"{sheet_name}!{start_column}{index + 2}:{end_column}{index + 2}"
+            )
             batch_updates.append({"range": range_to_update, "values": [row_data]})
 
         except Exception as e:

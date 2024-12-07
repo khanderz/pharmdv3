@@ -12,7 +12,11 @@ from app.python.ai_processing.utils.logger import (
     configure_logging,
     configure_warnings,
 )
-from app.python.ai_processing.utils.data_handler import load_data, load_spacy_model, project_root
+from app.python.ai_processing.utils.data_handler import (
+    load_data,
+    load_spacy_model,
+    project_root,
+)
 from app.python.ai_processing.utils.spacy_utils import handle_spacy_data
 from app.python.ai_processing.utils.trainer import train_spacy_model
 from app.python.ai_processing.utils.validation_utils import evaluate_model
@@ -83,6 +87,7 @@ train_spacy_model(MODEL_SAVE_PATH, nlp, examples, resume=False)
 evaluate_model(nlp, converted_data)
 # validate_entities(converted_data, nlp)
 
+
 # ------------------- TEST EXAMPLES -------------------
 def convert_example_to_biluo(text):
     """Convert model predictions for the given text to BILUO format."""
@@ -106,10 +111,11 @@ def convert_example_to_biluo(text):
 
     return doc, biluo_tags
 
+
 def inspect_job_benefit_predictions(text):
     """Inspect model predictions for job benefit text."""
     decoded_text = recursive_html_decode(text)
-    print(f"\nOriginal Text: '{decoded_text}'\n")   
+    print(f"\nOriginal Text: '{decoded_text}'\n")
     doc, biluo_tags = convert_example_to_biluo(decoded_text)
 
     print("Token Predictions:")
@@ -152,7 +158,9 @@ def inspect_job_benefit_predictions(text):
                 current_entity = None
                 current_tokens = []
 
-        print(f"{token.text:<15}{token.ent_type_ if token.ent_type_ else 'O':<20}{biluo_tag:<20}")
+        print(
+            f"{token.text:<15}{token.ent_type_ if token.ent_type_ else 'O':<20}{biluo_tag:<20}"
+        )
     if current_entity:
         if current_entity not in entity_data:
             entity_data[current_entity] = []

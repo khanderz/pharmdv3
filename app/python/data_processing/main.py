@@ -106,18 +106,18 @@ if __name__ == "__main__":
 
     # ----------------------------- PROXYCURL -----------------------------
     query_params = {
-        'country': 'US',
-        'region': 'United States',
+        "country": "US",
+        "region": "United States",
         # 'city': 'new AND york',
-        'type': 'PRIVATELY_HELD',
-        'follower_count_min': '100',
+        "type": "PRIVATELY_HELD",
+        "follower_count_min": "100",
         # 'follower_count_max': '1000',
         # 'name': 'google OR apple',
-        'industry': 'technology',
+        "industry": "technology",
         # 'employee_count_max': '1000',
         # 'employee_count_min': '1000',
         # 'description': 'medical device',
-        'founded_after_year': '2019',
+        "founded_after_year": "2019",
         # 'founded_before_year': '1999',
         # 'funding_amount_max': '1000000',
         # 'funding_amount_min': '1000000',
@@ -126,10 +126,12 @@ if __name__ == "__main__":
         # 'public_identifier_in_list': 'stripe,amazon',
         # 'public_identifier_not_in_list': 'stripe,amazon',
         # 'page_size': '10',
-        'enrich_profiles': 'enrich',
-        'use_cache': 'if-present',
+        "enrich_profiles": "enrich",
+        "use_cache": "if-present",
     }
 
     results = search_companies(query_params)
     filtered_companies = filter_healthcare_companies(results)
-    update_companies_to_google_sheet(credentials_path, sheet_id, sheet_range, filtered_companies)
+    update_companies_to_google_sheet(
+        credentials_path, sheet_id, sheet_range, filtered_companies
+    )

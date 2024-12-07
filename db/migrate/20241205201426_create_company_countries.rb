@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class CreateCompanyCountries < ActiveRecord::Migration[7.1]
   def change
     create_table :company_countries do |t|
