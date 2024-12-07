@@ -1,6 +1,10 @@
 #  app/python/ai_processing/job_qualifications/train_qualifications.py
 
+import base64
+import json
 import os
+import sys
+import warnings
 import spacy
 from spacy.training import iob_to_biluo
 from app.python.ai_processing.utils.description_splitter import recursive_html_decode
@@ -81,10 +85,10 @@ else:
     )
 
 # ------------------- TRAIN MODEL -------------------
-train_spacy_model(MODEL_SAVE_PATH, nlp, examples, resume=True)
+# train_spacy_model(MODEL_SAVE_PATH, nlp, examples, resume=True)
 
 # ------------------- VALIDATE TRAINER -------------------
-evaluate_model(nlp, converted_data)
+# evaluate_model(nlp, converted_data)
 # validate_entities(converted_data, nlp)
 
 
@@ -114,9 +118,8 @@ def convert_example_to_biluo(text):
 
 def inspect_job_qualification_predictions(text):
     """Inspect model predictions for job qualification text."""
-    decoded_text = recursive_html_decode(text)
-    print(f"\nOriginal Text: '{decoded_text}'\n")
-    doc, biluo_tags = convert_example_to_biluo(decoded_text)
+
+    doc, biluo_tags = convert_example_to_biluo(text)
 
     print("Token Predictions:")
     print(f"{'Token':<15}{'Predicted Label':<20}{'BILUO Tag':<20}")
@@ -167,3 +170,25 @@ def inspect_job_qualification_predictions(text):
         entity_data[current_entity].append(" ".join(current_tokens))
 
     return entity_data
+
+if __name__ == "__main__":
+    warnings.filterwarnings("ignore")
+    print("\nRunning job qualifications extraction model inspection script...", file=sys.stderr)
+    try:
+        encoded_input = sys.argv[1]
+        input_data = json.loads(base64.b64decode(encoded_input).decode("utf-8"))
+        text = input_data.get("text", "")
+
+
+        entity_data = inspect_job_qualification_predictions(text)
+
+        output = {
+            "status": "success" if entity_data else "failure",
+            "entities": entity_data,
+        }
+
+        print(json.dumps(output))
+    except Exception as e:
+        error_response = {"status": "error", "message": str(e)}
+        print(json.dumps(error_response))
+        sys.exit(1)
