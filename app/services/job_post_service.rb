@@ -3,19 +3,18 @@
 require 'open3'
 require 'json'
 require 'base64'
-require 'base64'
 require 'python_script_parser'
 
 class JobPostService
   def self.extract_and_save_job_description_and_salary(job_post)
-    puts "Extracting job description entities..."
+    puts 'Extracting job description entities...'
     job_description_data = call_inspect_job_description_predictions(
       script_path: 'app/python/ai_processing/job_description_extraction/train_job_description_extraction.py',
       input_text: job_post['content']
     )
     # puts "entities: #{job_description_data['entities']}"
 
-    return unless job_description_data && job_description_data['status'] == 'success'
+    nil unless job_description_data && job_description_data['status'] == 'success'
 
     # compensation_texts = job_description_data['entities']['COMPENSATION']
     # if compensation_texts.nil? || compensation_texts.empty?
@@ -27,8 +26,6 @@ class JobPostService
     #   extract_and_save_salary(job_post, compensation_text)
     # end
   end
-
-  private
 
   def self.extract_and_save_salary(job_post, compensation_text)
     puts "Extracting salary from compensation text: #{compensation_text}..."
@@ -44,7 +41,7 @@ class JobPostService
   end
 
   def self.print_entities(response)
-    puts "Extracted Entities and Values:"
+    puts 'Extracted Entities and Values:'
     response['entities'].each do |entity_type, values|
       puts "#{entity_type}:"
       values.each { |value| puts "  - #{value}" }
@@ -102,14 +99,18 @@ class JobPostService
     update_data[:job_salary_min] = min_salary['token'].to_i if min_salary
     update_data[:job_salary_max] = max_salary['token'].to_i if max_salary
     update_data[:job_salary_single] = single_salary['token'].to_i if single_salary
-    update_data[:job_salary_currency_id] = find_salary_currency_id(currency['token'], job_post) if currency
+    if currency
+      update_data[:job_salary_currency_id] =
+        find_salary_currency_id(currency['token'], job_post)
+    end
     update_data[:job_salary_interval_id] = find_salary_interval_id(interval['token']) if interval
 
     update_data
   end
 
   def self.find_salary_currency_id(currency_code, job_post)
-    JobSalaryCurrency.find_or_adjudicate_currency(currency_code, job_post.company_id, job_post.job_url)&.id
+    JobSalaryCurrency.find_or_adjudicate_currency(currency_code, job_post.company_id,
+                                                  job_post.job_url)&.id
   end
 
   def self.find_salary_interval_id(interval)
