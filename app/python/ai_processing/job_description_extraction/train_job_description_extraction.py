@@ -3,9 +3,7 @@ import base64
 import json
 import sys
 import warnings
-from bs4 import BeautifulSoup
 import spacy
-from html import unescape 
 import os
 from spacy.training import iob_to_biluo
 from app.python.ai_processing.utils.description_splitter import recursive_html_decode
@@ -110,7 +108,7 @@ evaluate_model(nlp, converted_data)
 # validate_entities(converted_data, nlp)
 
 
-# # ------------------- TEST EXAMPLES -------------------
+# ------------------- TEST EXAMPLES -------------------
 def convert_example_to_biluo(text):
     """Convert model predictions for the given text to BILUO format."""
     tokens = tokenizer(
@@ -132,7 +130,6 @@ def convert_example_to_biluo(text):
     biluo_tags = iob_to_biluo(iob_tags)
 
     return doc, biluo_tags
-
 
 
 def inspect_job_description_predictions(text):

@@ -74,10 +74,10 @@ def generate_label_mappings(entity_type):
         ENTITY_LABELS = JOB_QUALIFICATION_ENTITY_LABELS
     elif entity_type == "job_benefit":
         ENTITY_LABELS = JOB_BENEFIT_ENTITY_LABELS
-    elif entity_type == "job_location":
-        ENTITY_LABELS = JOB_LOCATION_ENTITY_LABELS
-    elif entity_type == "job_role":
-        ENTITY_LABELS = JOB_ROLE_ENTITY_LABELS
+    # elif entity_type == "job_location":
+    #     ENTITY_LABELS = JOB_LOCATION_ENTITY_LABELS
+    # elif entity_type == "job_role":
+    #     ENTITY_LABELS = JOB_ROLE_ENTITY_LABELS
     else:
         raise ValueError(
             f"Invalid entity type {entity_type}. Must pass entity type as argument."
