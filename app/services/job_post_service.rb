@@ -3,7 +3,13 @@
 require 'open3'
 require 'json'
 require 'base64'
-require 'python_script_parser'
+# require 'python_script_parser'
+
+GREEN = "\033[32m"
+BLUE = "\033[34m"
+RESET = "\033[0m"
+ORANGE = "\033[38;2;255;165;0m"
+RED = "\033[31m"
 
 class JobPostService
   def self.run_with_test_text(test_text)
@@ -24,11 +30,11 @@ class JobPostService
 
   def self.extract_and_save_job_description_and_salary(job_post)
     puts 'Preprocessing job description...'
-
+    # puts "job post: #{job_post}"
     structured_data = preprocess_job_description(job_post['content'])
 
     unless structured_data
-      puts "#{RED}Failed to preprocess job description.#{RESCUE}"
+      puts "#{RED}Failed to preprocess job description.#{RESET}"
       return
     end
 
@@ -69,6 +75,7 @@ class JobPostService
 
   def self.preprocess_job_description(job_description)
     puts 'Running description splitter...'
+    # puts "job_description: #{job_description}"
 
     python_script_path = 'app/python/ai_processing/utils/description_splitter.py'
     input_json = { text: job_description }.to_json
@@ -76,6 +83,8 @@ class JobPostService
     command = "python3 #{python_script_path} '#{encoded_data}'"
 
     stdout, stderr, status = Open3.capture3(command)
+    puts "stdout: #{stdout}"
+    puts "stderr: #{stderr}" unless stderr.strip.empty?
 
     if status.success? && !stdout.strip.empty?
       begin
@@ -84,10 +93,10 @@ class JobPostService
         result.each { |key, value| puts "#{key.capitalize}: #{value[0..100]}..." if value } 
         return result
       rescue JSON::ParserError => e
-        puts "#{RED}Error parsing JSON from description splitter: #{e.message}#{RESCUE}"
+        puts "#{RED}Error parsing JSON from description splitter: #{e.message}#{RESET}"
       end
     else
-      puts "#{RED}Error running description splitter: #{stderr} (Status: #{status.exitstatus})#{RESCUE}"
+      puts "#{RED}Error running description splitter: #{stderr} (Status: #{status.exitstatus})#{RESET}"
     end
 
     nil

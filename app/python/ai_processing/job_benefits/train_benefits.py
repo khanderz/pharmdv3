@@ -81,7 +81,7 @@ else:
     )
 
 # ------------------- TRAIN MODEL -------------------
-train_spacy_model(MODEL_SAVE_PATH, nlp, examples, resume=False)
+train_spacy_model(MODEL_SAVE_PATH, nlp, examples, resume=True)
 
 # ------------------- VALIDATE TRAINER -------------------
 evaluate_model(nlp, converted_data)

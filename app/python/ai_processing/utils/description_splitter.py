@@ -87,3 +87,93 @@ def print_readable_output(split_result: Dict[str, str]):
 #         clean_text = recursive_html_decode(text)
 #         split_result = split_job_description(clean_text)
 #         print_readable_output(split_result)
+
+import sys
+import base64
+import json
+from html import unescape
+import re
+from typing import Dict
+from bs4 import BeautifulSoup
+
+
+def strip_html_tags(text):
+    """
+    Removes HTML tags and extracts plain text from the input string.
+    """
+    soup = BeautifulSoup(text, "html.parser")
+    return soup.get_text()
+
+
+def recursive_html_decode(text, max_iterations=10):
+    """
+    Recursively decode HTML entities in the text until no further decoding is needed
+    or a maximum number of iterations is reached.
+    """
+    print("Running recursive_html_decode...", file=sys.stderr)
+    for _ in range(max_iterations):
+        decoded_text = unescape(text)
+        if decoded_text == text:
+            break
+        text = decoded_text
+    return strip_html_tags(text)
+
+
+def split_job_description(text: str) -> Dict[str, str]:
+    """
+    Splits a job description into sections based on specific keywords.
+
+    Args:
+        text (str): The job description text to be split.
+
+    Returns:
+        Dict[str, str]: A dictionary with keys 'responsibilities', 'qualifications', and 'benefits'.
+    """
+    print("Running split_job_description...", file=sys.stderr)
+    sections = ["summary", "responsibilities", "qualifications", "benefits"]
+
+    section_regex = re.compile(r"(?i)\b(" + "|".join(sections) + r")\b")
+
+    split_text = section_regex.split(text)
+
+    result = {}
+    current_section = "description"
+    result[current_section] = ""
+
+    for part in split_text:
+        header_match = section_regex.match(part.strip())
+        if header_match:
+            current_section = header_match.group(1).lower().replace(" ", "_")
+            result[current_section] = ""
+        elif current_section:
+            result[current_section] += part.strip() + " "
+
+    for key in result:
+        result[key] = result[key].strip()
+
+    return result
+
+
+def main():
+    """Main entry point of the script."""
+    if len(sys.argv) < 2:
+        print(json.dumps({"error": "No input provided to the script"}))
+        sys.exit(1)
+
+    try:
+        encoded_data = sys.argv[1]
+        input_data = json.loads(base64.b64decode(encoded_data))
+        job_description = input_data.get('text', '')
+
+        decoded_text = recursive_html_decode(job_description)
+        split_result = split_job_description(decoded_text)
+
+        print(json.dumps(split_result))
+
+    except Exception as e:
+        print(json.dumps({"error": str(e)}))
+        sys.exit(1)
+
+
+if __name__ == "__main__":
+    main()
