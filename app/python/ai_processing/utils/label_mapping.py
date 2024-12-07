@@ -12,12 +12,6 @@ SALARY_ENTITY_LABELS = [
 
 JOB_DESCRIPTION_ENTITY_LABELS = [
     "DESCRIPTION",
-    "RESPONSIBILITIES",
-    "QUALIFICATIONS",
-    # "SKILLS",
-    "CREDENTIALS",
-    "EDUCATION",
-    "EXPERIENCE",
     "JOB_ROLE",
     "JOB_SENIORITY",
     "JOB_DEPT",
@@ -26,28 +20,26 @@ JOB_DESCRIPTION_ENTITY_LABELS = [
     "JOB_SETTING",
     "JOB_COUNTRY",
     "JOB_CITY",
-    "JOB_STATE",
-    "COMPENSATION",
-    "RETIREMENT",
-    "OFFICE_LIFE",
-    "PROFESSIONAL_DEVELOPMENT",
-    "WELLNESS",
-    "PARENTAL",
-    "WORK_LIFE_BALANCE",
-    "VISA_SPONSORSHIP",
-    "ADDITIONAL_PERKS",
+    "JOB_STATE"
 ]
 
-JOB_LOCATION_ENTITY_LABELS = [
+JOB_RESPONSIBILITY_ENTITY_LABELS = [
+    "RESPONSIBILITIES",
+]
+
+JOB_QUALIFICATION_ENTITY_LABELS = [
+    "QUALIFICATIONS",
+    "CREDENTIALS",
+    "EDUCATION",
+    "EXPERIENCE",
+]
+
+JOB_BENEFIT_ENTITY_LABELS = [
+    "COMMITMENT",
     "JOB_SETTING",
     "JOB_COUNTRY",
     "JOB_CITY",
-    "JOB_STATE",
-]
-
-JOB_ROLE_ENTITY_LABELS = ["JOB_ROLE", "JOB_SENIORITY", "JOB_DEPT", "JOB_TEAM"]
-
-JOB_BENEFIT_ENTITY_LABELS = [
+    "JOB_STATE"
     "COMPENSATION",
     "RETIREMENT",
     "OFFICE_LIFE",
@@ -58,6 +50,17 @@ JOB_BENEFIT_ENTITY_LABELS = [
     "VISA_SPONSORSHIP",
     "ADDITIONAL_PERKS",
 ]
+
+# JOB_LOCATION_ENTITY_LABELS = [
+#     "JOB_SETTING",
+#     "JOB_COUNTRY",
+#     "JOB_CITY",
+#     "JOB_STATE",
+# ]
+
+# JOB_ROLE_ENTITY_LABELS = ["JOB_ROLE", "JOB_SENIORITY", "JOB_DEPT", "JOB_TEAM"]
+
+
 
 
 def generate_label_mappings(entity_type):
@@ -65,6 +68,12 @@ def generate_label_mappings(entity_type):
         ENTITY_LABELS = SALARY_ENTITY_LABELS
     elif entity_type == "job_description":
         ENTITY_LABELS = JOB_DESCRIPTION_ENTITY_LABELS
+    elif entity_type == "job_responsibility":
+        ENTITY_LABELS = JOB_RESPONSIBILITY_ENTITY_LABELS
+    elif entity_type == "job_qualification":
+        ENTITY_LABELS = JOB_QUALIFICATION_ENTITY_LABELS
+    elif entity_type == "job_benefit":
+        ENTITY_LABELS = JOB_BENEFIT_ENTITY_LABELS
     elif entity_type == "job_location":
         ENTITY_LABELS = JOB_LOCATION_ENTITY_LABELS
     elif entity_type == "job_role":
