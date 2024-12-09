@@ -77,81 +77,67 @@ class JobPost < ApplicationRecord
       # puts "Job URL: #{job_url}"
       # puts "Job Post Data: #{job_post_data}"
       existing_job = find_by(job_url: job_url)
-      locations = job_post_data.delete(:job_locations)
 
       if existing_job
         puts '-------------existing job post'
-        update_existing_job(existing_job, job_post_data, locations, company)
+        update_existing_job(existing_job, job_post_data, company)
       else
         puts '-------------new job post'
 
-        create_new_job(company, job_post_data, job_url, locations)
+        create_new_job(company, job_post_data, job_url)
       end
     end
 
     private
 
-    def update_existing_job(existing_job, job_post_data, locations, company)
-      ai_updated = update_salary_and_location_with_ai(existing_job, job_post_data, locations)
-
-      unless ai_updated
-        existing_job.update!(job_post_data)
-        update_job_locations(existing_job, locations)
-      end
-
-      # existing_job.extract_and_save_salary
-      # existing_job.extract_and_save_job_description
+    def update_existing_job(existing_job, job_post_data, company)
+      existing_job.update!(job_post_data)
 
       puts "#{ORANGE}Updated job post for URL: #{existing_job.job_url}#{RESET}"
     rescue StandardError => e
       log_job_error(existing_job, company, e.message)
     end
 
-    def create_new_job(company, job_post_data, _job_url, locations)
+    def create_new_job(company, job_post_data, _job_url)
       new_job_post = new(job_post_data)
-
-      if new_job_post.save
-        ai_updated = update_salary_and_location_with_ai(new_job_post, job_post_data, locations)
-        puts "AI updated: #{ai_updated}"
-
-        update_job_locations(new_job_post, locations) unless ai_updated
-
-        # new_job_post.extract_and_save_salary
-        # new_job_post.extract_and_save_job_description
-
-        puts "#{GREEN}#{company.company_name} job post added#{RESET}"
-      else
-        log_job_error(new_job_post, company, new_job_post.errors.full_messages.join(', '))
+    
+      begin
+        if new_job_post.save
+          puts "#{GREEN}#{company.company_name} job post added#{RESET}"
+        else
+          log_job_error(new_job_post, company, new_job_post.errors.full_messages.join(', '))
+        end
+      rescue ActiveRecord::RecordInvalid => e
+        puts "#{RED}Error saving new job post: #{e.message}#{RESET}"
+        puts e.backtrace
+        log_job_error(new_job_post, company, "Validation failed: #{e.message}")
+      rescue StandardError => e
+        puts "#{RED}Unexpected error: #{e.message}#{RESET}"
+        puts e.backtrace
+        log_job_error(new_job_post, company, "Unexpected error: #{e.message}")
       end
     end
 
-    def update_salary_and_location_with_ai(job_post, _job_post_data, _locations)
-      ai_salary_updated = JobPostService.extract_and_save_salary(job_post)
-      # ai_location_updated = JobPostService.update_location_with_ai(job_post, locations)
+    # def update_job_locations(job_post, locations)
+    #   return unless locations
 
-      # ai_salary_updated || ai_location_updated
-    end
+    #   if locations[:country_name]
+    #     country = Country.find_by(country_name: locations[:country_name]) ||
+    #               Country.find_by(country_code: locations[:country_code])
+    #     job_post.countries = [country].compact if country
+    #   end
 
-    def update_job_locations(job_post, locations)
-      return unless locations
+    #   if locations[:state_name] || locations[:state_code]
+    #     state = State.find_by(state_name: locations[:state_name]) ||
+    #             State.find_by(state_code: locations[:state_code])
+    #     job_post.states = [state].compact if state
+    #   end
 
-      if locations[:country_name]
-        country = Country.find_by(country_name: locations[:country_name]) ||
-                  Country.find_by(country_code: locations[:country_code])
-        job_post.countries = [country].compact if country
-      end
+    #   return unless locations[:city_name]
 
-      if locations[:state_name] || locations[:state_code]
-        state = State.find_by(state_name: locations[:state_name]) ||
-                State.find_by(state_code: locations[:state_code])
-        job_post.states = [state].compact if state
-      end
-
-      return unless locations[:city_name]
-
-      city = City.find_by(city_name: locations[:city_name])
-      job_post.cities = [city].compact if city
-    end
+    #   city = City.find_by(city_name: locations[:city_name])
+    #   job_post.cities = [city].compact if city
+    # end
 
     def log_job_error(job_post, company, error_message)
       Adjudication.create!(

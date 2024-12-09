@@ -39,7 +39,7 @@ def split_job_description(text: str) -> Dict[str, str]:
     """
     sections = ["summary", "responsibilities", "qualifications", "benefits"]
 
-    section_regex = re.compile(r"(?i)\b(" + "|".join(sections) + r")\b")
+    section_regex = re.compile(r"(?i)\b(" + "|".join(sections) + r")\b:?\s*")
 
     split_text = section_regex.split(text)
 
@@ -132,7 +132,7 @@ def split_job_description(text: str) -> Dict[str, str]:
     print("Running split_job_description...", file=sys.stderr)
     sections = ["summary", "responsibilities", "qualifications", "benefits"]
 
-    section_regex = re.compile(r"(?i)\b(" + "|".join(sections) + r")\b")
+    section_regex = re.compile(r"(?i)\b(" + "|".join(sections) + r")\b:?\s*")
 
     split_text = section_regex.split(text)
 
@@ -141,12 +141,14 @@ def split_job_description(text: str) -> Dict[str, str]:
     result[current_section] = ""
 
     for part in split_text:
-        header_match = section_regex.match(part.strip())
+        cleaned_part = part.strip()
+
+        header_match = section_regex.match(cleaned_part)
         if header_match:
             current_section = header_match.group(1).lower().replace(" ", "_")
             result[current_section] = ""
         elif current_section:
-            result[current_section] += part.strip() + " "
+            result[current_section] += cleaned_part + " "
 
     for key in result:
         result[key] = result[key].strip()

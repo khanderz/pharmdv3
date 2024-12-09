@@ -12,7 +12,7 @@ class GreenhouseDataMapper
       job_title: job['title'],
       job_url: job['absolute_url'],
 
-      job_description: job['content'],
+      job_description: nil,
       job_responsibilities: extract_responsibilities(job),
 
       job_posted: JobPost.parse_datetime(job['created_at']),
@@ -40,8 +40,6 @@ class GreenhouseDataMapper
 
     updated_by_ai = update_with_ai(job_post_data, job, company)
 
-    puts "Job Post Data after AI: #{job_post_data}"
-
     # unless updated_by_ai
     #   job_post_data[:job_salary_min] ||= nil
     #   job_post_data[:job_salary_max] ||= nil
@@ -49,8 +47,6 @@ class GreenhouseDataMapper
     #   job_post_data[:job_salary_currency_id] ||= nil
     #   job_post_data[:job_salary_interval_id] ||= nil
     # end
-    # save job post
-    job_post.save!
 
     job_post_data
   end
@@ -77,6 +73,7 @@ class GreenhouseDataMapper
           job_post_data[:job_salary_interval_id] = interval_id
           updated = true
         when 'description', 'summary'
+           puts "Debugging key: #{key}, value: #{value}"
           job_post_data[:job_description] ||= ""
           job_post_data[:job_description] += " " unless job_post_data[:job_description].empty?
           job_post_data[:job_description] += value

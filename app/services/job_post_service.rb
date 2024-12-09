@@ -144,7 +144,6 @@ class JobPostService
     script_path = "app/python/ai_processing/#{entity_type}/train_#{entity_type}.py"
 
     text = clean_text(input_text)
-    puts "script_path: #{script_path}, text #{text}" 
     print_indices(script_path, text)
     corrected_entities = []
     # $152,000 - $199,000     COMPENSATION
@@ -184,7 +183,7 @@ class JobPostService
       'text' => text,
       'entities' => corrected_entities
     }
-    puts "new_training_data: #{new_training_data}"
+    # puts "new_training_data: #{new_training_data}"
 
     training_data << new_training_data
     File.write(training_data_path, JSON.pretty_generate(training_data))
@@ -244,43 +243,31 @@ class JobPostService
       job_commitment: nil,
       job_post_countries: []
     }
-    if compensation_data['status'] == 'success' && compensation_data['entities']
-      entities = compensation_data['entities']
-      # puts "Entities: #{entities}"
-
-      if entities['SALARY_SINGLE']
-        job_post_object[:job_salary_min] = entities['SALARY_SINGLE']&.first&.gsub(',', '').to_i
-      end
-      if entities['SALARY_MAX']
-        job_post_object[:job_salary_max] = entities['SALARY_MAX']&.first&.gsub(',', '').to_i
-      end
-      if entities['SALARY_MIN']
-        job_post_object[:job_salary_single] = entities['SALARY_MIN']&.first&.gsub(',', '').to_i
-      end
-
-      if entities['CURRENCY']&.first
-        job_post_object[:job_salary_currency] = entities['CURRENCY'].first
-      end
-
-      if entities['INTERVAL']&.first
-        job_post_object[:job_salary_interval] = entities['INTERVAL'].first
-      end
-  
-      if entities['COMMITMENT']&.first
-        job_post_object[:job_commitment]  = entities['COMMITMENT'].first
-      end
-
-      if entities['JOB_COUNTRY']&.any?
-        job_post_object[:job_post_countries].clear
-        entities['JOB_COUNTRY'].each do |country|
-          job_post_object[:job_post_countries] <<  country
+    if compensation_data['status'] == 'success' && corrected_compensation_data.any?
+      corrected_compensation_data.each do |entity|
+        case entity['label']
+        when 'SALARY_MIN'
+          job_post_object[:job_salary_min] = entity['token'].gsub(',', '').to_i
+        when 'SALARY_MAX'
+          job_post_object[:job_salary_max] = entity['token'].gsub(',', '').to_i
+        when 'SALARY_SINGLE'
+          job_post_object[:job_salary_single] = entity['token'].gsub(',', '').to_i
+        when 'CURRENCY'
+          job_post_object[:job_salary_currency] = entity['token']
+        when 'INTERVAL'
+          job_post_object[:job_salary_interval] = entity['token']
+        when 'COMMITMENT'
+          job_post_object[:job_commitment] = entity['token']
+        when 'JOB_COUNTRY'
+          job_post_object[:job_post_countries] << entity['token'] if entity['token']
+        else
+          puts "#{RED}Unexpected label: #{entity['label']}#{RESET}"
         end
-
-        job_post_object  
       end
     else
       puts "#{RED}Failed to extract compensation data.#{RESET}"
     end
+    
     # puts "Job Post Object: #{job_post_object}"
     job_post_object
   end

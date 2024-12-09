@@ -117,7 +117,7 @@ job_roles = [
   { role_name: 'Head of DevOps', aliases: ['DevOps Lead'], department_names: %w[IT Engineering],
     team_names: ['DevOps'] },
   { role_name: 'Head of Customer Success', aliases: ['Customer Success Lead'], department_names: ['Customer Support'],
-    team_names: ['Client Services'] }
+    team_names: ['Client Services'] },
 ]
 
 seeded_count = 0
