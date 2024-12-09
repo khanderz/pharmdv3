@@ -1,5 +1,6 @@
-# app/python/utils/utils.py
+# app/python/ai_processing/utils/utils.py
 import re
+import sys
 import spacy
 import html
 from bs4 import BeautifulSoup
@@ -181,7 +182,7 @@ def calculate_entity_indices(data):
     return updated_data
 
 
-def print_data_with_entities(data):
+def print_data_with_entities(data, file=sys.stdout):
     """
     Prints the text with its dynamically calculated entity indices.
 
@@ -191,14 +192,19 @@ def print_data_with_entities(data):
     Returns:
         None: Prints the formatted text and entities.
     """
-    for item in data:
-        text = item["text"]
-        entities = item["entities"]
 
-        print(f"Text: {text}\n")
-        print("Tokens with Indices:")
+    if not isinstance(data, list):
+        raise ValueError("The input data must be a list of dictionaries.")
+
+    for item in data:
+        text = item.get("text", "")
+        entities = item.get("entities", [])
+
+        print(f"Text: {text}\n", file=file)
+        print("Tokens with Indices:", file=file)
         for entity in entities:
             print(
-                f"{entity['token']} ({entity['start']}, {entity['end']}): {entity['label']}"
+                f"{entity['token']} ({entity['start']}, {entity['end']}): {entity['label']}",
+                file=file
             )
-        print("\n" + "-" * 50 + "\n")
+        print("\n" + "-" * 50 + "\n", file=file)

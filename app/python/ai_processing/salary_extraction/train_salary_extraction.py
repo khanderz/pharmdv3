@@ -35,7 +35,7 @@ CONVERTED_FILE_PATH = os.path.join(BASE_DIR, "data", CONVERTED_FILE)
 MODEL_SAVE_PATH = os.path.join(BASE_DIR, "model", "spacy_salary_ner_model")
 SPACY_DATA_PATH = os.path.join(BASE_DIR, "data", "train.spacy")
 
-# converted_data = load_data(CONVERTED_FILE, FOLDER)
+converted_data = load_data(CONVERTED_FILE, FOLDER)
 nlp = load_spacy_model(MODEL_SAVE_PATH)
 
 # if "ner" not in nlp.pipe_names:
@@ -89,7 +89,6 @@ def convert_example_to_biluo(text):
     biluo_tags = iob_to_biluo(iob_tags)
 
     return doc, biluo_tags
-
 
 def inspect_salary_model_predictions(text):
     """Inspect model predictions for the given text."""
@@ -158,6 +157,25 @@ def inspect_salary_model_predictions(text):
 #     print(f"\nTesting text: '{text}'")
 #     inspect_salary_model_predictions(text)
 
+def main(encoded_data, validate_flag):
+    if validate_flag:
+        print("\nValidating entities of the converted data only...", file=sys.stderr)
+        validate_entities(converted_data, nlp)
+        print("\nValidation completed.", file=sys.stderr)
+        return
+
+    input_data = json.loads(base64.b64decode(encoded_data).decode("utf-8"))
+    text = input_data.get("text", "")
+
+    print("\nRunning salary extraction model inspection...", file=sys.stderr)
+    predictions = inspect_salary_model_predictions(text)
+
+    output = {
+        "status": "success" if predictions else "failure",
+        "entities": predictions,
+    }
+
+    sys.stdout.write(json.dumps(output) + "\n")
 
 
 if __name__ == "__main__":
@@ -165,18 +183,9 @@ if __name__ == "__main__":
     print("\nRunning salary extraction model inspection script...", file=sys.stderr)
     try:
         encoded_data = sys.argv[1]
-        input_data = json.loads(base64.b64decode(encoded_data).decode("utf-8"))
-        text = input_data.get("text", "")
+        validate_flag = sys.argv[2].lower() == "true" if len(sys.argv) > 2 else False
 
-        # print(f"Input Text: {text}", file=sys.stderr)
-        predictions = inspect_salary_model_predictions(text)
-        print(f"Predictions: {predictions}", file=sys.stderr)
-        output = {
-            "status": "success" if predictions else "failure",
-            "entities": predictions,
-        }
-
-        sys.stdout.write(json.dumps(output) + "\n")
+        main(encoded_data, validate_flag)
     except Exception as e:
         error_response = {"status": "error", "message": str(e)}
         sys.stdout.write(json.dumps(error_response) + "\n")

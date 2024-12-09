@@ -3,6 +3,7 @@
 require 'open3'
 require 'json'
 require 'base64'
+
 # require 'python_script_parser'
 
 GREEN = "\033[32m"
@@ -112,39 +113,178 @@ class JobPostService
     #   puts "#{RED}Failed to extract qualifications.#{RESET}"
     # end
   end
+
+  def self.print_indices(script_path, input_text)
+    call_inspect_predictions(script_path: script_path , input_text: input_text, validate: false, data: input_text)
+  end
+
+  def self.validate_and_update_training_data(input_text, extracted_entities, entity_type)
+    puts "Validating #{entity_type} entities..."
+    # puts "Extracted entities: #{extracted_entities}"
+  
+    training_data_path = 'app/python/ai_processing/job_benefits/data/train_data_spacy.json'
+    training_data = []
+    training_data = JSON.parse(File.read(training_data_path)) if File.exist?(training_data_path)
+    script_path = 'app/python/ai_processing/job_benefits/train_benefits.py'
+
+    print_indices(script_path, input_text)
+    corrected_entities = []
+  
+    extracted_entities.each do |entity|
+      token = entity[1][0] 
+
+      puts "Is the label '#{entity_type}' correct for this token? (yes/no)"
+      label_confirmation = gets.strip.downcase
+      if label_confirmation != "yes"
+        puts "Enter the correct label (e.g., 'COMPENSATION'):"
+        entity_type = gets.strip
+      end
+  
+      puts "\nText: '#{input_text}'"
+      puts "Extracted token: '#{token}'"
+      puts "Enter start index for '#{token}':"
+      start_value = gets.strip.to_i
+  
+      puts "Enter end index for '#{token}':"
+      end_value = gets.strip.to_i
+  
+      corrected_entities << {
+        "start" => start_value,
+        "end" => end_value,
+        "label" => entity_type,
+        "token" => token
+      }
+    end
+  
+    new_training_data = {
+      "text" => input_text,
+      "entities" => corrected_entities
+    }
+  
+    validation_result = call_inspect_predictions(
+      script_path: script_path,
+      input_text: input_text,
+      validate: true,
+      data: nil
+    )
+  
+    if validation_result && validation_result['status'] == 'success'
+      message = validation_result['message'].to_s.strip
+    
+      if message.include?('Validation passed')
+        training_data << new_training_data
+
+        File.write(training_data_path, JSON.pretty_generate(training_data))
+        puts "#{GREEN}Training data validated and saved successfully at #{training_data_path}.#{RESET}"
+      else
+        puts "#{RED}Validation completed with errors: #{message}#{RESET}"
+        training_data << new_training_data
+        File.write(training_data_path, JSON.pretty_generate(training_data))
+        puts "#{GREEN}Training data saved despite validation errors at #{training_data_path}.#{RESET}"
+      end
+    else
+      puts "#{RED}Validation script failed to execute successfully. Training data was not saved.#{RESET}"
+    end
+    corrected_entities
+  end
+  
   
   def self.extract_and_save_benefits(job_post, benefits)
+
+    puts "Starting validation for benefits..."
     benefits_data = call_inspect_predictions(
       script_path: 'app/python/ai_processing/job_benefits/train_benefits.py',
-      input_text: benefits
+      input_text: benefits,
+      validate: false,
+      data: nil
     )
 
     parsed_benefits = benefits_data['entities']
+    corrected_benefits = validate_and_update_training_data(benefits, parsed_benefits, 'benefits')
 
-    compensation_data = call_inspect_predictions(
-      script_path: 'app/python/ai_processing//salary_extraction/train_salary_extraction.py',
-      input_text: benefits
-    )
 
-    puts "benefits_data: #{parsed_benefits}"
-    puts "compensation_data: #{compensation_data}"
+    # compensation_data = call_inspect_predictions(
+    #   script_path: 'app/python/ai_processing//salary_extraction/train_salary_extraction.py',
+    #   input_text: parsed_benefits['PROFESSIONAL_DEVELOPMENT'][0]
+    # )
+    # puts "benefits: #{benefits}"
+    # puts "parsed benefits: #{parsed_benefits}"
+    # puts "#{parsed_benefits['PROFESSIONAL_DEVELOPMENT']}"
+    # puts "benefits_data: #{parsed_benefits}"
+    # puts "compensation_data: #{compensation_data}"
+
+    # if compensation_data['status'] == 'success' && compensation_data['entities']
+    #   entities = compensation_data['entities']
+    #   # puts "Entities: #{entities}"
+
+    #   job_post.job_salary_min = entities['SALARY_SINGLE']&.first&.gsub(',', '').to_i if entities['SALARY_SINGLE']
+    #   job_post.job_salary_max = entities['SALARY_MAX']&.first&.gsub(',', '').to_i if entities['SALARY_MAX']
+    #   job_post.job_salary_single = entities['SALARY_MIN']&.first&.gsub(',', '').to_i if entities['SALARY_MIN']
+  
+    #   if entities['CURRENCY']&.first
+    #     currency = JobSalaryCurrency.find_by(currency_code: entities['CURRENCY'].first) ||
+    #                JobSalaryCurrency.adjudicate_currency(entities['CURRENCY'].first, job_post.company_id, job_post.job_url)
+    #     job_post.job_salary_currency_id = currency.id if currency
+    #   end
+  
+    #   if entities['INTERVAL']&.first
+    #     interval = JobSalaryInterval.find_by(interval: entities['INTERVAL'].first)
+    #     job_post.job_salary_interval_id = interval.id if interval
+    #   end
+  
+    #   if entities['COMMITMENT']&.first
+    #     commitment = JobCommitment.find_by(name: entities['COMMITMENT'].first)
+    #     job_post.job_commitment_id = commitment.id if commitment
+    #   end
+
+    #   if entities['JOB_COUNTRY']&.any?
+    #     job_post.job_post_countries.destroy_all
+  
+    #     entities['JOB_COUNTRY'].each do |country_name|
+    #       country = JobCountry.find_or_create_by(name: country_name)
+  
+    #       JobPostCountry.find_or_create_by(job_post: job_post, country: country)
+    #     end
+    #   end
+    # end
+
+    # if job_post.changed?
+    #   job_post.save!
+    #   puts "Job post updated with salary and benefits data."
+    # else
+    #   puts "No changes made to the job post."
+    # end
   end
 
-  def self.call_inspect_predictions(script_path:, input_text:)
+  def self.call_inspect_predictions(script_path:, input_text:, validate: false, data: nil)
     input_json = { text: input_text }.to_json
+    input_text = input_text.strip.sub(/^:/, '') 
+    input_text = input_text.strip.gsub(/^\s*[:\u200B]+/, '')
+    other_json = { text: input_text.strip, entities: [] }.to_json
     encoded_data = Base64.strict_encode64(input_json)
-    command = "python3 #{script_path} '#{encoded_data}'"
+    validate_flag = validate
+    input_data = data ? other_json : ""
+
+    command = "python3 #{script_path} '#{encoded_data}' #{validate_flag} '#{input_data}'"
 
     stdout, stderr, status = Open3.capture3(command)
-    puts "stdout: #{stdout}"
-    puts "stderr: #{stderr}"
-    puts "status: #{status}"
+    # puts "stdout: #{stdout}"
+    # puts "stderr: #{stderr}"
+    # puts "status: #{status}"
 
     if status.success? && !stdout.strip.empty?
       begin
-        JSON.parse(stdout)
+        json_output = stdout.split("\n").find { |line| line.strip.start_with?("{") }
+  
+        if json_output
+          JSON.parse(json_output)
+        else
+          puts "#{RED}No valid JSON output found in stdout. Full output: #{stdout}#{RESET}"
+          nil
+        end
       rescue JSON::ParserError => e
         puts "#{RED}Error parsing JSON: #{e.message}#{RESET}"
+        puts "#{RED}Full stdout: #{stdout}#{RESET}"
         nil
       end
     else
@@ -152,7 +292,7 @@ class JobPostService
       nil
     end
   end
-  
+
   # def self.update_qualifications(job_post, qualifications_entities)
   #   qualifications_entities.each do |entity_type, values|
   #     puts "Updating qualifications for #{entity_type}: #{values.join(', ')}"
