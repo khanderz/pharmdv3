@@ -122,22 +122,23 @@ class JobPostService
     puts "Validating #{entity_type} entities..."
     # puts "Extracted entities: #{extracted_entities}"
   
-    training_data_path = 'app/python/ai_processing/job_benefits/data/train_data_spacy.json'
+    training_data_path = "app/python/ai_processing/#{entity_type}/data/train_data_spacy.json"
     training_data = []
     training_data = JSON.parse(File.read(training_data_path)) if File.exist?(training_data_path)
-    script_path = 'app/python/ai_processing/job_benefits/train_benefits.py'
+    script_path = "app/python/ai_processing/#{entity_type}/train_benefits.py"
 
     print_indices(script_path, input_text)
     corrected_entities = []
-  
-    extracted_entities.each do |entity|
-      token = entity[1][0] 
 
-      puts "Is the label '#{entity_type}' correct for this token? (yes/no)"
+    extracted_entities.each_with_index do |(label, tokens), index| 
+      label = label.to_s
+      token = tokens[0]
+
+      puts "Is the label '#{label}' correct for this #{token}? (yes/no)"
       label_confirmation = gets.strip.downcase
       if label_confirmation != "yes"
         puts "Enter the correct label (e.g., 'COMPENSATION'):"
-        entity_type = gets.strip
+        label = gets.strip
       end
   
       puts "\nText: '#{input_text}'"
@@ -151,7 +152,7 @@ class JobPostService
       corrected_entities << {
         "start" => start_value,
         "end" => end_value,
-        "label" => entity_type,
+        "label" => label,
         "token" => token
       }
     end
@@ -200,60 +201,54 @@ class JobPostService
     )
 
     parsed_benefits = benefits_data['entities']
-    corrected_benefits = validate_and_update_training_data(benefits, parsed_benefits, 'benefits')
+    corrected_benefits = validate_and_update_training_data(benefits, parsed_benefits, 'job_benefits')
 
+    compensation_data = call_inspect_predictions(
+      script_path: 'app/python/ai_processing/salary_extraction/train_salary_extraction.py',
+      input_text: corrected_benefits[0]["token"]
+    )
 
-    # compensation_data = call_inspect_predictions(
-    #   script_path: 'app/python/ai_processing//salary_extraction/train_salary_extraction.py',
-    #   input_text: parsed_benefits['PROFESSIONAL_DEVELOPMENT'][0]
-    # )
-    # puts "benefits: #{benefits}"
-    # puts "parsed benefits: #{parsed_benefits}"
-    # puts "#{parsed_benefits['PROFESSIONAL_DEVELOPMENT']}"
-    # puts "benefits_data: #{parsed_benefits}"
-    # puts "compensation_data: #{compensation_data}"
+    if compensation_data['status'] == 'success' && compensation_data['entities']
+      entities = compensation_data['entities']
+      # puts "Entities: #{entities}"
 
-    # if compensation_data['status'] == 'success' && compensation_data['entities']
-    #   entities = compensation_data['entities']
-    #   # puts "Entities: #{entities}"
-
-    #   job_post.job_salary_min = entities['SALARY_SINGLE']&.first&.gsub(',', '').to_i if entities['SALARY_SINGLE']
-    #   job_post.job_salary_max = entities['SALARY_MAX']&.first&.gsub(',', '').to_i if entities['SALARY_MAX']
-    #   job_post.job_salary_single = entities['SALARY_MIN']&.first&.gsub(',', '').to_i if entities['SALARY_MIN']
+      job_post.job_salary_min = entities['SALARY_SINGLE']&.first&.gsub(',', '').to_i if entities['SALARY_SINGLE']
+      job_post.job_salary_max = entities['SALARY_MAX']&.first&.gsub(',', '').to_i if entities['SALARY_MAX']
+      job_post.job_salary_single = entities['SALARY_MIN']&.first&.gsub(',', '').to_i if entities['SALARY_MIN']
   
-    #   if entities['CURRENCY']&.first
-    #     currency = JobSalaryCurrency.find_by(currency_code: entities['CURRENCY'].first) ||
-    #                JobSalaryCurrency.adjudicate_currency(entities['CURRENCY'].first, job_post.company_id, job_post.job_url)
-    #     job_post.job_salary_currency_id = currency.id if currency
-    #   end
+      if entities['CURRENCY']&.first
+        currency = JobSalaryCurrency.find_by(currency_code: entities['CURRENCY'].first) ||
+                   JobSalaryCurrency.adjudicate_currency(entities['CURRENCY'].first, job_post.company_id, job_post.job_url)
+        job_post.job_salary_currency_id = currency.id if currency
+      end
   
-    #   if entities['INTERVAL']&.first
-    #     interval = JobSalaryInterval.find_by(interval: entities['INTERVAL'].first)
-    #     job_post.job_salary_interval_id = interval.id if interval
-    #   end
+      if entities['INTERVAL']&.first
+        interval = JobSalaryInterval.find_by(interval: entities['INTERVAL'].first)
+        job_post.job_salary_interval_id = interval.id if interval
+      end
   
-    #   if entities['COMMITMENT']&.first
-    #     commitment = JobCommitment.find_by(name: entities['COMMITMENT'].first)
-    #     job_post.job_commitment_id = commitment.id if commitment
-    #   end
+      if entities['COMMITMENT']&.first
+        commitment = JobCommitment.find_by(name: entities['COMMITMENT'].first)
+        job_post.job_commitment_id = commitment.id if commitment
+      end
 
-    #   if entities['JOB_COUNTRY']&.any?
-    #     job_post.job_post_countries.destroy_all
+      if entities['JOB_COUNTRY']&.any?
+        job_post.job_post_countries.destroy_all
   
-    #     entities['JOB_COUNTRY'].each do |country_name|
-    #       country = JobCountry.find_or_create_by(name: country_name)
+        entities['JOB_COUNTRY'].each do |country_name|
+          country = JobCountry.find_or_create_by(name: country_name)
   
-    #       JobPostCountry.find_or_create_by(job_post: job_post, country: country)
-    #     end
-    #   end
-    # end
-
-    # if job_post.changed?
-    #   job_post.save!
-    #   puts "Job post updated with salary and benefits data."
-    # else
-    #   puts "No changes made to the job post."
-    # end
+          JobPostCountry.find_or_create_by(job_post: job_post, country: country)
+        end
+      end
+    end
+    puts "job_post: #{job_post.inspect}"
+    if job_post.changed?
+      job_post.save!
+      puts "Job post updated with salary and benefits data."
+    else
+      puts "No changes made to the job post."
+    end
   end
 
   def self.call_inspect_predictions(script_path:, input_text:, validate: false, data: nil)

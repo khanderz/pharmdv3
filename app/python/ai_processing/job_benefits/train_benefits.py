@@ -138,7 +138,7 @@ def inspect_job_benefit_predictions(text):
                 if current_entity:
                     if current_entity not in entity_data:
                         entity_data[current_entity] = []
-                    entity_data[current_entity].append("".join(current_tokens))
+                    entity_data[current_entity].append(" ".join(current_tokens))
 
                 current_entity = entity_label
                 current_tokens = [token.text]
@@ -151,7 +151,7 @@ def inspect_job_benefit_predictions(text):
                 if current_entity:
                     if current_entity not in entity_data:
                         entity_data[current_entity] = []
-                    entity_data[current_entity].append("".join(current_tokens))
+                    entity_data[current_entity].append(" ".join(current_tokens))
                 current_entity = None
                 current_tokens = []
 
@@ -163,14 +163,14 @@ def inspect_job_benefit_predictions(text):
             if current_entity:
                 if current_entity not in entity_data:
                     entity_data[current_entity] = []
-                entity_data[current_entity].append("".join(current_tokens))
+                entity_data[current_entity].append(" ".join(current_tokens))
                 current_entity = None
                 current_tokens = []
 
     if current_entity:
         if current_entity not in entity_data:
             entity_data[current_entity] = []
-        entity_data[current_entity].append("".join(current_tokens))
+        entity_data[current_entity].append(" ".join(current_tokens))
 
     return entity_data
 
@@ -188,7 +188,8 @@ def main(encoded_data, validate_flag, data=None):
         print("\nValidating entities of the converted data only...", file=sys.stderr)
         result =  validate_entities(converted_data, nlp)
         if result == "Validation passed for all entities.":
-                result = {
+            
+            result = {
             'status': 'success',
             'message': 'Validation passed for all entities'
         }
