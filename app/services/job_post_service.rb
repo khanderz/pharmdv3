@@ -31,11 +31,16 @@ class JobPostService
       return
     end
 
+    data_return = []
+
     description = structured_data['description']
     summary = structured_data['summary']
     responsibilities = structured_data['responsibilities']
     qualifications = structured_data['qualifications']
     benefits = structured_data['benefits'] || qualifications
+
+    data_return << { "description" => description } if description
+    data_return << { "summary" => summary } if summary
 
     # processed_descriptions = extract_and_save_descriptions(job_post, summary)
     # processed_qualifications = extract_and_save_job_qualifications(job_post, qualifications)
@@ -44,8 +49,7 @@ class JobPostService
     case entity_type
     when 'salary'
       salary_data = extract_and_save_benefits(job_post, benefits)
-
-      return salary_data
+      data_return << { "salary" => salary_data } if salary_data
     # when 'benefits'
     #   benefits_data = extract_benefits_data(structured_data)
     #   return benefits_data
@@ -121,6 +125,7 @@ class JobPostService
   end
 
   def self.print_indices(script_path, input_text)
+    puts 'Printing indices...'
     call_inspect_predictions(script_path: script_path, input_text: input_text, validate: false,
                              data: input_text)
   end
@@ -136,26 +141,27 @@ class JobPostService
     training_data_path = "app/python/ai_processing/#{entity_type}/data/train_data_spacy.json"
     training_data = []
     training_data = JSON.parse(File.read(training_data_path)) if File.exist?(training_data_path)
-    script_path = "app/python/ai_processing/#{entity_type}/train_benefits.py"
+    script_path = "app/python/ai_processing/#{entity_type}/train_#{entity_type}.py"
 
     text = clean_text(input_text)
+    puts "script_path: #{script_path}, text #{text}" 
     print_indices(script_path, text)
     corrected_entities = []
-    # $152,000 - $199,000
+    # $152,000 - $199,000     COMPENSATION
     extracted_entities.each_with_index do |(label, tokens), _index|
       label = label.to_s
       token = tokens[0]
 
       puts "is token #{token} correct (yes/no)"
       token_confirmation = gets.strip.downcase
-      if token_confirmation != 'yes'
+      if token_confirmation != 'yes' && token_confirmation != 'y'
         puts "Enter the correct token:"
         token = gets.strip
       end
 
       puts "Is the label '#{label}' correct for this #{token}? (yes/no)"
       label_confirmation = gets.strip.downcase
-      if label_confirmation != 'yes'
+      if label_confirmation != 'yes' && label_confirmation != 'y'
         puts "Enter the correct label (e.g., 'COMPENSATION'):"
         label = gets.strip
       end
@@ -178,7 +184,7 @@ class JobPostService
       'text' => text,
       'entities' => corrected_entities
     }
-
+    puts "new_training_data: #{new_training_data}"
 
     training_data << new_training_data
     File.write(training_data_path, JSON.pretty_generate(training_data))
@@ -212,7 +218,7 @@ class JobPostService
   def self.extract_and_save_benefits(job_post, benefits)
     puts 'Starting validation for benefits...'
     benefits_data = call_inspect_predictions(
-      script_path: 'app/python/ai_processing/job_benefits/train_benefits.py',
+      script_path: 'app/python/ai_processing/job_benefits/train_job_benefits.py',
       input_text: benefits,
       validate: false,
       data: nil
@@ -224,8 +230,10 @@ class JobPostService
 
     compensation_data = call_inspect_predictions(
       script_path: 'app/python/ai_processing/salary_extraction/train_salary_extraction.py',
-      input_text: corrected_benefits[0]['token']
+      input_text: corrected_benefits[0]['token'] # need to make dynamic
     )
+
+    corrected_compensation_data = validate_and_update_training_data(corrected_benefits[0]['token'], compensation_data['entities'], 'salary_extraction')
 
     job_post_object = {
       job_salary_min: nil,
@@ -273,7 +281,7 @@ class JobPostService
     else
       puts "#{RED}Failed to extract compensation data.#{RESET}"
     end
-    puts "Job Post Object: #{job_post_object}"
+    # puts "Job Post Object: #{job_post_object}"
     job_post_object
   end
 

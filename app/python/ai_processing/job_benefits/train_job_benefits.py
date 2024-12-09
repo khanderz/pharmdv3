@@ -1,4 +1,4 @@
-#  app/python/ai_processing/job_benefits/train_benefits.py
+#  app/python/ai_processing/job_benefits/train_job_benefits.py
 
 import base64
 import json

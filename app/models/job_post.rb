@@ -46,19 +46,6 @@ class JobPost < ApplicationRecord
   scope :active, -> { where(job_active: true) }
   scope :inactive, -> { where(job_active: false) }
 
-  # Instance Methods
-  def extract_and_save_salary
-    JobPostService.extract_and_save_salary(self)
-  end
-
-  def extract_and_save_job_description
-    JobPostService.extract_and_save_job_description(self)
-  end
-
-  def salary_needs_extraction?
-    job_salary_min.nil? && job_salary_max.nil? || job_salary_currency_id.nil? || job_salary_interval_id.nil? || job_salary_single.nil?
-  end
-
   def self.parse_datetime(datetime)
     DateTime.parse(datetime).strftime('%Y-%m-%d') if datetime
   end
@@ -86,6 +73,9 @@ class JobPost < ApplicationRecord
     end
 
     def process_job(company, job_url, job_post_data)
+      puts "#{GREEN}Processing job post for #{company.company_name}#{RESET}"
+      # puts "Job URL: #{job_url}"
+      # puts "Job Post Data: #{job_post_data}"
       existing_job = find_by(job_url: job_url)
       locations = job_post_data.delete(:job_locations)
 

@@ -28,7 +28,7 @@ class JobSalaryCurrency < ApplicationRecord
       puts "--------Currency with identifier '#{identifier}' not found. Logged to adjudications."
       return nil
     end
-    currency
+    currency.id
   end
 
   def self.find_by_symbol(symbol)

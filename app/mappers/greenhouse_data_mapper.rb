@@ -6,7 +6,7 @@ class GreenhouseDataMapper
   def self.map(job, company)
     location_input = extract_location(job)
     location_info = LocationMapper.new.match_location(location_input, job, company)
-    puts "processing job: #{job['title']} for company #{company.company_name}"
+    # puts "processing job: #{job['title']} for company #{company.company_name}"
 
     job_post_data = {
       job_title: job['title'],
@@ -38,19 +38,19 @@ class GreenhouseDataMapper
       job_active: true
     }
 
-    puts "Job Post Data: #{job_post_data}"
-
     updated_by_ai = update_with_ai(job_post_data, job, company)
 
     puts "Job Post Data after AI: #{job_post_data}"
 
-    unless updated_by_ai
-      job_post_data[:job_salary_min] ||= nil
-      job_post_data[:job_salary_max] ||= nil
-      job_post_data[:job_salary_single] ||= nil
-      job_post_data[:job_salary_currency_id] ||= nil
-      job_post_data[:job_salary_interval_id] ||= nil
-    end
+    # unless updated_by_ai
+    #   job_post_data[:job_salary_min] ||= nil
+    #   job_post_data[:job_salary_max] ||= nil
+    #   job_post_data[:job_salary_single] ||= nil
+    #   job_post_data[:job_salary_currency_id] ||= nil
+    #   job_post_data[:job_salary_interval_id] ||= nil
+    # end
+    # save job post
+    job_post.save!
 
     job_post_data
   end
@@ -59,21 +59,31 @@ class GreenhouseDataMapper
 
     ai_salary_data = JobPostService.split_descriptions(job, entity_type = 'salary')
 
-    # AI Salary Data: {:job_salary_min=>nil, :job_salary_max=>199000, :job_salary_single=>152000, :job_salary_currency=>"$", 
-    # :job_salary_interval=>nil, :job_commitment=>nil, :job_post_countries=>[]}
-
+    puts "AI Salary Data: #{ai_salary_data}"
     updated = false
 
-    currency_id = ai_salary_data[:job_salary_currency] ? JobSalaryCurrency.find_or_adjudicate_currency(ai_salary_data[:job_salary_currency], company.id, job_post_data[:job_url]) : nil
-    interval_id = ai_salary_data[:job_salary_interval] ? JobSalaryInterval.find_by(ai_salary_data[:job_salary_interval]) : nil
-
-    if ai_salary_data
-      job_post_data[:job_salary_min] = ai_salary_data[:job_salary_min]
-      job_post_data[:job_salary_max] = ai_salary_data[:job_salary_max]
-      job_post_data[:job_salary_single] = ai_salary_data[:job_salary_single]
-      job_post_data[:job_salary_currency_id] = currency_id
-      job_post_data[:job_salary_interval_id] = interval_id
-      updated = true
+    ai_salary_data.each do |field_data|
+      field_data.each do |key, value|
+        case key
+        when 'salary'
+          job_post_data[:job_salary_min] = value[:job_salary_min] if value[:job_salary_min]
+          job_post_data[:job_salary_max] = value[:job_salary_max] if value[:job_salary_max]
+          job_post_data[:job_salary_single] = value[:job_salary_single] if value[:job_salary_single]
+          
+          currency_id = value[:job_salary_currency] ? JobSalaryCurrency.find_or_adjudicate_currency(value[:job_salary_currency], company.id, job_post_data[:job_url]) : nil
+          interval_id = value[:job_salary_interval] ? JobSalaryInterval.find_by(interval: value[:job_salary_interval]) : nil
+  
+          job_post_data[:job_salary_currency_id] = currency_id
+          job_post_data[:job_salary_interval_id] = interval_id
+          updated = true
+        when 'description', 'summary'
+          job_post_data[:job_description] ||= ""
+          job_post_data[:job_description] += " " unless job_post_data[:job_description].empty?
+          job_post_data[:job_description] += value
+        else
+          puts "#{RED}Unexpected key: #{key}.#{RESET}"
+        end
+      end
     end
 
     updated

@@ -18,6 +18,7 @@ from app.python.ai_processing.utils.logger import (
 )
 from app.python.ai_processing.utils.spacy_utils import handle_spacy_data
 from app.python.ai_processing.utils.trainer import train_spacy_model
+from app.python.ai_processing.utils.utils import calculate_entity_indices, print_data_with_entities
 from app.python.ai_processing.utils.validation_utils import (
     evaluate_model,
     validate_entities,
@@ -159,11 +160,27 @@ def inspect_salary_model_predictions(text):
 #     inspect_salary_model_predictions(text)
 
 
-def main(encoded_data, validate_flag):
+def main(encoded_data, validate_flag, data=None):
+    if data:
+            if isinstance(data, str):
+                    data = json.loads(data)
+            
+
+            updated_data = calculate_entity_indices([data])  
+            print_data_with_entities(updated_data, file=sys.stderr)
+            return
+
     if validate_flag:
         print("\nValidating entities of the converted data only...", file=sys.stderr)
-        validate_entities(converted_data, nlp)
-        print("\nValidation completed.", file=sys.stderr)
+        result =  validate_entities(converted_data, nlp)
+        if result == "Validation passed for all entities.":
+            
+            result = {
+            'status': 'success',
+            'message': 'Validation passed for all entities'
+        }
+        sys.stdout.write(json.dumps(result) + "\n")
+
         return
 
     input_data = json.loads(base64.b64decode(encoded_data).decode("utf-8"))
@@ -186,8 +203,9 @@ if __name__ == "__main__":
     try:
         encoded_data = sys.argv[1]
         validate_flag = sys.argv[2].lower() == "true" if len(sys.argv) > 2 else False
+        data = sys.argv[3] if len(sys.argv) > 3 else None
 
-        main(encoded_data, validate_flag)
+        main(encoded_data, validate_flag, data)
     except Exception as e:
         error_response = {"status": "error", "message": str(e)}
         sys.stdout.write(json.dumps(error_response) + "\n")
