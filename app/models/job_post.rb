@@ -90,8 +90,11 @@ class JobPost < ApplicationRecord
       locations = job_post_data.delete(:job_locations)
 
       if existing_job
+        puts '-------------existing job post'
         update_existing_job(existing_job, job_post_data, locations, company)
       else
+        puts '-------------new job post'
+
         create_new_job(company, job_post_data, job_url, locations)
       end
     end

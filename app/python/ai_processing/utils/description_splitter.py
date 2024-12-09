@@ -163,7 +163,7 @@ def main():
     try:
         encoded_data = sys.argv[1]
         input_data = json.loads(base64.b64decode(encoded_data))
-        job_description = input_data.get('text', '')
+        job_description = input_data.get("text", "")
 
         decoded_text = recursive_html_decode(job_description)
         split_result = split_job_description(decoded_text)

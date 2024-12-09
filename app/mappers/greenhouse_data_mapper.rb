@@ -6,6 +6,7 @@ class GreenhouseDataMapper
   def self.map(job, company)
     location_input = extract_location(job)
     location_info = LocationMapper.new.match_location(location_input, job, company)
+    puts "processing job: #{job['title']} for company #{company.company_name}"
 
     job_post_data = {
       job_title: job['title'],
@@ -37,7 +38,11 @@ class GreenhouseDataMapper
       job_active: true
     }
 
-    updated_by_ai = update_with_ai(job_post_data, job, location_info)
+    puts "Job Post Data: #{job_post_data}"
+
+    updated_by_ai = update_with_ai(job_post_data, job, company)
+
+    puts "Job Post Data after AI: #{job_post_data}"
 
     unless updated_by_ai
       job_post_data[:job_salary_min] ||= nil
@@ -50,25 +55,26 @@ class GreenhouseDataMapper
     job_post_data
   end
 
-  def self.update_with_ai(job_post_data, job, _location_info)
-    ai_salary_data = JobPostService.extract_and_save_job_description_and_salary(job)
-    # ai_location_data = JobPostService.extract_and_save_salary(location_info)
+  def self.update_with_ai(job_post_data, job, company)
+
+    ai_salary_data = JobPostService.split_descriptions(job, entity_type = 'salary')
+
+    # AI Salary Data: {:job_salary_min=>nil, :job_salary_max=>199000, :job_salary_single=>152000, :job_salary_currency=>"$", 
+    # :job_salary_interval=>nil, :job_commitment=>nil, :job_post_countries=>[]}
 
     updated = false
 
+    currency_id = ai_salary_data[:job_salary_currency] ? JobSalaryCurrency.find_or_adjudicate_currency(ai_salary_data[:job_salary_currency], company.id, job_post_data[:job_url]) : nil
+    interval_id = ai_salary_data[:job_salary_interval] ? JobSalaryInterval.find_by(ai_salary_data[:job_salary_interval]) : nil
+
     if ai_salary_data
-      job_post_data[:job_salary_min] = ai_salary_data[:salary_min]
-      job_post_data[:job_salary_max] = ai_salary_data[:salary_max]
-      job_post_data[:job_salary_single] = ai_salary_data[:salary_single]
-      job_post_data[:job_salary_currency_id] = ai_salary_data[:currency_id]
-      job_post_data[:job_salary_interval_id] = ai_salary_data[:interval_id]
+      job_post_data[:job_salary_min] = ai_salary_data[:job_salary_min]
+      job_post_data[:job_salary_max] = ai_salary_data[:job_salary_max]
+      job_post_data[:job_salary_single] = ai_salary_data[:job_salary_single]
+      job_post_data[:job_salary_currency_id] = currency_id
+      job_post_data[:job_salary_interval_id] = interval_id
       updated = true
     end
-
-    # if ai_location_data
-    #   job_post_data[:job_setting] = ai_location_data[:location_type]
-    #   updated = true
-    # end
 
     updated
   end

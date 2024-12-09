@@ -90,6 +90,7 @@ def convert_example_to_biluo(text):
 
     return doc, biluo_tags
 
+
 def inspect_salary_model_predictions(text):
     """Inspect model predictions for the given text."""
     doc, biluo_tags = convert_example_to_biluo(text)
@@ -156,6 +157,7 @@ def inspect_salary_model_predictions(text):
 # for text in test_texts:
 #     print(f"\nTesting text: '{text}'")
 #     inspect_salary_model_predictions(text)
+
 
 def main(encoded_data, validate_flag):
     if validate_flag:

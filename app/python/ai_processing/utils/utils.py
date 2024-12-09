@@ -205,6 +205,6 @@ def print_data_with_entities(data, file=sys.stdout):
         for entity in entities:
             print(
                 f"{entity['token']} ({entity['start']}, {entity['end']}): {entity['label']}",
-                file=file
+                file=file,
             )
         print("\n" + "-" * 50 + "\n", file=file)

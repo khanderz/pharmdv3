@@ -170,15 +170,18 @@ def inspect_job_responsibility_predictions(text):
 
     return entity_data
 
+
 if __name__ == "__main__":
     warnings.filterwarnings("ignore")
-    print("\nRunning job responsibilities extraction model inspection script...", file=sys.stderr)
-    
+    print(
+        "\nRunning job responsibilities extraction model inspection script...",
+        file=sys.stderr,
+    )
+
     try:
         encoded_input = sys.argv[1]
         input_data = json.loads(base64.b64decode(encoded_input).decode("utf-8"))
         text = input_data.get("text", "")
-
 
         entity_data = inspect_job_responsibility_predictions(text)
 

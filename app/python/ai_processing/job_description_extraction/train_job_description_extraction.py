@@ -200,7 +200,10 @@ def inspect_job_description_predictions(text):
 if __name__ == "__main__":
     warnings.filterwarnings("ignore")
 
-    print("\nRunning job description extraction model inspection script...", file=sys.stderr)
+    print(
+        "\nRunning job description extraction model inspection script...",
+        file=sys.stderr,
+    )
     try:
         encoded_data = sys.argv[1]
         input_data = json.loads(base64.b64decode(encoded_data).decode("utf-8"))
