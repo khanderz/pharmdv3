@@ -33,6 +33,7 @@ class JobDataMapper
     {
       job_title: job['title'] || job['text'],
       job_url: job['absolute_url'] || job['hostedUrl'],
+      job_applyUrl: job['absolute_url'] || job['applyUrl'],
 
       job_description: job['descriptionBodyPlain'] || nil,
       job_responsibilities: ResponsibilitiesExtractor.extract_responsibilities(job, source),
@@ -42,7 +43,7 @@ class JobDataMapper
       job_updated: JobPost.parse_datetime(job['updated_at'] || job['updatedAt']),
 
       job_internal_id: job['internal_job_id'] || job['id'],
-      job_applyUrl: job['absolute_url'] || job['applyUrl'],
+      job_url_id: job['id'] || nil,
 
       department_id: Department.find_department(
         job['departments']&.first&.dig('name') || job['categories']['department'], 'JobPost', job['absolute_url'] || job['hostedUrl']
@@ -58,7 +59,7 @@ class JobDataMapper
       job_salary_currency_id: nil,
       job_salary_interval_id: nil,
 
-      job_role_id: JobRole.find_or_create_job_role(job['title']),
+      job_role_id: JobRole.find_or_create_job_role(job['title'] || job['text']),
       job_active: true
     }
   end
