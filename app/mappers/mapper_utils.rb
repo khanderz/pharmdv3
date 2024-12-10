@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # app/mappers/mapper_utils.rb
 
 class LocationHelper
@@ -33,15 +35,19 @@ class AiSalaryUpdater
           job_post_data[:job_salary_max] = value[:job_salary_max] if value[:job_salary_max]
           job_post_data[:job_salary_single] = value[:job_salary_single] if value[:job_salary_single]
 
-          currency_id = value[:job_salary_currency] ? JobSalaryCurrency.find_or_adjudicate_currency(value[:job_salary_currency], company.id, job_post_data[:job_url]) : nil
+          currency_id = if value[:job_salary_currency]
+                          JobSalaryCurrency.find_or_adjudicate_currency(
+                            value[:job_salary_currency], company.id, job_post_data[:job_url]
+                          )
+                        end
           interval_id = value[:job_salary_interval] ? JobSalaryInterval.find_by(interval: value[:job_salary_interval]) : nil
 
           job_post_data[:job_salary_currency_id] = currency_id
           job_post_data[:job_salary_interval_id] = interval_id
           updated = true
         when 'description', 'summary'
-          job_post_data[:job_description] ||= ""
-          job_post_data[:job_description] += " " unless job_post_data[:job_description].empty?
+          job_post_data[:job_description] ||= ''
+          job_post_data[:job_description] += ' ' unless job_post_data[:job_description].empty?
           job_post_data[:job_description] += value
         else
           puts "#{RED}Unexpected key: #{key}.#{RESET}"
@@ -82,7 +88,7 @@ class JobPostDataMapper
   # @param company [Object] The company object associated with the job.
   # @param location_info [Hash] The extracted location information.
   # @return [Hash] A hash containing the mapped job post data.
-  def self.map_basic_data(job, company, location_info)
+  def self.map_basic_data(job, _company, location_info)
     {
       job_title: job['title'] || job['text'],
       job_url: job['absolute_url'] || job['hostedUrl'],
@@ -92,9 +98,11 @@ class JobPostDataMapper
       job_updated: JobPost.parse_datetime(job['updated_at'] || job['updatedAt']),
       job_internal_id: job['internal_job_id'] || job['id'],
       job_applyUrl: job['absolute_url'] || job['applyUrl'],
-      department_id: Department.find_department(job['departments']&.first&.dig('name') || job['categories']['department'], 'JobPost', job['absolute_url'] || job['hostedUrl']).id,
-      team_id: nil,  # This could be mapped similarly if necessary
-      job_commitment_id: nil,  # Can be mapped if available in job data
+      department_id: Department.find_department(
+        job['departments']&.first&.dig('name') || job['categories']['department'], 'JobPost', job['absolute_url'] || job['hostedUrl']
+      ).id,
+      team_id: nil, # This could be mapped similarly if necessary
+      job_commitment_id: nil, # Can be mapped if available in job data
       job_setting: location_info[:location_type] || nil,
       job_salary_min: nil,
       job_salary_max: nil,

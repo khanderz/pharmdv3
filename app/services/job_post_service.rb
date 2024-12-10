@@ -39,8 +39,8 @@ class JobPostService
     qualifications = structured_data['qualifications']
     benefits = structured_data['benefits'] || qualifications
 
-    data_return << { "description" => description } if description
-    data_return << { "summary" => summary } if summary
+    data_return << { 'description' => description } if description
+    data_return << { 'summary' => summary } if summary
 
     # processed_descriptions = extract_and_save_descriptions(job_post, summary)
     # processed_qualifications = extract_and_save_job_qualifications(job_post, qualifications)
@@ -49,16 +49,15 @@ class JobPostService
     case entity_type
     when 'salary'
       salary_data = extract_and_save_benefits(job_post, benefits)
-      data_return << { "salary" => salary_data } if salary_data
+      data_return << { 'salary' => salary_data } if salary_data
     # when 'benefits'
     #   benefits_data = extract_benefits_data(structured_data)
     #   return benefits_data
     else
       puts "#{RED}Unknown entity type: #{entity_type}.#{RESET}"
-      return nil
+      nil
     end
 
-    
     # puts "description: #{description}"
     # puts "*" * 50
     # puts "summary: #{summary}"
@@ -154,7 +153,7 @@ class JobPostService
       puts "is token #{token} correct (yes/no)"
       token_confirmation = gets.strip.downcase
       if token_confirmation != 'yes' && token_confirmation != 'y'
-        puts "Enter the correct token:"
+        puts 'Enter the correct token:'
         token = gets.strip
       end
 
@@ -214,7 +213,7 @@ class JobPostService
     corrected_entities
   end
 
-  def self.extract_and_save_benefits(job_post, benefits)
+  def self.extract_and_save_benefits(_job_post, benefits)
     puts 'Starting validation for benefits...'
     benefits_data = call_inspect_predictions(
       script_path: 'app/python/ai_processing/job_benefits/train_job_benefits.py',
@@ -232,7 +231,8 @@ class JobPostService
       input_text: corrected_benefits[0]['token'] # need to make dynamic
     )
 
-    corrected_compensation_data = validate_and_update_training_data(corrected_benefits[0]['token'], compensation_data['entities'], 'salary_extraction')
+    corrected_compensation_data = validate_and_update_training_data(corrected_benefits[0]['token'],
+                                                                    compensation_data['entities'], 'salary_extraction')
 
     job_post_object = {
       job_salary_min: nil,
@@ -267,7 +267,7 @@ class JobPostService
     else
       puts "#{RED}Failed to extract compensation data.#{RESET}"
     end
-    
+
     # puts "Job Post Object: #{job_post_object}"
     job_post_object
   end

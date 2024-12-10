@@ -39,4 +39,4 @@ Style/SafeNavigation:
   Enabled: false
 
 Style/Documentation:
-Enabled: false
+  Enabled: false

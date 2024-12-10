@@ -23,8 +23,14 @@ from app.python.ai_processing.utils.data_handler import (
 )
 from app.python.ai_processing.utils.spacy_utils import handle_spacy_data
 from app.python.ai_processing.utils.trainer import train_spacy_model
-from app.python.ai_processing.utils.utils import calculate_entity_indices, print_data_with_entities
-from app.python.ai_processing.utils.validation_utils import evaluate_model, validate_entities
+from app.python.ai_processing.utils.utils import (
+    calculate_entity_indices,
+    print_data_with_entities,
+)
+from app.python.ai_processing.utils.validation_utils import (
+    evaluate_model,
+    validate_entities,
+)
 from transformers import LongformerTokenizer, LongformerModel
 
 configure_warnings()
@@ -174,25 +180,25 @@ def inspect_job_benefit_predictions(text):
 
     return entity_data
 
+
 def main(encoded_data, validate_flag, data=None):
     if data:
-            if isinstance(data, str):
-                    data = json.loads(data)
-            
+        if isinstance(data, str):
+            data = json.loads(data)
 
-            updated_data = calculate_entity_indices([data])  
-            print_data_with_entities(updated_data, file=sys.stderr)
-            return
+        updated_data = calculate_entity_indices([data])
+        print_data_with_entities(updated_data, file=sys.stderr)
+        return
 
     if validate_flag:
         print("\nValidating entities of the converted data only...", file=sys.stderr)
-        result =  validate_entities(converted_data, nlp)
+        result = validate_entities(converted_data, nlp)
         if result == "Validation passed for all entities.":
-            
+
             result = {
-            'status': 'success',
-            'message': 'Validation passed for all entities'
-        }
+                "status": "success",
+                "message": "Validation passed for all entities",
+            }
         sys.stdout.write(json.dumps(result) + "\n")
 
         return
@@ -210,10 +216,13 @@ def main(encoded_data, validate_flag, data=None):
     }
 
     sys.stdout.write(json.dumps(output) + "\n")
-    
+
+
 if __name__ == "__main__":
     warnings.filterwarnings("ignore")
-    print("\nRunning job benefits extraction model inspection script...", file=sys.stderr)
+    print(
+        "\nRunning job benefits extraction model inspection script...", file=sys.stderr
+    )
     try:
         encoded_data = sys.argv[1]
         validate_flag = sys.argv[2].lower() == "true" if len(sys.argv) > 2 else False

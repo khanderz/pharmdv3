@@ -55,7 +55,6 @@ class LeverDataMapper
   end
 
   def self.update_with_ai(job_post_data, job, company)
-
     ai_salary_data = JobPostService.split_descriptions(job, entity_type = 'salary')
 
     puts "AI Salary Data: #{ai_salary_data}"
@@ -68,17 +67,21 @@ class LeverDataMapper
           job_post_data[:job_salary_min] = value[:job_salary_min] if value[:job_salary_min]
           job_post_data[:job_salary_max] = value[:job_salary_max] if value[:job_salary_max]
           job_post_data[:job_salary_single] = value[:job_salary_single] if value[:job_salary_single]
-          
-          currency_id = value[:job_salary_currency] ? JobSalaryCurrency.find_or_adjudicate_currency(value[:job_salary_currency], company.id, job_post_data[:job_url]) : nil
+
+          currency_id = if value[:job_salary_currency]
+                          JobSalaryCurrency.find_or_adjudicate_currency(
+                            value[:job_salary_currency], company.id, job_post_data[:job_url]
+                          )
+                        end
           interval_id = value[:job_salary_interval] ? JobSalaryInterval.find_by(interval: value[:job_salary_interval]) : nil
-  
+
           job_post_data[:job_salary_currency_id] = currency_id
           job_post_data[:job_salary_interval_id] = interval_id
           updated = true
         when 'description', 'summary'
-           puts "Debugging key: #{key}, value: #{value}"
-          job_post_data[:job_description] ||= ""
-          job_post_data[:job_description] += " " unless job_post_data[:job_description].empty?
+          puts "Debugging key: #{key}, value: #{value}"
+          job_post_data[:job_description] ||= ''
+          job_post_data[:job_description] += ' ' unless job_post_data[:job_description].empty?
           job_post_data[:job_description] += value
         else
           puts "#{RED}Unexpected key: #{key}.#{RESET}"
