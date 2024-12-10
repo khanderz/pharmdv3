@@ -41,7 +41,7 @@ class LeverDataMapper
       job_active: true
     }
 
-    updated_by_ai = update_with_ai(job_post_data, job, location_info)
+    updated_by_ai = update_with_ai(job_post_data, job, company)
 
     unless updated_by_ai
       job_post_data[:job_salary_min] ||= job['salaryRange']&.dig('min')
@@ -54,25 +54,37 @@ class LeverDataMapper
     job_post_data
   end
 
-  def self.update_with_ai(job_post_data, job, _location_info)
-    ai_salary_data = JobPostService.extract_and_save_salary(job)
-    # ai_location_data = JobPostService.extract_and_save_salary(location_info)
+  def self.update_with_ai(job_post_data, job, company)
 
+    ai_salary_data = JobPostService.split_descriptions(job, entity_type = 'salary')
+
+    puts "AI Salary Data: #{ai_salary_data}"
     updated = false
 
-    if ai_salary_data
-      job_post_data[:job_salary_min] = ai_salary_data[:salary_min]
-      job_post_data[:job_salary_max] = ai_salary_data[:salary_max]
-      job_post_data[:job_salary_single] = ai_salary_data[:salary_single]
-      job_post_data[:job_salary_currency_id] = ai_salary_data[:currency_id]
-      job_post_data[:job_salary_interval_id] = ai_salary_data[:interval_id]
-      updated = true
+    ai_salary_data.each do |field_data|
+      field_data.each do |key, value|
+        case key
+        when 'salary'
+          job_post_data[:job_salary_min] = value[:job_salary_min] if value[:job_salary_min]
+          job_post_data[:job_salary_max] = value[:job_salary_max] if value[:job_salary_max]
+          job_post_data[:job_salary_single] = value[:job_salary_single] if value[:job_salary_single]
+          
+          currency_id = value[:job_salary_currency] ? JobSalaryCurrency.find_or_adjudicate_currency(value[:job_salary_currency], company.id, job_post_data[:job_url]) : nil
+          interval_id = value[:job_salary_interval] ? JobSalaryInterval.find_by(interval: value[:job_salary_interval]) : nil
+  
+          job_post_data[:job_salary_currency_id] = currency_id
+          job_post_data[:job_salary_interval_id] = interval_id
+          updated = true
+        when 'description', 'summary'
+           puts "Debugging key: #{key}, value: #{value}"
+          job_post_data[:job_description] ||= ""
+          job_post_data[:job_description] += " " unless job_post_data[:job_description].empty?
+          job_post_data[:job_description] += value
+        else
+          puts "#{RED}Unexpected key: #{key}.#{RESET}"
+        end
+      end
     end
-
-    # if ai_location_data
-    #   job_post_data[:job_setting] = ai_location_data[:location_type]
-    #   updated = true
-    # end
 
     updated
   end

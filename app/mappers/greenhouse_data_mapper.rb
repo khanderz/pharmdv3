@@ -95,7 +95,7 @@ class GreenhouseDataMapper
   end
 
   def self.extract_responsibilities(job)
-    match_section(job['content'], 'Responsibilities', 'Qualifications')
+    match_section(job['content'], 'Responsibilities')
   end
 
   def self.match_section(content, start_keyword, end_keyword)

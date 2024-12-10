@@ -37,3 +37,6 @@ Lint/UselessAssignment:
 
 Style/SafeNavigation:
   Enabled: false
+
+Style/Documentation:
+Enabled: false
