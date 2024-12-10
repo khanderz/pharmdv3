@@ -3,7 +3,7 @@
 # app/mappers/location_mapper.rb
 
 class LocationMapper
-  def match_location(input, job, company, countryInput = nil)
+  def match_location(input, job, company, country_input = nil)
     if input.strip.casecmp?('Remote')
       return {
         city_name: nil,
@@ -37,7 +37,7 @@ class LocationMapper
                      elsif country_name
                        { country_code: nil, country_name: country_name }
                      else
-                       { country_code: nil, country_name: countryInput }
+                       { country_code: nil, country_name: country_input }
                      end
 
     city = City.find_city(city_name, job, company)
