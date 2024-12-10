@@ -99,22 +99,22 @@ class JobPost < ApplicationRecord
     end
 
     def create_new_job(company, job_post_data, _job_url)
-      puts "job_post_data: #{job_post_data}"
+      job_post = JobPost.new(job_post_data)
 
       begin
-        if job_post_data.save
+        if job_post.save
           puts "#{GREEN}#{company.company_name} job post added#{RESET}"
         else
-          log_job_error(job_post_data, company, job_post_data.errors.full_messages.join(', '))
+          log_job_error(job_post, company, job_post.errors.full_messages.join(', '))
         end
       rescue ActiveRecord::RecordInvalid => e
         puts "#{RED}Error saving new job post: #{e.message}#{RESET}"
         puts e.backtrace
-        log_job_error(job_post_data, company, "Validation failed: #{e.message}")
+        log_job_error(job_post, company, "Validation failed: #{e.message}")
       rescue StandardError => e
         puts "#{RED}Unexpected error: #{e.message}#{RESET}"
         puts e.backtrace
-        # log_job_error(job_post_data, company, "Unexpected error: #{e.message}")
+        # log_job_error(job_post, company, "Unexpected error: #{e.message}")
       end
     end
 

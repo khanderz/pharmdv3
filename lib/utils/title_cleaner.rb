@@ -6,6 +6,8 @@ module Utils
     def self.clean_title(title)
       return '' if title.nil?
 
+      original_title = title.strip
+
       cleaned_title = title.gsub(/\(.*?\)/, '')
                            .split(/[-,]/).first.strip
 
@@ -27,8 +29,12 @@ module Utils
 
       employment_pattern = /\b(#{employment_terms.join('|')})\b/i
       cleaned_title.gsub!(employment_pattern, '')
+      modified_title = original_title.gsub(/,/, ' of')
 
-      cleaned_title.strip
+      {
+        cleaned_title: cleaned_title.strip,
+        modified_title: modified_title.strip
+      }
     end
   end
 end

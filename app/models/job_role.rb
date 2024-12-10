@@ -10,29 +10,35 @@ class JobRole < ApplicationRecord
   validates :role_name, presence: true, uniqueness: true
 
   def self.find_or_create_job_role(job_title)
-    cleaned_job_title = Utils::TitleCleaner.clean_title(job_title)
+    titles = Utils::TitleCleaner.clean_title(job_title)
 
-    job_role = JobRole.find_by('LOWER(role_name) = ?', cleaned_job_title.downcase)
+    cleaned_title = titles[:cleaned_title]
+    modified_title = titles[:modified_title]
 
-    # If job role is not found, search by aliases
+    job_role = JobRole.find_by('LOWER(role_name) = ?', cleaned_title.downcase)
+
     if job_role.nil?
-      job_role = JobRole.where('LOWER(?) = ANY (SELECT LOWER(unnest(aliases)))',
-                               cleaned_job_title.downcase).first
+      job_role = JobRole.find_by('LOWER(role_name) = ?', modified_title.downcase)
+    end
+  
+    if job_role.nil?
+      job_role = JobRole.where('LOWER(?) = ANY (SELECT LOWER(unnest(aliases)))', cleaned_title.downcase).first
+      job_role ||= JobRole.where('LOWER(?) = ANY (SELECT LOWER(unnest(aliases)))', modified_title.downcase).first
     end
 
     if job_role.nil?
       job_role = JobRole.create!(
-        role_name: cleaned_job_title,
-        error_details: "Job Role: #{cleaned_job_title} not found in existing records",
+        role_name: cleaned_title,
+        error_details: "Job Role: #{cleaned_title} not found in existing records",
         resolved: false
       )
       Adjudication.create!(
         adjudicatable_type: 'JobRole',
         adjudicatable_id: job_role.id,
-        error_details: "Job Role: #{cleaned_job_title} not found in existing records",
+        error_details: "Job Role: #{cleaned_title} not found in existing records",
         resolved: false
       )
-      puts "Adjudication created for new job role: #{cleaned_job_title}."
+      puts "Adjudication created for new job role: #{cleaned_title}."
     end
     job_role
   end

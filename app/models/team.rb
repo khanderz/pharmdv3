@@ -8,7 +8,8 @@ class Team < ApplicationRecord
   validates :team_name, presence: true, uniqueness: true
 
   def self.find_team(team_name, adjudicatable_type, relation = nil)
-    cleaned_team_name = Utils::TitleCleaner.clean_title(team_name)
+    titles = Utils::TitleCleaner.clean_title(team_name)
+    cleaned_team_name = titles[:cleaned_title]
 
     team = Team.find_by('LOWER(team_name) = ? OR LOWER(?) = ANY (SELECT LOWER(unnest(aliases)))',
                         cleaned_team_name.downcase, cleaned_team_name.downcase)
