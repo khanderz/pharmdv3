@@ -21,7 +21,7 @@ class JobPostService
   #   split_descriptions(job_post, 'salary')
   # end
 
-  def self.split_descriptions(job_post, entity_type)
+  def self.split_descriptions(job_post)
     puts 'Preprocessing job description...'
     # puts "job post: #{job_post}"
     structured_data = preprocess_job_description(job_post['content'])
@@ -42,31 +42,16 @@ class JobPostService
     data_return << { 'description' => description } if description
     data_return << { 'summary' => summary } if summary
 
-    # processed_descriptions = extract_and_save_descriptions(job_post, summary)
-    # processed_qualifications = extract_and_save_job_qualifications(job_post, qualifications)
-    # processed_responsibilities = extract_and_save_responsibilities(job_post, responsibilities)
+    processed_description = extract_descriptions(summary)
+    # processed_qualifications = extract_and_save_job_qualifications(qualifications)
+    #  process for locations
+    #  process for settings
+    # process for commitments
+    # process for seniorities
+    salary_data = extract_benefits(benefits)
+    data_return << { 'salary' => salary_data } if salary_data
 
-    case entity_type
-    when 'salary'
-      salary_data = extract_and_save_benefits(job_post, benefits)
-      data_return << { 'salary' => salary_data } if salary_data
-    # when 'benefits'
-    #   benefits_data = extract_benefits_data(structured_data)
-    #   return benefits_data
-    else
-      puts "#{RED}Unknown entity type: #{entity_type}.#{RESET}"
-      nil
-    end
-
-    # puts "description: #{description}"
-    # puts "*" * 50
-    # puts "summary: #{summary}"
-    # puts "*" * 50
-    # puts "responsibilities: #{responsibilities}"
-    # puts "*" * 50
-    # puts "qualifications: #{qualifications}"
-    # puts "*" * 50
-    # puts "benefits: #{benefits}"
+    data_return
   end
 
   def self.preprocess_job_description(job_description)
@@ -99,31 +84,91 @@ class JobPostService
     nil
   end
 
-  def self.extract_and_save_descriptions(_job_post, descriptions)
-    descriptions_data = call_inspect_predictions(
+  def self.extract_descriptions(summary)
+    puts 'Extracting descriptions...'
+    description_data = call_inspect_predictions(
       script_path: 'app/python/ai_processing/job_description_extraction/train_job_description_extraction.py',
-      input_text: descriptions
+      input_text: summary
     )
 
-    puts "descriptions_data: #{descriptions_data}"
+    # puts "description_data: #{description_data}"
+    # Associate Director
+
+    parsed_descriptions = description_data['entities']
+    corrected_descriptions = validate_and_update_training_data(summary, parsed_descriptions,
+                                                              'job_description_extraction')
+    puts"corrected_descriptions: #{corrected_descriptions}"
   end
 
-  def self.extract_and_save_responsibilities(_job_post, responsibilities)
-    responsibilities_data = call_inspect_predictions(
-      script_path: 'app/python/ai_processing/job_responsibilities/train_responsibilities.py',
-      input_text: responsibilities
-    )
-
-    puts "responsibilities_data: #{responsibilities_data}"
-  end
-
-  def self.extract_and_save_job_qualifications(_job_post, qualifications_text)
+  def self.extract_job_qualifications( qualifications_text)
     # puts "Extracting qualifications from text: #{qualifications_text}..."
 
     qualification_data = call_inspect_predictions(
       script_path: 'app/python/ai_processing/job_qualifications/train_qualifications.py',
       input_text: qualifications_text
     )
+  end
+
+  def self.extract_benefits( benefits)
+    puts 'Starting validation for benefits...'
+        # $152,000 - $199,000     COMPENSATION
+
+    # puts "Benefits: #{benefits}"
+    benefits_data = call_inspect_predictions(
+      script_path: 'app/python/ai_processing/job_benefits/train_job_benefits.py',
+      input_text: benefits,
+      validate: false,
+      data: nil
+    )
+
+    parsed_benefits = benefits_data['entities']
+    corrected_benefits = validate_and_update_training_data(benefits, parsed_benefits,
+                                                           'job_benefits')
+
+    compensation_data = call_inspect_predictions(
+      script_path: 'app/python/ai_processing/salary_extraction/train_salary_extraction.py',
+      input_text: corrected_benefits[0]['token'] # need to make dynamic
+    )
+
+    corrected_compensation_data = validate_and_update_training_data(corrected_benefits[0]['token'],
+                                                                    compensation_data['entities'], 'salary_extraction')
+
+    job_post_object = {
+      job_salary_min: nil,
+      job_salary_max: nil,
+      job_salary_single: nil,
+      job_salary_currency: nil,
+      job_salary_interval: nil,
+      job_commitment: nil,
+      job_post_countries: []
+    }
+    if compensation_data['status'] == 'success' && corrected_compensation_data.any?
+      corrected_compensation_data.each do |entity|
+        case entity['label']
+        when 'SALARY_MIN'
+          job_post_object[:job_salary_min] = entity['token'].gsub(',', '').to_i
+        when 'SALARY_MAX'
+          job_post_object[:job_salary_max] = entity['token'].gsub(',', '').to_i
+        when 'SALARY_SINGLE'
+          job_post_object[:job_salary_single] = entity['token'].gsub(',', '').to_i
+        when 'CURRENCY'
+          job_post_object[:job_salary_currency] = entity['token']
+        when 'INTERVAL'
+          job_post_object[:job_salary_interval] = entity['token']
+        when 'COMMITMENT'
+          job_post_object[:job_commitment] = entity['token']
+        when 'JOB_COUNTRY'
+          job_post_object[:job_post_countries] << entity['token'] if entity['token']
+        else
+          puts "#{RED}Unexpected label: #{entity['label']}#{RESET}"
+        end
+      end
+    else
+      puts "#{RED}Failed to extract compensation data.#{RESET}"
+    end
+
+    # puts "Job Post Object: #{job_post_object}"
+    job_post_object
   end
 
   def self.print_indices(script_path, input_text)
@@ -148,7 +193,6 @@ class JobPostService
     text = clean_text(input_text)
     print_indices(script_path, text)
     corrected_entities = []
-    # $152,000 - $199,000     COMPENSATION
     extracted_entities.each_with_index do |(label, tokens), _index|
       label = label.to_s
       token = tokens[0]
@@ -214,66 +258,6 @@ class JobPostService
     # end
 
     corrected_entities
-  end
-
-  def self.extract_and_save_benefits(_job_post, benefits)
-    puts 'Starting validation for benefits...'
-    # puts "Benefits: #{benefits}"
-    benefits_data = call_inspect_predictions(
-      script_path: 'app/python/ai_processing/job_benefits/train_job_benefits.py',
-      input_text: benefits,
-      validate: false,
-      data: nil
-    )
-
-    parsed_benefits = benefits_data['entities']
-    corrected_benefits = validate_and_update_training_data(benefits, parsed_benefits,
-                                                           'job_benefits')
-
-    compensation_data = call_inspect_predictions(
-      script_path: 'app/python/ai_processing/salary_extraction/train_salary_extraction.py',
-      input_text: corrected_benefits[0]['token'] # need to make dynamic
-    )
-
-    corrected_compensation_data = validate_and_update_training_data(corrected_benefits[0]['token'],
-                                                                    compensation_data['entities'], 'salary_extraction')
-
-    job_post_object = {
-      job_salary_min: nil,
-      job_salary_max: nil,
-      job_salary_single: nil,
-      job_salary_currency: nil,
-      job_salary_interval: nil,
-      job_commitment: nil,
-      job_post_countries: []
-    }
-    if compensation_data['status'] == 'success' && corrected_compensation_data.any?
-      corrected_compensation_data.each do |entity|
-        case entity['label']
-        when 'SALARY_MIN'
-          job_post_object[:job_salary_min] = entity['token'].gsub(',', '').to_i
-        when 'SALARY_MAX'
-          job_post_object[:job_salary_max] = entity['token'].gsub(',', '').to_i
-        when 'SALARY_SINGLE'
-          job_post_object[:job_salary_single] = entity['token'].gsub(',', '').to_i
-        when 'CURRENCY'
-          job_post_object[:job_salary_currency] = entity['token']
-        when 'INTERVAL'
-          job_post_object[:job_salary_interval] = entity['token']
-        when 'COMMITMENT'
-          job_post_object[:job_commitment] = entity['token']
-        when 'JOB_COUNTRY'
-          job_post_object[:job_post_countries] << entity['token'] if entity['token']
-        else
-          puts "#{RED}Unexpected label: #{entity['label']}#{RESET}"
-        end
-      end
-    else
-      puts "#{RED}Failed to extract compensation data.#{RESET}"
-    end
-
-    # puts "Job Post Object: #{job_post_object}"
-    job_post_object
   end
 
   def self.call_inspect_predictions(script_path:, input_text:, validate: false, data: nil)

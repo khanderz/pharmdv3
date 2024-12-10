@@ -9,7 +9,7 @@ class GreenhouseDataMapper
 
     job_post_data = JobDataMapper.map_basic_data(job, company, location_info, 'greenhouse')
 
-    updated_by_ai = AiSalaryUpdater.update_with_ai(job_post_data, job, company)
+    updated_by_ai = AiUpdater.update_with_ai(job_post_data, job, company)
 
     job_post_data
   end

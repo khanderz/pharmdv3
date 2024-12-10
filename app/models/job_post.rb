@@ -100,32 +100,47 @@ class JobPost < ApplicationRecord
 
     def create_new_job(company, job_post_data, _job_url)
       job_post = JobPost.new(job_post_data)
+      puts "job post data: #{job_post}"
 
       begin
         if job_post.save
           puts "#{GREEN}#{company.company_name} job post added#{RESET}"
         else
-          log_job_error(job_post, company, job_post.errors.full_messages.join(', '))
+          log_job_error(job_post, company, job_post.errors.full_messages.join(', '), job_post)
         end
       rescue ActiveRecord::RecordInvalid => e
         puts "#{RED}Error saving new job post: #{e.message}#{RESET}"
         puts e.backtrace
-        log_job_error(job_post, company, "Validation failed: #{e.message}")
+        log_job_error(job_post, company, "Validation failed: #{e.message}", job_post)
       rescue StandardError => e
         puts "#{RED}Unexpected error: #{e.message}#{RESET}"
         puts e.backtrace
-        # log_job_error(job_post, company, "Unexpected error: #{e.message}")
+        log_job_error(job_post, company, "Unexpected error: #{e.message}", job_post)
       end
     end
 
-    def log_job_error(job_post, company, error_message)
-      Adjudication.create!(
-        adjudicatable_type: 'JobPost',
-        adjudicatable_id: job_post.id,
-        error_details: error_message,
-        resolved: false
-      )
-      puts "#{RED}Error for #{company.company_name} job post: #{error_message}#{RESET}"
+    def log_job_error(job_post, company, error_message, job_post_instance = nil)
+      if job_post_instance.nil? 
+        Adjudication.create!(
+          adjudicatable_type: 'JobPost',
+          adjudicatable_id: job_post.id,
+          error_details: error_message,
+          resolved: false
+        )
+        puts "#{RED}Adjudication created for existing job post: #{company.company_name} #{job_post.id}.#{RESET}"
+      else
+        job_post_instance = JobPost.create!(job_post.attributes)
+
+        puts "#{GREEN}New job post created for #{company.company_name}.#{RESET}"
+    
+        Adjudication.create!(
+          adjudicatable_type: 'JobPost',
+          adjudicatable_id: job_post_instance.id,
+          error_details: error_message,
+          resolved: false
+        )
+        puts "#{RED}Adjudication created for new job post: #{company.company_name} #{job_post_instance.id}.#{RESET}"
+      end
     end
   end
 end

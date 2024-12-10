@@ -60,7 +60,7 @@ def validate_entities(data, nlp):
         print(f"{RED}Validation failed for {len(fails)} entities.{RESET}")
         return fails
     else:
-        # print(f"{GREEN}Validation passed for all entities.{RESET}")
+        print(f"{GREEN}Validation passed for all entities.{RESET}")
         return "Validation passed for all entities."
 
 

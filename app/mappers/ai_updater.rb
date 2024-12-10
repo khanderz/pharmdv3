@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 
-# app/mappers/ai_salary_updater.rb
+# app/mappers/ai_updater.rb
 
-class AiSalaryUpdater
+class AiUpdater
   # Updates salary-related fields in the job post data using AI-extracted information.
   #
   # @param job_post_data [Hash] The current job post data.
@@ -10,12 +10,23 @@ class AiSalaryUpdater
   # @param company [Object] The company object associated with the job.
   # @return [Boolean] True if the job post data was updated, otherwise false.
   def self.update_with_ai(job_post_data, job, company)
-    ai_salary_data = JobPostService.split_descriptions(job, entity_type = 'salary')
+    ai_data = JobPostService.split_descriptions(job)
     updated = false
 
-    ai_salary_data.each do |field_data|
+    ai_data.each do |field_data|
       field_data.each do |key, value|
         case key
+        when 'description', 'summary'
+          job_post_data[:job_description] ||= ''
+          job_post_data[:job_description] += ' ' unless job_post_data[:job_description].empty?
+          job_post_data[:job_description] += value
+        when 'responsibilities'
+          if job_post_data[:responsibilities].to_s.empty?
+            job_post_data[:responsibilities] = value
+          else
+            job_post_data[:responsibilities] += " " unless job_post_data[:responsibilities].end_with?(" ")
+            job_post_data[:responsibilities] += value
+          end
         when 'salary'
           job_post_data[:job_salary_min] = value[:job_salary_min] if value[:job_salary_min]
           job_post_data[:job_salary_max] = value[:job_salary_max] if value[:job_salary_max]
@@ -31,10 +42,7 @@ class AiSalaryUpdater
           job_post_data[:job_salary_currency_id] = currency_id
           job_post_data[:job_salary_interval_id] = interval_id
           updated = true
-        when 'description', 'summary'
-          job_post_data[:job_description] ||= ''
-          job_post_data[:job_description] += ' ' unless job_post_data[:job_description].empty?
-          job_post_data[:job_description] += value
+
         else
           puts "#{RED}Unexpected key: #{key}.#{RESET}"
         end

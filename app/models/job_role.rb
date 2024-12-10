@@ -11,7 +11,7 @@ class JobRole < ApplicationRecord
 
   def self.find_or_create_job_role(job_title)
     titles = Utils::TitleCleaner.clean_title(job_title)
-
+    puts " titles #{titles}"
     cleaned_title = titles[:cleaned_title]
     modified_title = titles[:modified_title]
 
@@ -40,6 +40,8 @@ class JobRole < ApplicationRecord
       )
       puts "Adjudication created for new job role: #{cleaned_title}."
     end
+
+    puts "Job Role: #{job_role.role_name} found."
     job_role
   end
 end

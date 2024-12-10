@@ -45,7 +45,7 @@ job_roles = [
   { role_name: 'Associate Director of Engineering', aliases: ['Associate Engineering Director'], department_names: ['Engineering'], team_names: ['Software Engineering'] },
   { role_name: 'Associate Director of Operations', aliases: ['Associate Operations Director'], department_names: ['Operations'], team_names: ['Operations'] },
   { role_name: 'Associate Director of Product Management', aliases: ['Associate Product Management Director'], department_names: ['Product Management'], team_names: ['Product'] },
-  { role_name: 'Associate Director of Quality', aliases: ['Associate Clinical Quality Assurance', 'Associate Director of Quality Assurance', 'Associate Director, Clinical Quality Assurance'], department_names: ['Quality'], team_names: ['Quality Assurance'] },
+  { role_name: 'Associate Director of Quality', aliases: ['Associate Clinical Quality Assurance', 'Associate Director of Quality Assurance', 'Associate Director of Clinical Quality Assurance'], department_names: ['Quality'], team_names: ['Quality Assurance'] },
   { role_name: 'Chief Clinical Officer', aliases: ['CCO'], department_names: ['Clinical Team'], team_names: ['Care Operations'] },
   { role_name: 'Chief Compliance Officer', aliases: ['CCO'], department_names: ['Legal'], team_names: ['Legal'] },
   { role_name: 'Chief Executive Officer', aliases: ['CEO'], department_names: ['Executive'], team_names: ['Executive'] },

@@ -6,7 +6,6 @@ import warnings
 import spacy
 import os
 from spacy.training import iob_to_biluo
-from app.python.ai_processing.utils.description_splitter import recursive_html_decode
 from app.python.ai_processing.utils.label_mapping import get_label_list
 from app.python.ai_processing.utils.data_handler import load_data, load_spacy_model
 from app.python.ai_processing.utils.logger import (
@@ -18,7 +17,8 @@ from app.python.ai_processing.utils.logger import (
 )
 from app.python.ai_processing.utils.spacy_utils import handle_spacy_data
 from app.python.ai_processing.utils.trainer import train_spacy_model
-from app.python.ai_processing.utils.validation_utils import evaluate_model
+from app.python.ai_processing.utils.utils import calculate_entity_indices, print_data_with_entities
+from app.python.ai_processing.utils.validation_utils import evaluate_model, validate_entities
 from app.python.ai_processing.utils.data_handler import project_root
 from transformers import LongformerTokenizer, LongformerModel
 
@@ -48,42 +48,42 @@ nlp = load_spacy_model(
     MODEL_SAVE_PATH, MAX_SEQ_LENGTH, model_name="allenai/longformer-base-4096"
 )
 
-# if "ner" not in nlp.pipe_names:
-#     ner = nlp.add_pipe("ner")
-#     print(f"{RED}Added NER pipe to blank model: {nlp.pipe_names}{RESET}")
+if "ner" not in nlp.pipe_names:
+    ner = nlp.add_pipe("ner")
+    print(f"{RED}Added NER pipe to blank model: {nlp.pipe_names}{RESET}")
 
-#     for label in get_label_list(entity_type="job_description"):
-#         ner.add_label(label)
+    for label in get_label_list(entity_type="job_description"):
+        ner.add_label(label)
 
-#     spacy.tokens.Doc.set_extension("index", default=None, force=True)
-#     doc_bin, examples = handle_spacy_data(
-#         SPACY_DATA_PATH,
-#         CONVERTED_FILE,
-#         FOLDER,
-#         nlp,
-#         tokenizer,
-#         MAX_SEQ_LENGTH,
-#         transformer,
-#     )
+    spacy.tokens.Doc.set_extension("index", default=None, force=True)
+    doc_bin, examples = handle_spacy_data(
+        SPACY_DATA_PATH,
+        CONVERTED_FILE,
+        FOLDER,
+        nlp,
+        tokenizer,
+        MAX_SEQ_LENGTH,
+        transformer,
+    )
 
-#     nlp.initialize(get_examples=lambda: examples)
+    nlp.initialize(get_examples=lambda: examples)
 
-#     os.makedirs(MODEL_SAVE_PATH, exist_ok=True)
-#     nlp.to_disk(MODEL_SAVE_PATH)
-#     print(f"{GREEN}Model saved to {MODEL_SAVE_PATH} with NER component added.{RESET}")
-# else:
-#     ner = nlp.get_pipe("ner")
-#     print(f"{GREEN}NER pipe already exists in blank model: {nlp.pipe_names}{RESET}")
+    os.makedirs(MODEL_SAVE_PATH, exist_ok=True)
+    nlp.to_disk(MODEL_SAVE_PATH)
+    print(f"{GREEN}Model saved to {MODEL_SAVE_PATH} with NER component added.{RESET}")
+else:
+    ner = nlp.get_pipe("ner")
+    print(f"{GREEN}NER pipe already exists in blank model: {nlp.pipe_names}{RESET}")
 
-#     doc_bin, examples = handle_spacy_data(
-#         SPACY_DATA_PATH,
-#         CONVERTED_FILE,
-#         FOLDER,
-#         nlp,
-#         tokenizer,
-#         MAX_SEQ_LENGTH,
-#         transformer,
-#     )
+    doc_bin, examples = handle_spacy_data(
+        SPACY_DATA_PATH,
+        CONVERTED_FILE,
+        FOLDER,
+        nlp,
+        tokenizer,
+        MAX_SEQ_LENGTH,
+        transformer,
+    )
 
 # if examples:
 #     for example in examples:
@@ -98,7 +98,7 @@ nlp = load_spacy_model(
 
 # ------------------- VALIDATE TRAINER -------------------
 # evaluate_model(nlp, converted_data)
-# validate_entities(converted_data, nlp)
+validate_entities(converted_data, nlp)
 
 
 # ------------------- TEST EXAMPLES -------------------
@@ -127,13 +127,12 @@ def convert_example_to_biluo(text):
 
 def inspect_job_description_predictions(text):
     """Inspect model predictions for job description text."""
-    decoded_text = recursive_html_decode(text)
-    print(f"\nOriginal Text: '{decoded_text}'\n")
-    doc, biluo_tags = convert_example_to_biluo(decoded_text)
 
-    print("Token Predictions:")
-    print(f"{'Token':<15}{'Predicted Label':<20}{'BILUO Tag':<20}")
-    print("-" * 50)
+    doc, biluo_tags = convert_example_to_biluo(text)
+
+    # print("Token Predictions:")
+    # print(f"{'Token':<15}{'Predicted Label':<20}{'BILUO Tag':<20}")
+    # print("-" * 50)
 
     entity_data = {}
     current_entity = None
@@ -163,6 +162,11 @@ def inspect_job_description_predictions(text):
                     entity_data[current_entity].append(" ".join(current_tokens))
                 current_entity = None
                 current_tokens = []
+
+            elif biluo_tag.startswith("U-"):
+                if entity_label not in entity_data:
+                    entity_data[entity_label] = []
+                entity_data[entity_label].append(token.text)
         else:
             if current_entity:
                 if current_entity not in entity_data:
@@ -171,9 +175,6 @@ def inspect_job_description_predictions(text):
                 current_entity = None
                 current_tokens = []
 
-        print(
-            f"{token.text:<15}{token.ent_type_ if token.ent_type_ else 'O':<20}{biluo_tag:<20}"
-        )
     if current_entity:
         if current_entity not in entity_data:
             entity_data[current_entity] = []
@@ -197,26 +198,55 @@ def inspect_job_description_predictions(text):
 # for text in test_texts:
 #     inspect_job_description_predictions(text)
 
-if __name__ == "__main__":
-    warnings.filterwarnings("ignore")
+def main(encoded_data, validate_flag, data=None):
+    if data:
+        if isinstance(data, str):
+            data = json.loads(data)
 
-    print(
-        "\nRunning job description extraction model inspection script...",
-        file=sys.stderr,
-    )
-    try:
-        encoded_data = sys.argv[1]
-        input_data = json.loads(base64.b64decode(encoded_data).decode("utf-8"))
+        updated_data = calculate_entity_indices([data])
+        print_data_with_entities(updated_data, file=sys.stderr)
+        return
 
-        text = input_data.get("text", "")
+    if validate_flag:
+        print("\nValidating entities of the converted data only...", file=sys.stderr)
+        result = validate_entities(converted_data, nlp)
+        if result == "Validation passed for all entities.":
 
-        if not text:
-            raise ValueError("No text provided for prediction.")
+            result = {
+                "status": "success",
+                "message": "Validation passed for all entities",
+            }
+        sys.stdout.write(json.dumps(result) + "\n")
 
-        predictions = inspect_job_description_predictions(text)
+        return
 
-        print(json.dumps({"status": "success", "entities": predictions}))
-    except Exception as e:
-        error_response = {"status": "error", "message": str(e)}
-        print(json.dumps(error_response))
-        sys.exit(1)
+    input_data = json.loads(base64.b64decode(encoded_data).decode("utf-8"))
+    text = input_data.get("text", "")
+    print(f"\nText: {text}", file=sys.stderr)
+
+    print("\nRunning benefits extraction model inspection...", file=sys.stderr)
+    predictions = inspect_job_description_predictions(text)
+
+    output = {
+        "status": "success" if predictions else "failure",
+        "entities": predictions,
+    }
+
+    sys.stdout.write(json.dumps(output) + "\n")
+
+
+# if __name__ == "__main__":
+#     warnings.filterwarnings("ignore")
+#     print(
+#         "\nRunning job benefits extraction model inspection script...", file=sys.stderr
+#     )
+#     try:
+#         encoded_data = sys.argv[1]
+#         validate_flag = sys.argv[2].lower() == "true" if len(sys.argv) > 2 else False
+#         data = sys.argv[3] if len(sys.argv) > 3 else None
+
+#         main(encoded_data, validate_flag, data)
+#     except Exception as e:
+#         error_response = {"status": "error", "message": str(e)}
+#         sys.stdout.write(json.dumps(error_response) + "\n")
+#         sys.exit(1)

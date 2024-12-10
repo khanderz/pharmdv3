@@ -27,10 +27,11 @@ class JobDataMapper
   # @param company [Object] The company object associated with the job.
   # @param location_info [Hash] The extracted location information.
   # @return [Hash] A hash containing the mapped job post data.
-  def self.map_basic_data(job, _company, location_info, source = 'greenhouse')
+  def self.map_basic_data(job, company, location_info, source = 'greenhouse')
     team_var = source == 'lever' ? Team.find_team(job['categories']&.dig('team'), 'JobPost', job['hosted_url'])&.id : nil
 
     {
+      company_id: company.id,
       job_title: job['title'] || job['text'],
       job_url: job['absolute_url'] || job['hostedUrl'],
       job_applyUrl: job['absolute_url'] || job['applyUrl'],
@@ -90,8 +91,8 @@ class ResponsibilitiesExtractor
   # @return [String, nil] The matched section content or nil if not found.
   def self.match_section(content, start_keyword, end_keyword = 'Qualifications')
     return unless content
-
-    content.match(/#{start_keyword}[:-](.*?)#{end_keyword}[:-]/m)&.captures&.first&.strip
+  
+    content.match(/#{start_keyword}[:-](.*?)#{end_keyword}[:-]/mi)&.captures&.first&.strip
   end
 
   # Extracts a list from the job content based on the specified key.
