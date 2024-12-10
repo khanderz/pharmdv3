@@ -17,8 +17,14 @@ from app.python.ai_processing.utils.logger import (
 )
 from app.python.ai_processing.utils.spacy_utils import handle_spacy_data
 from app.python.ai_processing.utils.trainer import train_spacy_model
-from app.python.ai_processing.utils.utils import calculate_entity_indices, print_data_with_entities
-from app.python.ai_processing.utils.validation_utils import evaluate_model, validate_entities
+from app.python.ai_processing.utils.utils import (
+    calculate_entity_indices,
+    print_data_with_entities,
+)
+from app.python.ai_processing.utils.validation_utils import (
+    evaluate_model,
+    validate_entities,
+)
 from app.python.ai_processing.utils.data_handler import project_root
 from transformers import LongformerTokenizer, LongformerModel
 
@@ -197,6 +203,7 @@ def inspect_job_description_predictions(text):
 
 # for text in test_texts:
 #     inspect_job_description_predictions(text)
+
 
 def main(encoded_data, validate_flag, data=None):
     if data:

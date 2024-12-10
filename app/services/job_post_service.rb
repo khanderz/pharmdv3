@@ -43,12 +43,13 @@ class JobPostService
     data_return << { 'summary' => summary } if summary
 
     processed_description = extract_descriptions(summary)
-    # processed_qualifications = extract_and_save_job_qualifications(qualifications)
-    #  process for locations
-    #  process for settings
-    # process for commitments
-    # process for seniorities
-    salary_data = extract_benefits(benefits)
+    data_return << { 'description' => processed_description } if processed_description
+    processed_qualifications = extract_qualifications(qualifications)
+    data_return << { 'qualifications' => processed_qualifications } if processed_qualifications
+    processed_benefits = extract_benefits(benefits)
+    data_return << { 'benefits' => processed_benefits } if processed_benefits
+
+    salary_data = extract_salary(benefits)
     data_return << { 'salary' => salary_data } if salary_data
 
     data_return
@@ -96,22 +97,168 @@ class JobPostService
 
     parsed_descriptions = description_data['entities']
     corrected_descriptions = validate_and_update_training_data(summary, parsed_descriptions,
-                                                              'job_description_extraction')
-    puts"corrected_descriptions: #{corrected_descriptions}"
+                                                               'job_description_extraction')
+    puts "corrected_descriptions: #{corrected_descriptions}"
+
+    if description_data['status'] == 'success' && corrected_descriptions.any?
+      job_post_object = {
+        job_description: nil,
+        job_role: nil,
+        job_seniority: nil,
+        job_dept: nil,
+        job_team: nil,
+        job_commitment: nil,
+        job_setting: nil,
+        job_country: nil,
+        job_city: nil,
+        job_state: nil
+      }
+
+      corrected_descriptions.each do |entity|
+        case entity['label']
+        when 'DESCRIPTION'
+          job_post_object[:job_description] = entity['token']
+        when 'JOB_ROLE'
+          job_post_object[:job_role] = entity['token']
+        when 'JOB_SENIORITY'
+          job_post_object[:job_seniority] = entity['token']
+        when 'JOB_DEPT'
+          job_post_object[:job_dept] = entity['token']
+        when 'JOB_TEAM'
+          job_post_object[:job_team] = entity['token']
+        when 'JOB_COMMITMENT'
+          job_post_object[:job_commitment] = entity['token']
+        when 'JOB_SETTING'
+          job_post_object[:job_setting] = entity['token']
+        when 'JOB_COUNTRY'
+          job_post_object[:job_country] = entity['token']
+        when 'JOB_CITY'
+          job_post_object[:job_city] = entity['token']
+        when 'JOB_STATE'
+          job_post_object[:job_state] = entity['token']
+        else
+          puts "#{RED}Unexpected label: #{entity['label']}#{RESET}"
+        end
+      end
+    else
+      puts "#{RED}Failed to extract description data.#{RESET}"
+    end
   end
 
-  def self.extract_job_qualifications( qualifications_text)
+  def self.extract_qualifications(qualifications)
     # puts "Extracting qualifications from text: #{qualifications_text}..."
 
     qualification_data = call_inspect_predictions(
       script_path: 'app/python/ai_processing/job_qualifications/train_qualifications.py',
-      input_text: qualifications_text
+      input_text: qualifications
     )
+
+    parsed_qualifications = qualification_data['entities']
+    puts "parsed_qualifications: #{parsed_qualifications}"
+    corrected_qualifications = validate_and_update_training_data(qualifications,
+                                                                 parsed_qualifications, 'job_qualifications')
+
+    if qualification_data['status'] == 'success' && corrected_qualifications.any?
+      job_post_object = {
+        qualifications: nil,
+        credentials: nil,
+        education: nil,
+        experience: nil,
+      }
+
+      corrected_qualifications.each do |entity|
+        case entity['label']
+        when 'QUALIFICATIONS'
+          job_post_object[:qualifications] = entity['token']
+        when 'CREDENTIALS'
+          job_post_object[:credentials] = entity['token']
+        when 'EDUCATION'
+          job_post_object[:education] = entity['token']
+        when 'EXPERIENCE'
+          job_post_object[:experience] = entity['token']
+        else
+          puts "#{RED}Unexpected label: #{entity['label']}#{RESET}"
+        end
+      end
+    else
+      puts "#{RED}Failed to extract qualifications data.#{RESET}"
+    end
   end
 
-  def self.extract_benefits( benefits)
+  def self.extract_benefits(benefits)
     puts 'Starting validation for benefits...'
-        # $152,000 - $199,000     COMPENSATION
+    # puts "Benefits: #{benefits}"
+    benefits_data = call_inspect_predictions(
+      script_path: 'app/python/ai_processing/job_benefits/train_job_benefits.py',
+      input_text: benefits,
+      validate: false,
+      data: nil
+    )
+
+    parsed_benefits = benefits_data['entities']
+    corrected_benefits = validate_and_update_training_data(benefits, parsed_benefits,
+                                                           'job_benefits')
+
+    if benefits_data['status'] == 'success' && corrected_benefits.any?
+      job_post_object = {
+        commitment: nil,
+        job_setting: nil,
+        job_country: nil,
+        job_city: nil,
+        job_state: nil,
+        job_compensation: nil,
+        retirement: nil,
+        office_life: nil,
+        professional_development: nil,
+        wellness: nil,
+        parental: nil,
+        work_life_balance: nil,
+        visa_sponsorship: nil,
+        additional_perks: nil,
+      }
+
+      corrected_benefits.each do |entity|
+        case entity['label']
+        when 'COMMITMENT'
+          job_post_object[:commitment] = entity['token']
+        when 'JOB_SETTING'
+          job_post_object[:job_setting] = entity['token']
+        when 'JOB_COUNTRY'
+          job_post_object[:job_country] = entity['token']
+        when 'JOB_CITY'
+          job_post_object[:job_city] = entity['token']
+        when 'JOB_STATE'
+          job_post_object[:job_state] = entity['token']
+        when 'JOB_COMPENSATION'
+          job_post_object[:job_compensation] = entity['token']
+        when 'RETIREMENT'
+          job_post_object[:retirement] = entity['token']
+        when 'OFFICE_LIFE'
+          job_post_object[:office_life] = entity['token']
+        when 'PROFESSIONAL_DEVELOPMENT'
+          job_post_object[:professional_development] = entity['token']
+        when 'WELLNESS'
+          job_post_object[:wellness] = entity['token']
+        when 'PARENTAL'
+          job_post_object[:parental] = entity['token']
+        when 'WORK_LIFE_BALANCE'
+          job_post_object[:work_life_balance] = entity['token']
+        when 'VISA_SPONSORSHIP'
+          job_post_object[:visa_sponsorship] = entity['token']
+        when 'ADDITIONAL_PERKS'
+          job_post_object[:additional_perks] = entity['token']
+        else
+          puts "#{RED}Unexpected label: #{entity['label']}#{RESET}"
+        end
+      end
+    else
+      puts "#{RED}Failed to extract benefits data.#{RESET}"
+    end
+  end
+
+  def self.extract_salary(benefits)
+    puts 'Starting validation for benefits...'
+    # $152,000 - $199,000     COMPENSATION
 
     # puts "Benefits: #{benefits}"
     benefits_data = call_inspect_predictions(

@@ -91,12 +91,16 @@ def split_job_description(text: str) -> Dict[str, str]:
 
     for part in split_text:
         header_match = section_regex.match(part.strip())
-        
+
         if header_match:
             # print("Header match:", header_match, file=sys.stderr)
             matched_section = header_match.group(1).lower().replace(" ", "_")
             # print(f"Matched alias: {matched_alias}", file=sys.stderr)
-            if matched_section in result and (current_section is None or list(result.keys()).index(matched_section) > list(result.keys()).index(current_section)):
+            if matched_section in result and (
+                current_section is None
+                or list(result.keys()).index(matched_section)
+                > list(result.keys()).index(current_section)
+            ):
                 current_section = matched_section
                 result[current_section] = ""
         elif current_section:
@@ -105,7 +109,7 @@ def split_job_description(text: str) -> Dict[str, str]:
 
     for key in result:
         result[key] = result[key].strip()
-        # print(f"------------Section '{key}': {result[key]}", file=sys.stderr)    
+        # print(f"------------Section '{key}': {result[key]}", file=sys.stderr)
     # print("Split job description:", result, file=sys.stderr)
     return result
 
