@@ -100,7 +100,7 @@ class JobPost < ApplicationRecord
 
     def create_new_job(company, job_post_data, _job_url)
       new_job_post = new(job_post_data)
-    
+      puts "new job post data: #{new_job_post.inspect}"
       begin
         if new_job_post.save
           puts "#{GREEN}#{company.company_name} job post added#{RESET}"
