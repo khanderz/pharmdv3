@@ -4,10 +4,10 @@
 
 class GreenhouseDataMapper
   def self.map(job, company)
-    location_input = LocationHelper.extract_location(job, 'greenhouse')
+    location_input = LocationMapper.extract_location(job, 'greenhouse')
     location_info = LocationMapper.new.match_location(location_input, job, company)
 
-    job_post_data = JobPostDataMapper.map_basic_data(job, company, location_info, 'greenhouse')
+    job_post_data = JobDataMapper.map_basic_data(job, company, location_info, 'greenhouse')
 
     updated_by_ai = AiSalaryUpdater.update_with_ai(job_post_data, job, company)
 
