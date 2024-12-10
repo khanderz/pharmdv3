@@ -26,7 +26,8 @@ departments = [
     aliases: ['Strategy & Operations', 'Business Operations', 'Logistics', 'Supply Chain', 'Growth & Business Excellence',
               'worker operations', 'People Operations'] },
   { dept_name: 'Product Management', aliases: ['Product Development', 'Product'] },
-  { dept_name: 'Sales', aliases: ['Business Development', 'Account Management'] }
+  { dept_name: 'Sales', aliases: ['Business Development', 'Account Management'] },
+  { dept_name: 'Quality', aliases: ['Quality Assurance', 'Quality Control', 'QA'] },
 ]
 
 seeded_count = 0

@@ -99,6 +99,7 @@ class JobPost < ApplicationRecord
     end
 
     def create_new_job(company, job_post_data, _job_url)
+      puts"job_post_data: #{job_post_data}"
       new_job_post = new(job_post_data)
       puts "new job post data: #{new_job_post.inspect}"
       begin
@@ -114,30 +115,9 @@ class JobPost < ApplicationRecord
       rescue StandardError => e
         puts "#{RED}Unexpected error: #{e.message}#{RESET}"
         puts e.backtrace
-        log_job_error(new_job_post, company, "Unexpected error: #{e.message}")
+        # log_job_error(new_job_post, company, "Unexpected error: #{e.message}")
       end
     end
-
-    # def update_job_locations(job_post, locations)
-    #   return unless locations
-
-    #   if locations[:country_name]
-    #     country = Country.find_by(country_name: locations[:country_name]) ||
-    #               Country.find_by(country_code: locations[:country_code])
-    #     job_post.countries = [country].compact if country
-    #   end
-
-    #   if locations[:state_name] || locations[:state_code]
-    #     state = State.find_by(state_name: locations[:state_name]) ||
-    #             State.find_by(state_code: locations[:state_code])
-    #     job_post.states = [state].compact if state
-    #   end
-
-    #   return unless locations[:city_name]
-
-    #   city = City.find_by(city_name: locations[:city_name])
-    #   job_post.cities = [city].compact if city
-    # end
 
     def log_job_error(job_post, company, error_message)
       Adjudication.create!(
