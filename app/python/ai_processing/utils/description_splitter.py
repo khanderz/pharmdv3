@@ -76,31 +76,37 @@ def split_job_description(text: str) -> Dict[str, str]:
         alias for section_list in sections.values() for alias in section_list
     ]
 
-    section_regex = re.compile(r"(?i)\b(" + "|".join(all_sections) + r")\b[ :\-]?\s*")
+    section_regex = re.compile(r"(?i)\b(" + "|".join(all_sections) + r")\b:?\s*")
 
     split_text = section_regex.split(text)
 
-    result = {}
-    current_section = "description"
-    result[current_section] = ""
+    result = {
+        "summary": "",
+        "responsibilities": "",
+        "qualifications": "",
+        "benefits": "",
+    }
+
+    current_section = None
 
     for part in split_text:
-        cleaned_part = part.strip()
-
-        header_match = section_regex.match(cleaned_part)
+        header_match = section_regex.match(part.strip())
+        
         if header_match:
-            matched_alias = header_match.group(1).lower()
-            for section, aliases in sections.items():
-                if matched_alias in [alias.lower() for alias in aliases]:
-                    current_section = section
-                    break
-            result[current_section] = ""
+            # print("Header match:", header_match, file=sys.stderr)
+            matched_section = header_match.group(1).lower().replace(" ", "_")
+            # print(f"Matched alias: {matched_alias}", file=sys.stderr)
+            if matched_section in result and (current_section is None or list(result.keys()).index(matched_section) > list(result.keys()).index(current_section)):
+                current_section = matched_section
+                result[current_section] = ""
         elif current_section:
-            result[current_section] += cleaned_part + " "
+            result[current_section] += part.strip() + " "
+            # print(f"Current section '{current_section}': {result[current_section]}", file=sys.stderr)
 
     for key in result:
         result[key] = result[key].strip()
-
+        # print(f"------------Section '{key}': {result[key]}", file=sys.stderr)    
+    # print("Split job description:", result, file=sys.stderr)
     return result
 
 

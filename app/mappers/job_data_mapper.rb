@@ -28,6 +28,8 @@ class JobDataMapper
   # @param location_info [Hash] The extracted location information.
   # @return [Hash] A hash containing the mapped job post data.
   def self.map_basic_data(job, _company, location_info, source = 'greenhouse')
+    team_var = source == 'lever' ? Team.find_team(job['categories']&.dig('team'), 'JobPost', job['hosted_url'])&.id : nil
+
     {
       job_title: job['title'] || job['text'],
       job_url: job['absolute_url'] || job['hostedUrl'],
@@ -45,7 +47,7 @@ class JobDataMapper
       department_id: Department.find_department(
         job['departments']&.first&.dig('name') || job['categories']['department'], 'JobPost', job['absolute_url'] || job['hostedUrl']
       ).id,
-      team_id: Team.find_team(job['categories']['team'], 'JobPost', job['hosted_url']).id || nil,
+      team_id: team_var,
 
       job_commitment_id: JobCommitment.find_job_commitment(job['categories']&.dig('commitment')) || nil,
       job_setting: location_info[:location_type] || nil,

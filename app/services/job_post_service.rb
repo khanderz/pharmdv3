@@ -25,7 +25,7 @@ class JobPostService
     puts 'Preprocessing job description...'
     # puts "job post: #{job_post}"
     structured_data = preprocess_job_description(job_post['content'])
-
+    # puts "structured_data: #{structured_data}"
     unless structured_data
       puts "#{RED}Failed to preprocess job description.#{RESET}"
       return
@@ -37,7 +37,7 @@ class JobPostService
     summary = structured_data['summary']
     responsibilities = structured_data['responsibilities']
     qualifications = structured_data['qualifications']
-    benefits = structured_data['benefits'] || qualifications
+    benefits = structured_data['benefits'].empty? ? qualifications : structured_data['benefits']
 
     data_return << { 'description' => description } if description
     data_return << { 'summary' => summary } if summary
@@ -79,6 +79,9 @@ class JobPostService
     command = "python3 #{python_script_path} '#{encoded_data}'"
 
     stdout, stderr, status = Open3.capture3(command)
+    # puts "stdout: #{stdout}"
+    # puts "stderr: #{stderr}"
+    # puts "status: #{status}"
 
     if status.success? && !stdout.strip.empty?
       begin
@@ -215,6 +218,7 @@ class JobPostService
 
   def self.extract_and_save_benefits(_job_post, benefits)
     puts 'Starting validation for benefits...'
+    # puts "Benefits: #{benefits}"
     benefits_data = call_inspect_predictions(
       script_path: 'app/python/ai_processing/job_benefits/train_job_benefits.py',
       input_text: benefits,
