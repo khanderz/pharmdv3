@@ -316,9 +316,9 @@ class JobPostService
     job_post_object
   end
 
-  def self.print_indices(script_path, input_text)
+  def self.print_indices(entity_type, input_text)
     puts 'Printing indices...'
-    call_inspect_predictions(script_path: script_path, input_text: input_text, validate: false,
+    call_inspect_predictions(entity_type: entity_type, input_text: input_text, validate: false,
                              data: input_text)
   end
 
@@ -333,10 +333,9 @@ class JobPostService
     training_data_path = "app/python/ai_processing/#{entity_type}/data/train_data_spacy.json"
     training_data = []
     training_data = JSON.parse(File.read(training_data_path)) if File.exist?(training_data_path)
-    script_path = "app/python/ai_processing/#{entity_type}/train_#{entity_type}.py"
 
     text = clean_text(input_text)
-    print_indices(script_path, text)
+    print_indices(entity_type, text)
     corrected_entities = []
     extracted_entities.each_with_index do |(label, tokens), _index|
       label = label.to_s
@@ -464,7 +463,7 @@ class JobPostService
         nil
       end
     else
-      puts "#{RED}Error running script #{script_path}: #{stderr}#{RESET}"
+      puts "#{RED}Error running script for #{attribute_type}: #{stderr}#{RESET}"
       nil
     end
   end
