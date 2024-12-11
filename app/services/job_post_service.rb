@@ -92,7 +92,8 @@ class JobPostService
     # puts "Summary: #{summary}"
     description_data = call_inspect_predictions(
       attribute_type: 'job_description',
-      input_text: summary
+      input_text: summary,
+      predict: true
     )
 
     # puts "description_data: #{description_data}"
@@ -402,65 +403,76 @@ class JobPostService
     }
     # puts "new_training_data: #{new_training_data}"
 
-    # training_data << new_training_data
-    # File.write(training_data_path, JSON.pretty_generate(training_data))
-
     validation_result = call_inspect_predictions(
       attribute_type: entity_type,
       input_text: input_text,
-      validate: new_training_data
+      validate: [new_training_data]
     )
 
-    # if validation_result && validation_result['status'] == 'success'
-    #   message = validation_result['message'].to_s.strip
+    if validation_result && validation_result['status'] == 'success'
+      puts "validation result on rb : #{validation_result}"
+      message = validation_result['message'].to_s.strip
+      puts "#{GREEN}Validation completed successfully: #{message}#{RESET}"
+      if message.include?('Validation passed for all entities.')
+        training_data << new_training_data
 
-    #   if message.include?('Validation passed')
-    #     training_data << new_training_data
-
-    #     # File.write(training_data_path, JSON.pretty_generate(training_data))
-    #     puts "#{GREEN}Training data validated and saved successfully at #{training_data_path}.#{RESET}"
-    #   else
-    #     puts "#{RED}Validation completed with errors: #{message}#{RESET}"
-    #     training_data << new_training_data
-    #     File.write(training_data_path, JSON.pretty_generate(training_data))
-    #     puts "#{GREEN}Training data saved despite validation errors at #{training_data_path}.#{RESET}"
-    #   end
-    # end
+        File.write(training_data_path, JSON.pretty_generate(training_data))
+        puts "#{GREEN}Training data validated and saved successfully at #{training_data_path}.#{RESET}"
+      else
+        puts "#{RED}Validation completed with errors: #{message}#{RESET}"
+        # training_data << new_training_data
+        # File.write(training_data_path, JSON.pretty_generate(training_data))
+        # puts "#{GREEN}Training data saved despite validation errors at #{training_data_path}.#{RESET}"
+      end
+    end
 
     corrected_entities
   end
 
-  def self.call_inspect_predictions(attribute_type:, input_text:, validate: nil, train: false, data: nil)
+  def self.call_inspect_predictions(attribute_type:, input_text:, validate: nil, predict: false, train: false, data: nil)
     puts "Calling inspect predictions for #{attribute_type}..."
     input_json = { text: input_text }.to_json
     input_text = input_text.strip.sub(/^:/, '')
     input_text = input_text.strip.gsub(/^\s*[:\u200B]+/, '')
     other_json = { text: input_text.strip, entities: [] }.to_json
     encoded_data = Base64.strict_encode64(input_json)
+
     train_flag = train
-    validate_data = validate.nil? ? validate.to_json : "None"
+    predict_flag = predict
+
+    puts "validate raw : #{validate}"
+    encoded_validation_data = validate ? Base64.strict_encode64(validate.to_json) : "None"
+
     input_data = data ? other_json : ''
-    puts "validate_data before : #{validate_data}, train_flag: #{train_flag}, input_data: #{input_data}"
+    puts "validate_data before : #{encoded_validation_data}, train_flag: #{train_flag}"
     # puts "attribute type: #{attribute_type}"
-    command = "python3 app/python/ai_processing/main.py '#{attribute_type}' '#{encoded_data}' #{validate_data} #{train_flag} '#{input_data}' "
+    puts "predict_flag: #{predict_flag}"
+    command = "python3 app/python/ai_processing/main.py '#{attribute_type}' '#{encoded_data}' #{encoded_validation_data} #{predict_flag} #{train_flag} '#{input_data}' "
 
     stdout, stderr, status = Open3.capture3(command)
-    # puts "stdout: #{stdout}"
-    # puts "stderr: #{stderr}"
-    # puts "status: #{status}"
+    puts "stdout: #{stdout}"
+    puts "stderr: #{stderr}"
+    puts "status: #{status}"
 
     if status.success? && !stdout.strip.empty?
       begin
         json_output = stdout.split("\n").find { |line| line.strip.start_with?('{') }
-
+    
         if json_output
-          JSON.parse(json_output)
+          begin
+            parsed_json = JSON.parse(json_output)
+            parsed_json
+          rescue JSON::ParserError => e
+            puts "#{RED}Failed to parse JSON: #{e.message}#{RESET}"
+            puts "#{RED}Raw stdout content: #{stdout}#{RESET}"
+            nil
+          end
         else
           puts "#{RED}No valid JSON output found in stdout. Full output: #{stdout}#{RESET}"
           nil
         end
-      rescue JSON::ParserError => e
-        puts "#{RED}Error parsing JSON: #{e.message}#{RESET}"
+      rescue StandardError => e
+        puts "#{RED}Unexpected error: #{e.message}#{RESET}"
         puts "#{RED}Full stdout: #{stdout}#{RESET}"
         nil
       end
@@ -468,6 +480,7 @@ class JobPostService
       puts "#{RED}Error running script for #{attribute_type}: #{stderr}#{RESET}"
       nil
     end
+    
   end
 
   # def self.update_qualifications(job_post, qualifications_entities)

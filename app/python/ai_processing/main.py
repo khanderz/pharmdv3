@@ -159,6 +159,7 @@ def inspect_job_post_predictions(text, nlp, attribute_type):
 def main(
     encoded_data,
     train_flag,
+    predict_flag,
     nlp,
     MODEL_SAVE_PATH,
     examples,
@@ -177,14 +178,24 @@ def main(
 
     if validate_data not in [None, "None", "", "null"]:
         print("\nValidating entities of the converted data only...", file=sys.stderr)
-        # print(f"validate_data: {validate_data}", file=sys.stderr)
-        result = validate_entities(validate_data, nlp)
-        if result == "Validation passed for all entities.":
+        # print(f"validate_data main: {validate_data}", file=sys.stderr)
+        decoded = json.loads(base64.b64decode(validate_data).decode("utf-8"))
+        print(f"decoded main: {decoded}", file=sys.stderr)
+        validation_result = validate_entities(decoded, nlp, file=sys.stdout)
+        print("validation_result on main",validation_result, file=sys.stderr)
 
+        if validation_result["status"] == "success":
             result = {
                 "status": "success",
                 "message": "Validation passed for all entities",
             }
+        else:
+            result = {
+                "status": "failure",
+                "message": validation_result['message'],
+            }   
+
+            print(f" result on main: {result}", file=sys.stderr)
         sys.stdout.write(json.dumps(result) + "\n")
 
         return
@@ -193,23 +204,24 @@ def main(
         print("\nTraining the main extraction model...", file=sys.stderr)
         train_spacy_model(MODEL_SAVE_PATH, nlp, examples, resume=True)
         return
+    
+    if predict_flag:
+        input_data = json.loads(base64.b64decode(encoded_data).decode("utf-8"))
+        text = input_data.get("text", "")
+        # print(f"\nText: {text}", file=sys.stderr)
 
-    input_data = json.loads(base64.b64decode(encoded_data).decode("utf-8"))
-    text = input_data.get("text", "")
-    # print(f"\nText: {text}", file=sys.stderr)
+        print("\nRunning job post main extraction model inspection...", file=sys.stderr)
+        predictions = inspect_job_post_predictions(
+            text, nlp, attribute_type
+        )
+        # print(f"\nPredictions: {predictions}", file=sys.stderr)
 
-    print("\nRunning job post main extraction model inspection...", file=sys.stderr)
-    predictions = inspect_job_post_predictions(
-        text, nlp, attribute_type
-    )
-    # print(f"\nPredictions: {predictions}", file=sys.stderr)
+        output = {
+            "status": "success" if predictions else "failure",
+            "entities": predictions,
+        }
 
-    output = {
-        "status": "success" if predictions else "failure",
-        "entities": predictions,
-    }
-
-    sys.stdout.write(json.dumps(output) + "\n")
+        sys.stdout.write(json.dumps(output) + "\n")
 
 
 if __name__ == "__main__":
@@ -221,8 +233,9 @@ if __name__ == "__main__":
         attribute_type = sys.argv[1]
         encoded_data = sys.argv[2]
         validate_data = sys.argv[3] if len(sys.argv) > 3 else None
-        train_flag = sys.argv[4].lower() == "true" if len(sys.argv) > 4 else False
-        data = sys.argv[5] if len(sys.argv) > 5 else None
+        predict_flag = sys.argv[4].lower() == "true" if len(sys.argv) > 4 else False
+        train_flag = sys.argv[5].lower() == "true" if len(sys.argv) > 5 else False
+        data = sys.argv[6] if len(sys.argv) > 6 else None
 
         (
             nlp,
@@ -231,12 +244,14 @@ if __name__ == "__main__":
         ) = return_paths(attribute_type)
         # print(f"attribiute_type: {attribute_type}", file=sys.stderr)
         # print(f"encoded_data: {encoded_data}", file=sys.stderr)
-        # print(f"validate_data after: {validate_data}", file=sys.stderr)
+
         # print(f"train_flag: {train_flag}", file=sys.stderr)
         # print(f"data: {data}", file=sys.stderr)
+        # print(f"predict_flag: {predict_flag}", file=sys.stderr)
         main(
             encoded_data,
             train_flag,
+            predict_flag,
             nlp,
             MODEL_SAVE_PATH,
             examples,

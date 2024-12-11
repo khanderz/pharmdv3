@@ -1,4 +1,6 @@
 #  app/python/ai_processing/utils/validation_utils.py
+import json
+import sys
 from app.python.ai_processing.utils.logger import BLUE, RED, GREEN, RESET
 from app.python.ai_processing.utils.utils import print_token_characters
 from spacy.scorer import Scorer
@@ -32,7 +34,7 @@ def verify_data_consistency(validation_data):
             ), f"{RED}{print_token_characters(text)}{RESET}"
 
 
-def validate_entities(data, nlp):
+def validate_entities(data, nlp, file=sys.stdout):
     fails = []
 
     for idx, item in enumerate(data):
@@ -53,15 +55,25 @@ def validate_entities(data, nlp):
                     f"Mismatch found in object {idx + 1}:\n"
                     f"  Label: {label}\n"
                     f"  Expected: '{expected_token}' got: (start={start}, end={end})\n"
-                    f"  Actual: '{spacy_token.text if spacy_token else None}'\n"
+                    f"  Actual: '{spacy_token.text if spacy_token else None}'\n",
+                                        file=file
                 )
+    # print(f"fails : {fails}")            
     if fails:
-        # print(f"{BLUE}failed entities: {fails}{RESET}")
-        print(f"{RED}Validation failed for {len(fails)} entities.{RESET}")
-        return fails
+        result = {
+            "status": "failure",
+            "message": f"Validation failed for {len(fails)} entities."
+        }
     else:
-        print(f"{GREEN}Validation passed for all entities.{RESET}")
-        return "Validation passed for all entities."
+        result =  {
+            "status": "success",
+            "message": "Validation passed for all entities."
+        }
+    
+    print(json.dumps(result), file=file)
+
+    return result
+        
 
 
 def fuzzy_match(true_entities, pred_entities, tolerance=1):
