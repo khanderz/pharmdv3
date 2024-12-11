@@ -41,9 +41,12 @@ class JobPostService
 
     data_return << { 'description' => description } if description
     data_return << { 'summary' => summary } if summary
+    data_return << { 'responsibilities' => responsibilities } if responsibilities
+
 
     processed_description = extract_descriptions(summary)
     data_return << { 'description' => processed_description } if processed_description
+
     processed_qualifications = extract_qualifications(qualifications)
     data_return << { 'qualifications' => processed_qualifications } if processed_qualifications
     processed_benefits = extract_benefits(benefits)
@@ -433,7 +436,8 @@ class JobPostService
     corrected_entities
   end
 
-  def self.call_inspect_predictions(script_path:, input_text:, validate: false, data: nil)
+  def self.call_inspect_predictions(attribute_type:, input_text:, validate: false, data: nil)
+    puts "Calling inspect predictions for #{attribute_type}..."
     input_json = { text: input_text }.to_json
     input_text = input_text.strip.sub(/^:/, '')
     input_text = input_text.strip.gsub(/^\s*[:\u200B]+/, '')
@@ -442,7 +446,7 @@ class JobPostService
     validate_flag = validate
     input_data = data ? other_json : ''
 
-    command = "python3 #{script_path} '#{encoded_data}' #{validate_flag} '#{input_data}'"
+    command = "python3 app/python/ai_processing/main.py '#{attribute_type}' '#{encoded_data}' #{validate_flag} '#{input_data}' "
 
     stdout, stderr, status = Open3.capture3(command)
     # puts "stdout: #{stdout}"

@@ -17,11 +17,12 @@ class AiUpdater
       field_data.each do |key, value|
         case key
         when 'description', 'summary'
-          job_post_data[:job_description] ||= ''
-          job_post_data[:job_description] += ' ' unless job_post_data[:job_description].empty?
-          job_post_data[:job_description] += value
+          job_post_data[:job_description] ||= {}
+          job_post_data[:job_description]['description'] ||= ''
+          job_post_data[:job_description]['description'] += ' ' unless job_post_data[:job_description]['description'].empty?
+          job_post_data[:job_description]['description'] += value
 
-          description = value[:job_description]
+          description = { 'description' => processed_description }
           role = value[:job_role]
           job_post_data[:job_role_id] = JobRole.find_or_adjudicate_role(role, company.id, job_post_data[:job_url]).id
 

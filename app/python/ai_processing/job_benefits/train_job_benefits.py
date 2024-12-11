@@ -53,14 +53,14 @@ transformer = LongformerModel.from_pretrained("allenai/longformer-base-4096")
 
 MAX_SEQ_LENGTH = 4096
 
-converted_data = load_data(CONVERTED_FILE, FOLDER)
-nlp = load_spacy_model(
+benefits_converted_data = load_data(CONVERTED_FILE, FOLDER)
+benefits_nlp = load_spacy_model(
     MODEL_SAVE_PATH, MAX_SEQ_LENGTH, model_name="allenai/longformer-base-4096"
 )
 
-# if "ner" not in nlp.pipe_names:
-#     ner = nlp.add_pipe("ner")
-#     print(f"{RED}Added NER pipe to blank model: {nlp.pipe_names}{RESET}")
+# if "ner" not in benefits_nlp.pipe_names:
+#     ner = benefits_nlp.add_pipe("ner")
+#     print(f"{RED}Added NER pipe to blank model: {benefits_nlp.pipe_names}{RESET}")
 
 #     for label in get_label_list(entity_type="job_benefit"):
 #         ner.add_label(label)
@@ -70,170 +70,170 @@ nlp = load_spacy_model(
 #         SPACY_DATA_PATH,
 #         CONVERTED_FILE,
 #         FOLDER,
-#         nlp,
+#         benefits_nlp,
 #         tokenizer,
 #         MAX_SEQ_LENGTH,
 #         transformer,
 #     )
 
-#     nlp.initialize(get_examples=lambda: examples)
+#     benefits_nlp.initialize(get_examples=lambda: examples)
 
 #     os.makedirs(MODEL_SAVE_PATH, exist_ok=True)
-#     nlp.to_disk(MODEL_SAVE_PATH)
+#     benefits_nlp.to_disk(MODEL_SAVE_PATH)
 #     print(f"{GREEN}Model saved to {MODEL_SAVE_PATH} with NER component added.{RESET}")
 # else:
-#     ner = nlp.get_pipe("ner")
-#     print(f"{GREEN}NER pipe already exists in blank model: {nlp.pipe_names}{RESET}")
+#     ner = benefits_nlp.get_pipe("ner")
+#     print(f"{GREEN}NER pipe already exists in blank model: {benefits_nlp.pipe_names}{RESET}")
 
 #     doc_bin, examples = handle_spacy_data(
 #         SPACY_DATA_PATH,
 #         CONVERTED_FILE,
 #         FOLDER,
-#         nlp,
+#         benefits_nlp,
 #         tokenizer,
 #         MAX_SEQ_LENGTH,
 #         transformer,
 #     )
 
 # ------------------- TRAIN MODEL -------------------
-# train_spacy_model(MODEL_SAVE_PATH, nlp, examples, resume=True)
+# train_spacy_model(MODEL_SAVE_PATH, benefits_nlp, examples, resume=True)
 
 # ------------------- VALIDATE TRAINER -------------------
-# evaluate_model(nlp, converted_data)
-# validate_entities(converted_data, nlp)
+# evaluate_model(benefits_nlp, converted_data)
+# validate_entities(converted_data, benefits_nlp)
 
 
 # ------------------- TEST EXAMPLES -------------------
-def convert_example_to_biluo(text):
-    """Convert model predictions for the given text to BILUO format."""
-    tokens = tokenizer(
-        text,
-        max_length=MAX_SEQ_LENGTH,
-        truncation=True,
-        padding="max_length",
-        return_tensors="pt",
-    )
+# def convert_example_to_biluo(text):
+#     """Convert model predictions for the given text to BILUO format."""
+#     tokens = tokenizer(
+#         text,
+#         max_length=MAX_SEQ_LENGTH,
+#         truncation=True,
+#         padding="max_length",
+#         return_tensors="pt",
+#     )
 
-    decoded_text = tokenizer.decode(tokens["input_ids"][0], skip_special_tokens=True)
+#     decoded_text = tokenizer.decode(tokens["input_ids"][0], skip_special_tokens=True)
 
-    doc = nlp(decoded_text)
+#     doc = benefits_nlp(decoded_text)
 
-    iob_tags = [
-        token.ent_iob_ + "-" + token.ent_type_ if token.ent_type_ else "O"
-        for token in doc
-    ]
-    biluo_tags = iob_to_biluo(iob_tags)
+#     iob_tags = [
+#         token.ent_iob_ + "-" + token.ent_type_ if token.ent_type_ else "O"
+#         for token in doc
+#     ]
+#     biluo_tags = iob_to_biluo(iob_tags)
 
-    return doc, biluo_tags
-
-
-def inspect_job_benefit_predictions(text):
-    """Inspect model predictions for job benefit text."""
-
-    doc, biluo_tags = convert_example_to_biluo(text)
-
-    # print("Token Predictions:")
-    # print(f"{'Token':<15}{'Predicted Label':<20}{'BILUO Tag':<20}")
-    # print("-" * 50)
-
-    entity_data = {}
-    current_entity = None
-    current_tokens = []
-
-    for token, biluo_tag in zip(doc, biluo_tags):
-        if biluo_tag != "O":
-            entity_label = biluo_tag.split("-")[-1]
-
-            if biluo_tag.startswith("B-"):
-                if current_entity:
-                    if current_entity not in entity_data:
-                        entity_data[current_entity] = []
-                    entity_data[current_entity].append(" ".join(current_tokens))
-
-                current_entity = entity_label
-                current_tokens = [token.text]
-
-            elif biluo_tag.startswith("I-"):
-                current_tokens.append(token.text)
-
-            elif biluo_tag.startswith("L-"):
-                current_tokens.append(token.text)
-                if current_entity:
-                    if current_entity not in entity_data:
-                        entity_data[current_entity] = []
-                    entity_data[current_entity].append(" ".join(current_tokens))
-                current_entity = None
-                current_tokens = []
-
-            elif biluo_tag.startswith("U-"):
-                if entity_label not in entity_data:
-                    entity_data[entity_label] = []
-                entity_data[entity_label].append(token.text)
-        else:
-            if current_entity:
-                if current_entity not in entity_data:
-                    entity_data[current_entity] = []
-                entity_data[current_entity].append(" ".join(current_tokens))
-                current_entity = None
-                current_tokens = []
-
-    if current_entity:
-        if current_entity not in entity_data:
-            entity_data[current_entity] = []
-        entity_data[current_entity].append(" ".join(current_tokens))
-
-    return entity_data
+#     return doc, biluo_tags
 
 
-def main(encoded_data, validate_flag, data=None):
-    if data:
-        if isinstance(data, str):
-            data = json.loads(data)
+# def inspect_job_benefit_predictions(text):
+#     """Inspect model predictions for job benefit text."""
 
-        updated_data = calculate_entity_indices([data])
-        print_data_with_entities(updated_data, file=sys.stderr)
-        return
+#     doc, biluo_tags = convert_example_to_biluo(text)
 
-    if validate_flag:
-        print("\nValidating entities of the converted data only...", file=sys.stderr)
-        result = validate_entities(converted_data, nlp)
-        if result == "Validation passed for all entities.":
+#     # print("Token Predictions:")
+#     # print(f"{'Token':<15}{'Predicted Label':<20}{'BILUO Tag':<20}")
+#     # print("-" * 50)
 
-            result = {
-                "status": "success",
-                "message": "Validation passed for all entities",
-            }
-        sys.stdout.write(json.dumps(result) + "\n")
+#     entity_data = {}
+#     current_entity = None
+#     current_tokens = []
 
-        return
+#     for token, biluo_tag in zip(doc, biluo_tags):
+#         if biluo_tag != "O":
+#             entity_label = biluo_tag.split("-")[-1]
 
-    input_data = json.loads(base64.b64decode(encoded_data).decode("utf-8"))
-    text = input_data.get("text", "")
-    print(f"\nText: {text}", file=sys.stderr)
+#             if biluo_tag.startswith("B-"):
+#                 if current_entity:
+#                     if current_entity not in entity_data:
+#                         entity_data[current_entity] = []
+#                     entity_data[current_entity].append(" ".join(current_tokens))
 
-    print("\nRunning benefits extraction model inspection...", file=sys.stderr)
-    predictions = inspect_job_benefit_predictions(text)
+#                 current_entity = entity_label
+#                 current_tokens = [token.text]
 
-    output = {
-        "status": "success" if predictions else "failure",
-        "entities": predictions,
-    }
+#             elif biluo_tag.startswith("I-"):
+#                 current_tokens.append(token.text)
 
-    sys.stdout.write(json.dumps(output) + "\n")
+#             elif biluo_tag.startswith("L-"):
+#                 current_tokens.append(token.text)
+#                 if current_entity:
+#                     if current_entity not in entity_data:
+#                         entity_data[current_entity] = []
+#                     entity_data[current_entity].append(" ".join(current_tokens))
+#                 current_entity = None
+#                 current_tokens = []
+
+#             elif biluo_tag.startswith("U-"):
+#                 if entity_label not in entity_data:
+#                     entity_data[entity_label] = []
+#                 entity_data[entity_label].append(token.text)
+#         else:
+#             if current_entity:
+#                 if current_entity not in entity_data:
+#                     entity_data[current_entity] = []
+#                 entity_data[current_entity].append(" ".join(current_tokens))
+#                 current_entity = None
+#                 current_tokens = []
+
+#     if current_entity:
+#         if current_entity not in entity_data:
+#             entity_data[current_entity] = []
+#         entity_data[current_entity].append(" ".join(current_tokens))
+
+#     return entity_data
 
 
-if __name__ == "__main__":
-    warnings.filterwarnings("ignore")
-    print(
-        "\nRunning job benefits extraction model inspection script...", file=sys.stderr
-    )
-    try:
-        encoded_data = sys.argv[1]
-        validate_flag = sys.argv[2].lower() == "true" if len(sys.argv) > 2 else False
-        data = sys.argv[3] if len(sys.argv) > 3 else None
+# def main(encoded_data, validate_flag, data=None):
+#     if data:
+#         if isinstance(data, str):
+#             data = json.loads(data)
 
-        main(encoded_data, validate_flag, data)
-    except Exception as e:
-        error_response = {"status": "error", "message": str(e)}
-        sys.stdout.write(json.dumps(error_response) + "\n")
-        sys.exit(1)
+#         updated_data = calculate_entity_indices([data])
+#         print_data_with_entities(updated_data, file=sys.stderr)
+#         return
+
+#     if validate_flag:
+#         print("\nValidating entities of the converted data only...", file=sys.stderr)
+#         result = validate_entities(converted_data, benefits_nlp)
+#         if result == "Validation passed for all entities.":
+
+#             result = {
+#                 "status": "success",
+#                 "message": "Validation passed for all entities",
+#             }
+#         sys.stdout.write(json.dumps(result) + "\n")
+
+#         return
+
+#     input_data = json.loads(base64.b64decode(encoded_data).decode("utf-8"))
+#     text = input_data.get("text", "")
+#     print(f"\nText: {text}", file=sys.stderr)
+
+#     print("\nRunning benefits extraction model inspection...", file=sys.stderr)
+#     predictions = inspect_job_benefit_predictions(text)
+
+#     output = {
+#         "status": "success" if predictions else "failure",
+#         "entities": predictions,
+#     }
+
+#     sys.stdout.write(json.dumps(output) + "\n")
+
+
+# if __name__ == "__main__":
+#     warnings.filterwarnings("ignore")
+#     print(
+#         "\nRunning job benefits extraction model inspection script...", file=sys.stderr
+#     )
+#     try:
+#         encoded_data = sys.argv[1]
+#         validate_flag = sys.argv[2].lower() == "true" if len(sys.argv) > 2 else False
+#         data = sys.argv[3] if len(sys.argv) > 3 else None
+
+#         main(encoded_data, validate_flag, data)
+#     except Exception as e:
+#         error_response = {"status": "error", "message": str(e)}
+#         sys.stdout.write(json.dumps(error_response) + "\n")
+#         sys.exit(1)
