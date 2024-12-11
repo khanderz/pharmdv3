@@ -37,7 +37,7 @@ BASE_DIR = os.path.join(project_root, FOLDER)
 TRAIN_DATA_FILE = "train_data.json"
 CONVERTED_FILE = "train_data_spacy.json"
 CONVERTED_FILE_PATH = os.path.join(BASE_DIR, "data", CONVERTED_FILE)
-MODEL_SAVE_PATH = os.path.join(BASE_DIR, "model", "spacy_job_description_ner_model")
+DESCRIPTION_MODEL_SAVE_PATH = os.path.join(BASE_DIR, "model", "spacy_job_description_ner_model")
 SPACY_DATA_PATH = os.path.join(BASE_DIR, "data", "train.spacy")
 
 # train_data = load_data(TRAIN_DATA_FILE, FOLDER)
@@ -51,45 +51,51 @@ MAX_SEQ_LENGTH = 4096
 
 description_converted_data = load_data(CONVERTED_FILE, FOLDER)
 description_nlp = load_spacy_model(
-    MODEL_SAVE_PATH, MAX_SEQ_LENGTH, model_name="allenai/longformer-base-4096"
+    DESCRIPTION_MODEL_SAVE_PATH, MAX_SEQ_LENGTH, model_name="allenai/longformer-base-4096"
 )
 
-# if "ner" not in description_nlp.pipe_names:
-#     ner = description_nlp.add_pipe("ner")
-#     print(f"{RED}Added NER pipe to blank model: {description_nlp.pipe_names}{RESET}")
+description_examples = []
 
-#     for label in get_label_list(entity_type="job_description"):
-#         ner.add_label(label)
+if "ner" not in description_nlp.pipe_names:
+    ner = description_nlp.add_pipe("ner")
+    print(f"{RED}Added NER pipe to blank model: {description_nlp.pipe_names}{RESET}")
 
-#     spacy.tokens.Doc.set_extension("index", default=None, force=True)
-#     doc_bin, examples = handle_spacy_data(
-#         SPACY_DATA_PATH,
-#         CONVERTED_FILE,
-#         FOLDER,
-#         description_nlp,
-#         tokenizer,
-#         MAX_SEQ_LENGTH,
-#         transformer,
-#     )
+    for label in get_label_list(entity_type="job_description"):
+        ner.add_label(label)
 
-#     description_nlp.initialize(get_examples=lambda: examples)
+    spacy.tokens.Doc.set_extension("index", default=None, force=True)
+    doc_bin, examples = handle_spacy_data(
+        SPACY_DATA_PATH,
+        CONVERTED_FILE,
+        FOLDER,
+        description_nlp,
+        tokenizer,
+        MAX_SEQ_LENGTH,
+        transformer,
+    )
 
-#     os.makedirs(MODEL_SAVE_PATH, exist_ok=True)
-#     description_nlp.to_disk(MODEL_SAVE_PATH)
-#     print(f"{GREEN}Model saved to {MODEL_SAVE_PATH} with NER component added.{RESET}")
-# else:
-#     ner = description_nlp.get_pipe("ner")
-#     print(f"{GREEN}NER pipe already exists in blank model: {description_nlp.pipe_names}{RESET}")
+    description_examples = examples
 
-#     doc_bin, examples = handle_spacy_data(
-#         SPACY_DATA_PATH,
-#         CONVERTED_FILE,
-#         FOLDER,
-#         description_nlp,
-#         tokenizer,
-#         MAX_SEQ_LENGTH,
-#         transformer,
-#     )
+    description_nlp.initialize(get_examples=lambda: examples)
+
+    os.makedirs(DESCRIPTION_MODEL_SAVE_PATH, exist_ok=True)
+    description_nlp.to_disk(DESCRIPTION_MODEL_SAVE_PATH)
+    print(f"{GREEN}Model saved to {DESCRIPTION_MODEL_SAVE_PATH} with NER component added.{RESET}")
+else:
+    ner = description_nlp.get_pipe("ner")
+    print(f"{GREEN}NER pipe already exists in blank model: {description_nlp.pipe_names}{RESET}")
+
+    doc_bin, examples = handle_spacy_data(
+        SPACY_DATA_PATH,
+        CONVERTED_FILE,
+        FOLDER,
+        description_nlp,
+        tokenizer,
+        MAX_SEQ_LENGTH,
+        transformer,
+    )
+
+    description_examples = examples
 
 # if examples:
 #     for example in examples:
@@ -99,7 +105,7 @@ description_nlp = load_spacy_model(
 #             print(f"  - Text: '{ent.text}', Start: {ent.start_char}, End: {ent.end_char}, Label: {ent.label_}")
 
 # ------------------- TRAIN MODEL -------------------
-# train_spacy_model(MODEL_SAVE_PATH, description_nlp, examples, resume=True)
+# train_spacy_model(DESCRIPTION_MODEL_SAVE_PATH, description_nlp, examples, resume=True)
 
 
 # ------------------- VALIDATE TRAINER -------------------

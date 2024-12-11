@@ -436,7 +436,7 @@ class JobPostService
     corrected_entities
   end
 
-  def self.call_inspect_predictions(attribute_type:, input_text:, validate: false, data: nil)
+  def self.call_inspect_predictions(attribute_type:, input_text:, validate: false, train: false, data: nil)
     puts "Calling inspect predictions for #{attribute_type}..."
     input_json = { text: input_text }.to_json
     input_text = input_text.strip.sub(/^:/, '')
@@ -444,9 +444,10 @@ class JobPostService
     other_json = { text: input_text.strip, entities: [] }.to_json
     encoded_data = Base64.strict_encode64(input_json)
     validate_flag = validate
+    train_flag = train
     input_data = data ? other_json : ''
 
-    command = "python3 app/python/ai_processing/main.py '#{attribute_type}' '#{encoded_data}' #{validate_flag} '#{input_data}' "
+    command = "python3 app/python/ai_processing/main.py '#{attribute_type}' '#{encoded_data}' #{validate_flag} #{train_flag} '#{input_data}' "
 
     stdout, stderr, status = Open3.capture3(command)
     # puts "stdout: #{stdout}"

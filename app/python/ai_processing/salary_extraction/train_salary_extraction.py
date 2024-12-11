@@ -36,7 +36,7 @@ BASE_DIR = os.path.join(project_root, FOLDER)
 
 CONVERTED_FILE = "train_data_spacy.json"
 CONVERTED_FILE_PATH = os.path.join(BASE_DIR, "data", CONVERTED_FILE)
-MODEL_SAVE_PATH = os.path.join(BASE_DIR, "model", "spacy_salary_ner_model")
+SALARY_MODEL_SAVE_PATH = os.path.join(BASE_DIR, "model", "spacy_salary_ner_model")
 SPACY_DATA_PATH = os.path.join(BASE_DIR, "data", "train.spacy")
 
 # TRAIN_DATA_FILE = "train_data.json"
@@ -45,29 +45,35 @@ SPACY_DATA_PATH = os.path.join(BASE_DIR, "data", "train.spacy")
 # print_data_with_entities(updated_data)
 
 salary_converted_data = load_data(CONVERTED_FILE, FOLDER)
-salary_nlp = load_spacy_model(MODEL_SAVE_PATH)
+salary_nlp = load_spacy_model(SALARY_MODEL_SAVE_PATH)
 
-# if "ner" not in salary_nlp.pipe_names:
-#     ner = salary_nlp.add_pipe("ner")
-#     print(f"{RED}Added NER pipe to blank model: {salary_nlp.pipe_names}{RESET}")
+salary_examples = []
 
-#     for label in get_label_list(entity_type="salary"):
-#         ner.add_label(label)
+if "ner" not in salary_nlp.pipe_names:
+    ner = salary_nlp.add_pipe("ner")
+    print(f"{RED}Added NER pipe to blank model: {salary_nlp.pipe_names}{RESET}")
 
-#     spacy.tokens.Doc.set_extension("index", default=None, force=True)
-#     doc_bin, examples = handle_spacy_data(SPACY_DATA_PATH, CONVERTED_FILE, FOLDER, salary_nlp)
+    for label in get_label_list(entity_type="salary"):
+        ner.add_label(label)
 
-#     salary_nlp.initialize(get_examples=lambda: examples)
+    spacy.tokens.Doc.set_extension("index", default=None, force=True)
+    doc_bin, examples = handle_spacy_data(SPACY_DATA_PATH, CONVERTED_FILE, FOLDER, salary_nlp)
 
-#     os.makedirs(MODEL_SAVE_PATH, exist_ok=True)
-#     salary_nlp.to_disk(MODEL_SAVE_PATH)
-#     print(f"{GREEN}Model saved to {MODEL_SAVE_PATH} with NER component added.{RESET}")
-# else:
-#     ner = salary_nlp.get_pipe("ner")
-#     print(f"{GREEN}NER pipe already exists in blank model: {salary_nlp.pipe_names}{RESET}")
+    salary_examples = examples
 
-#     doc_bin, examples = handle_spacy_data(SPACY_DATA_PATH, CONVERTED_FILE, FOLDER, salary_nlp)
+    salary_nlp.initialize(get_examples=lambda: examples)
 
+    os.makedirs(SALARY_MODEL_SAVE_PATH, exist_ok=True)
+    salary_nlp.to_disk(SALARY_MODEL_SAVE_PATH)
+    print(f"{GREEN}Model saved to {SALARY_MODEL_SAVE_PATH} with NER component added.{RESET}")
+else:
+    ner = salary_nlp.get_pipe("ner")
+    print(f"{GREEN}NER pipe already exists in blank model: {salary_nlp.pipe_names}{RESET}")
+
+    doc_bin, examples = handle_spacy_data(SPACY_DATA_PATH, CONVERTED_FILE, FOLDER, salary_nlp)
+
+    salary_examples = examples
+    
 # if examples:
 #     for example in examples:
 #         print(f"\nText: '{example.reference.text}'")
@@ -78,7 +84,7 @@ salary_nlp = load_spacy_model(MODEL_SAVE_PATH)
 #             )
 
 # ------------------- TRAIN MODEL -------------------
-# train_spacy_model(MODEL_SAVE_PATH, salary_nlp, examples, resume=True)
+# train_spacy_model(SALARY_MODEL_SAVE_PATH, salary_nlp, examples, resume=True)
 
 
 # ------------------- VALIDATE TRAINER -------------------
