@@ -178,11 +178,9 @@ def main(
 
     if validate_data not in [None, "None", "", "null"]:
         print("\nValidating entities of the converted data only...", file=sys.stderr)
-        # print(f"validate_data main: {validate_data}", file=sys.stderr)
+
         decoded = json.loads(base64.b64decode(validate_data).decode("utf-8"))
-        print(f"decoded main: {decoded}", file=sys.stderr)
         validation_result = validate_entities(decoded, nlp, file=sys.stdout)
-        print("validation_result on main",validation_result, file=sys.stderr)
 
         if validation_result["status"] == "success":
             result = {
@@ -195,9 +193,7 @@ def main(
                 "message": validation_result['message'],
             }   
 
-            print(f" result on main: {result}", file=sys.stderr)
         sys.stdout.write(json.dumps(result) + "\n")
-
         return
 
     if train_flag == "true":
@@ -208,13 +204,11 @@ def main(
     if predict_flag:
         input_data = json.loads(base64.b64decode(encoded_data).decode("utf-8"))
         text = input_data.get("text", "")
-        # print(f"\nText: {text}", file=sys.stderr)
 
         print("\nRunning job post main extraction model inspection...", file=sys.stderr)
         predictions = inspect_job_post_predictions(
             text, nlp, attribute_type
         )
-        # print(f"\nPredictions: {predictions}", file=sys.stderr)
 
         output = {
             "status": "success" if predictions else "failure",

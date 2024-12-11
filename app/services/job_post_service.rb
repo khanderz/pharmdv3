@@ -410,19 +410,19 @@ class JobPostService
     )
 
     if validation_result && validation_result['status'] == 'success'
-      puts "validation result on rb : #{validation_result}"
+      # puts "validation result on rb : #{validation_result}"
       message = validation_result['message'].to_s.strip
       puts "#{GREEN}Validation completed successfully: #{message}#{RESET}"
       if message.include?('Validation passed for all entities.')
         training_data << new_training_data
-
         File.write(training_data_path, JSON.pretty_generate(training_data))
         puts "#{GREEN}Training data validated and saved successfully at #{training_data_path}.#{RESET}"
+
+        puts "#{BLUE} Now training data #{RESET}"
+        call_inspect_predictions(attribute_type: entity_type, input_text: input_text, train: true)
       else
         puts "#{RED}Validation completed with errors: #{message}#{RESET}"
-        # training_data << new_training_data
-        # File.write(training_data_path, JSON.pretty_generate(training_data))
-        # puts "#{GREEN}Training data saved despite validation errors at #{training_data_path}.#{RESET}"
+
       end
     end
 

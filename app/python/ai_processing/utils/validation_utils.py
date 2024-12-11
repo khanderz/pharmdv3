@@ -58,7 +58,7 @@ def validate_entities(data, nlp, file=sys.stdout):
                     f"  Actual: '{spacy_token.text if spacy_token else None}'\n",
                                         file=file
                 )
-    # print(f"fails : {fails}")            
+        
     if fails:
         result = {
             "status": "failure",
