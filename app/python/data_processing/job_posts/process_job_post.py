@@ -1,6 +1,6 @@
 #  app/python/data_processing/job_posts/process_job_post.py
 
-from app.python.ai_processing.job_description_extraction.train_job_description_extraction import (
+from app.python.ai_processing.job_description.train_job_description import (
     inspect_job_description_predictions,
 )
 from app.python.ai_processing.utils.logger import BLUE, RED, RESET

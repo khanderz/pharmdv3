@@ -10,9 +10,9 @@ from app.python.ai_processing.utils.validation_utils import validate_entities
 from spacy.training import iob_to_biluo
 from transformers import LongformerTokenizer, LongformerModel
 from app.python.ai_processing.job_qualifications.train_job_qualifications  import qualifications_converted_data, qualifications_nlp, QUALIFICATIONS_MODEL_SAVE_PATH, qualification_examples
-from app.python.ai_processing.job_description_extraction.train_job_description_extraction import description_converted_data, description_nlp, DESCRIPTION_MODEL_SAVE_PATH, description_examples
+from app.python.ai_processing.job_description.train_job_description import description_converted_data, description_nlp, DESCRIPTION_MODEL_SAVE_PATH, description_examples
 from app.python.ai_processing.job_benefits.train_job_benefits import benefits_converted_data, benefits_nlp, BENEFITS_MODEL_SAVE_PATH, benefits_examples
-from app.python.ai_processing.salary_extraction.train_salary_extraction import salary_converted_data, salary_nlp, SALARY_MODEL_SAVE_PATH, salary_examples
+from app.python.ai_processing.salary.train_salary import salary_converted_data, salary_nlp, SALARY_MODEL_SAVE_PATH, salary_examples
 
 def return_paths(attribute_type):
     if attribute_type == "job_qualifications":

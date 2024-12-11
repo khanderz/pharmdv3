@@ -91,7 +91,7 @@ class JobPostService
   def self.extract_descriptions(summary)
     puts 'Extracting descriptions...'
     description_data = call_inspect_predictions(
-      script_path: 'app/python/ai_processing/job_description_extraction/train_job_description_extraction.py',
+      attribute_type: 'job_description',
       input_text: summary
     )
 
@@ -100,7 +100,7 @@ class JobPostService
 
     parsed_descriptions = description_data['entities']
     corrected_descriptions = validate_and_update_training_data(summary, parsed_descriptions,
-                                                               'job_description_extraction')
+                                                               'job_description')
     puts "corrected_descriptions: #{corrected_descriptions}"
 
     if description_data['status'] == 'success' && corrected_descriptions.any?
@@ -152,7 +152,7 @@ class JobPostService
     # puts "Extracting qualifications from text: #{qualifications_text}..."
 
     qualification_data = call_inspect_predictions(
-      script_path: 'app/python/ai_processing/job_qualifications/train_job_qualifications.py',
+      attribute_type: 'job_qualifications',
       input_text: qualifications
     )
 
@@ -192,10 +192,8 @@ class JobPostService
     puts 'Starting validation for benefits...'
     # puts "Benefits: #{benefits}"
     benefits_data = call_inspect_predictions(
-      script_path: 'app/python/ai_processing/job_benefits/train_job_benefits.py',
+      attribute_type: 'job_benefits',
       input_text: benefits,
-      validate: false,
-      data: nil
     )
 
     parsed_benefits = benefits_data['entities']
@@ -265,10 +263,8 @@ class JobPostService
 
     # puts "Benefits: #{benefits}"
     benefits_data = call_inspect_predictions(
-      script_path: 'app/python/ai_processing/job_benefits/train_job_benefits.py',
-      input_text: benefits,
-      validate: false,
-      data: nil
+      attribute_type: 'job_benefits',
+      input_text: benefits
     )
 
     parsed_benefits = benefits_data['entities']
@@ -276,12 +272,12 @@ class JobPostService
                                                            'job_benefits')
 
     compensation_data = call_inspect_predictions(
-      script_path: 'app/python/ai_processing/salary_extraction/train_salary_extraction.py',
+      attribute_type: 'salary',
       input_text: corrected_benefits[0]['token'] # need to make dynamic
     )
 
     corrected_compensation_data = validate_and_update_training_data(corrected_benefits[0]['token'],
-                                                                    compensation_data['entities'], 'salary_extraction')
+                                                                    compensation_data['entities'], 'salary')
 
     job_post_object = {
       job_salary_min: nil,
@@ -411,10 +407,9 @@ class JobPostService
     File.write(training_data_path, JSON.pretty_generate(training_data))
 
     # validation_result = call_inspect_predictions(
-    #   script_path: script_path,
+    #   attribute_type: entity_type,
     #   input_text: input_text,
     #   validate: true,
-    #   data: nil
     # )
 
     # if validation_result && validation_result['status'] == 'success'
