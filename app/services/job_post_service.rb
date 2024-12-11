@@ -89,6 +89,7 @@ class JobPostService
 
   def self.extract_descriptions(summary)
     puts 'Extracting descriptions...'
+    # puts "Summary: #{summary}"
     description_data = call_inspect_predictions(
       attribute_type: 'job_description',
       input_text: summary
@@ -318,7 +319,7 @@ class JobPostService
 
   def self.print_indices(entity_type, input_text)
     puts 'Printing indices...'
-    call_inspect_predictions(entity_type: entity_type, input_text: input_text, validate: false,
+    call_inspect_predictions(attribute_type: entity_type, input_text: input_text, validate: false,
                              data: input_text)
   end
 
@@ -440,6 +441,8 @@ class JobPostService
     train_flag = train
     input_data = data ? other_json : ''
 
+    # puts "validate_flag: #{validate_flag}, train_flag: #{train_flag}, input_data: #{input_data}"
+    # puts "attribute type: #{attribute_type}"
     command = "python3 app/python/ai_processing/main.py '#{attribute_type}' '#{encoded_data}' #{validate_flag} #{train_flag} '#{input_data}' "
 
     stdout, stderr, status = Open3.capture3(command)

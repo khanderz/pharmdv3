@@ -4,6 +4,7 @@ import base64
 import json
 import sys
 import warnings
+import spacy
 from app.python.ai_processing.utils.trainer import train_spacy_model
 from app.python.ai_processing.utils.utils import (
     calculate_entity_indices,
@@ -11,7 +12,7 @@ from app.python.ai_processing.utils.utils import (
 )
 from app.python.ai_processing.utils.validation_utils import validate_entities
 from spacy.training import iob_to_biluo
-from transformers import LongformerTokenizer, LongformerModel
+from transformers import LongformerTokenizer
 from app.python.ai_processing.job_qualifications.train_job_qualifications import (
     qualifications_converted_data,
     qualifications_nlp,
@@ -37,47 +38,28 @@ from app.python.ai_processing.salary.train_salary import (
     salary_examples,
 )
 
+tokenizer = LongformerTokenizer.from_pretrained("allenai/longformer-base-4096")
+MAX_SEQ_LENGTH = 4096
 
 def return_paths(attribute_type):
     if attribute_type == "job_qualifications":
-        tokenizer = LongformerTokenizer.from_pretrained("allenai/longformer-base-4096")
-        transformer = LongformerModel.from_pretrained("allenai/longformer-base-4096")
-        MAX_SEQ_LENGTH = 4096
-
         return (
             qualifications_converted_data,
             qualifications_nlp,
-            tokenizer,
-            transformer,
-            MAX_SEQ_LENGTH,
             QUALIFICATIONS_MODEL_SAVE_PATH,
             qualification_examples,
         )
     elif attribute_type == "job_description":
-        tokenizer = LongformerTokenizer.from_pretrained("allenai/longformer-base-4096")
-        transformer = LongformerModel.from_pretrained("allenai/longformer-base-4096")
-        MAX_SEQ_LENGTH = 4096
-
         return (
             description_converted_data,
             description_nlp,
-            tokenizer,
-            transformer,
-            MAX_SEQ_LENGTH,
             DESCRIPTION_MODEL_SAVE_PATH,
             description_examples,
         )
     elif attribute_type == "job_benefits":
-        tokenizer = LongformerTokenizer.from_pretrained("allenai/longformer-base-4096")
-        transformer = LongformerModel.from_pretrained("allenai/longformer-base-4096")
-
-        MAX_SEQ_LENGTH = 4096
         return (
             benefits_converted_data,
             benefits_nlp,
-            tokenizer,
-            transformer,
-            MAX_SEQ_LENGTH,
             BENEFITS_MODEL_SAVE_PATH,
             benefits_examples,
         )
@@ -85,9 +67,6 @@ def return_paths(attribute_type):
         return (
             salary_converted_data,
             salary_nlp,
-            None,
-            None,
-            None,
             SALARY_MODEL_SAVE_PATH,
             salary_examples,
         )
@@ -95,9 +74,10 @@ def return_paths(attribute_type):
         raise ValueError("Invalid attribute type provided.")
 
 
-def convert_example_to_biluo(text, nlp, tokenizer, transformer, MAX_SEQ_LENGTH):
+def convert_example_to_biluo(text, nlp, attribute_type):
     """Convert model predictions for the given text to BILUO format."""
-    if tokenizer and transformer and MAX_SEQ_LENGTH:
+    # print(f" attribute_type: {attribute_type}", file=sys.stderr)
+    if attribute_type != 'salary':
         tokens = tokenizer(
             text,
             max_length=MAX_SEQ_LENGTH,
@@ -129,10 +109,10 @@ def convert_example_to_biluo(text, nlp, tokenizer, transformer, MAX_SEQ_LENGTH):
     return doc, biluo_tags
 
 
-def inspect_job_post_predictions(text, nlp, tokenizer, transformer, MAX_SEQ_LENGTH):
+def inspect_job_post_predictions(text, nlp, attribute_type):
     """Inspect model predictions for job post text."""
     doc, biluo_tags = convert_example_to_biluo(
-        text, nlp, tokenizer, transformer, MAX_SEQ_LENGTH
+        text, nlp, attribute_type
     )
 
     entity_data = {}
@@ -190,14 +170,13 @@ def main(
     train_flag,
     converted_data,
     nlp,
-    tokenizer,
-    transformer,
-    MAX_SEQ_LENGTH,
     MODEL_SAVE_PATH,
     examples,
+    attribute_type,
     data=None,
 ):
     if data:
+        print("\nCalculating entity indices for the provided data...", file=sys.stderr)
         if isinstance(data, str):
             data = json.loads(data)
 
@@ -218,18 +197,20 @@ def main(
 
         return
 
-    if train_flag:
+    if train_flag == "true":
+        print("\nTraining the main extraction model...", file=sys.stderr)
         train_spacy_model(MODEL_SAVE_PATH, nlp, examples, resume=True)
         return
 
     input_data = json.loads(base64.b64decode(encoded_data).decode("utf-8"))
     text = input_data.get("text", "")
-    print(f"\nText: {text}", file=sys.stderr)
+    # print(f"\nText: {text}", file=sys.stderr)
 
     print("\nRunning job post main extraction model inspection...", file=sys.stderr)
     predictions = inspect_job_post_predictions(
-        text, nlp, tokenizer, transformer, MAX_SEQ_LENGTH
+        text, nlp, attribute_type
     )
+    # print(f"\nPredictions: {predictions}", file=sys.stderr)
 
     output = {
         "status": "success" if predictions else "failure",
@@ -254,22 +235,20 @@ if __name__ == "__main__":
         (
             converted_data,
             nlp,
-            tokenizer,
-            transformer,
-            MAX_SEQ_LENGTH,
             MODEL_SAVE_PATH,
             examples,
         ) = return_paths(attribute_type)
+        # print(f"attribiute_type: {attribute_type}", file=sys.stderr)
+
         main(
             encoded_data,
             validate_flag,
+            train_flag,
             converted_data,
             nlp,
-            tokenizer,
-            transformer,
-            MAX_SEQ_LENGTH,
             MODEL_SAVE_PATH,
             examples,
+            attribute_type,
             data,
         )
     except Exception as e:

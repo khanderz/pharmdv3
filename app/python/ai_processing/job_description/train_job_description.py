@@ -31,7 +31,7 @@ from transformers import LongformerTokenizer, LongformerModel
 configure_warnings()
 configure_logging()
 
-FOLDER = "job_description_extraction"
+FOLDER = "job_description"
 BASE_DIR = os.path.join(project_root, FOLDER)
 
 TRAIN_DATA_FILE = "train_data.json"

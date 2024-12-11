@@ -31,7 +31,7 @@ from app.python.ai_processing.utils.data_handler import project_root
 configure_warnings()
 configure_logging()
 
-FOLDER = "salary_extraction"
+FOLDER = "salary"
 BASE_DIR = os.path.join(project_root, FOLDER)
 
 CONVERTED_FILE = "train_data_spacy.json"
