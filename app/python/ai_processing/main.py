@@ -5,14 +5,38 @@ import json
 import sys
 import warnings
 from app.python.ai_processing.utils.trainer import train_spacy_model
-from app.python.ai_processing.utils.utils import calculate_entity_indices, print_data_with_entities
+from app.python.ai_processing.utils.utils import (
+    calculate_entity_indices,
+    print_data_with_entities,
+)
 from app.python.ai_processing.utils.validation_utils import validate_entities
 from spacy.training import iob_to_biluo
 from transformers import LongformerTokenizer, LongformerModel
-from app.python.ai_processing.job_qualifications.train_job_qualifications  import qualifications_converted_data, qualifications_nlp, QUALIFICATIONS_MODEL_SAVE_PATH, qualification_examples
-from app.python.ai_processing.job_description.train_job_description import description_converted_data, description_nlp, DESCRIPTION_MODEL_SAVE_PATH, description_examples
-from app.python.ai_processing.job_benefits.train_job_benefits import benefits_converted_data, benefits_nlp, BENEFITS_MODEL_SAVE_PATH, benefits_examples
-from app.python.ai_processing.salary.train_salary import salary_converted_data, salary_nlp, SALARY_MODEL_SAVE_PATH, salary_examples
+from app.python.ai_processing.job_qualifications.train_job_qualifications import (
+    qualifications_converted_data,
+    qualifications_nlp,
+    QUALIFICATIONS_MODEL_SAVE_PATH,
+    qualification_examples,
+)
+from app.python.ai_processing.job_description.train_job_description import (
+    description_converted_data,
+    description_nlp,
+    DESCRIPTION_MODEL_SAVE_PATH,
+    description_examples,
+)
+from app.python.ai_processing.job_benefits.train_job_benefits import (
+    benefits_converted_data,
+    benefits_nlp,
+    BENEFITS_MODEL_SAVE_PATH,
+    benefits_examples,
+)
+from app.python.ai_processing.salary.train_salary import (
+    salary_converted_data,
+    salary_nlp,
+    SALARY_MODEL_SAVE_PATH,
+    salary_examples,
+)
+
 
 def return_paths(attribute_type):
     if attribute_type == "job_qualifications":
@@ -20,24 +44,57 @@ def return_paths(attribute_type):
         transformer = LongformerModel.from_pretrained("allenai/longformer-base-4096")
         MAX_SEQ_LENGTH = 4096
 
-        return qualifications_converted_data, qualifications_nlp, tokenizer, transformer, MAX_SEQ_LENGTH, QUALIFICATIONS_MODEL_SAVE_PATH, qualification_examples
-    elif attribute_type == 'job_description':
+        return (
+            qualifications_converted_data,
+            qualifications_nlp,
+            tokenizer,
+            transformer,
+            MAX_SEQ_LENGTH,
+            QUALIFICATIONS_MODEL_SAVE_PATH,
+            qualification_examples,
+        )
+    elif attribute_type == "job_description":
         tokenizer = LongformerTokenizer.from_pretrained("allenai/longformer-base-4096")
         transformer = LongformerModel.from_pretrained("allenai/longformer-base-4096")
         MAX_SEQ_LENGTH = 4096
 
-        return description_converted_data, description_nlp, tokenizer, transformer, MAX_SEQ_LENGTH, DESCRIPTION_MODEL_SAVE_PATH, description_examples
-    elif attribute_type == 'job_benefits':
+        return (
+            description_converted_data,
+            description_nlp,
+            tokenizer,
+            transformer,
+            MAX_SEQ_LENGTH,
+            DESCRIPTION_MODEL_SAVE_PATH,
+            description_examples,
+        )
+    elif attribute_type == "job_benefits":
         tokenizer = LongformerTokenizer.from_pretrained("allenai/longformer-base-4096")
         transformer = LongformerModel.from_pretrained("allenai/longformer-base-4096")
 
         MAX_SEQ_LENGTH = 4096
-        return benefits_converted_data, benefits_nlp, tokenizer, transformer, MAX_SEQ_LENGTH, BENEFITS_MODEL_SAVE_PATH, benefits_examples
-    elif attribute_type == 'salary':
-        return salary_converted_data, salary_nlp, None, None, None, SALARY_MODEL_SAVE_PATH, salary_examples
+        return (
+            benefits_converted_data,
+            benefits_nlp,
+            tokenizer,
+            transformer,
+            MAX_SEQ_LENGTH,
+            BENEFITS_MODEL_SAVE_PATH,
+            benefits_examples,
+        )
+    elif attribute_type == "salary":
+        return (
+            salary_converted_data,
+            salary_nlp,
+            None,
+            None,
+            None,
+            SALARY_MODEL_SAVE_PATH,
+            salary_examples,
+        )
     else:
         raise ValueError("Invalid attribute type provided.")
-    
+
+
 def convert_example_to_biluo(text, nlp, tokenizer, transformer, MAX_SEQ_LENGTH):
     """Convert model predictions for the given text to BILUO format."""
     if tokenizer and transformer and MAX_SEQ_LENGTH:
@@ -49,7 +106,9 @@ def convert_example_to_biluo(text, nlp, tokenizer, transformer, MAX_SEQ_LENGTH):
             return_tensors="pt",
         )
 
-        decoded_text = tokenizer.decode(tokens["input_ids"][0], skip_special_tokens=True)
+        decoded_text = tokenizer.decode(
+            tokens["input_ids"][0], skip_special_tokens=True
+        )
 
         doc = nlp(decoded_text)
 
@@ -72,7 +131,9 @@ def convert_example_to_biluo(text, nlp, tokenizer, transformer, MAX_SEQ_LENGTH):
 
 def inspect_job_post_predictions(text, nlp, tokenizer, transformer, MAX_SEQ_LENGTH):
     """Inspect model predictions for job post text."""
-    doc, biluo_tags = convert_example_to_biluo(text, nlp, tokenizer, transformer, MAX_SEQ_LENGTH)
+    doc, biluo_tags = convert_example_to_biluo(
+        text, nlp, tokenizer, transformer, MAX_SEQ_LENGTH
+    )
 
     entity_data = {}
     current_entity = None
@@ -122,7 +183,20 @@ def inspect_job_post_predictions(text, nlp, tokenizer, transformer, MAX_SEQ_LENG
 
     return entity_data
 
-def main(encoded_data, validate_flag, train_flag, converted_data, nlp, tokenizer, transformer, MAX_SEQ_LENGTH, MODEL_SAVE_PATH, examples, data=None):
+
+def main(
+    encoded_data,
+    validate_flag,
+    train_flag,
+    converted_data,
+    nlp,
+    tokenizer,
+    transformer,
+    MAX_SEQ_LENGTH,
+    MODEL_SAVE_PATH,
+    examples,
+    data=None,
+):
     if data:
         if isinstance(data, str):
             data = json.loads(data)
@@ -143,7 +217,7 @@ def main(encoded_data, validate_flag, train_flag, converted_data, nlp, tokenizer
         sys.stdout.write(json.dumps(result) + "\n")
 
         return
-    
+
     if train_flag:
         train_spacy_model(MODEL_SAVE_PATH, nlp, examples, resume=True)
         return
@@ -153,7 +227,9 @@ def main(encoded_data, validate_flag, train_flag, converted_data, nlp, tokenizer
     print(f"\nText: {text}", file=sys.stderr)
 
     print("\nRunning job post main extraction model inspection...", file=sys.stderr)
-    predictions = inspect_job_post_predictions(text, nlp, tokenizer, transformer, MAX_SEQ_LENGTH)
+    predictions = inspect_job_post_predictions(
+        text, nlp, tokenizer, transformer, MAX_SEQ_LENGTH
+    )
 
     output = {
         "status": "success" if predictions else "failure",
@@ -175,8 +251,27 @@ if __name__ == "__main__":
         train_flag = sys.argv[4].lower() == "true" if len(sys.argv) > 4 else False
         data = sys.argv[5] if len(sys.argv) > 5 else None
 
-        converted_data, nlp, tokenizer, transformer, MAX_SEQ_LENGTH, MODEL_SAVE_PATH, examples = return_paths(attribute_type)
-        main(encoded_data, validate_flag, converted_data, nlp, tokenizer, transformer, MAX_SEQ_LENGTH, MODEL_SAVE_PATH, examples, data)
+        (
+            converted_data,
+            nlp,
+            tokenizer,
+            transformer,
+            MAX_SEQ_LENGTH,
+            MODEL_SAVE_PATH,
+            examples,
+        ) = return_paths(attribute_type)
+        main(
+            encoded_data,
+            validate_flag,
+            converted_data,
+            nlp,
+            tokenizer,
+            transformer,
+            MAX_SEQ_LENGTH,
+            MODEL_SAVE_PATH,
+            examples,
+            data,
+        )
     except Exception as e:
         error_response = {"status": "error", "message": str(e)}
         sys.stdout.write(json.dumps(error_response) + "\n")

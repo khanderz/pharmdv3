@@ -57,7 +57,9 @@ if "ner" not in salary_nlp.pipe_names:
         ner.add_label(label)
 
     spacy.tokens.Doc.set_extension("index", default=None, force=True)
-    doc_bin, examples = handle_spacy_data(SPACY_DATA_PATH, CONVERTED_FILE, FOLDER, salary_nlp)
+    doc_bin, examples = handle_spacy_data(
+        SPACY_DATA_PATH, CONVERTED_FILE, FOLDER, salary_nlp
+    )
 
     salary_examples = examples
 
@@ -65,15 +67,21 @@ if "ner" not in salary_nlp.pipe_names:
 
     os.makedirs(SALARY_MODEL_SAVE_PATH, exist_ok=True)
     salary_nlp.to_disk(SALARY_MODEL_SAVE_PATH)
-    print(f"{GREEN}Model saved to {SALARY_MODEL_SAVE_PATH} with NER component added.{RESET}")
+    print(
+        f"{GREEN}Model saved to {SALARY_MODEL_SAVE_PATH} with NER component added.{RESET}"
+    )
 else:
     ner = salary_nlp.get_pipe("ner")
-    print(f"{GREEN}NER pipe already exists in blank model: {salary_nlp.pipe_names}{RESET}")
+    print(
+        f"{GREEN}NER pipe already exists in blank model: {salary_nlp.pipe_names}{RESET}"
+    )
 
-    doc_bin, examples = handle_spacy_data(SPACY_DATA_PATH, CONVERTED_FILE, FOLDER, salary_nlp)
+    doc_bin, examples = handle_spacy_data(
+        SPACY_DATA_PATH, CONVERTED_FILE, FOLDER, salary_nlp
+    )
 
     salary_examples = examples
-    
+
 # if examples:
 #     for example in examples:
 #         print(f"\nText: '{example.reference.text}'")
@@ -172,4 +180,3 @@ else:
 # for text in test_texts:
 #     print(f"\nTesting text: '{text}'")
 #     inspect_salary_model_predictions(text)
-

@@ -11,7 +11,7 @@ def train_spacy_model(MODEL_SAVE_PATH, nlp, examples, resume=False):
     """Train the spaCy model with the given examples."""
     if examples is None:
         raise ValueError("No examples provided to train the model.")
-    
+
     if resume:
         print("\nResuming training from the last saved model...")
         optimizer = nlp.resume_training()

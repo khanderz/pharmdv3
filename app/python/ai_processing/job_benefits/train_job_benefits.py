@@ -41,7 +41,9 @@ BASE_DIR = os.path.join(project_root, FOLDER)
 
 CONVERTED_FILE = "train_data_spacy.json"
 CONVERTED_FILE_PATH = os.path.join(BASE_DIR, "data", CONVERTED_FILE)
-BENEFITS_MODEL_SAVE_PATH = os.path.join(BASE_DIR, "model", "spacy_job_benefit_ner_model")
+BENEFITS_MODEL_SAVE_PATH = os.path.join(
+    BASE_DIR, "model", "spacy_job_benefit_ner_model"
+)
 SPACY_DATA_PATH = os.path.join(BASE_DIR, "data", "train.spacy")
 
 # train_data = load_data(TRAIN_DATA_FILE, FOLDER)
@@ -84,10 +86,14 @@ if "ner" not in benefits_nlp.pipe_names:
 
     os.makedirs(BENEFITS_MODEL_SAVE_PATH, exist_ok=True)
     benefits_nlp.to_disk(BENEFITS_MODEL_SAVE_PATH)
-    print(f"{GREEN}Model saved to {BENEFITS_MODEL_SAVE_PATH} with NER component added.{RESET}")
+    print(
+        f"{GREEN}Model saved to {BENEFITS_MODEL_SAVE_PATH} with NER component added.{RESET}"
+    )
 else:
     ner = benefits_nlp.get_pipe("ner")
-    print(f"{GREEN}NER pipe already exists in blank model: {benefits_nlp.pipe_names}{RESET}")
+    print(
+        f"{GREEN}NER pipe already exists in blank model: {benefits_nlp.pipe_names}{RESET}"
+    )
 
     doc_bin, examples = handle_spacy_data(
         SPACY_DATA_PATH,

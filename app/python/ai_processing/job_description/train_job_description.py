@@ -37,7 +37,9 @@ BASE_DIR = os.path.join(project_root, FOLDER)
 TRAIN_DATA_FILE = "train_data.json"
 CONVERTED_FILE = "train_data_spacy.json"
 CONVERTED_FILE_PATH = os.path.join(BASE_DIR, "data", CONVERTED_FILE)
-DESCRIPTION_MODEL_SAVE_PATH = os.path.join(BASE_DIR, "model", "spacy_job_description_ner_model")
+DESCRIPTION_MODEL_SAVE_PATH = os.path.join(
+    BASE_DIR, "model", "spacy_job_description_ner_model"
+)
 SPACY_DATA_PATH = os.path.join(BASE_DIR, "data", "train.spacy")
 
 # train_data = load_data(TRAIN_DATA_FILE, FOLDER)
@@ -51,7 +53,9 @@ MAX_SEQ_LENGTH = 4096
 
 description_converted_data = load_data(CONVERTED_FILE, FOLDER)
 description_nlp = load_spacy_model(
-    DESCRIPTION_MODEL_SAVE_PATH, MAX_SEQ_LENGTH, model_name="allenai/longformer-base-4096"
+    DESCRIPTION_MODEL_SAVE_PATH,
+    MAX_SEQ_LENGTH,
+    model_name="allenai/longformer-base-4096",
 )
 
 description_examples = []
@@ -80,10 +84,14 @@ if "ner" not in description_nlp.pipe_names:
 
     os.makedirs(DESCRIPTION_MODEL_SAVE_PATH, exist_ok=True)
     description_nlp.to_disk(DESCRIPTION_MODEL_SAVE_PATH)
-    print(f"{GREEN}Model saved to {DESCRIPTION_MODEL_SAVE_PATH} with NER component added.{RESET}")
+    print(
+        f"{GREEN}Model saved to {DESCRIPTION_MODEL_SAVE_PATH} with NER component added.{RESET}"
+    )
 else:
     ner = description_nlp.get_pipe("ner")
-    print(f"{GREEN}NER pipe already exists in blank model: {description_nlp.pipe_names}{RESET}")
+    print(
+        f"{GREEN}NER pipe already exists in blank model: {description_nlp.pipe_names}{RESET}"
+    )
 
     doc_bin, examples = handle_spacy_data(
         SPACY_DATA_PATH,

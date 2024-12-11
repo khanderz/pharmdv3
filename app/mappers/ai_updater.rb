@@ -19,12 +19,15 @@ class AiUpdater
         when 'description', 'summary'
           job_post_data[:job_description] ||= {}
           job_post_data[:job_description]['description'] ||= ''
-          job_post_data[:job_description]['description'] += ' ' unless job_post_data[:job_description]['description'].empty?
+          unless job_post_data[:job_description]['description'].empty?
+            job_post_data[:job_description]['description'] += ' '
+          end
           job_post_data[:job_description]['description'] += value
 
           description = { 'description' => processed_description }
           role = value[:job_role]
-          job_post_data[:job_role_id] = JobRole.find_or_adjudicate_role(role, company.id, job_post_data[:job_url]).id
+          job_post_data[:job_role_id] =
+            JobRole.find_or_adjudicate_role(role, company.id, job_post_data[:job_url]).id
 
           #  need to populate to seniority table not job post table
           if value[:job_seniority]

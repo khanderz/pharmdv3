@@ -15,7 +15,6 @@ class GreenhouseDataMapper
     job_post_data
   end
 
-
   def self.print_job_post_data(job_post_data)
     puts "\n--- Job Post Data ---"
     puts "Company ID: #{job_post_data[:company_id]}"
@@ -38,6 +37,6 @@ class GreenhouseDataMapper
     puts "Job Salary Interval ID: #{job_post_data[:job_salary_interval_id] || 'N/A'}"
     puts "Job Role ID: #{job_post_data[:job_role_id].id}"
     puts "Job Active: #{job_post_data[:job_active] ? 'Yes' : 'No'}"
-    puts "--- End of Job Post Data ---"
+    puts '--- End of Job Post Data ---'
   end
 end

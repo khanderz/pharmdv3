@@ -23,8 +23,14 @@ from app.python.ai_processing.utils.data_handler import (
 )
 from app.python.ai_processing.utils.spacy_utils import handle_spacy_data
 from app.python.ai_processing.utils.trainer import train_spacy_model
-from app.python.ai_processing.utils.utils import calculate_entity_indices, print_data_with_entities
-from app.python.ai_processing.utils.validation_utils import evaluate_model, validate_entities
+from app.python.ai_processing.utils.utils import (
+    calculate_entity_indices,
+    print_data_with_entities,
+)
+from app.python.ai_processing.utils.validation_utils import (
+    evaluate_model,
+    validate_entities,
+)
 from transformers import LongformerTokenizer, LongformerModel
 
 configure_warnings()
@@ -35,7 +41,9 @@ BASE_DIR = os.path.join(project_root, FOLDER)
 
 CONVERTED_FILE = "train_data_spacy.json"
 CONVERTED_FILE_PATH = os.path.join(BASE_DIR, "data", CONVERTED_FILE)
-QUALIFICATIONS_MODEL_SAVE_PATH = os.path.join(BASE_DIR, "model", "spacy_job_qualification_ner_model")
+QUALIFICATIONS_MODEL_SAVE_PATH = os.path.join(
+    BASE_DIR, "model", "spacy_job_qualification_ner_model"
+)
 SPACY_DATA_PATH = os.path.join(BASE_DIR, "data", "train.spacy")
 
 tokenizer = LongformerTokenizer.from_pretrained("allenai/longformer-base-4096")
@@ -45,7 +53,9 @@ MAX_SEQ_LENGTH = 4096
 
 qualifications_converted_data = load_data(CONVERTED_FILE, FOLDER)
 qualifications_nlp = load_spacy_model(
-    QUALIFICATIONS_MODEL_SAVE_PATH, MAX_SEQ_LENGTH, model_name="allenai/longformer-base-4096"
+    QUALIFICATIONS_MODEL_SAVE_PATH,
+    MAX_SEQ_LENGTH,
+    model_name="allenai/longformer-base-4096",
 )
 
 qualification_examples = []
@@ -73,10 +83,14 @@ if "ner" not in qualifications_nlp.pipe_names:
 
     os.makedirs(QUALIFICATIONS_MODEL_SAVE_PATH, exist_ok=True)
     qualifications_nlp.to_disk(QUALIFICATIONS_MODEL_SAVE_PATH)
-    print(f"{GREEN}Model saved to {QUALIFICATIONS_MODEL_SAVE_PATH} with NER component added.{RESET}")
+    print(
+        f"{GREEN}Model saved to {QUALIFICATIONS_MODEL_SAVE_PATH} with NER component added.{RESET}"
+    )
 else:
     ner = qualifications_nlp.get_pipe("ner")
-    print(f"{GREEN}NER pipe already exists in blank model: {qualifications_nlp.pipe_names}{RESET}")
+    print(
+        f"{GREEN}NER pipe already exists in blank model: {qualifications_nlp.pipe_names}{RESET}"
+    )
 
     doc_bin, examples = handle_spacy_data(
         SPACY_DATA_PATH,

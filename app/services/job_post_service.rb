@@ -43,7 +43,6 @@ class JobPostService
     data_return << { 'summary' => summary } if summary
     data_return << { 'responsibilities' => responsibilities } if responsibilities
 
-
     processed_description = extract_descriptions(summary)
     data_return << { 'description' => processed_description } if processed_description
 
@@ -193,7 +192,7 @@ class JobPostService
     # puts "Benefits: #{benefits}"
     benefits_data = call_inspect_predictions(
       attribute_type: 'job_benefits',
-      input_text: benefits,
+      input_text: benefits
     )
 
     parsed_benefits = benefits_data['entities']
@@ -372,23 +371,23 @@ class JobPostService
     end
 
     loop do
-      puts "Are there any missing entities? (yes/no)"
+      puts 'Are there any missing entities? (yes/no)'
       missing_entities_confirmation = gets.strip.downcase
-    
+
       break if missing_entities_confirmation != 'yes' && missing_entities_confirmation != 'y'
-    
-      puts "Enter the token for the missing entity:"
+
+      puts 'Enter the token for the missing entity:'
       token = gets.strip
-    
+
       puts "Enter the label for the missing entity (e.g., 'COMPENSATION'):"
       label = gets.strip
-    
+
       puts "Enter start index for '#{token}':"
       start_value = gets.strip.to_i
-    
+
       puts "Enter end index for '#{token}':"
       end_value = gets.strip.to_i
-    
+
       corrected_entities << {
         'start' => start_value,
         'end' => end_value,
