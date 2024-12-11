@@ -17,13 +17,13 @@ class JobRole < ApplicationRecord
 
     job_role = JobRole.find_by('LOWER(role_name) = ?', cleaned_title.downcase)
 
+    job_role = JobRole.find_by('LOWER(role_name) = ?', modified_title.downcase) if job_role.nil?
+
     if job_role.nil?
-      job_role = JobRole.find_by('LOWER(role_name) = ?', modified_title.downcase)
-    end
-  
-    if job_role.nil?
-      job_role = JobRole.where('LOWER(?) = ANY (SELECT LOWER(unnest(aliases)))', cleaned_title.downcase).first
-      job_role ||= JobRole.where('LOWER(?) = ANY (SELECT LOWER(unnest(aliases)))', modified_title.downcase).first
+      job_role = JobRole.where('LOWER(?) = ANY (SELECT LOWER(unnest(aliases)))',
+                               cleaned_title.downcase).first
+      job_role ||= JobRole.where('LOWER(?) = ANY (SELECT LOWER(unnest(aliases)))',
+                                 modified_title.downcase).first
     end
 
     if job_role.nil?

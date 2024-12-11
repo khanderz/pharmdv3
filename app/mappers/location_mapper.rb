@@ -3,7 +3,7 @@
 # app/mappers/location_mapper.rb
 
 class LocationMapper
-    # Extracts the location information from a job post.
+  # Extracts the location information from a job post.
   #
   # @param job [Hash] The job data containing location details.
   # @param source [String] The source of the job data (e.g., 'lever', 'greenhouse').
@@ -19,11 +19,9 @@ class LocationMapper
       else
         job.dig('location', 'name')
       end
-    else
-      nil
     end
   end
-  
+
   def match_location(input, job, company, country_input = nil)
     if input.strip.casecmp?('Remote')
       return {
@@ -113,5 +111,4 @@ class LocationMapper
     )
     puts "Error for #{company.company_name} job post: #{error_message}"
   end
-  
 end

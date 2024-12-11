@@ -149,7 +149,7 @@ class JobPostService
     # puts "Extracting qualifications from text: #{qualifications_text}..."
 
     qualification_data = call_inspect_predictions(
-      script_path: 'app/python/ai_processing/job_qualifications/train_qualifications.py',
+      script_path: 'app/python/ai_processing/job_qualifications/train_job_qualifications.py',
       input_text: qualifications
     )
 
@@ -344,7 +344,7 @@ class JobPostService
       label = label.to_s
       token = tokens[0]
 
-      puts "is token #{token} correct (yes/no)"
+      puts "is token #{token} for label '#{label}' correct (yes/no)"
       token_confirmation = gets.strip.downcase
       if token_confirmation != 'yes' && token_confirmation != 'y'
         puts 'Enter the correct token:'
@@ -364,6 +364,32 @@ class JobPostService
       puts "Enter end index for '#{token}':"
       end_value = gets.strip.to_i
 
+      corrected_entities << {
+        'start' => start_value,
+        'end' => end_value,
+        'label' => label,
+        'token' => token
+      }
+    end
+
+    loop do
+      puts "Are there any missing entities? (yes/no)"
+      missing_entities_confirmation = gets.strip.downcase
+    
+      break if missing_entities_confirmation != 'yes' && missing_entities_confirmation != 'y'
+    
+      puts "Enter the token for the missing entity:"
+      token = gets.strip
+    
+      puts "Enter the label for the missing entity (e.g., 'COMPENSATION'):"
+      label = gets.strip
+    
+      puts "Enter start index for '#{token}':"
+      start_value = gets.strip.to_i
+    
+      puts "Enter end index for '#{token}':"
+      end_value = gets.strip.to_i
+    
       corrected_entities << {
         'start' => start_value,
         'end' => end_value,

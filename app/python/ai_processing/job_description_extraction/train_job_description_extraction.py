@@ -231,7 +231,7 @@ def main(encoded_data, validate_flag, data=None):
     text = input_data.get("text", "")
     print(f"\nText: {text}", file=sys.stderr)
 
-    print("\nRunning benefits extraction model inspection...", file=sys.stderr)
+    print("\nRunning description extraction model inspection...", file=sys.stderr)
     predictions = inspect_job_description_predictions(text)
 
     output = {
@@ -245,7 +245,7 @@ def main(encoded_data, validate_flag, data=None):
 if __name__ == "__main__":
     warnings.filterwarnings("ignore")
     print(
-        "\nRunning job benefits extraction model inspection script...", file=sys.stderr
+        "\nRunning job description extraction model inspection script...", file=sys.stderr
     )
     try:
         encoded_data = sys.argv[1]

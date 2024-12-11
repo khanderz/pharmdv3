@@ -1,4 +1,4 @@
-#  app/python/ai_processing/job_qualifications/train_qualifications.py
+#  app/python/ai_processing/job_qualifications/train_job_qualifications.py.py
 
 import base64
 import json
@@ -23,7 +23,8 @@ from app.python.ai_processing.utils.data_handler import (
 )
 from app.python.ai_processing.utils.spacy_utils import handle_spacy_data
 from app.python.ai_processing.utils.trainer import train_spacy_model
-from app.python.ai_processing.utils.validation_utils import evaluate_model
+from app.python.ai_processing.utils.utils import calculate_entity_indices, print_data_with_entities
+from app.python.ai_processing.utils.validation_utils import evaluate_model, validate_entities
 from transformers import LongformerTokenizer, LongformerModel
 
 configure_warnings()
@@ -118,12 +119,7 @@ def convert_example_to_biluo(text):
 
 def inspect_job_qualification_predictions(text):
     """Inspect model predictions for job qualification text."""
-
     doc, biluo_tags = convert_example_to_biluo(text)
-
-    print("Token Predictions:")
-    print(f"{'Token':<15}{'Predicted Label':<20}{'BILUO Tag':<20}")
-    print("-" * 50)
 
     entity_data = {}
     current_entity = None
@@ -153,6 +149,11 @@ def inspect_job_qualification_predictions(text):
                     entity_data[current_entity].append(" ".join(current_tokens))
                 current_entity = None
                 current_tokens = []
+
+            elif biluo_tag.startswith("U-"):
+                if entity_label not in entity_data:
+                    entity_data[entity_label] = []
+                entity_data[entity_label].append(token.text)
         else:
             if current_entity:
                 if current_entity not in entity_data:
@@ -161,9 +162,6 @@ def inspect_job_qualification_predictions(text):
                 current_entity = None
                 current_tokens = []
 
-        print(
-            f"{token.text:<15}{token.ent_type_ if token.ent_type_ else 'O':<20}{biluo_tag:<20}"
-        )
     if current_entity:
         if current_entity not in entity_data:
             entity_data[current_entity] = []
@@ -171,27 +169,55 @@ def inspect_job_qualification_predictions(text):
 
     return entity_data
 
+def main(encoded_data, validate_flag, data=None):
+    if data:
+        if isinstance(data, str):
+            data = json.loads(data)
+
+        updated_data = calculate_entity_indices([data])
+        print_data_with_entities(updated_data, file=sys.stderr)
+        return
+
+    if validate_flag:
+        print("\nValidating entities of the converted data only...", file=sys.stderr)
+        result = validate_entities(converted_data, nlp)
+        if result == "Validation passed for all entities.":
+
+            result = {
+                "status": "success",
+                "message": "Validation passed for all entities",
+            }
+        sys.stdout.write(json.dumps(result) + "\n")
+
+        return
+
+    input_data = json.loads(base64.b64decode(encoded_data).decode("utf-8"))
+    text = input_data.get("text", "")
+    print(f"\nText: {text}", file=sys.stderr)
+
+    print("\nRunning qualifications extraction model inspection...", file=sys.stderr)
+    predictions = inspect_job_qualification_predictions(text)
+
+    output = {
+        "status": "success" if predictions else "failure",
+        "entities": predictions,
+    }
+
+    sys.stdout.write(json.dumps(output) + "\n")
+
 
 if __name__ == "__main__":
     warnings.filterwarnings("ignore")
     print(
-        "\nRunning job qualifications extraction model inspection script...",
-        file=sys.stderr,
+        "\nRunning job qualifications extraction model inspection script...", file=sys.stderr
     )
     try:
-        encoded_input = sys.argv[1]
-        input_data = json.loads(base64.b64decode(encoded_input).decode("utf-8"))
-        text = input_data.get("text", "")
+        encoded_data = sys.argv[1]
+        validate_flag = sys.argv[2].lower() == "true" if len(sys.argv) > 2 else False
+        data = sys.argv[3] if len(sys.argv) > 3 else None
 
-        entity_data = inspect_job_qualification_predictions(text)
-
-        output = {
-            "status": "success" if entity_data else "failure",
-            "entities": entity_data,
-        }
-
-        print(json.dumps(output))
+        main(encoded_data, validate_flag, data)
     except Exception as e:
         error_response = {"status": "error", "message": str(e)}
-        print(json.dumps(error_response))
+        sys.stdout.write(json.dumps(error_response) + "\n")
         sys.exit(1)

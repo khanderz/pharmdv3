@@ -3,20 +3,21 @@
 job_seniorities = [
   { job_seniority_code: 'ASSOCIATE', job_seniority_label: 'Associate', aliases: ['Assoc'] },
   { job_seniority_code: 'ASSOCIATE_DIRECTOR', job_seniority_label: 'Associate Director' },
-  { job_seniority_code: 'C_LEVEL', job_seniority_label: 'C-Level', aliases: ['CEO', 'CTO', 'CFO'] },
+  { job_seniority_code: 'C_LEVEL', job_seniority_label: 'C-Level', aliases: %w[CEO CTO CFO] },
   { job_seniority_code: 'DIRECTOR', job_seniority_label: 'Director', aliases: ['Dir'] },
-  { job_seniority_code: 'ENTRY', job_seniority_label: 'Entry Level', aliases: ['Beginner', 'Junior'] },
+  { job_seniority_code: 'ENTRY', job_seniority_label: 'Entry Level',
+    aliases: %w[Beginner Junior] },
   { job_seniority_code: 'EXECUTIVE', job_seniority_label: 'Executive', aliases: ['Exec'] },
   { job_seniority_code: 'FELLOWSHIP', job_seniority_label: 'Fellowship', aliases: ['Fellow'] },
   { job_seniority_code: 'INTERNSHIP', job_seniority_label: 'Internship', aliases: ['Intern'] },
-  { job_seniority_code: 'MANAGER', job_seniority_label: 'Manager', aliases: ['Mgr', 'Supervisor'] },
-  { job_seniority_code: 'MIDLEVEL', job_seniority_label: 'Midlevel', aliases: ['Mid', 'Intermediate'] },
+  { job_seniority_code: 'MANAGER', job_seniority_label: 'Manager', aliases: %w[Mgr Supervisor] },
+  { job_seniority_code: 'MIDLEVEL', job_seniority_label: 'Midlevel',
+    aliases: %w[Mid Intermediate] },
   { job_seniority_code: 'PRINCIPAL', job_seniority_label: 'Principal', aliases: ['Lead'] },
-  { job_seniority_code: 'SENIOR', job_seniority_label: 'Senior', aliases: ['Sr', 'Experienced'] },
+  { job_seniority_code: 'SENIOR', job_seniority_label: 'Senior', aliases: %w[Sr Experienced] },
   { job_seniority_code: 'STAFF', job_seniority_label: 'Staff', aliases: ['Team Member'] },
   { job_seniority_code: 'VP', job_seniority_label: 'Vice President', aliases: ['Vice Pres', 'VP'] }
 ]
-
 
 seeded_count = 0
 existing_count = 0

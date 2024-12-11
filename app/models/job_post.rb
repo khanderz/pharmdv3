@@ -120,7 +120,7 @@ class JobPost < ApplicationRecord
     end
 
     def log_job_error(job_post, company, error_message, job_post_instance = nil)
-      if job_post_instance.nil? 
+      if job_post_instance.nil?
         Adjudication.create!(
           adjudicatable_type: 'JobPost',
           adjudicatable_id: job_post.id,
@@ -132,7 +132,7 @@ class JobPost < ApplicationRecord
         job_post_instance = JobPost.create!(job_post.attributes)
 
         puts "#{GREEN}New job post created for #{company.company_name}.#{RESET}"
-    
+
         Adjudication.create!(
           adjudicatable_type: 'JobPost',
           adjudicatable_id: job_post_instance.id,

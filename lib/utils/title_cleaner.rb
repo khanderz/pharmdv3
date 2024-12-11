@@ -14,12 +14,12 @@ module Utils
       states = State.all.pluck(:state_code, :state_name).flatten.compact.map do |s|
         Regexp.escape(s)
       end
-      state_pattern = /\b(#{states.join('|')})\b/i  
+      state_pattern = /\b(#{states.join('|')})\b/i
 
       cleaned_title.gsub!(state_pattern, '')
 
       countries = Country.all.pluck(:country_name).compact.map { |c| Regexp.escape(c) }
-      country_pattern = /\b(#{countries.join('|')})\b/i 
+      country_pattern = /\b(#{countries.join('|')})\b/i
 
       cleaned_title.gsub!(country_pattern, '')
 

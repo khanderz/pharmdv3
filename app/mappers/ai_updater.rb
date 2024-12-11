@@ -23,6 +23,7 @@ class AiUpdater
 
           description = value[:job_description]
           role = value[:job_role]
+          job_post_data[:job_role_id] = JobRole.find_or_adjudicate_role(role, company.id, job_post_data[:job_url]).id
 
           #  need to populate to seniority table not job post table
           if value[:job_seniority]
