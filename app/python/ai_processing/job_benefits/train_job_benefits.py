@@ -64,7 +64,7 @@ benefits_examples = []
 
 if "ner" not in benefits_nlp.pipe_names:
     ner = benefits_nlp.add_pipe("ner")
-    print(f"{RED}Added NER pipe to blank model: {benefits_nlp.pipe_names}{RESET}")
+    # print(f"{RED}Added NER pipe to blank model: {benefits_nlp.pipe_names}{RESET}")
 
     for label in get_label_list(entity_type="job_benefit"):
         ner.add_label(label)
@@ -86,14 +86,14 @@ if "ner" not in benefits_nlp.pipe_names:
 
     os.makedirs(BENEFITS_MODEL_SAVE_PATH, exist_ok=True)
     benefits_nlp.to_disk(BENEFITS_MODEL_SAVE_PATH)
-    print(
-        f"{GREEN}Model saved to {BENEFITS_MODEL_SAVE_PATH} with NER component added.{RESET}"
-    )
+    # print(
+    #     f"{GREEN}Model saved to {BENEFITS_MODEL_SAVE_PATH} with NER component added.{RESET}"
+    # )
 else:
     ner = benefits_nlp.get_pipe("ner")
-    print(
-        f"{GREEN}NER pipe already exists in blank model: {benefits_nlp.pipe_names}{RESET}"
-    )
+    # print(
+    #     f"{GREEN}NER pipe already exists in blank model: {benefits_nlp.pipe_names}{RESET}"
+    # )
 
     doc_bin, examples = handle_spacy_data(
         SPACY_DATA_PATH,

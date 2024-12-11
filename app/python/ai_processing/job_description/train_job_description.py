@@ -89,9 +89,9 @@ if "ner" not in description_nlp.pipe_names:
     )
 else:
     ner = description_nlp.get_pipe("ner")
-    print(
-        f"{GREEN}NER pipe already exists in blank model: {description_nlp.pipe_names}{RESET}"
-    )
+    # print(
+    #     f"{GREEN}NER pipe already exists in blank model: {description_nlp.pipe_names}{RESET}"
+    # )
 
     doc_bin, examples = handle_spacy_data(
         SPACY_DATA_PATH,

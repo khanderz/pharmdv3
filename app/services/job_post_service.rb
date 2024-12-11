@@ -319,7 +319,7 @@ class JobPostService
 
   def self.print_indices(entity_type, input_text)
     puts 'Printing indices...'
-    call_inspect_predictions(attribute_type: entity_type, input_text: input_text, validate: false,
+    call_inspect_predictions(attribute_type: entity_type, input_text: input_text,
                              data: input_text)
   end
 
@@ -402,14 +402,14 @@ class JobPostService
     }
     # puts "new_training_data: #{new_training_data}"
 
-    training_data << new_training_data
-    File.write(training_data_path, JSON.pretty_generate(training_data))
+    # training_data << new_training_data
+    # File.write(training_data_path, JSON.pretty_generate(training_data))
 
-    # validation_result = call_inspect_predictions(
-    #   attribute_type: entity_type,
-    #   input_text: input_text,
-    #   validate: true,
-    # )
+    validation_result = call_inspect_predictions(
+      attribute_type: entity_type,
+      input_text: input_text,
+      validate: new_training_data
+    )
 
     # if validation_result && validation_result['status'] == 'success'
     #   message = validation_result['message'].to_s.strip
@@ -430,20 +430,19 @@ class JobPostService
     corrected_entities
   end
 
-  def self.call_inspect_predictions(attribute_type:, input_text:, validate: false, train: false, data: nil)
+  def self.call_inspect_predictions(attribute_type:, input_text:, validate: nil, train: false, data: nil)
     puts "Calling inspect predictions for #{attribute_type}..."
     input_json = { text: input_text }.to_json
     input_text = input_text.strip.sub(/^:/, '')
     input_text = input_text.strip.gsub(/^\s*[:\u200B]+/, '')
     other_json = { text: input_text.strip, entities: [] }.to_json
     encoded_data = Base64.strict_encode64(input_json)
-    validate_flag = validate
     train_flag = train
+    validate_data = validate.nil? ? validate.to_json : "None"
     input_data = data ? other_json : ''
-
-    # puts "validate_flag: #{validate_flag}, train_flag: #{train_flag}, input_data: #{input_data}"
+    puts "validate_data before : #{validate_data}, train_flag: #{train_flag}, input_data: #{input_data}"
     # puts "attribute type: #{attribute_type}"
-    command = "python3 app/python/ai_processing/main.py '#{attribute_type}' '#{encoded_data}' #{validate_flag} #{train_flag} '#{input_data}' "
+    command = "python3 app/python/ai_processing/main.py '#{attribute_type}' '#{encoded_data}' #{validate_data} #{train_flag} '#{input_data}' "
 
     stdout, stderr, status = Open3.capture3(command)
     # puts "stdout: #{stdout}"

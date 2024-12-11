@@ -33,22 +33,22 @@ def handle_spacy_data(
         try:
             with open(last_hash_path, "r") as f:
                 last_hash = f.read().strip()
-                print(f"{BLUE}Last hash for converted file found: {last_hash}{RESET}")
+                # print(f"{BLUE}Last hash for converted file found: {last_hash}{RESET}")
         except FileNotFoundError:
             print(
                 f"{RED}Warning: last_converted_file_hash.txt not found. Assuming no prior hash.{RESET}"
             )
 
         if current_hash == last_hash:
-            print(
-                f"{BLUE}Training data has not changed. Loading existing data...{RESET}"
-            )
+            # print(
+            #     f"{BLUE}Training data has not changed. Loading existing data...{RESET}"
+            # )
 
             doc_bin = DocBin().from_disk(SPACY_DATA_PATH)
             docs = list(doc_bin.get_docs(nlp.vocab))
 
             if docs:
-                print(f"{BLUE}Loaded {len(docs)} documents from doc_bin.{RESET}")
+                # print(f"{BLUE}Loaded {len(docs)} documents from doc_bin.{RESET}")
 
                 examples = []
                 for doc in docs:

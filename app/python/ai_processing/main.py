@@ -14,25 +14,21 @@ from app.python.ai_processing.utils.validation_utils import validate_entities
 from spacy.training import iob_to_biluo
 from transformers import LongformerTokenizer
 from app.python.ai_processing.job_qualifications.train_job_qualifications import (
-    qualifications_converted_data,
     qualifications_nlp,
     QUALIFICATIONS_MODEL_SAVE_PATH,
     qualification_examples,
 )
 from app.python.ai_processing.job_description.train_job_description import (
-    description_converted_data,
     description_nlp,
     DESCRIPTION_MODEL_SAVE_PATH,
     description_examples,
 )
 from app.python.ai_processing.job_benefits.train_job_benefits import (
-    benefits_converted_data,
     benefits_nlp,
     BENEFITS_MODEL_SAVE_PATH,
     benefits_examples,
 )
 from app.python.ai_processing.salary.train_salary import (
-    salary_converted_data,
     salary_nlp,
     SALARY_MODEL_SAVE_PATH,
     salary_examples,
@@ -44,28 +40,24 @@ MAX_SEQ_LENGTH = 4096
 def return_paths(attribute_type):
     if attribute_type == "job_qualifications":
         return (
-            qualifications_converted_data,
             qualifications_nlp,
             QUALIFICATIONS_MODEL_SAVE_PATH,
             qualification_examples,
         )
     elif attribute_type == "job_description":
         return (
-            description_converted_data,
             description_nlp,
             DESCRIPTION_MODEL_SAVE_PATH,
             description_examples,
         )
     elif attribute_type == "job_benefits":
         return (
-            benefits_converted_data,
             benefits_nlp,
             BENEFITS_MODEL_SAVE_PATH,
             benefits_examples,
         )
     elif attribute_type == "salary":
         return (
-            salary_converted_data,
             salary_nlp,
             SALARY_MODEL_SAVE_PATH,
             salary_examples,
@@ -166,13 +158,12 @@ def inspect_job_post_predictions(text, nlp, attribute_type):
 
 def main(
     encoded_data,
-    validate_flag,
     train_flag,
-    converted_data,
     nlp,
     MODEL_SAVE_PATH,
     examples,
     attribute_type,
+    validate_data=None,
     data=None,
 ):
     if data:
@@ -181,12 +172,13 @@ def main(
             data = json.loads(data)
 
         updated_data = calculate_entity_indices([data])
-        print_data_with_entities(updated_data, file=sys.stderr)
+        print_data_with_entities(updated_data, file=sys.stdout)
         return
 
-    if validate_flag:
+    if validate_data not in [None, "None", "", "null"]:
         print("\nValidating entities of the converted data only...", file=sys.stderr)
-        result = validate_entities(converted_data, nlp)
+        # print(f"validate_data: {validate_data}", file=sys.stderr)
+        result = validate_entities(validate_data, nlp)
         if result == "Validation passed for all entities.":
 
             result = {
@@ -228,27 +220,28 @@ if __name__ == "__main__":
     try:
         attribute_type = sys.argv[1]
         encoded_data = sys.argv[2]
-        validate_flag = sys.argv[3].lower() == "true" if len(sys.argv) > 3 else False
+        validate_data = sys.argv[3] if len(sys.argv) > 3 else None
         train_flag = sys.argv[4].lower() == "true" if len(sys.argv) > 4 else False
         data = sys.argv[5] if len(sys.argv) > 5 else None
 
         (
-            converted_data,
             nlp,
             MODEL_SAVE_PATH,
             examples,
         ) = return_paths(attribute_type)
         # print(f"attribiute_type: {attribute_type}", file=sys.stderr)
-
+        # print(f"encoded_data: {encoded_data}", file=sys.stderr)
+        # print(f"validate_data after: {validate_data}", file=sys.stderr)
+        # print(f"train_flag: {train_flag}", file=sys.stderr)
+        # print(f"data: {data}", file=sys.stderr)
         main(
             encoded_data,
-            validate_flag,
             train_flag,
-            converted_data,
             nlp,
             MODEL_SAVE_PATH,
             examples,
             attribute_type,
+            validate_data,
             data,
         )
     except Exception as e:
