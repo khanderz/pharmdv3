@@ -149,9 +149,8 @@ class JobPostService
     end
   end
 
-
   def self.print_indices(entity_type, input_text)
-    puts 'Printing indices...'
+    puts "#{BLUE}Printing indices...#{RESET}"
     call_inspect_predictions(attribute_type: entity_type, input_text: input_text,
                              data: input_text)
   end
@@ -293,9 +292,11 @@ class JobPostService
 
   def self.call_inspect_predictions(attribute_type:, input_text:, validate: nil, predict: false, train: false, data: nil)
     puts "#{BLUE}Calling inspect predictions for #{attribute_type}...#{RESET}"
+
     input_json = { text: input_text }.to_json
     input_text = input_text.strip.sub(/^:/, '')
     input_text = input_text.strip.gsub(/^\s*[:\u200B]+/, '')
+
     other_json = { text: input_text.strip, entities: [] }.to_json
     encoded_data = Base64.strict_encode64(input_json)
 
@@ -306,16 +307,18 @@ class JobPostService
 
     input_data = data ? other_json : ''
 
-    puts "validate_data before : #{encoded_validation_data}, train_flag: #{train_flag}"
-    # puts "attribute type: #{attribute_type}"
-    puts "predict_flag: #{predict_flag}"
-
     command = "python3 app/python/ai_processing/main.py '#{attribute_type}' '#{encoded_data}' #{encoded_validation_data} #{predict_flag} #{train_flag} '#{input_data}' "
 
     stdout, stderr, status = Open3.capture3(command)
     puts "stdout: #{stdout}"
     puts "stderr: #{stderr}"
-    puts "status: #{status}"
+    # puts "status: #{status}"
+
+    if train_flag
+      puts "#{BLUE}Training started in the background. Logs will be saved to 'training.log'.#{RESET}"
+      Process.spawn(command) 
+      return nil
+    end
 
     if status.success? && !stdout.strip.empty?
       begin

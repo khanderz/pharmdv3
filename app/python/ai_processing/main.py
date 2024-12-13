@@ -5,7 +5,8 @@ import json
 import sys
 import warnings
 import threading
-
+import logging
+import os
 import spacy
 from app.python.ai_processing.utils.logger import BLUE, RESET
 from app.python.ai_processing.utils.trainer import train_spacy_model
@@ -39,6 +40,12 @@ from app.python.ai_processing.salary.train_salary import (
 
 tokenizer = LongformerTokenizer.from_pretrained("allenai/longformer-base-4096")
 MAX_SEQ_LENGTH = 4096
+
+logging.basicConfig(
+    filename="training.log",
+    level=logging.INFO,
+    format="%(asctime)s - %(levelname)s - %(message)s"
+)
 
 def return_paths(attribute_type):
     if attribute_type == "job_qualifications":
@@ -159,9 +166,15 @@ def inspect_job_post_predictions(text, nlp, attribute_type):
     return entity_data
 
 def train_model_in_thread(MODEL_SAVE_PATH, nlp, examples):
-    print("\nTraining model in the background...")
-    train_spacy_model(MODEL_SAVE_PATH, nlp, examples, resume=True)
-    print(f"{BLUE}\nTraining completed.{RESET}")
+    try:
+        print("\nTraining model in the background...")
+        logging.info("Training model started.")
+
+        train_spacy_model(MODEL_SAVE_PATH, nlp, examples, resume=True)
+        logging.info("Training model completed successfully.")
+    except Exception as e:
+        logging.error(f"Training failed: {e}")
+
 
 def main(
     encoded_data,
@@ -184,7 +197,7 @@ def main(
         return
 
     if validate_data not in [None, "None", "", "null"]:
-        print("\nValidating entities of the converted data only...", file=sys.stderr)
+        print(f"\n {BLUE}Validating entities of the converted data only...{RESET}", file=sys.stderr)
 
         decoded = json.loads(base64.b64decode(validate_data).decode("utf-8"))
         validation_result = validate_entities(decoded, nlp, file=sys.stdout)
@@ -204,7 +217,7 @@ def main(
         return
 
     if train_flag == "true":
-        print("\n Isolating process to train the main extraction model...", file=sys.stderr)
+        print(f"\n {BLUE}Isolating process to train the main extraction model...{RESET}", file=sys.stderr)
         training_thread = threading.Thread(target=train_model_in_thread, args=(MODEL_SAVE_PATH, nlp, examples))
         training_thread.start()
         return
@@ -213,7 +226,7 @@ def main(
         input_data = json.loads(base64.b64decode(encoded_data).decode("utf-8"))
         text = input_data.get("text", "")
 
-        print("\nRunning job post main extraction model inspection...", file=sys.stderr)
+        print("\n{BLUE}Running job post main predictions...{RESET}", file=sys.stderr)
         predictions = inspect_job_post_predictions(
             text, nlp, attribute_type
         )
@@ -229,7 +242,7 @@ def main(
 if __name__ == "__main__":
     warnings.filterwarnings("ignore")
     print(
-        "\nRunning job post main extraction model inspection script...", file=sys.stderr
+        "\n{BLUE}Running job post main extraction model inspection script...{RESET}", file=sys.stderr
     )
     try:
         attribute_type = sys.argv[1]
