@@ -117,7 +117,7 @@ else:
 
 
 # ------------------- VALIDATE TRAINER -------------------
-# evaluate_model(description_nlp, converted_data)
+# evaluate_model(description_nlp, description_converted_data)
 # validate_entities(converted_data, description_nlp)
 
 
