@@ -168,95 +168,102 @@ class JobPostService
 
     text = clean_text(input_text)
     print_indices(entity_type, text)
-    corrected_entities = []
-    extracted_entities.each_with_index do |(label, tokens), _index|
-      label = label.to_s
-      token = tokens[0]
-
-      puts "is token #{token} for label '#{label}' correct (yes/no)"
-      token_confirmation = gets.strip.downcase
-      if token_confirmation != 'yes' && token_confirmation != 'y'
-        puts 'Enter the correct token:'
-        token = gets.strip
-      end
-
-      puts "Is the label '#{label}' correct for this #{token}? (yes/no)"
-      label_confirmation = gets.strip.downcase
-      if label_confirmation != 'yes' && label_confirmation != 'y'
-        puts "Enter the correct label (e.g., 'COMPENSATION'):"
-        label = gets.strip
-      end
-
-      puts "Enter start index for '#{token}':"
-      start_value = gets.strip.to_i
-
-      puts "Enter end index for '#{token}':"
-      end_value = gets.strip.to_i
-
-      corrected_entities << {
-        'start' => start_value,
-        'end' => end_value,
-        'label' => label,
-        'token' => token
-      }
-    end
 
     loop do
-      puts 'Are there any missing entities? (yes/no)'
-      missing_entities_confirmation = gets.strip.downcase
+      corrected_entities = []
+      
+      extracted_entities.each_with_index do |(label, tokens), _index|
+        label = label.to_s
+        token = tokens[0]
 
-      break if missing_entities_confirmation != 'yes' && missing_entities_confirmation != 'y'
+        puts "is token #{token} for label '#{label}' correct (yes/no)"
+        token_confirmation = gets.strip.downcase
+        if token_confirmation != 'yes' && token_confirmation != 'y'
+          puts 'Enter the correct token:'
+          token = gets.strip
+        end
 
-      puts 'Enter the token for the missing entity:'
-      token = gets.strip
+        puts "Is the label '#{label}' correct for this #{token}? (yes/no)"
+        label_confirmation = gets.strip.downcase
+        if label_confirmation != 'yes' && label_confirmation != 'y'
+          puts "Enter the correct label (e.g., 'COMPENSATION'):"
+          label = gets.strip
+        end
 
-      puts "Enter the label for the missing entity (e.g., 'COMPENSATION'):"
-      label = gets.strip
+        puts "Enter start index for '#{token}':"
+        start_value = gets.strip.to_i
 
-      puts "Enter start index for '#{token}':"
-      start_value = gets.strip.to_i
+        puts "Enter end index for '#{token}':"
+        end_value = gets.strip.to_i
 
-      puts "Enter end index for '#{token}':"
-      end_value = gets.strip.to_i
+        corrected_entities << {
+          'start' => start_value,
+          'end' => end_value,
+          'label' => label,
+          'token' => token
+        }
+      end
 
-      corrected_entities << {
-        'start' => start_value,
-        'end' => end_value,
-        'label' => label,
-        'token' => token
+      loop do
+        puts 'Are there any missing entities? (yes/no)'
+        missing_entities_confirmation = gets.strip.downcase
+
+        break if missing_entities_confirmation != 'yes' && missing_entities_confirmation != 'y'
+
+        puts 'Enter the token for the missing entity:'
+        token = gets.strip
+
+        puts "Enter the label for the missing entity (e.g., 'COMPENSATION'):"
+        label = gets.strip
+
+        puts "Enter start index for '#{token}':"
+        start_value = gets.strip.to_i
+
+        puts "Enter end index for '#{token}':"
+        end_value = gets.strip.to_i
+
+        corrected_entities << {
+          'start' => start_value,
+          'end' => end_value,
+          'label' => label,
+          'token' => token
+        }
+      end
+
+      new_training_data = {
+        'text' => text,
+        'entities' => corrected_entities
       }
-    end
+      # puts "new_training_data: #{new_training_data}"
 
-    new_training_data = {
-      'text' => text,
-      'entities' => corrected_entities
-    }
-    # puts "new_training_data: #{new_training_data}"
+      validation_result = call_inspect_predictions(
+        attribute_type: entity_type,
+        input_text: input_text,
+        validate: [new_training_data]
+      )
 
-    validation_result = call_inspect_predictions(
-      attribute_type: entity_type,
-      input_text: input_text,
-      validate: [new_training_data]
-    )
+      if validation_result && validation_result['status'] == 'success'
+        # puts "validation result on rb : #{validation_result}"
+        message = validation_result['message'].to_s.strip
+        puts "#{GREEN}Validation completed successfully: #{message}#{RESET}"
+        
+        if message.include?('Validation passed for all entities.')
+          training_data << new_training_data
+          File.write(training_data_path, JSON.pretty_generate(training_data))
+          puts "#{GREEN}Training data validated and saved successfully at #{training_data_path}.#{RESET}"
 
-    if validation_result && validation_result['status'] == 'success'
-      # puts "validation result on rb : #{validation_result}"
-      message = validation_result['message'].to_s.strip
-      puts "#{GREEN}Validation completed successfully: #{message}#{RESET}"
-      if message.include?('Validation passed for all entities.')
-        training_data << new_training_data
-        File.write(training_data_path, JSON.pretty_generate(training_data))
-        puts "#{GREEN}Training data validated and saved successfully at #{training_data_path}.#{RESET}"
-
-        puts "#{BLUE} Now training data #{RESET}"
-        call_inspect_predictions(attribute_type: entity_type, input_text: input_text, train: true)
+          puts "#{BLUE} Now training data #{RESET}"
+          call_inspect_predictions(attribute_type: entity_type, input_text: input_text, train: true)
+          break
+        else
+          puts "#{RED}Validation completed with errors: #{message}#{RESET}"
+        end  
       else
         puts "#{RED}Validation completed with errors: #{message}#{RESET}"
-
+        redo_correction = gets.strip.downcase
+        break if redo_correction != 'yes' && redo_correction != 'y'
       end
     end
-
-    corrected_entities
   end
 
   def self.call_inspect_predictions(attribute_type:, input_text:, validate: nil, predict: false, train: false, data: nil)
