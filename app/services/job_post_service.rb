@@ -183,6 +183,7 @@ class JobPostService
           puts "#{RED}Unexpected label: #{entity['label']}#{RESET}"
         end
       end
+      puts "job_post_object: #{job_post_object}"
     else
       puts "#{RED}Failed to extract qualifications data.#{RESET}"
     end
@@ -205,9 +206,11 @@ class JobPostService
       return []
     end
 
+    validation_attempts = 0
+    max_attempts = 3
+
     loop do
       corrected_entities = []
-
       extracted_entities.each_with_index do |(label, tokens), _index|
         label = label.to_s
         token = tokens[0]
@@ -274,7 +277,7 @@ class JobPostService
         'text' => text,
         'entities' => corrected_entities
       }
-      # puts "new_training_data: #{new_training_data}"
+      puts "new_training_data: #{new_training_data}"
 
       validation_result = call_inspect_predictions(
         attribute_type: entity_type,
@@ -298,19 +301,26 @@ class JobPostService
           return corrected_entities
           # break
         else
-          puts "#{RED}Validation completed with errors: #{message}#{RESET}"
-          redo_correction = gets.strip.downcase
-          break if redo_correction != 'yes' && redo_correction != 'y'
+          puts "#{RED}Validation completed with warnings: #{message}#{RESET}"
         end
       else
-        puts "#{RED}Validation completed with errors: #{message}#{RESET}"
-        redo_correction = gets.strip.downcase
-        break if redo_correction != 'yes' && redo_correction != 'y'
+        puts "#{RED}Validation failed: #{validation_result&.dig('message') || 'Unknown error'}#{RESET}"
       end
-      puts "corrected entities after training 2: #{corrected_entities}"
-      corrected_entities
+
+      validation_attempts += 1
+      break if validation_attempts >= max_attempts
+  
+      puts "Would you like to redo the corrections? (yes/no)"
+      redo_correction = gets.strip.downcase
+      break unless redo_correction == 'yes' || redo_correction == 'y'
     end
-  end
+  
+    puts "#{RED}Validation failed after #{max_attempts} attempts. Exiting...#{RESET}"
+
+    puts "corrected entities after training 2: #{corrected_entities}"
+    corrected_entities
+    end
+  # end
 
   def self.call_inspect_predictions(attribute_type:, input_text:, validate: nil, predict: false, train: false, data: nil)
     puts "#{BLUE}Calling inspect predictions for #{attribute_type}...#{RESET}"
@@ -332,9 +342,9 @@ class JobPostService
     command = "python3 app/python/ai_processing/main.py '#{attribute_type}' '#{encoded_data}' #{encoded_validation_data} #{predict_flag} #{train_flag} '#{input_data}' "
 
     stdout, stderr, status = Open3.capture3(command)
-    puts "stdout: #{stdout}"
-    puts "stderr: #{stderr}"
-    puts "status: #{status}"
+    # puts "stdout: #{stdout}"
+    # puts "stderr: #{stderr}"
+    # puts "status: #{status}"
 
     if train_flag
       puts "#{BLUE}Training started in the background. Logs will be saved to 'training.log'.#{RESET}"
@@ -406,7 +416,7 @@ class JobPostService
     parsed_benefits = benefits_data['entities']
     corrected_benefits = validate_and_update_training_data(benefits, parsed_benefits,
                                                            'job_benefits')
-
+    
     if benefits_data['status'] == 'success' && corrected_benefits.any?
       job_post_object = {
         commitment: nil,
@@ -459,6 +469,7 @@ class JobPostService
           puts "#{RED}Unexpected label: #{entity['label']}#{RESET}"
         end
       end
+      puts "job_post_object: #{job_post_object}"
     else
       puts "#{RED}Failed to extract benefits data.#{RESET}"
     end

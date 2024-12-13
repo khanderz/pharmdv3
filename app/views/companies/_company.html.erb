@@ -1,77 +1,9 @@
-<div id="<%= dom_id company %>">
-  <p>
-    <strong>Company name:</strong>
-    <%= company.company_name %>
-  </p>
-
-  <p>
-    <strong>Operating status:</strong>
-    <%= company.operating_status %>
-  </p>
-
-  <p>
-    <strong>Company type:</strong>
-    <%= company.company_type %>
-  </p>
-
-  <p>
-  <strong>Company type:</strong>
-  <%= company.company_type_value %>
-</p>
-
-  <p>
-    <strong>Company ats type:</strong>
-    <%= company.company_ats_type %>
-  </p>
-
-  <p>
-    <strong>Company size:</strong>
-    <%= company.company_size %>
-  </p>
-
-  <p>
-    <strong>Last funding type:</strong>
-    <%= company.last_funding_type %>
-  </p>
-
-  <p>
-    <strong>Linkedin url:</strong>
-    <%= company.linkedin_url %>
-  </p>
-
-  <p>
-    <strong>Is public:</strong>
-    <%= company.is_public %>
-  </p>
-
-  <p>
-    <strong>Year founded:</strong>
-    <%= company.year_founded %>
-  </p>
-
-  <p>
-    <strong>Company city:</strong>
-    <%= company.company_city %>
-  </p>
-
-  <p>
-    <strong>Company state:</strong>
-    <%= company.company_state %>
-  </p>
-
-  <p>
-    <strong>Company country:</strong>
-    <%= company.company_country %>
-  </p>
-
-  <p>
-    <strong>Acquired by:</strong>
-    <%= company.acquired_by %>
-  </p>
-
-  <p>
-    <strong>Ats:</strong>
-    <%= company.ats_id %>
-  </p>
-
-</div>
+<h1>Companies</h1>
+<ul>
+  <% @companies.each do |company| %>
+    <li>
+      <strong><%= link_to company.company_name, company_path(company) %></strong>
+      <p><%= company.company_description %></p>
+    </li>
+  <% end %>
+</ul>

@@ -3,27 +3,52 @@
 class Company < ApplicationRecord
   has_paper_trail ignore: [:updated_at]
 
+  # Associations
   belongs_to :ats_type
   belongs_to :company_size, optional: true
   belongs_to :funding_type, optional: true
+  belongs_to :company_type, optional: true
 
   has_many :company_cities, dependent: :destroy
-  has_many :cities, through: :company_cities, dependent: :destroy
+  has_many :cities, through: :company_cities
+
   has_many :company_states, dependent: :destroy
-  has_many :states, through: :company_states, dependent: :destroy
+  has_many :states, through: :company_states
+
   has_many :company_countries, dependent: :destroy
-  has_many :countries, through: :company_countries, dependent: :destroy
-  has_many :company_domains
+  has_many :countries, through: :company_countries
+
+  has_many :company_domains, dependent: :destroy
   has_many :healthcare_domains, through: :company_domains
-  has_many :adjudications, as: :adjudicatable, dependent: :destroy
-  has_many :job_posts, dependent: :destroy
-  has_many :company_specializations
+
+  has_many :company_specializations, dependent: :destroy
   has_many :company_specialties, through: :company_specializations
 
+  has_many :adjudications, as: :adjudicatable, dependent: :destroy
+  has_many :job_posts, dependent: :destroy
+
+  # Validations
   validates :company_name, presence: true, uniqueness: true
   validates :linkedin_url, uniqueness: true, allow_blank: true
+  validates :company_url, uniqueness: true, allow_blank: true
 
+  # Scopes
   scope :with_size, ->(size) { where(company_size_id: size.id) }
+  scope :operating, -> { where(operating_status: true) }
+  scope :by_country, ->(country_id) { joins(:company_countries).where(company_countries: { country_id: country_id }) }
+  scope :by_state, ->(state_id) { joins(:company_states).where(company_states: { state_id: state_id }) }
+  scope :by_city, ->(city_id) { joins(:company_cities).where(company_cities: { city_id: city_id }) }
+  scope :by_healthcare_domain, ->(domain_id) { joins(:company_domains).where(company_domains: { healthcare_domain_id: domain_id }) }
+  scope :by_specialty, ->(specialty_id) { joins(:company_specializations).where(company_specializations: { company_specialty_id: specialty_id }) }
+
+  # Instance Methods
+  def full_location
+    locations = []
+    locations << cities.pluck(:city_name).join(', ') if cities.any?
+    locations << states.pluck(:state_name).join(', ') if states.any?
+    locations << countries.pluck(:country_name).join(', ') if countries.any?
+    locations.join(' - ')
+  end
 
   def active_jobs
     job_posts.where(job_active: true)

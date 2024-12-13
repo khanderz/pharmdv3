@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 class CompaniesController < ApplicationController
-  before_action :set_company, only: %i[show edit update destroy]
+  before_action :set_company, only: %i[show ]
 
   # GET /companies or /companies.json
   def index
@@ -10,11 +10,34 @@ class CompaniesController < ApplicationController
       # Filter companies that have the selected healthcare domain
       @companies = Company.joins(:healthcare_domains)
                           .where(healthcare_domains: { id: params[:domain_id] })
-                          .includes(:job_posts, :company_size, :ats_type, :country, :state, :city, :company_specialties, :healthcare_domains)
+                          .includes(
+                            :job_posts,
+                            :company_size,
+                            :ats_type,
+                            :funding_type,
+                            :company_type,
+                            :company_cities,
+                            :company_states,
+                            :company_countries,
+                            :company_specializations,
+                            :company_domains,
+                            :healthcare_domains
+                          )
     else
       # No filter applied, return all companies
-      @companies = Company.includes(:job_posts, :company_size, :ats_type, :country, :state, :city, :company_specialties,
-                                    :healthcare_domains).all
+      @companies = Company.includes(
+        :job_posts,
+        :company_size,
+        :ats_type,
+        :funding_type,
+        :company_type,
+        :company_cities,
+        :company_states,
+        :company_countries,
+        :company_specializations,
+        :company_domains,
+        :healthcare_domains
+      ).all
     end
 
     # Render JSON with nested relationships
@@ -23,12 +46,16 @@ class CompaniesController < ApplicationController
         job_posts: { only: %i[job_title job_description job_active] },
         company_size: { only: [:size_range] },
         ats_type: { only: [:ats_type_name] },
-        country: { only: [:country_name] },
-        state: { only: [:state_name] },
-        city: { only: [:city_name] },
-        company_specialties: { only: %i[key value] },
+        funding_type: { only: [:name] },
+        company_type: { only: [:name] },
+        company_cities: { include: { city: { only: [:city_name] } } },
+        company_states: { include: { state: { only: [:state_name] } } },
+        company_countries: { include: { country: { only: [:country_name] } } },
+        company_specializations: { include: { company_specialty: { only: %i[key value] } } },
+        company_domains: { include: { healthcare_domain: { only: %i[key value] } } },
         healthcare_domains: { only: %i[key value] }
-      }
+      },
+      methods: [:logo_url] 
     )
   end
 
@@ -38,28 +65,37 @@ class CompaniesController < ApplicationController
       :job_posts,
       :company_size,
       :ats_type,
-      :country,
-      :state,
-      :city,
-      :company_specialties,
-      :healthcare_domains # Include healthcare domains
+      :funding_type,
+      :company_type,
+      :company_cities,
+      :company_states,
+      :company_countries,
+      :company_specializations,
+      :company_domains,
+      :healthcare_domains
     ).find(params[:id])
 
     # Add human-readable values for associated models
-    company_with_details = @company.as_json(
+    render json: @company.as_json(
       include: {
         job_posts: { only: %i[job_title job_description job_active] },
         company_size: { only: [:size_range] },
         ats_type: { only: [:ats_type_name] },
-        country: { only: [:country_name] },
-        state: { only: [:state_name] },
-        city: { only: [:city_name] },
-        company_specialties: { only: %i[key value] },
-        healthcare_domains: { only: %i[key value] } # Include healthcare domain details
-      }
+        funding_type: { only: [:name] },
+        company_type: { only: [:name] },
+        company_cities: { include: { city: { only: [:city_name] } } },
+        company_states: { include: { state: { only: [:state_name] } } },
+        company_countries: { include: { country: { only: [:country_name] } } },
+        company_specializations: { include: { company_specialty: { only: %i[key value] } } },
+        company_domains: { include: { healthcare_domain: { only: %i[key value] } } },
+        healthcare_domains: { only: %i[key value] }
+      },
+      methods: [:logo_url] 
     )
 
-    render json: company_with_details
+    rescue ActiveRecord::RecordNotFound
+      render json: { error: 'Company not found' }, status: :not_found
+    end
   end
 
   # GET /companies/new
@@ -67,50 +103,6 @@ class CompaniesController < ApplicationController
     @company = Company.new
   end
 
-  # GET /companies/1/edit
-  def edit; end
-
-  # POST /companies or /companies.json
-  def create
-    @company = Company.new(company_params)
-
-    respond_to do |format|
-      if @company.save
-        format.html do
-          redirect_to company_url(@company), notice: 'Company was successfully created.'
-        end
-        format.json { render :show, status: :created, location: @company }
-      else
-        format.html { render :new, status: :unprocessable_entity }
-        format.json { render json: @company.errors, status: :unprocessable_entity }
-      end
-    end
-  end
-
-  # PATCH/PUT /companies/1 or /companies/1.json
-  def update
-    respond_to do |format|
-      if @company.update(company_params)
-        format.html do
-          redirect_to company_url(@company), notice: 'Company was successfully updated.'
-        end
-        format.json { render :show, status: :ok, location: @company }
-      else
-        format.html { render :edit, status: :unprocessable_entity }
-        format.json { render json: @company.errors, status: :unprocessable_entity }
-      end
-    end
-  end
-
-  # DELETE /companies/1 or /companies/1.json
-  def destroy
-    @company.destroy!
-
-    respond_to do |format|
-      format.html { redirect_to companies_url, notice: 'Company was successfully destroyed.' }
-      format.json { head :no_content }
-    end
-  end
 
   private
 
@@ -126,7 +118,10 @@ class CompaniesController < ApplicationController
       :operating_status,
       :company_size_id,
       :ats_type_id,
+      :funding_type_id,
       :linkedin_url,
+      :company_url,
+      :company_type_id,
       :is_public,
       :year_founded,
       :city_id,
@@ -135,8 +130,17 @@ class CompaniesController < ApplicationController
       :acquired_by,
       :company_description,
       :ats_id,
-      company_specialization_ids: [],   # Allow for company specializations
-      healthcare_domain_ids: []         # Allow for healthcare domain associations
+      :logo_url,
+      :company_tagline,
+      :is_completely_remote,
+      :error_details,
+      :reference_id,
+      :resolved,
+      company_specialization_ids: [], 
+      healthcare_domain_ids: [],     
+      company_city_ids: [],           
+      company_state_ids: [],          
+      company_country_ids: []   
     )
   end
-end
+

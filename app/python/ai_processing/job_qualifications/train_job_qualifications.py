@@ -108,7 +108,7 @@ else:
 # train_spacy_model(QUALIFICATIONS_MODEL_SAVE_PATH, qualifications_nlp, examples, resume=True)
 
 # ------------------- VALIDATE TRAINER -------------------
-# evaluate_model(qualifications_nlp, converted_data)
+# evaluate_model(qualifications_nlp, qualifications_converted_data)
 # validate_entities(converted_data, qualifications_nlp)
 
 
