@@ -4,7 +4,10 @@ import base64
 import json
 import sys
 import warnings
+import threading
+
 import spacy
+from app.python.ai_processing.utils.logger import BLUE, RESET
 from app.python.ai_processing.utils.trainer import train_spacy_model
 from app.python.ai_processing.utils.utils import (
     calculate_entity_indices,
@@ -155,6 +158,10 @@ def inspect_job_post_predictions(text, nlp, attribute_type):
 
     return entity_data
 
+def train_model_in_thread(MODEL_SAVE_PATH, nlp, examples):
+    print("\nTraining model in the background...")
+    train_spacy_model(MODEL_SAVE_PATH, nlp, examples, resume=True)
+    print(f"{BLUE}\nTraining completed.{RESET}")
 
 def main(
     encoded_data,
@@ -197,8 +204,9 @@ def main(
         return
 
     if train_flag == "true":
-        print("\nTraining the main extraction model...", file=sys.stderr)
-        train_spacy_model(MODEL_SAVE_PATH, nlp, examples, resume=True)
+        print("\n Isolating process to train the main extraction model...", file=sys.stderr)
+        training_thread = threading.Thread(target=train_model_in_thread, args=(MODEL_SAVE_PATH, nlp, examples))
+        training_thread.start()
         return
     
     if predict_flag:

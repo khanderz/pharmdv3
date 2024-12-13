@@ -149,6 +149,173 @@ class JobPostService
     end
   end
 
+
+  def self.print_indices(entity_type, input_text)
+    puts 'Printing indices...'
+    call_inspect_predictions(attribute_type: entity_type, input_text: input_text,
+                             data: input_text)
+  end
+
+
+
+  def self.validate_and_update_training_data(input_text, extracted_entities, entity_type)
+    puts "Validating #{entity_type} entities..."
+    # puts "Extracted entities: #{extracted_entities}"
+
+    training_data_path = "app/python/ai_processing/#{entity_type}/data/train_data_spacy.json"
+    training_data = []
+    training_data = JSON.parse(File.read(training_data_path)) if File.exist?(training_data_path)
+
+    text = clean_text(input_text)
+    print_indices(entity_type, text)
+    corrected_entities = []
+    extracted_entities.each_with_index do |(label, tokens), _index|
+      label = label.to_s
+      token = tokens[0]
+
+      puts "is token #{token} for label '#{label}' correct (yes/no)"
+      token_confirmation = gets.strip.downcase
+      if token_confirmation != 'yes' && token_confirmation != 'y'
+        puts 'Enter the correct token:'
+        token = gets.strip
+      end
+
+      puts "Is the label '#{label}' correct for this #{token}? (yes/no)"
+      label_confirmation = gets.strip.downcase
+      if label_confirmation != 'yes' && label_confirmation != 'y'
+        puts "Enter the correct label (e.g., 'COMPENSATION'):"
+        label = gets.strip
+      end
+
+      puts "Enter start index for '#{token}':"
+      start_value = gets.strip.to_i
+
+      puts "Enter end index for '#{token}':"
+      end_value = gets.strip.to_i
+
+      corrected_entities << {
+        'start' => start_value,
+        'end' => end_value,
+        'label' => label,
+        'token' => token
+      }
+    end
+
+    loop do
+      puts 'Are there any missing entities? (yes/no)'
+      missing_entities_confirmation = gets.strip.downcase
+
+      break if missing_entities_confirmation != 'yes' && missing_entities_confirmation != 'y'
+
+      puts 'Enter the token for the missing entity:'
+      token = gets.strip
+
+      puts "Enter the label for the missing entity (e.g., 'COMPENSATION'):"
+      label = gets.strip
+
+      puts "Enter start index for '#{token}':"
+      start_value = gets.strip.to_i
+
+      puts "Enter end index for '#{token}':"
+      end_value = gets.strip.to_i
+
+      corrected_entities << {
+        'start' => start_value,
+        'end' => end_value,
+        'label' => label,
+        'token' => token
+      }
+    end
+
+    new_training_data = {
+      'text' => text,
+      'entities' => corrected_entities
+    }
+    # puts "new_training_data: #{new_training_data}"
+
+    validation_result = call_inspect_predictions(
+      attribute_type: entity_type,
+      input_text: input_text,
+      validate: [new_training_data]
+    )
+
+    if validation_result && validation_result['status'] == 'success'
+      # puts "validation result on rb : #{validation_result}"
+      message = validation_result['message'].to_s.strip
+      puts "#{GREEN}Validation completed successfully: #{message}#{RESET}"
+      if message.include?('Validation passed for all entities.')
+        training_data << new_training_data
+        File.write(training_data_path, JSON.pretty_generate(training_data))
+        puts "#{GREEN}Training data validated and saved successfully at #{training_data_path}.#{RESET}"
+
+        puts "#{BLUE} Now training data #{RESET}"
+        call_inspect_predictions(attribute_type: entity_type, input_text: input_text, train: true)
+      else
+        puts "#{RED}Validation completed with errors: #{message}#{RESET}"
+
+      end
+    end
+
+    corrected_entities
+  end
+
+  def self.call_inspect_predictions(attribute_type:, input_text:, validate: nil, predict: false, train: false, data: nil)
+    puts "Calling inspect predictions for #{attribute_type}..."
+    input_json = { text: input_text }.to_json
+    input_text = input_text.strip.sub(/^:/, '')
+    input_text = input_text.strip.gsub(/^\s*[:\u200B]+/, '')
+    other_json = { text: input_text.strip, entities: [] }.to_json
+    encoded_data = Base64.strict_encode64(input_json)
+
+    train_flag = train
+    predict_flag = predict
+
+    puts "validate raw : #{validate}"
+    encoded_validation_data = validate ? Base64.strict_encode64(validate.to_json) : "None"
+
+    input_data = data ? other_json : ''
+    puts "validate_data before : #{encoded_validation_data}, train_flag: #{train_flag}"
+    # puts "attribute type: #{attribute_type}"
+    puts "predict_flag: #{predict_flag}"
+    command = "python3 app/python/ai_processing/main.py '#{attribute_type}' '#{encoded_data}' #{encoded_validation_data} #{predict_flag} #{train_flag} '#{input_data}' "
+
+    stdout, stderr, status = Open3.capture3(command)
+    puts "stdout: #{stdout}"
+    puts "stderr: #{stderr}"
+    puts "status: #{status}"
+
+    if status.success? && !stdout.strip.empty?
+      begin
+        json_output = stdout.split("\n").find { |line| line.strip.start_with?('{') }
+    
+        if json_output
+          begin
+            parsed_json = JSON.parse(json_output)
+            parsed_json
+          rescue JSON::ParserError => e
+            puts "#{RED}Failed to parse JSON: #{e.message}#{RESET}"
+            puts "#{RED}Raw stdout content: #{stdout}#{RESET}"
+            nil
+          end
+        else
+          puts "#{RED}No valid JSON output found in stdout. Full output: #{stdout}#{RESET}"
+          nil
+        end
+      rescue StandardError => e
+        puts "#{RED}Unexpected error: #{e.message}#{RESET}"
+        puts "#{RED}Full stdout: #{stdout}#{RESET}"
+        nil
+      end
+    else
+      puts "#{RED}Error running script for #{attribute_type}: #{stderr}#{RESET}"
+      nil
+    end
+  end
+
+  def self.clean_text(data)
+    data.gsub(/\n+/, ' ').strip
+  end
+
   def self.extract_qualifications(qualifications)
     # puts "Extracting qualifications from text: #{qualifications_text}..."
 
@@ -317,180 +484,6 @@ class JobPostService
     # puts "Job Post Object: #{job_post_object}"
     job_post_object
   end
-
-  def self.print_indices(entity_type, input_text)
-    puts 'Printing indices...'
-    call_inspect_predictions(attribute_type: entity_type, input_text: input_text,
-                             data: input_text)
-  end
-
-  def self.clean_text(data)
-    data.gsub(/\n+/, ' ').strip
-  end
-
-  def self.validate_and_update_training_data(input_text, extracted_entities, entity_type)
-    puts "Validating #{entity_type} entities..."
-    # puts "Extracted entities: #{extracted_entities}"
-
-    training_data_path = "app/python/ai_processing/#{entity_type}/data/train_data_spacy.json"
-    training_data = []
-    training_data = JSON.parse(File.read(training_data_path)) if File.exist?(training_data_path)
-
-    text = clean_text(input_text)
-    print_indices(entity_type, text)
-    corrected_entities = []
-    extracted_entities.each_with_index do |(label, tokens), _index|
-      label = label.to_s
-      token = tokens[0]
-
-      puts "is token #{token} for label '#{label}' correct (yes/no)"
-      token_confirmation = gets.strip.downcase
-      if token_confirmation != 'yes' && token_confirmation != 'y'
-        puts 'Enter the correct token:'
-        token = gets.strip
-      end
-
-      puts "Is the label '#{label}' correct for this #{token}? (yes/no)"
-      label_confirmation = gets.strip.downcase
-      if label_confirmation != 'yes' && label_confirmation != 'y'
-        puts "Enter the correct label (e.g., 'COMPENSATION'):"
-        label = gets.strip
-      end
-
-      puts "Enter start index for '#{token}':"
-      start_value = gets.strip.to_i
-
-      puts "Enter end index for '#{token}':"
-      end_value = gets.strip.to_i
-
-      corrected_entities << {
-        'start' => start_value,
-        'end' => end_value,
-        'label' => label,
-        'token' => token
-      }
-    end
-
-    loop do
-      puts 'Are there any missing entities? (yes/no)'
-      missing_entities_confirmation = gets.strip.downcase
-
-      break if missing_entities_confirmation != 'yes' && missing_entities_confirmation != 'y'
-
-      puts 'Enter the token for the missing entity:'
-      token = gets.strip
-
-      puts "Enter the label for the missing entity (e.g., 'COMPENSATION'):"
-      label = gets.strip
-
-      puts "Enter start index for '#{token}':"
-      start_value = gets.strip.to_i
-
-      puts "Enter end index for '#{token}':"
-      end_value = gets.strip.to_i
-
-      corrected_entities << {
-        'start' => start_value,
-        'end' => end_value,
-        'label' => label,
-        'token' => token
-      }
-    end
-
-    new_training_data = {
-      'text' => text,
-      'entities' => corrected_entities
-    }
-    # puts "new_training_data: #{new_training_data}"
-
-    validation_result = call_inspect_predictions(
-      attribute_type: entity_type,
-      input_text: input_text,
-      validate: [new_training_data]
-    )
-
-    if validation_result && validation_result['status'] == 'success'
-      # puts "validation result on rb : #{validation_result}"
-      message = validation_result['message'].to_s.strip
-      puts "#{GREEN}Validation completed successfully: #{message}#{RESET}"
-      if message.include?('Validation passed for all entities.')
-        training_data << new_training_data
-        File.write(training_data_path, JSON.pretty_generate(training_data))
-        puts "#{GREEN}Training data validated and saved successfully at #{training_data_path}.#{RESET}"
-
-        puts "#{BLUE} Now training data #{RESET}"
-        call_inspect_predictions(attribute_type: entity_type, input_text: input_text, train: true)
-      else
-        puts "#{RED}Validation completed with errors: #{message}#{RESET}"
-
-      end
-    end
-
-    corrected_entities
-  end
-
-  def self.call_inspect_predictions(attribute_type:, input_text:, validate: nil, predict: false, train: false, data: nil)
-    puts "Calling inspect predictions for #{attribute_type}..."
-    input_json = { text: input_text }.to_json
-    input_text = input_text.strip.sub(/^:/, '')
-    input_text = input_text.strip.gsub(/^\s*[:\u200B]+/, '')
-    other_json = { text: input_text.strip, entities: [] }.to_json
-    encoded_data = Base64.strict_encode64(input_json)
-
-    train_flag = train
-    predict_flag = predict
-
-    puts "validate raw : #{validate}"
-    encoded_validation_data = validate ? Base64.strict_encode64(validate.to_json) : "None"
-
-    input_data = data ? other_json : ''
-    puts "validate_data before : #{encoded_validation_data}, train_flag: #{train_flag}"
-    # puts "attribute type: #{attribute_type}"
-    puts "predict_flag: #{predict_flag}"
-    command = "python3 app/python/ai_processing/main.py '#{attribute_type}' '#{encoded_data}' #{encoded_validation_data} #{predict_flag} #{train_flag} '#{input_data}' "
-
-    stdout, stderr, status = Open3.capture3(command)
-    puts "stdout: #{stdout}"
-    puts "stderr: #{stderr}"
-    puts "status: #{status}"
-
-    if status.success? && !stdout.strip.empty?
-      begin
-        json_output = stdout.split("\n").find { |line| line.strip.start_with?('{') }
-    
-        if json_output
-          begin
-            parsed_json = JSON.parse(json_output)
-            parsed_json
-          rescue JSON::ParserError => e
-            puts "#{RED}Failed to parse JSON: #{e.message}#{RESET}"
-            puts "#{RED}Raw stdout content: #{stdout}#{RESET}"
-            nil
-          end
-        else
-          puts "#{RED}No valid JSON output found in stdout. Full output: #{stdout}#{RESET}"
-          nil
-        end
-      rescue StandardError => e
-        puts "#{RED}Unexpected error: #{e.message}#{RESET}"
-        puts "#{RED}Full stdout: #{stdout}#{RESET}"
-        nil
-      end
-    else
-      puts "#{RED}Error running script for #{attribute_type}: #{stderr}#{RESET}"
-      nil
-    end
-    
-  end
-
-  # def self.update_qualifications(job_post, qualifications_entities)
-  #   qualifications_entities.each do |entity_type, values|
-  #     puts "Updating qualifications for #{entity_type}: #{values.join(', ')}"
-  #     job_post.qualifications ||= []
-  #     job_post.qualifications.concat(values)
-  #     job_post.save
-  #   end
-  # end
 end
 
 test_text = <<~TEXT
