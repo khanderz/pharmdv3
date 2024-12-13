@@ -201,7 +201,7 @@ class JobPostService
     parsed_benefits = benefits_data['entities']
     corrected_benefits = validate_and_update_training_data(benefits, parsed_benefits,
                                                            'job_benefits')
-    
+
     if benefits_data['status'] == 'success' && corrected_benefits.any?
       job_post_object = {
         commitment: nil,
@@ -441,17 +441,17 @@ class JobPostService
 
       validation_attempts += 1
       break if validation_attempts >= max_attempts
-  
-      puts "Would you like to redo the corrections? (yes/no)"
+
+      puts 'Would you like to redo the corrections? (yes/no)'
       redo_correction = gets.strip.downcase
-      break unless redo_correction == 'yes' || redo_correction == 'y'
+      break unless %w[yes y].include?(redo_correction)
     end
-  
+
     puts "#{RED}Validation failed after #{max_attempts} attempts. Exiting...#{RESET}"
 
     puts "corrected entities after training 2: #{corrected_entities}"
     corrected_entities
-    end
+  end
   # end
 
   def self.call_inspect_predictions(attribute_type:, input_text:, validate: nil, predict: false, train: false, data: nil)

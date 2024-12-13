@@ -35,11 +35,19 @@ class Company < ApplicationRecord
   # Scopes
   scope :with_size, ->(size) { where(company_size_id: size.id) }
   scope :operating, -> { where(operating_status: true) }
-  scope :by_country, ->(country_id) { joins(:company_countries).where(company_countries: { country_id: country_id }) }
-  scope :by_state, ->(state_id) { joins(:company_states).where(company_states: { state_id: state_id }) }
+  scope :by_country, lambda { |country_id|
+    joins(:company_countries).where(company_countries: { country_id: country_id })
+  }
+  scope :by_state, lambda { |state_id|
+    joins(:company_states).where(company_states: { state_id: state_id })
+  }
   scope :by_city, ->(city_id) { joins(:company_cities).where(company_cities: { city_id: city_id }) }
-  scope :by_healthcare_domain, ->(domain_id) { joins(:company_domains).where(company_domains: { healthcare_domain_id: domain_id }) }
-  scope :by_specialty, ->(specialty_id) { joins(:company_specializations).where(company_specializations: { company_specialty_id: specialty_id }) }
+  scope :by_healthcare_domain, lambda { |domain_id|
+    joins(:company_domains).where(company_domains: { healthcare_domain_id: domain_id })
+  }
+  scope :by_specialty, lambda { |specialty_id|
+    joins(:company_specializations).where(company_specializations: { company_specialty_id: specialty_id })
+  }
 
   # Instance Methods
   def full_location
