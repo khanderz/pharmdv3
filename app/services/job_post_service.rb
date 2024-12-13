@@ -150,7 +150,8 @@ class JobPostService
 
     qualification_data = call_inspect_predictions(
       attribute_type: 'job_qualifications',
-      input_text: qualifications
+      input_text: qualifications,
+      predict: true
     )
 
     puts "qualification_data: #{qualification_data}"
@@ -333,9 +334,9 @@ class JobPostService
     command = "python3 app/python/ai_processing/main.py '#{attribute_type}' '#{encoded_data}' #{encoded_validation_data} #{predict_flag} #{train_flag} '#{input_data}' "
 
     stdout, stderr, status = Open3.capture3(command)
-    # puts "stdout: #{stdout}"
-    # puts "stderr: #{stderr}"
-    # puts "status: #{status}"
+    puts "stdout: #{stdout}"
+    puts "stderr: #{stderr}"
+    puts "status: #{status}"
 
     if train_flag
       puts "#{BLUE}Training started in the background. Logs will be saved to 'training.log'.#{RESET}"
@@ -401,7 +402,8 @@ class JobPostService
     # puts "Benefits: #{benefits}"
     benefits_data = call_inspect_predictions(
       attribute_type: 'job_benefits',
-      input_text: benefits
+      input_text: benefits,
+      predict: true
     )
 
     parsed_benefits = benefits_data['entities']
@@ -472,7 +474,8 @@ class JobPostService
     # puts "Benefits: #{benefits}"
     benefits_data = call_inspect_predictions(
       attribute_type: 'job_benefits',
-      input_text: benefits
+      input_text: benefits,
+      predict: true
     )
 
     parsed_benefits = benefits_data['entities']
