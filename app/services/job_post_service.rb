@@ -207,7 +207,7 @@ class JobPostService
 
     loop do
       corrected_entities = []
-      
+
       extracted_entities.each_with_index do |(label, tokens), _index|
         label = label.to_s
         token = tokens[0]
@@ -225,7 +225,6 @@ class JobPostService
         end
         label_index = gets.strip.to_i
         label = label_list[label_index] if label_index >= 0 && label_index < label_list.size
-
 
         puts "Enter start index for '#{token}':"
         start_value = gets.strip.to_i
@@ -257,7 +256,6 @@ class JobPostService
         label_index = gets.strip.to_i
         label = label_list[label_index] if label_index >= 0 && label_index < label_list.size
 
-
         puts "Enter start index for '#{token}':"
         start_value = gets.strip.to_i
 
@@ -288,12 +286,12 @@ class JobPostService
         # puts "validation result on rb : #{validation_result}"
         message = validation_result['message'].to_s.strip
         puts "#{GREEN}Validation completed successfully: #{message}#{RESET}"
-        
+
         if message.include?('Validation passed for all entities.')
           training_data << new_training_data
           File.write(training_data_path, JSON.pretty_generate(training_data))
           puts "#{GREEN}Training data validated and saved successfully at #{training_data_path}.#{RESET}"
-          
+
           puts "#{BLUE} Now training model with new validated entities #{RESET}"
           call_inspect_predictions(attribute_type: entity_type, input_text: input_text, train: true)
           puts "corrected entities after training: #{corrected_entities}"
@@ -303,7 +301,7 @@ class JobPostService
           puts "#{RED}Validation completed with errors: #{message}#{RESET}"
           redo_correction = gets.strip.downcase
           break if redo_correction != 'yes' && redo_correction != 'y'
-        end  
+        end
       else
         puts "#{RED}Validation completed with errors: #{message}#{RESET}"
         redo_correction = gets.strip.downcase
@@ -327,7 +325,7 @@ class JobPostService
     train_flag = train
     predict_flag = predict
 
-    encoded_validation_data = validate ? Base64.strict_encode64(validate.to_json) : "None"
+    encoded_validation_data = validate ? Base64.strict_encode64(validate.to_json) : 'None'
 
     input_data = data ? other_json : ''
 
@@ -340,18 +338,17 @@ class JobPostService
 
     if train_flag
       puts "#{BLUE}Training started in the background. Logs will be saved to 'training.log'.#{RESET}"
-      Process.detach(Process.spawn(command)) 
+      Process.detach(Process.spawn(command))
       return nil
     end
 
     if status.success? && !stdout.strip.empty?
       begin
         json_output = stdout.split("\n").find { |line| line.strip.start_with?('{') }
-    
+
         if json_output
           begin
-            parsed_json = JSON.parse(json_output)
-            parsed_json
+            JSON.parse(json_output)
           rescue JSON::ParserError => e
             puts "#{RED}Failed to parse JSON: #{e.message}#{RESET}"
             puts "#{RED}Raw stdout content: #{stdout}#{RESET}"

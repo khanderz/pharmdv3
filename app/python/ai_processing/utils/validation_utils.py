@@ -56,24 +56,20 @@ def validate_entities(data, nlp, file=sys.stdout):
                     f"  Label: {label}\n"
                     f"  Expected: '{expected_token}' got: (start={start}, end={end})\n"
                     f"  Actual: '{spacy_token.text if spacy_token else None}'\n",
-                                        file=file
+                    file=file,
                 )
-        
+
     if fails:
         result = {
             "status": "failure",
-            "message": f"Validation failed for {len(fails)} entities."
+            "message": f"Validation failed for {len(fails)} entities.",
         }
     else:
-        result =  {
-            "status": "success",
-            "message": "Validation passed for all entities."
-        }
-    
+        result = {"status": "success", "message": "Validation passed for all entities."}
+
     print(json.dumps(result), file=file)
 
     return result
-        
 
 
 def fuzzy_match(true_entities, pred_entities, tolerance=1):

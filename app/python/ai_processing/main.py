@@ -44,8 +44,9 @@ MAX_SEQ_LENGTH = 4096
 logging.basicConfig(
     filename="training.log",
     level=logging.INFO,
-    format="%(asctime)s - %(levelname)s - %(message)s"
+    format="%(asctime)s - %(levelname)s - %(message)s",
 )
+
 
 def return_paths(attribute_type):
     if attribute_type == "job_qualifications":
@@ -79,7 +80,7 @@ def return_paths(attribute_type):
 def convert_example_to_biluo(text, nlp, attribute_type):
     """Convert model predictions for the given text to BILUO format."""
     # print(f" attribute_type: {attribute_type}", file=sys.stderr)
-    if attribute_type != 'salary':
+    if attribute_type != "salary":
         tokens = tokenizer(
             text,
             max_length=MAX_SEQ_LENGTH,
@@ -113,9 +114,7 @@ def convert_example_to_biluo(text, nlp, attribute_type):
 
 def inspect_job_post_predictions(text, nlp, attribute_type):
     """Inspect model predictions for job post text."""
-    doc, biluo_tags = convert_example_to_biluo(
-        text, nlp, attribute_type
-    )
+    doc, biluo_tags = convert_example_to_biluo(text, nlp, attribute_type)
 
     entity_data = {}
     current_entity = None
@@ -165,6 +164,7 @@ def inspect_job_post_predictions(text, nlp, attribute_type):
 
     return entity_data
 
+
 def train_model_in_thread(MODEL_SAVE_PATH, nlp, examples):
     try:
         print("\nTraining model in the background...")
@@ -188,7 +188,10 @@ def main(
     data=None,
 ):
     if data:
-        print(f"{BLUE}Calculating entity indices for the provided data...{RESET}", file=sys.stderr)
+        print(
+            f"{BLUE}Calculating entity indices for the provided data...{RESET}",
+            file=sys.stderr,
+        )
         if isinstance(data, str):
             data = json.loads(data)
 
@@ -197,7 +200,10 @@ def main(
         return
 
     if validate_data not in [None, "None", "", "null"]:
-        print(f"{BLUE}Validating entities of the converted data only...{RESET}", file=sys.stderr)
+        print(
+            f"{BLUE}Validating entities of the converted data only...{RESET}",
+            file=sys.stderr,
+        )
 
         decoded = json.loads(base64.b64decode(validate_data).decode("utf-8"))
         validation_result = validate_entities(decoded, nlp, file=sys.stdout)
@@ -210,26 +216,29 @@ def main(
         else:
             result = {
                 "status": "failure",
-                "message": validation_result['message'],
-            }   
+                "message": validation_result["message"],
+            }
 
         sys.stdout.write(json.dumps(result) + "\n")
         return
 
     if train_flag == "true":
-        print(f"{BLUE}Isolating process to train the main extraction model...{RESET}", file=sys.stderr)
-        training_thread = threading.Thread(target=train_model_in_thread, args=(MODEL_SAVE_PATH, nlp, examples))
+        print(
+            f"{BLUE}Isolating process to train the main extraction model...{RESET}",
+            file=sys.stderr,
+        )
+        training_thread = threading.Thread(
+            target=train_model_in_thread, args=(MODEL_SAVE_PATH, nlp, examples)
+        )
         training_thread.start()
         return
-    
+
     if predict_flag:
         input_data = json.loads(base64.b64decode(encoded_data).decode("utf-8"))
         text = input_data.get("text", "")
 
         print(f"{BLUE}Running job post main predictions...{RESET}", file=sys.stderr)
-        predictions = inspect_job_post_predictions(
-            text, nlp, attribute_type
-        )
+        predictions = inspect_job_post_predictions(text, nlp, attribute_type)
 
         output = {
             "status": "success" if predictions else "failure",
@@ -242,7 +251,8 @@ def main(
 if __name__ == "__main__":
     warnings.filterwarnings("ignore")
     print(
-        f"{BLUE}Running job post main extraction model inspection script...{RESET}", file=sys.stderr
+        f"{BLUE}Running job post main extraction model inspection script...{RESET}",
+        file=sys.stderr,
     )
     try:
         attribute_type = sys.argv[1]

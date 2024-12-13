@@ -54,6 +54,7 @@ JOB_BENEFIT_ENTITY_LABELS = [
     "ADDITIONAL_PERKS",
 ]
 
+
 def generate_label_mappings(entity_type, is_biluo):
     if entity_type == "salary":
         ENTITY_LABELS = SALARY_ENTITY_LABELS
@@ -78,7 +79,7 @@ def generate_label_mappings(entity_type, is_biluo):
 
     else:
         for label in ENTITY_LABELS:
-            label_list.extend([label])        
+            label_list.extend([label])
 
     label_to_id = {label: i for i, label in enumerate(label_list)}
     id_to_label = {i: label for i, label in enumerate(label_list)}
@@ -88,10 +89,10 @@ def generate_label_mappings(entity_type, is_biluo):
 
 # Utils
 def get_label_list(entity_type, is_biluo=True):
-    label_list, _, _ = generate_label_mappings(entity_type,is_biluo)
+    label_list, _, _ = generate_label_mappings(entity_type, is_biluo)
     return label_list
 
 
 def get_label_to_id(entity_type, is_biluo=True):
-    _, label_to_id, _ = generate_label_mappings(entity_type,is_biluo)
+    _, label_to_id, _ = generate_label_mappings(entity_type, is_biluo)
     return label_to_id
