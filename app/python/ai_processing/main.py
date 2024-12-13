@@ -188,7 +188,7 @@ def main(
     data=None,
 ):
     if data:
-        print("\nCalculating entity indices for the provided data...", file=sys.stderr)
+        print(f"{BLUE}Calculating entity indices for the provided data...{RESET}", file=sys.stderr)
         if isinstance(data, str):
             data = json.loads(data)
 
@@ -197,7 +197,7 @@ def main(
         return
 
     if validate_data not in [None, "None", "", "null"]:
-        print(f"\n {BLUE}Validating entities of the converted data only...{RESET}", file=sys.stderr)
+        print(f"{BLUE}Validating entities of the converted data only...{RESET}", file=sys.stderr)
 
         decoded = json.loads(base64.b64decode(validate_data).decode("utf-8"))
         validation_result = validate_entities(decoded, nlp, file=sys.stdout)
@@ -217,7 +217,7 @@ def main(
         return
 
     if train_flag == "true":
-        print(f"\n {BLUE}Isolating process to train the main extraction model...{RESET}", file=sys.stderr)
+        print(f"{BLUE}Isolating process to train the main extraction model...{RESET}", file=sys.stderr)
         training_thread = threading.Thread(target=train_model_in_thread, args=(MODEL_SAVE_PATH, nlp, examples))
         training_thread.start()
         return
@@ -226,7 +226,7 @@ def main(
         input_data = json.loads(base64.b64decode(encoded_data).decode("utf-8"))
         text = input_data.get("text", "")
 
-        print("\n{BLUE}Running job post main predictions...{RESET}", file=sys.stderr)
+        print(f"{BLUE}Running job post main predictions...{RESET}", file=sys.stderr)
         predictions = inspect_job_post_predictions(
             text, nlp, attribute_type
         )
@@ -242,7 +242,7 @@ def main(
 if __name__ == "__main__":
     warnings.filterwarnings("ignore")
     print(
-        "\n{BLUE}Running job post main extraction model inspection script...{RESET}", file=sys.stderr
+        f"{BLUE}Running job post main extraction model inspection script...{RESET}", file=sys.stderr
     )
     try:
         attribute_type = sys.argv[1]

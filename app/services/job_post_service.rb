@@ -96,13 +96,9 @@ class JobPostService
       predict: true
     )
 
-    # puts "description_data: #{description_data}"
-    # Associate Director
-
     parsed_descriptions = description_data['entities']
     corrected_descriptions = validate_and_update_training_data(summary, parsed_descriptions,
                                                                'job_description')
-    # puts "corrected_descriptions: #{corrected_descriptions}"
 
     if description_data['status'] == 'success' && corrected_descriptions.any?
       job_post_object = {
@@ -149,24 +145,45 @@ class JobPostService
     end
   end
 
-  def self.print_indices(entity_type, input_text)
-    puts "#{BLUE}Printing indices...#{RESET}"
-    call_inspect_predictions(attribute_type: entity_type, input_text: input_text,
-                             data: input_text)
-  end
+  def self.extract_qualifications(qualifications)
+    puts "#{BLUE}Extracting qualifications from text: #{qualifications}...#{RESET}"
 
-  def self.get_labels_from_python(entity_type)
-    command = "python3 -c \"from app.python.ai_processing.utils.label_mapping import get_label_list; import json; print(json.dumps(get_label_list('#{entity_type}', is_biluo=False)))\""
-    stdout, stderr, status = Open3.capture3(command)
-    # puts "stdout: #{stdout}"
-    # puts "stderr: #{stderr}"
-    # puts "status: #{status}"
+    qualification_data = call_inspect_predictions(
+      attribute_type: 'job_qualifications',
+      input_text: qualifications
+    )
 
-    if status.success?
-      JSON.parse(stdout)
+    puts "qualification_data: #{qualification_data}"
+
+    parsed_qualifications = qualification_data['entities']
+    puts "parsed_qualifications: #{parsed_qualifications}"
+    corrected_qualifications = validate_and_update_training_data(qualifications,
+                                                                 parsed_qualifications, 'job_qualifications')
+
+    if qualification_data['status'] == 'success' && corrected_qualifications.any?
+      job_post_object = {
+        qualifications: nil,
+        credentials: nil,
+        education: nil,
+        experience: nil,
+      }
+
+      corrected_qualifications.each do |entity|
+        case entity['label']
+        when 'QUALIFICATIONS'
+          job_post_object[:qualifications] = entity['token']
+        when 'CREDENTIALS'
+          job_post_object[:credentials] = entity['token']
+        when 'EDUCATION'
+          job_post_object[:education] = entity['token']
+        when 'EXPERIENCE'
+          job_post_object[:experience] = entity['token']
+        else
+          puts "#{RED}Unexpected label: #{entity['label']}#{RESET}"
+        end
+      end
     else
-      puts "#{RED}Error fetching labels: #{stderr}#{RESET}"
-      []
+      puts "#{RED}Failed to extract qualifications data.#{RESET}"
     end
   end
 
@@ -184,7 +201,7 @@ class JobPostService
     label_list = get_labels_from_python(entity_type)
     if label_list.empty?
       puts "#{RED}Failed to get label for entity type: #{entity_type}#{RESET}"
-      return
+      return []
     end
 
     loop do
@@ -275,18 +292,24 @@ class JobPostService
           training_data << new_training_data
           File.write(training_data_path, JSON.pretty_generate(training_data))
           puts "#{GREEN}Training data validated and saved successfully at #{training_data_path}.#{RESET}"
-
+          
           puts "#{BLUE} Now training model with new validated entities #{RESET}"
           call_inspect_predictions(attribute_type: entity_type, input_text: input_text, train: true)
-          break
+          puts "corrected entities after training: #{corrected_entities}"
+          return corrected_entities
+          # break
         else
           puts "#{RED}Validation completed with errors: #{message}#{RESET}"
+          redo_correction = gets.strip.downcase
+          break if redo_correction != 'yes' && redo_correction != 'y'
         end  
       else
         puts "#{RED}Validation completed with errors: #{message}#{RESET}"
         redo_correction = gets.strip.downcase
         break if redo_correction != 'yes' && redo_correction != 'y'
       end
+      puts "corrected entities after training 2: #{corrected_entities}"
+      corrected_entities
     end
   end
 
@@ -310,13 +333,13 @@ class JobPostService
     command = "python3 app/python/ai_processing/main.py '#{attribute_type}' '#{encoded_data}' #{encoded_validation_data} #{predict_flag} #{train_flag} '#{input_data}' "
 
     stdout, stderr, status = Open3.capture3(command)
-    puts "stdout: #{stdout}"
-    puts "stderr: #{stderr}"
+    # puts "stdout: #{stdout}"
+    # puts "stderr: #{stderr}"
     # puts "status: #{status}"
 
     if train_flag
       puts "#{BLUE}Training started in the background. Logs will be saved to 'training.log'.#{RESET}"
-      Process.spawn(command) 
+      Process.detach(Process.spawn(command)) 
       return nil
     end
 
@@ -352,43 +375,24 @@ class JobPostService
     data.gsub(/\n+/, ' ').strip
   end
 
-  def self.extract_qualifications(qualifications)
-    # puts "Extracting qualifications from text: #{qualifications_text}..."
+  def self.print_indices(entity_type, input_text)
+    puts "#{BLUE}Printing indices...#{RESET}"
+    call_inspect_predictions(attribute_type: entity_type, input_text: input_text,
+                             data: input_text)
+  end
 
-    qualification_data = call_inspect_predictions(
-      attribute_type: 'job_qualifications',
-      input_text: qualifications
-    )
+  def self.get_labels_from_python(entity_type)
+    command = "python3 -c \"from app.python.ai_processing.utils.label_mapping import get_label_list; import json; print(json.dumps(get_label_list('#{entity_type}', is_biluo=False)))\""
+    stdout, stderr, status = Open3.capture3(command)
+    # puts "stdout: #{stdout}"
+    # puts "stderr: #{stderr}"
+    # puts "status: #{status}"
 
-    parsed_qualifications = qualification_data['entities']
-    puts "parsed_qualifications: #{parsed_qualifications}"
-    corrected_qualifications = validate_and_update_training_data(qualifications,
-                                                                 parsed_qualifications, 'job_qualifications')
-
-    if qualification_data['status'] == 'success' && corrected_qualifications.any?
-      job_post_object = {
-        qualifications: nil,
-        credentials: nil,
-        education: nil,
-        experience: nil,
-      }
-
-      corrected_qualifications.each do |entity|
-        case entity['label']
-        when 'QUALIFICATIONS'
-          job_post_object[:qualifications] = entity['token']
-        when 'CREDENTIALS'
-          job_post_object[:credentials] = entity['token']
-        when 'EDUCATION'
-          job_post_object[:education] = entity['token']
-        when 'EXPERIENCE'
-          job_post_object[:experience] = entity['token']
-        else
-          puts "#{RED}Unexpected label: #{entity['label']}#{RESET}"
-        end
-      end
+    if status.success?
+      JSON.parse(stdout)
     else
-      puts "#{RED}Failed to extract qualifications data.#{RESET}"
+      puts "#{RED}Error fetching labels: #{stderr}#{RESET}"
+      []
     end
   end
 
