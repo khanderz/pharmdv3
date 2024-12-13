@@ -22,7 +22,7 @@ class JobPostService
   # end
 
   def self.split_descriptions(job_post)
-    puts 'Preprocessing job description...'
+    puts "#{BLUE}Preprocessing job description...#{RESET}"
     # puts "job post: #{job_post}"
     structured_data = preprocess_job_description(job_post['content'])
     # puts "structured_data: #{structured_data}"
@@ -58,7 +58,7 @@ class JobPostService
   end
 
   def self.preprocess_job_description(job_description)
-    puts 'Running description splitter...'
+    puts "#{BLUE}Running description splitter...#{RESET}"
     # puts "job_description: #{job_description}"
 
     python_script_path = 'app/python/ai_processing/utils/description_splitter.py'
@@ -88,7 +88,7 @@ class JobPostService
   end
 
   def self.extract_descriptions(summary)
-    puts 'Extracting descriptions...'
+    puts "#{BLUE}Extracting descriptions...#{RESET}"
     # puts "Summary: #{summary}"
     description_data = call_inspect_predictions(
       attribute_type: 'job_description',
@@ -102,7 +102,7 @@ class JobPostService
     parsed_descriptions = description_data['entities']
     corrected_descriptions = validate_and_update_training_data(summary, parsed_descriptions,
                                                                'job_description')
-    puts "corrected_descriptions: #{corrected_descriptions}"
+    # puts "corrected_descriptions: #{corrected_descriptions}"
 
     if description_data['status'] == 'success' && corrected_descriptions.any?
       job_post_object = {
@@ -156,10 +156,23 @@ class JobPostService
                              data: input_text)
   end
 
+  def self.get_labels_from_python(entity_type)
+    command = "python3 -c \"from app.python.ai_processing.utils.label_mapping import get_label_list; import json; print(json.dumps(get_label_list('#{entity_type}', is_biluo=False)))\""
+    stdout, stderr, status = Open3.capture3(command)
+    # puts "stdout: #{stdout}"
+    # puts "stderr: #{stderr}"
+    # puts "status: #{status}"
 
+    if status.success?
+      JSON.parse(stdout)
+    else
+      puts "#{RED}Error fetching labels: #{stderr}#{RESET}"
+      []
+    end
+  end
 
   def self.validate_and_update_training_data(input_text, extracted_entities, entity_type)
-    puts "Validating #{entity_type} entities..."
+    puts "#{BLUE}Validating #{entity_type} entities...#{RESET}"
     # puts "Extracted entities: #{extracted_entities}"
 
     training_data_path = "app/python/ai_processing/#{entity_type}/data/train_data_spacy.json"
@@ -168,6 +181,12 @@ class JobPostService
 
     text = clean_text(input_text)
     print_indices(entity_type, text)
+
+    label_list = get_labels_from_python(entity_type)
+    if label_list.empty?
+      puts "#{RED}Failed to get label for entity type: #{entity_type}#{RESET}"
+      return
+    end
 
     loop do
       corrected_entities = []
@@ -183,12 +202,13 @@ class JobPostService
           token = gets.strip
         end
 
-        puts "Is the label '#{label}' correct for this #{token}? (yes/no)"
-        label_confirmation = gets.strip.downcase
-        if label_confirmation != 'yes' && label_confirmation != 'y'
-          puts "Enter the correct label (e.g., 'COMPENSATION'):"
-          label = gets.strip
+        puts "Select the correct label for this token (#{token}):"
+        label_list.each_with_index do |lbl, idx|
+          puts "#{idx}: #{lbl}"
         end
+        label_index = gets.strip.to_i
+        label = label_list[label_index] if label_index >= 0 && label_index < label_list.size
+
 
         puts "Enter start index for '#{token}':"
         start_value = gets.strip.to_i
@@ -213,8 +233,13 @@ class JobPostService
         puts 'Enter the token for the missing entity:'
         token = gets.strip
 
-        puts "Enter the label for the missing entity (e.g., 'COMPENSATION'):"
-        label = gets.strip
+        puts "Select the label for this token (#{token}):"
+        label_list.each_with_index do |lbl, idx|
+          puts "#{idx}: #{lbl}"
+        end
+        label_index = gets.strip.to_i
+        label = label_list[label_index] if label_index >= 0 && label_index < label_list.size
+
 
         puts "Enter start index for '#{token}':"
         start_value = gets.strip.to_i
@@ -252,7 +277,7 @@ class JobPostService
           File.write(training_data_path, JSON.pretty_generate(training_data))
           puts "#{GREEN}Training data validated and saved successfully at #{training_data_path}.#{RESET}"
 
-          puts "#{BLUE} Now training data #{RESET}"
+          puts "#{BLUE} Now training model with new validated entities #{RESET}"
           call_inspect_predictions(attribute_type: entity_type, input_text: input_text, train: true)
           break
         else
@@ -267,7 +292,7 @@ class JobPostService
   end
 
   def self.call_inspect_predictions(attribute_type:, input_text:, validate: nil, predict: false, train: false, data: nil)
-    puts "Calling inspect predictions for #{attribute_type}..."
+    puts "#{BLUE}Calling inspect predictions for #{attribute_type}...#{RESET}"
     input_json = { text: input_text }.to_json
     input_text = input_text.strip.sub(/^:/, '')
     input_text = input_text.strip.gsub(/^\s*[:\u200B]+/, '')
@@ -277,13 +302,14 @@ class JobPostService
     train_flag = train
     predict_flag = predict
 
-    puts "validate raw : #{validate}"
     encoded_validation_data = validate ? Base64.strict_encode64(validate.to_json) : "None"
 
     input_data = data ? other_json : ''
+
     puts "validate_data before : #{encoded_validation_data}, train_flag: #{train_flag}"
     # puts "attribute type: #{attribute_type}"
     puts "predict_flag: #{predict_flag}"
+
     command = "python3 app/python/ai_processing/main.py '#{attribute_type}' '#{encoded_data}' #{encoded_validation_data} #{predict_flag} #{train_flag} '#{input_data}' "
 
     stdout, stderr, status = Open3.capture3(command)

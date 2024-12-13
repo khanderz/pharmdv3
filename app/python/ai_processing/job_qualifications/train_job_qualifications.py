@@ -64,7 +64,7 @@ if "ner" not in qualifications_nlp.pipe_names:
     ner = qualifications_nlp.add_pipe("ner")
     print(f"{RED}Added NER pipe to blank model: {qualifications_nlp.pipe_names}{RESET}")
 
-    for label in get_label_list(entity_type="job_qualification"):
+    for label in get_label_list(entity_type="job_qualifications"):
         ner.add_label(label)
 
     spacy.tokens.Doc.set_extension("index", default=None, force=True)
