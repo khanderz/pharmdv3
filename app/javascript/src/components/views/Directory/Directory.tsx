@@ -19,7 +19,7 @@ export const Directory = () => {
   }, [key]);
 
   const { companies, loading, error } = useCompanies();
-  console.log({ companies });
+  // console.log({ companies });
   // useEffect(() => {
   //   setCompanies(companiesData);
   //   setLoading(loadingReturn);

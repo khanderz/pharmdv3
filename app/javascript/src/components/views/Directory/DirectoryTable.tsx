@@ -46,8 +46,8 @@ export const DirectoryTable = ({
   const renderDataHeaders = dataHeaders({ open });
   const dataAccessors = renderDataHeaders.map((key: any) => key['field']);
   const tableData = getTableData({ data, dataAccessors });
+  console.log({ data });
 
-  console.log({ tableData });
   const handleUpdateRow = (
     params: GridRowParams,
     event: MuiEvent<React.MouseEvent>
@@ -57,6 +57,7 @@ export const DirectoryTable = ({
 
   const companyToPass = (companyId: Company['id']) => {
     const company = data.find((company) => company.id === companyId);
+    console.log({ company });
     return company;
   };
 
@@ -112,7 +113,7 @@ export const CompanyDetailsPanel = (companyId: GridRowId) => {
   const fetchCompanyDetails = async (id: number) => {
     try {
       setLoading(true);
-      const response = await axios.get(`/companies/${id}`);
+      const response = await axios.get(`/companies/${companyId['companyId']}`);
       setCompanyData(response.data);
       setError(null);
     } catch (err) {
@@ -158,6 +159,47 @@ export const CompanyDetailsPanel = (companyId: GridRowId) => {
       </Box>
     );
   }
+  console.log({ companyData });
+  //   companyData:
+  // acquired_by: ""
+  // ats_id: "1910genetics"
+  // ats_type: {ats_type_name: 'Greenhouse'}
+  // ats_type_id: 8
+  // company_cities: [{…}]
+  // city  :   {city_name: 'Boston'}
+  // city_id  :   3
+  // id: 1654
+  // company_countries: [{…}]
+  // company_description: "1910 Genetics is the only biotechnology company advancing small and large molecule drug discovery with a multimodal AI platform powered by laboratory automation. We integrate AI with three proprietary data streams – computational data, wet lab proxy biological data, and wet lab ground truth biological data – to deliver novel drug candidates and software solutions to leading pharma and tech partners, and advance our internal pipeline for neurological, autoimmune diseases, and cancer."
+  // company_domains: (6) [{…}, {…}, {…}, {…}, {…}, {…}]
+  //   company_id: 1
+  // healthcare_domain: {key: 'DIGITAL_HEALTH', value: 'Digital Health'}
+  // healthcare_domain_id: 5
+  // id: 4578
+  // company_name: "1910 genetics"
+  // company_size: {size_range: '11-50'}
+  // company_size_id: 2
+  // company_specializations: []
+  // company_states: [{…}]
+  // company_tagline: "Advancing small and large molecule drug discovery with a multimodal AI platform powered by laboratory automation."
+  // company_type: {}
+  // company_type_id: 5
+  // company_url: "http://www.1910genetics.com"
+  // created_at: "2024-12-05T20:28:09.190Z"
+  // error_details: null
+  // funding_type_id: null
+  // healthcare_domains: (6) [{…}, {…}, {…}, {…}, {…}, {…}]
+  // {key: 'DIGITAL_HEALTH', value: 'Digital Health'}
+  // id: 1
+  // is_completely_remote: null
+  // job_posts: []
+  // linkedin_url: "https://www.linkedin.com/company/1910genetics"
+  // logo_url: "https://na1.hubspot-logos.com/1910genetics.com"
+  // operating_status: true
+  // reference_id: null
+  // resolved: null
+  // updated_at: "2024-12-06T15:31:49.882Z"
+  // year_founded: 2018
 
   return (
     <Box sx={{ height: 400, width: '100%' }}>

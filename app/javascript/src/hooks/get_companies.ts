@@ -126,6 +126,6 @@ export const useCompanies = () => {
 
   //   fetchCompanies();
   // }, []);
-  console.log({ companies });
+  // console.log({ companies });
   return { companies, loading, error };
 };
