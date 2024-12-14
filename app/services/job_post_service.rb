@@ -39,13 +39,19 @@ class JobPostService
     qualifications = structured_data['qualifications']
     benefits = structured_data['benefits'].empty? ? qualifications : structured_data['benefits']
 
-    data_return << { 'description' => description } if description
-    data_return << { 'summary' => summary } if summary
-    data_return << { 'responsibilities' => responsibilities } if responsibilities
-    puts "data return : #{data_return}"
+    if description.is_a?(Hash) && summary
+      description[:job_description] = summary
+      data_return << { 'description' => description }
+    elsif description
+      data_return << { 'description' => description }
+    end
 
     processed_description = extract_descriptions(summary)
     data_return << { 'description' => processed_description } if processed_description
+
+    puts "data return : #{data_return}"
+
+    data_return << { 'responsibilities' => responsibilities } if responsibilities
     puts "data return : #{data_return}"
 
     processed_qualifications = extract_qualifications(qualifications)

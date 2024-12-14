@@ -9,7 +9,7 @@ class JobRole < ApplicationRecord
 
   validates :role_name, presence: true, uniqueness: true
 
-  def self.find_or_create_job_role(job_title)
+  def self.find_or_create_job_role(job_title, job_post_url)
     titles = Utils::TitleCleaner.clean_title(job_title)
     puts " titles #{titles}"
     cleaned_title = titles[:cleaned_title]
@@ -35,7 +35,7 @@ class JobRole < ApplicationRecord
       Adjudication.create!(
         adjudicatable_type: 'JobRole',
         adjudicatable_id: job_role.id,
-        error_details: "Job Role: #{cleaned_title} not found in existing records",
+        error_details: "Job Role: #{cleaned_title} for #{job_post_url} not found in existing records",
         resolved: false
       )
       puts "Adjudication created for new job role: #{cleaned_title}."

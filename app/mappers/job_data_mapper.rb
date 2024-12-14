@@ -64,7 +64,7 @@ class JobDataMapper
       job_salary_currency_id: nil,
       job_salary_interval_id: nil,
 
-      job_role_id: JobRole.find_or_create_job_role(job['title'] || job['text']),
+      job_role_id: JobRole.find_or_create_job_role(job['title'] || job['text'], job['absolute_url'] || job['hostedUrl'])&.id,
       job_active: true
     }
   end

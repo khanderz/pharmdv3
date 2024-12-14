@@ -19,19 +19,29 @@ class AiUpdater
       field_data.each do |key, value|
         case key
         when 'description', 'summary'
+#           JOB_DESCRIPTION_ENTITY_LABELS = [
+#     "DESCRIPTION",
+#     "JOB_ROLE",
+#     "JOB_SENIORITY",
+#     "JOB_DEPT",
+#     "JOB_TEAM",
+#     "COMMITMENT",
+#     "JOB_SETTING",
+#     "JOB_COUNTRY",
+#     "JOB_CITY",
+#     "JOB_STATE",
+# ]
           puts "key is #{key}"
           puts "value is #{value}"
-          job_post_data[:job_description] ||= {}
-          job_post_data[:job_description]['description'] ||= ''
-          unless job_post_data[:job_description]['description'].empty?
-            job_post_data[:job_description]['description'] += ' '
-          end
-          job_post_data[:job_description]['description'] += value
+          job_post_data[:job_description] ||= ''
+          job_post_data[:job_description] += ' ' unless job_post_data[:job_description].empty?
+          job_post_data[:job_description] += value.to_s.strip
 
-          description = { 'description' => processed_description }
-          role = value[:job_role]
-          job_post_data[:job_role_id] =
-            JobRole.find_or_adjudicate_role(role, company.id, job_post_data[:job_url]).id
+          if value.is_a?(Hash)
+            job_post_data[:job_role_id] = JobRole.find_or_create_job_role(value[:job_role], job_post_data[:job_url])&.id
+            job_post_data[:team_id] = Team.find_team(value[:job_team], 'JobPost', job_post_data[:job_url])&.id if value[:job_team]
+            job_post_data[:department_id] = Department.find_department(value[:job_dept], 'JobPost', job_post_data[:job_url])&.id  if value[:job_dept]
+          end
 
           #  need to populate to seniority table not job post table
           if value[:job_seniority]
@@ -48,6 +58,7 @@ class AiUpdater
           country = value[:job_country]
           city = value[:job_city]
           state = value[:job_state]
+
         when 'responsibilities'
           puts "key is #{key}"
           puts "value is #{value}"
@@ -59,14 +70,38 @@ class AiUpdater
             end
             job_post_data[:responsibilities] += value
           end
+
         when 'qualifications'
+#           JOB_QUALIFICATION_ENTITY_LABELS = [
+#     "QUALIFICATIONS",
+#     "CREDENTIALS",
+#     "EDUCATION",
+#     "EXPERIENCE",
+# ]
           puts "key is #{key}"
           puts "value is #{value}"
           job_post_data[:job_qualifications] ||= ''
           credentials = value[:credentials]
           education = value[:education]
           experience = value[:experience]
+
         when 'benefits'
+#           JOB_BENEFIT_ENTITY_LABELS = [
+#     "COMMITMENT",
+#     "JOB_SETTING",
+#     "JOB_COUNTRY",
+#     "JOB_CITY",
+#     "JOB_STATE",
+#     "COMPENSATION",
+#     "RETIREMENT",
+#     "OFFICE_LIFE",
+#     "PROFESSIONAL_DEVELOPMENT",
+#     "WELLNESS",
+#     "PARENTAL",
+#     "WORK_LIFE_BALANCE",
+#     "VISA_SPONSORSHIP",
+#     "ADDITIONAL_PERKS",
+# ]
           puts "key is #{key}"
           puts "value is #{value}"
           commitment = value[:commitment]
@@ -83,7 +118,17 @@ class AiUpdater
           work_life_balance = value[:work_life_balance]
           visa_sponsorship = value[:visa_sponsorship]
           additional_perks = value[:additional_perks]
+
         when 'salary'
+#           SALARY_ENTITY_LABELS = [
+#     "SALARY_MIN",
+#     "SALARY_MAX",
+#     "SALARY_SINGLE",
+#     "CURRENCY",
+#     "INTERVAL",
+#     "COMMITMENT",
+#     "JOB_COUNTRY",
+# ]
           puts "key is #{key}"
           puts "value is #{value}"
           if value[:job_salary_min]

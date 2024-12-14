@@ -36,7 +36,7 @@ class GreenhouseDataMapper
     puts "Job Salary Max: #{job_post_data[:job_salary_max] || 'N/A'}"
     puts "Job Salary Currency ID: #{job_post_data[:job_salary_currency_id] || 'N/A'}"
     puts "Job Salary Interval ID: #{job_post_data[:job_salary_interval_id] || 'N/A'}"
-    puts "Job Role ID: #{job_post_data[:job_role_id].id}"
+    puts "Job Role ID: #{job_post_data[:job_role_id]}"
     puts "Job Active: #{job_post_data[:job_active] ? 'Yes' : 'No'}"
     puts '--- End of Job Post Data ---'
   end
