@@ -161,10 +161,8 @@ class JobPostService
       predict: true
     )
 
-    puts "qualification_data: #{qualification_data}"
-
     parsed_qualifications = qualification_data['entities']
-    puts "parsed_qualifications: #{parsed_qualifications}"
+
     corrected_qualifications = validate_and_update_training_data(qualifications,
                                                                  parsed_qualifications, 'job_qualifications')
 
@@ -270,7 +268,7 @@ class JobPostService
   def self.extract_salary(salary)
     puts 'Starting validation for benefits...'
 
-    puts "Salary: #{salary}"
+    # puts "Salary: #{salary}"
     compensation_data = call_inspect_predictions(
       attribute_type: 'salary',
       input_text: salary,
@@ -367,7 +365,7 @@ class JobPostService
         if corrections_exist
           puts "Enter start index for '#{token}':"
           start_value = gets.strip.to_i
-  
+
           puts "Enter end index for '#{token}':"
           end_value = gets.strip.to_i
         end
@@ -405,7 +403,7 @@ class JobPostService
         if corrections_exist
           puts "Enter start index for '#{token}':"
           start_value = gets.strip.to_i
-  
+
           puts "Enter end index for '#{token}':"
           end_value = gets.strip.to_i
         end

@@ -19,6 +19,8 @@ class AiUpdater
       field_data.each do |key, value|
         case key
         when 'description', 'summary'
+          puts "key is #{key}"
+          puts "value is #{value}"
           job_post_data[:job_description] ||= {}
           job_post_data[:job_description]['description'] ||= ''
           unless job_post_data[:job_description]['description'].empty?
@@ -47,6 +49,8 @@ class AiUpdater
           city = value[:job_city]
           state = value[:job_state]
         when 'responsibilities'
+          puts "key is #{key}"
+          puts "value is #{value}"
           if job_post_data[:responsibilities].to_s.empty?
             job_post_data[:responsibilities] = value
           else
@@ -56,11 +60,15 @@ class AiUpdater
             job_post_data[:responsibilities] += value
           end
         when 'qualifications'
+          puts "key is #{key}"
+          puts "value is #{value}"
           job_post_data[:job_qualifications] ||= ''
           credentials = value[:credentials]
           education = value[:education]
           experience = value[:experience]
         when 'benefits'
+          puts "key is #{key}"
+          puts "value is #{value}"
           commitment = value[:commitment]
           setting = value[:setting]
           country = value[:country]
@@ -76,9 +84,20 @@ class AiUpdater
           visa_sponsorship = value[:visa_sponsorship]
           additional_perks = value[:additional_perks]
         when 'salary'
-          job_post_data[:job_salary_min] = value[:job_salary_min] if value[:job_salary_min]
-          job_post_data[:job_salary_max] = value[:job_salary_max] if value[:job_salary_max]
-          job_post_data[:job_salary_single] = value[:job_salary_single] if value[:job_salary_single]
+          puts "key is #{key}"
+          puts "value is #{value}"
+          if value[:job_salary_min]
+            job_post_data[:job_salary_min] =
+              value[:job_salary_min]
+          end
+          if value[:job_salary_max]
+            job_post_data[:job_salary_max] =
+              value[:job_salary_max]
+          end
+          if value[:job_salary_single]
+            job_post_data[:job_salary_single] =
+              value[:job_salary_single]
+          end
 
           currency_id = if value[:job_salary_currency]
                           JobSalaryCurrency.find_or_adjudicate_currency(
@@ -105,6 +124,6 @@ class AiUpdater
       # end
     end
 
-    updated
+    job_post_data
   end
 end
