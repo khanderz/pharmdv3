@@ -42,17 +42,23 @@ class JobPostService
     data_return << { 'description' => description } if description
     data_return << { 'summary' => summary } if summary
     data_return << { 'responsibilities' => responsibilities } if responsibilities
+    puts "data return : #{data_return}"
 
     processed_description = extract_descriptions(summary)
     data_return << { 'description' => processed_description } if processed_description
+    puts "data return : #{data_return}"
 
     processed_qualifications = extract_qualifications(qualifications)
     data_return << { 'qualifications' => processed_qualifications } if processed_qualifications
+    puts "data return : #{data_return}"
+
     processed_benefits = extract_benefits(benefits)
     data_return << { 'benefits' => processed_benefits } if processed_benefits
 
-    salary_data = extract_salary(benefits)
+    puts "data return : #{data_return}"
+    salary_data = extract_salary(processed_benefits[:job_compensation])
     data_return << { 'salary' => salary_data } if salary_data
+    puts "data return : #{data_return}"
 
     data_return
   end
@@ -143,6 +149,7 @@ class JobPostService
     else
       puts "#{RED}Failed to extract description data.#{RESET}"
     end
+    job_post_object
   end
 
   def self.extract_qualifications(qualifications)
@@ -183,15 +190,15 @@ class JobPostService
           puts "#{RED}Unexpected label: #{entity['label']}#{RESET}"
         end
       end
-      puts "job_post_object: #{job_post_object}"
     else
       puts "#{RED}Failed to extract qualifications data.#{RESET}"
     end
+    job_post_object
   end
 
   def self.extract_benefits(benefits)
     puts 'Starting validation for benefits...'
-    # puts "Benefits: #{benefits}"
+
     benefits_data = call_inspect_predictions(
       attribute_type: 'job_benefits',
       input_text: benefits,
@@ -254,33 +261,23 @@ class JobPostService
           puts "#{RED}Unexpected label: #{entity['label']}#{RESET}"
         end
       end
-      puts "job_post_object: #{job_post_object}"
     else
       puts "#{RED}Failed to extract benefits data.#{RESET}"
     end
+    job_post_object
   end
 
-  def self.extract_salary(benefits)
+  def self.extract_salary(salary)
     puts 'Starting validation for benefits...'
-    # $152,000 - $199,000     COMPENSATION
 
-    # puts "Benefits: #{benefits}"
-    benefits_data = call_inspect_predictions(
-      attribute_type: 'job_benefits',
-      input_text: benefits,
+    puts "Salary: #{salary}"
+    compensation_data = call_inspect_predictions(
+      attribute_type: 'salary',
+      input_text: salary,
       predict: true
     )
 
-    parsed_benefits = benefits_data['entities']
-    corrected_benefits = validate_and_update_training_data(benefits, parsed_benefits,
-                                                           'job_benefits')
-
-    compensation_data = call_inspect_predictions(
-      attribute_type: 'salary',
-      input_text: corrected_benefits[0]['token'] # need to make dynamic
-    )
-
-    corrected_compensation_data = validate_and_update_training_data(corrected_benefits[0]['token'],
+    corrected_compensation_data = validate_and_update_training_data(salary,
                                                                     compensation_data['entities'], 'salary')
 
     job_post_object = {
@@ -316,8 +313,6 @@ class JobPostService
     else
       puts "#{RED}Failed to extract compensation data.#{RESET}"
     end
-
-    # puts "Job Post Object: #{job_post_object}"
     job_post_object
   end
 
@@ -340,9 +335,11 @@ class JobPostService
 
     validation_attempts = 0
     max_attempts = 3
+    corrections_exist = false
 
     loop do
       corrected_entities = []
+      corrections_exist = false
       extracted_entities.each_with_index do |(label, tokens), _index|
         label = label.to_s
         token = tokens[0]
@@ -352,20 +349,28 @@ class JobPostService
         if token_confirmation != 'yes' && token_confirmation != 'y'
           puts 'Enter the correct token:'
           token = gets.strip
+          corrections_exist = true
         end
 
-        puts "Select the correct label for this token (#{token}):"
-        label_list.each_with_index do |lbl, idx|
-          puts "#{idx}: #{lbl}"
+        puts "Is the label '#{label}' for token '#{token}' correct? (yes/no)"
+        label_confirmation = gets.strip.downcase
+        if label_confirmation != 'yes' && label_confirmation != 'y'
+          puts "Select the correct label for this token (#{token}):"
+          label_list.each_with_index do |lbl, idx|
+            puts "#{idx}: #{lbl}"
+          end
+          label_index = gets.strip.to_i
+          label = label_list[label_index] if label_index >= 0 && label_index < label_list.size
+          corrections_exist = true
         end
-        label_index = gets.strip.to_i
-        label = label_list[label_index] if label_index >= 0 && label_index < label_list.size
 
-        puts "Enter start index for '#{token}':"
-        start_value = gets.strip.to_i
-
-        puts "Enter end index for '#{token}':"
-        end_value = gets.strip.to_i
+        if corrections_exist
+          puts "Enter start index for '#{token}':"
+          start_value = gets.strip.to_i
+  
+          puts "Enter end index for '#{token}':"
+          end_value = gets.strip.to_i
+        end
 
         corrected_entities << {
           'start' => start_value,
@@ -383,19 +388,27 @@ class JobPostService
 
         puts 'Enter the token for the missing entity:'
         token = gets.strip
+        corrections_exist = true
 
-        puts "Select the label for this token (#{token}):"
-        label_list.each_with_index do |lbl, idx|
-          puts "#{idx}: #{lbl}"
+        puts "Is the label '#{label}' for token '#{token}' correct? (yes/no)"
+        label_confirmation = gets.strip.downcase
+        if label_confirmation != 'yes' && label_confirmation != 'y'
+          puts "Select the correct label for this token (#{token}):"
+          label_list.each_with_index do |lbl, idx|
+            puts "#{idx}: #{lbl}"
+          end
+          label_index = gets.strip.to_i
+          label = label_list[label_index] if label_index >= 0 && label_index < label_list.size
+          corrections_exist = true
         end
-        label_index = gets.strip.to_i
-        label = label_list[label_index] if label_index >= 0 && label_index < label_list.size
 
-        puts "Enter start index for '#{token}':"
-        start_value = gets.strip.to_i
-
-        puts "Enter end index for '#{token}':"
-        end_value = gets.strip.to_i
+        if corrections_exist
+          puts "Enter start index for '#{token}':"
+          start_value = gets.strip.to_i
+  
+          puts "Enter end index for '#{token}':"
+          end_value = gets.strip.to_i
+        end
 
         corrected_entities << {
           'start' => start_value,
@@ -410,6 +423,11 @@ class JobPostService
         'entities' => corrected_entities
       }
       puts "new_training_data: #{new_training_data}"
+
+      if corrections_exist == false
+        puts "#{ORANGE}No entities to validate. Skipping validation and proceeding to next step.#{RESET}"
+        return corrected_entities
+      end
 
       validation_result = call_inspect_predictions(
         attribute_type: entity_type,
@@ -452,7 +470,6 @@ class JobPostService
     puts "corrected entities after training 2: #{corrected_entities}"
     corrected_entities
   end
-  # end
 
   def self.call_inspect_predictions(attribute_type:, input_text:, validate: nil, predict: false, train: false, data: nil)
     puts "#{BLUE}Calling inspect predictions for #{attribute_type}...#{RESET}"

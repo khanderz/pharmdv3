@@ -13,6 +13,8 @@ class AiUpdater
     ai_data = JobPostService.split_descriptions(job)
     updated = false
 
+    puts "data from AI: #{ai_data}"
+
     ai_data.each do |field_data|
       field_data.each do |key, value|
         case key
