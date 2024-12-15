@@ -108,6 +108,5 @@ class LocationMapper
       adjudicatable_id: job_post.id,
       error_details: error_message
     )
-    puts "Error for #{company.company_name} job post: #{error_message}"
   end
 end

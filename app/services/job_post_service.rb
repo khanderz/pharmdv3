@@ -39,9 +39,7 @@ class JobPostService
     qualifications = structured_data['qualifications']
     benefits = structured_data['benefits'].empty? ? qualifications : structured_data['benefits']
 
-    if description
-      data_return << { 'description' => description }
-    end
+    data_return << { 'description' => description } if description
     # puts "data return / description: #{data_return}"
 
     processed_description = extract_descriptions(summary)

@@ -24,7 +24,6 @@ class Department < ApplicationRecord
         adjudicatable_id: department.id,
         error_details: "Department #{department_name} for #{relation} not found in existing records"
       )
-      puts "#{RED}Department #{department_name} created and logged to adjudications with adjudicatable_type #{adjudicatable_type}.#{RESET}"
     end
     department
   end

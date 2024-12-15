@@ -6,11 +6,13 @@ class State < ApplicationRecord
                   state_param.downcase).first
 
     # log_state_error(state_param, job_post, company) if state.nil?
-    Adjudication.log_error(
-      adjudicatable_type: 'JobPost',
-      adjudicatable_id: job_post.id,
-      error_details: "State '#{state_param}' not found for #{company.company_name} for job #{job_post.job_title}"
-    ) if state.nil?
+    if state.nil?
+      Adjudication.log_error(
+        adjudicatable_type: 'JobPost',
+        adjudicatable_id: job_post.id,
+        error_details: "State '#{state_param}' not found for #{company.company_name} for job #{job_post.job_title}"
+      )
+    end
 
     state
   end

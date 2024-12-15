@@ -6,11 +6,13 @@ class City < ApplicationRecord
                  city_param.downcase, "%#{city_param.downcase}%").first
 
     error_message = "City '#{city_param}' not found for #{company.company_name} for job #{job_post.job_title}"
-    Adjudication.log_error(
-      adjudicatable_type: 'JobPost',
-      adjudicatable_id: job_post.id,
-      error_details: error_message
-    ) if city.nil?
+    if city.nil?
+      Adjudication.log_error(
+        adjudicatable_type: 'JobPost',
+        adjudicatable_id: job_post.id,
+        error_details: error_message
+      )
+    end
 
     city
   end

@@ -56,7 +56,7 @@ class AiUpdater
     ai_data.each do |field_data|
       field_data.each do |key, value|
         case key
-        when 'description' 
+        when 'description'
           puts "key is #{key}"
           puts "value is #{value}"
 
@@ -75,15 +75,18 @@ class AiUpdater
             job_post_data[:job_description] = description if description
 
             if job_post_data[:job_role_id].nil? && job_role
-              job_post_data[:job_role_id] = JobRole.find_or_create_job_role(job_role, job_post_data[:job_url])&.id
+              job_post_data[:job_role_id] =
+                JobRole.find_or_create_job_role(job_role, job_post_data[:job_url])&.id
             end
-          
+
             if job_post_data[:team_id].nil? && job_team
-              job_post_data[:team_id] = Team.find_team(job_team, 'JobPost', job_post_data[:job_url])&.id
+              job_post_data[:team_id] =
+                Team.find_team(job_team, 'JobPost', job_post_data[:job_url])&.id
             end
-          
+
             if job_post_data[:department_id].nil? && job_dept
-              job_post_data[:department_id] = Department.find_department(job_dept, 'JobPost', job_post_data[:job_url])&.id
+              job_post_data[:department_id] =
+                Department.find_department(job_dept, 'JobPost', job_post_data[:job_url])&.id
             end
 
             if job_seniority
@@ -96,9 +99,7 @@ class AiUpdater
               job_post_data[:job_commitment_id] = commitment_id
             end
 
-            if setting 
-              job_post_data[:job_settings].push(setting).uniq!
-            end
+            job_post_data[:job_settings].push(setting).uniq! if setting
 
             if country
               country_id = Country.find_or_adjudicate_country(
@@ -125,16 +126,16 @@ class AiUpdater
 
           responsibilities = value[:responsibilities]
           job_post_data[:job_responsibilities] = responsibilities
-     
+
           puts "responsibilities / job post data is #{job_post_data}"
 
         when 'qualifications'
-#           JOB_QUALIFICATION_ENTITY_LABELS = [
-#     "QUALIFICATIONS",
-#     "CREDENTIALS",
-#     "EDUCATION",
-#     "EXPERIENCE",
-# ]
+          #           JOB_QUALIFICATION_ENTITY_LABELS = [
+          #     "QUALIFICATIONS",
+          #     "CREDENTIALS",
+          #     "EDUCATION",
+          #     "EXPERIENCE",
+          # ]
           puts "key is #{key}"
           puts "value is #{value}"
 
@@ -145,47 +146,50 @@ class AiUpdater
             experience = value[:experience]
 
             job_post_data[:job_qualifications] = qualifications if qualifications
-              
-              if credentials
-                credentials.each do |credential|
-                  credential_id = Credential.find_or_create_credential(credential, job_post_data[:job_url])&.id
-                  job_post_credentials << credential_id if credential_id
-                end
+
+            if credentials
+              credentials.each do |credential|
+                credential_id = Credential.find_or_create_credential(credential,
+                                                                     job_post_data[:job_url])&.id
+                job_post_credentials << credential_id if credential_id
               end
-  
-              if education
-                education.each do |edu|
-                  education_id = Education.find_or_create_education(edu, job_post_data[:job_url])&.id
-                  job_post_educations << education_id if education_id
-                end
+            end
+
+            if education
+              education.each do |edu|
+                education_id = Education.find_or_create_education(edu,
+                                                                  job_post_data[:job_url])&.id
+                job_post_educations << education_id if education_id
               end
-  
-              if experience
-                experience.each do |exp|
-                  experience_id = Experience.find_or_create_experience(exp, job_post_data[:job_url])&.id
-                  job_post_experiences << experience_id if experience_id
-                end
+            end
+
+            if experience
+              experience.each do |exp|
+                experience_id = Experience.find_or_create_experience(exp,
+                                                                     job_post_data[:job_url])&.id
+                job_post_experiences << experience_id if experience_id
               end
+            end
           end
           puts "qualifications / job post data is #{job_post_data}"
 
         when 'benefits'
-#           JOB_BENEFIT_ENTITY_LABELS = [
-#     "COMMITMENT",
-#     "JOB_SETTING",
-#     "JOB_COUNTRY",
-#     "JOB_CITY",
-#     "JOB_STATE",
-#     "COMPENSATION",
-#     "RETIREMENT",
-#     "OFFICE_LIFE",
-#     "PROFESSIONAL_DEVELOPMENT",
-#     "WELLNESS",
-#     "PARENTAL",
-#     "WORK_LIFE_BALANCE",
-#     "VISA_SPONSORSHIP",
-#     "ADDITIONAL_PERKS",
-# ]
+          #           JOB_BENEFIT_ENTITY_LABELS = [
+          #     "COMMITMENT",
+          #     "JOB_SETTING",
+          #     "JOB_COUNTRY",
+          #     "JOB_CITY",
+          #     "JOB_STATE",
+          #     "COMPENSATION",
+          #     "RETIREMENT",
+          #     "OFFICE_LIFE",
+          #     "PROFESSIONAL_DEVELOPMENT",
+          #     "WELLNESS",
+          #     "PARENTAL",
+          #     "WORK_LIFE_BALANCE",
+          #     "VISA_SPONSORSHIP",
+          #     "ADDITIONAL_PERKS",
+          # ]
           puts "key is #{key}"
           puts "value is #{value}"
           commitment = value[:commitment]
@@ -205,15 +209,15 @@ class AiUpdater
           puts "benefits / job post data is #{job_post_data}"
 
         when 'salary'
-#           SALARY_ENTITY_LABELS = [
-#     "SALARY_MIN",
-#     "SALARY_MAX",
-#     "SALARY_SINGLE",
-#     "CURRENCY",
-#     "INTERVAL",
-#     "COMMITMENT",
-#     "JOB_COUNTRY",
-# ]
+          #           SALARY_ENTITY_LABELS = [
+          #     "SALARY_MIN",
+          #     "SALARY_MAX",
+          #     "SALARY_SINGLE",
+          #     "CURRENCY",
+          #     "INTERVAL",
+          #     "COMMITMENT",
+          #     "JOB_COUNTRY",
+          # ]
           puts "key is #{key}"
           puts "value is #{value}"
           if value[:job_salary_min]
@@ -266,7 +270,7 @@ class AiUpdater
     puts "job post skills is #{job_post_skills}"
     puts "job post states is #{job_post_states}"
 
-    return {
+    {
       job_post_data: job_post_data,
       job_post_benefits: job_post_benefits,
       job_post_cities: job_post_cities,

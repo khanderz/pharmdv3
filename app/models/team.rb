@@ -13,20 +13,19 @@ class Team < ApplicationRecord
 
     team = Team.find_by('LOWER(team_name) = ? OR LOWER(?) = ANY (SELECT LOWER(unnest(aliases)))',
                         cleaned_team_name.downcase, cleaned_team_name.downcase)
-    if team
-      return team
-    else
-      team = Team.create!(
-        team_name: cleaned_team_name
-      )
+    return team if team
 
-      Adjudication.log_error(
-        adjudicatable_type: adjudicatable_type,
-        adjudicatable_id: relation.try(:id),
-        error_details: "Team #{team_name} for #{relation} not found in existing records",
-        resolved: false
-      )
-    end
+    team = Team.create!(
+      team_name: cleaned_team_name
+    )
+
+    Adjudication.log_error(
+      adjudicatable_type: adjudicatable_type,
+      adjudicatable_id: relation.try(:id),
+      error_details: "Team #{team_name} for #{relation} not found in existing records",
+      resolved: false
+    )
+
     team
   end
 end
