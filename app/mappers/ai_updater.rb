@@ -150,7 +150,7 @@ class AiUpdater
             if credentials
               credentials.each do |credential|
                 credential_id = Credential.find_or_create_credential(credential,
-                                                                     job_post_data, company)&.id
+                                                                     job_post_data)&.id
                 job_post_credentials << credential_id if credential_id
               end
             end
@@ -158,7 +158,7 @@ class AiUpdater
             if education
               education.each do |edu|
                 education_id = Education.find_or_create_education(edu,
-                                                                  job_post_data[:job_url])&.id
+                                                                  job_post_data)&.id
                 job_post_educations << education_id if education_id
               end
             end
@@ -166,7 +166,7 @@ class AiUpdater
             if experience
               experience.each do |exp|
                 experience_id = Experience.find_or_create_experience(exp,
-                                                                     job_post_data[:job_url])&.id
+                                                                     job_post_data)&.id
                 job_post_experiences << experience_id if experience_id
               end
             end

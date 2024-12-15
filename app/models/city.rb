@@ -5,7 +5,6 @@ class City < ApplicationRecord
     city = where('LOWER(city_name) = ? OR LOWER(aliases::text) LIKE ?',
                  city_param.downcase, "%#{city_param.downcase}%").first
 
-
     if city
       puts "#{GREEN}City #{city_param} found in existing records.#{RESET}"
     else

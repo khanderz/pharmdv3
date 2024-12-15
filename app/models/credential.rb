@@ -1,13 +1,13 @@
 # frozen_string_literal: true
 
 class Credential < ApplicationRecord
-  def self.find_or_create_credential(credential_param, job_post, company)
+  def self.find_or_create_credential(credential_param, job_post)
     credential = where('LOWER(credential_name) = ?', credential_param.downcase).first
 
     if credential
       puts "#{GREEN}Credential #{credential_param} found in existing records.#{RESET}"
     else
-      error_details = "Credential #{credential_param} for #{job_post.job_url} company #{company.company_name} not found in existing records"
+      error_details = "Credential #{credential_param} for #{job_post.job_url} not found in existing records"
       credential = create!(
         credential_name: credential_param,
         error_details: error_details,
