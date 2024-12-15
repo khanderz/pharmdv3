@@ -99,8 +99,9 @@ class JobPost < ApplicationRecord
     end
 
     def create_new_job(company, job_post_data, _job_url)
+      puts "job post data at job post model: #{job_post}"
+
       job_post = JobPost.new(job_post_data)
-      puts "job post data: #{job_post}"
 
       begin
         if job_post.save

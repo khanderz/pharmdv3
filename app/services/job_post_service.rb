@@ -39,32 +39,40 @@ class JobPostService
     qualifications = structured_data['qualifications']
     benefits = structured_data['benefits'].empty? ? qualifications : structured_data['benefits']
 
-    if description.is_a?(Hash) && summary
-      description[:job_description] = summary
-      data_return << { 'description' => description }
-    elsif description
+    if description
       data_return << { 'description' => description }
     end
+    # puts "data return / description: #{data_return}"
 
     processed_description = extract_descriptions(summary)
     data_return << { 'description' => processed_description } if processed_description
 
-    puts "data return : #{data_return}"
+    # puts "data return / processed_description: #{data_return}"
+
+    if summary
+      description_object = data_return.find { |item| item.key?('description') }
+      if description_object && description_object['description'].is_a?(Hash)
+        description_object['description'][:job_description] ||= summary
+      end
+    end
+
+    # puts "data return  / summary: #{data_return}"
 
     data_return << { 'responsibilities' => responsibilities } if responsibilities
-    puts "data return : #{data_return}"
+    # puts "data return / responsibilities : #{data_return}"
 
     processed_qualifications = extract_qualifications(qualifications)
     data_return << { 'qualifications' => processed_qualifications } if processed_qualifications
-    puts "data return : #{data_return}"
+    # puts "data return / qualifications: #{data_return}"
 
     processed_benefits = extract_benefits(benefits)
     data_return << { 'benefits' => processed_benefits } if processed_benefits
 
-    puts "data return : #{data_return}"
+    # puts "data return /benefits : #{data_return}"
+
     salary_data = extract_salary(processed_benefits[:job_compensation])
     data_return << { 'salary' => salary_data } if salary_data
-    puts "data return : #{data_return}"
+    # puts "data return / salary / final : #{data_return}"
 
     data_return
   end
@@ -426,7 +434,7 @@ class JobPostService
         'text' => text,
         'entities' => corrected_entities
       }
-      puts "new_training_data: #{new_training_data}"
+      # puts "new_training_data: #{new_training_data}"
 
       if corrections_exist == false
         puts "#{ORANGE}No entities to validate. Skipping validation and proceeding to next step.#{RESET}"

@@ -42,7 +42,7 @@ class JobDataMapper
       job_description: job['descriptionBodyPlain'] || nil,
       job_responsibilities: ResponsibilitiesExtractor.extract_responsibilities(job, source),
       job_additional: job['additionalPlain'] || nil,
-      job_qualifications: nil,
+      # job_qualifications: nil,
 
       job_posted: JobPost.parse_datetime(job['created_at'] || job['createdAt']),
       job_updated: JobPost.parse_datetime(job['updated_at'] || job['updatedAt']),

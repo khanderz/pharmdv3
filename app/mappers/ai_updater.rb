@@ -9,67 +9,123 @@ class AiUpdater
   # @param job [Hash] The raw job data.
   # @param company [Object] The company object associated with the job.
   # @return [Boolean] True if the job post data was updated, otherwise false.
+  def self.print_job_post_data(job_post_data)
+    puts "\n--- Job Post Data ---"
+    puts "Company ID: #{job_post_data[:company_id]}"
+    puts "Job Title: #{job_post_data[:job_title]}"
+    puts "Job URL: #{job_post_data[:job_url]}"
+    puts "Apply URL: #{job_post_data[:job_applyUrl]}"
+    puts "Job Description: #{job_post_data[:job_description] || 'N/A'}"
+    puts "Job Responsibilities: #{job_post_data[:job_responsibilities]}"
+    puts " job_additional: #{job_post_data[:job_additional] || 'N/A'}"
+    puts "Job Posted Date: #{job_post_data[:job_posted] || 'N/A'}"
+    puts "Job Updated Date: #{job_post_data[:job_updated]}"
+    puts "Job Internal ID: #{job_post_data[:job_internal_id]}"
+    puts "Job URL ID: #{job_post_data[:job_url_id]}"
+    puts "Department ID: #{job_post_data[:department_id]}"
+    puts "Team ID: #{job_post_data[:team_id] || 'N/A'}"
+    puts "Job Setting: #{job_post_data[:job_setting]}"
+    puts "Job Salary Min: #{job_post_data[:job_salary_min] || 'N/A'}"
+    puts "Job Salary Max: #{job_post_data[:job_salary_max] || 'N/A'}"
+    puts "Job Salary Currency ID: #{job_post_data[:job_salary_currency_id] || 'N/A'}"
+    puts "Job Salary Interval ID: #{job_post_data[:job_salary_interval_id] || 'N/A'}"
+    puts "Job Role ID: #{job_post_data[:job_role_id]}"
+    puts "Job Active: #{job_post_data[:job_active] ? 'Yes' : 'No'}"
+    puts "job salary single: #{job_post_data[:job_salary_single]}"
+    puts "job commitment id #{job_post_data[:job_commitment_id]}"
+    puts '--- End of Job Post Data ---'
+  end
+
   def self.update_with_ai(job_post_data, job, company)
     ai_data = JobPostService.split_descriptions(job)
     updated = false
 
+    print_job_post_data(job_post_data)
     puts "data from AI: #{ai_data}"
+
+    job_post_benefits = {}
+    job_post_cities = {}
+    job_post_countries = {}
+    job_post_credentials = {}
+    job_post_educations = {}
+    job_post_experiences = {}
+    job_post_seniorities = {}
+    job_post_skills = {}
+    job_post_states = {}
 
     ai_data.each do |field_data|
       field_data.each do |key, value|
         case key
-        when 'description', 'summary'
-#           JOB_DESCRIPTION_ENTITY_LABELS = [
-#     "DESCRIPTION",
-#     "JOB_ROLE",
-#     "JOB_SENIORITY",
-#     "JOB_DEPT",
-#     "JOB_TEAM",
-#     "COMMITMENT",
-#     "JOB_SETTING",
-#     "JOB_COUNTRY",
-#     "JOB_CITY",
-#     "JOB_STATE",
-# ]
+        when 'description' 
           puts "key is #{key}"
           puts "value is #{value}"
-          job_post_data[:job_description] ||= ''
-          job_post_data[:job_description] += ' ' unless job_post_data[:job_description].empty?
-          job_post_data[:job_description] += value.to_s.strip
 
           if value.is_a?(Hash)
-            job_post_data[:job_role_id] = JobRole.find_or_create_job_role(value[:job_role], job_post_data[:job_url])&.id
-            job_post_data[:team_id] = Team.find_team(value[:job_team], 'JobPost', job_post_data[:job_url])&.id if value[:job_team]
-            job_post_data[:department_id] = Department.find_department(value[:job_dept], 'JobPost', job_post_data[:job_url])&.id  if value[:job_dept]
-          end
+            description = value[:job_description]
+            job_role = value[:job_role]
+            job_seniority = value[:job_seniority]
+            job_dept = value[:job_dept]
+            job_team = value[:job_team]
+            commitment = value[:job_commitment]
+            setting = value[:job_setting]
+            country = value[:job_country]
+            city = value[:job_city]
+            state = value[:job_state]
 
-          #  need to populate to seniority table not job post table
-          if value[:job_seniority]
-            seniority_id = JobSeniority.find_by_name(value[:job_seniority]).id
+            if description
+              job_post_data[:job_description] = description
+            end
+
+            if job_post_data[:job_role_id].nil? && job_role
+              job_post_data[:job_role_id] = JobRole.find_or_create_job_role(job_role, job_post_data[:job_url])&.id
+            end
+          
+            if job_post_data[:team_id].nil? && job_team
+              job_post_data[:team_id] = Team.find_team(job_team, 'JobPost', job_post_data[:job_url])&.id
+            end
+          
+            if job_post_data[:department_id].nil? && job_dept
+              job_post_data[:department_id] = Department.find_department(job_dept, 'JobPost', job_post_data[:job_url])&.id
+            end
+
+            if job_seniority
+              seniority_id = JobSeniority.find_by_name(job_seniority).id
+            end
+
+            if job_post_data[:job_commitment_id].nil? && commitment
+              commitment_id = JobCommitment.find_job_commitment(commitment).id
+            end
+
+            if setting 
+              job_post_data[:job_settings] ||= []
+              job_post_data[:job_settings].push(setting).uniq! if setting
+            end
+
+            if country
+              job_post_data[:job_countries] ||= []
+              job_post_data[:job_countries].push(country).uniq! if country
+            end
+
+            if city
+              job_post_data[:job_cities] ||= []
+              job_post_data[:job_cities].push(city).uniq! if city
+            end
+
+            if state
+              job_post_data[:job_states] ||= []
+              job_post_data[:job_states].push(state).uniq! if state
+            end
           end
-          dept = value[:job_dept]
-          if value[:job_team]
-            job_post_data[:team_id] =
-              Team.find_team(value[:job_team], 'JobPost',
-                             job_post_data[:job_url]).id
-          end
-          commitment = value[:job_commitment]
-          setting = value[:job_setting]
-          country = value[:job_country]
-          city = value[:job_city]
-          state = value[:job_state]
+          puts "description / job post data is #{job_post_data}"
 
         when 'responsibilities'
           puts "key is #{key}"
           puts "value is #{value}"
-          if job_post_data[:responsibilities].to_s.empty?
-            job_post_data[:responsibilities] = value
-          else
-            unless job_post_data[:responsibilities].end_with?(' ')
-              job_post_data[:responsibilities] += ' '
-            end
-            job_post_data[:responsibilities] += value
-          end
+
+          responsibilities = value[:responsibilities]
+          job_post_data[:job_responsibilities] = responsibilities
+     
+          puts "responsibilities / job post data is #{job_post_data}"
 
         when 'qualifications'
 #           JOB_QUALIFICATION_ENTITY_LABELS = [
@@ -80,10 +136,14 @@ class AiUpdater
 # ]
           puts "key is #{key}"
           puts "value is #{value}"
-          job_post_data[:job_qualifications] ||= ''
-          credentials = value[:credentials]
-          education = value[:education]
-          experience = value[:experience]
+
+          if value.is_a?(Hash)
+            qualifications = value[:qualifications]
+            credentials = value[:credentials]
+            education = value[:education]
+            experience = value[:experience]
+          end
+          puts "qualifications / job post data is #{job_post_data}"
 
         when 'benefits'
 #           JOB_BENEFIT_ENTITY_LABELS = [
@@ -118,6 +178,7 @@ class AiUpdater
           work_life_balance = value[:work_life_balance]
           visa_sponsorship = value[:visa_sponsorship]
           additional_perks = value[:additional_perks]
+          puts "benefits / job post data is #{job_post_data}"
 
         when 'salary'
 #           SALARY_ENTITY_LABELS = [
@@ -154,6 +215,7 @@ class AiUpdater
           job_post_data[:job_salary_currency_id] = currency_id
           job_post_data[:job_salary_interval_id] = interval_id
           updated = true
+          puts "salary / job post data is #{job_post_data}"
 
         else
           puts "#{RED}Unexpected key: #{key}.#{RESET}"
@@ -169,6 +231,17 @@ class AiUpdater
       # end
     end
 
-    job_post_data
+    return {
+      job_post_data: job_post_data,
+      job_post_benefits: job_post_benefits,
+      job_post_cities: job_post_cities,
+      job_post_countries: job_post_countries,
+      job_post_credentials: job_post_credentials,
+      job_post_educations: job_post_educations,
+      job_post_experiences: job_post_experiences,
+      job_post_seniorities: job_post_seniorities,
+      job_post_skills: job_post_skills,
+      job_post_states: job_post_states
+    }
   end
 end
