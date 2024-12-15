@@ -50,7 +50,8 @@ class LocationMapper
     city_name, state_name, country_name = parse_input(input)
     return log_location_error(input, job, company) unless city_name && state_name
 
-    state = State.find_state(state_name, job, company)
+    state = State.find_or_create_state(state_name, job)
+    # TODO: handle canadian states
     country_params = if state
                        { country_code: 'US', country_name: 'United States' }
                      elsif country_name
@@ -59,7 +60,7 @@ class LocationMapper
                        { country_code: nil, country_name: country_input }
                      end
 
-    city = City.find_city(city_name, job, company)
+    city = City.find_or_create_city(city_name, job)
     return unless city
 
     country = Country.find_or_adjudicate_country(

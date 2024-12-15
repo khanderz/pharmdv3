@@ -90,7 +90,7 @@ class AiUpdater
             end
 
             if job_seniority
-              seniority_id = JobSeniority.find_by_name(job_seniority).id
+              seniority_id = JobSeniority.find_or_create_seniority(job_seniority, job_post_data).id
               job_post_seniorities << seniority if seniority
             end
 
@@ -109,12 +109,12 @@ class AiUpdater
             end
 
             if city
-              city_id = City.find_city(city, job_post_data[:job_url], company).id
+              city_id = City.find_or_create_city(city, job_post_data).id
               job_post_cities << city if city
             end
 
             if state
-              state_id = State.find_state(state, job_post_data[:job_url], company).id
+              state_id = State.find_or_create_state(state, job_post_data).id
               job_post_states << state if state
             end
           end
@@ -150,7 +150,7 @@ class AiUpdater
             if credentials
               credentials.each do |credential|
                 credential_id = Credential.find_or_create_credential(credential,
-                                                                     job_post_data[:job_url])&.id
+                                                                     job_post_data, company)&.id
                 job_post_credentials << credential_id if credential_id
               end
             end
