@@ -126,10 +126,10 @@ class JobPostService
         job_dept: nil,
         job_team: nil,
         job_commitment: nil,
-        job_setting: nil,
-        job_country: nil,
-        job_city: nil,
-        job_state: nil
+        job_settings: [],
+        job_countries: [],
+        job_cities: [],
+        job_states: []
       }
 
       corrected_descriptions.each do |entity|
@@ -147,13 +147,13 @@ class JobPostService
         when 'JOB_COMMITMENT'
           job_post_object[:job_commitment] = entity['token']
         when 'JOB_SETTING'
-          job_post_object[:job_setting] = entity['token']
+          job_post_object[:job_settings] << entity['token'] unless job_post_object[:job_settings].include?(entity['token'])
         when 'JOB_COUNTRY'
-          job_post_object[:job_country] = entity['token']
+          job_post_object[:job_countries] << entity['token'] unless job_post_object[:job_countries].include?(entity['token'])
         when 'JOB_CITY'
-          job_post_object[:job_city] = entity['token']
+          job_post_object[:job_cities] << entity['token'] unless job_post_object[:job_cities].include?(entity['token'])
         when 'JOB_STATE'
-          job_post_object[:job_state] = entity['token']
+          job_post_object[:job_states] << entity['token'] unless job_post_object[:job_states].include?(entity['token'])
         else
           puts "#{RED}Unexpected label: #{entity['label']}#{RESET}"
         end
@@ -180,22 +180,22 @@ class JobPostService
 
     if qualification_data['status'] == 'success' && corrected_qualifications.any?
       job_post_object = {
-        qualifications: nil,
-        credentials: nil,
-        education: nil,
-        experience: nil,
+        qualifications: [],
+        credentials: [],
+        education: [],
+        experience: []
       }
-
+    
       corrected_qualifications.each do |entity|
         case entity['label']
         when 'QUALIFICATIONS'
-          job_post_object[:qualifications] = entity['token']
+          job_post_object[:qualifications] << entity['token']
         when 'CREDENTIALS'
-          job_post_object[:credentials] = entity['token']
+          job_post_object[:credentials] << entity['token']
         when 'EDUCATION'
-          job_post_object[:education] = entity['token']
+          job_post_object[:education] << entity['token']
         when 'EXPERIENCE'
-          job_post_object[:experience] = entity['token']
+          job_post_object[:experience] << entity['token']
         else
           puts "#{RED}Unexpected label: #{entity['label']}#{RESET}"
         end
@@ -203,7 +203,7 @@ class JobPostService
     else
       puts "#{RED}Failed to extract qualifications data.#{RESET}"
     end
-    job_post_object
+    job_post_object.to_json
   end
 
   def self.extract_benefits(benefits)
@@ -222,10 +222,10 @@ class JobPostService
     if benefits_data['status'] == 'success' && corrected_benefits.any?
       job_post_object = {
         commitment: nil,
-        job_setting: nil,
-        job_country: nil,
-        job_city: nil,
-        job_state: nil,
+        job_settings: [],
+        job_countries: [],
+        job_cities: [],
+        job_states: [],
         job_compensation: nil,
         retirement: nil,
         office_life: nil,
@@ -242,13 +242,13 @@ class JobPostService
         when 'COMMITMENT'
           job_post_object[:commitment] = entity['token']
         when 'JOB_SETTING'
-          job_post_object[:job_setting] = entity['token']
+          job_post_object[:job_settings] << entity['token'] unless job_post_object[:job_settings].include?(entity['token'])
         when 'JOB_COUNTRY'
-          job_post_object[:job_country] = entity['token']
+          job_post_object[:job_countries] << entity['token'] unless job_post_object[:job_countries].include?(entity['token'])
         when 'JOB_CITY'
-          job_post_object[:job_city] = entity['token']
+          job_post_object[:job_cities] << entity['token'] unless job_post_object[:job_cities].include?(entity['token'])
         when 'JOB_STATE'
-          job_post_object[:job_state] = entity['token']
+          job_post_object[:job_states] << entity['token'] unless job_post_object[:job_states].include?(entity['token'])
         when 'COMPENSATION'
           job_post_object[:job_compensation] = entity['token']
         when 'RETIREMENT'
