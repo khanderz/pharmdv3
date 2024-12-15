@@ -147,13 +147,21 @@ class JobPostService
         when 'JOB_COMMITMENT'
           job_post_object[:job_commitment] = entity['token']
         when 'JOB_SETTING'
-          job_post_object[:job_settings] << entity['token'] unless job_post_object[:job_settings].include?(entity['token'])
+          unless job_post_object[:job_settings].include?(entity['token'])
+            job_post_object[:job_settings] << entity['token']
+          end
         when 'JOB_COUNTRY'
-          job_post_object[:job_countries] << entity['token'] unless job_post_object[:job_countries].include?(entity['token'])
+          unless job_post_object[:job_countries].include?(entity['token'])
+            job_post_object[:job_countries] << entity['token']
+          end
         when 'JOB_CITY'
-          job_post_object[:job_cities] << entity['token'] unless job_post_object[:job_cities].include?(entity['token'])
+          unless job_post_object[:job_cities].include?(entity['token'])
+            job_post_object[:job_cities] << entity['token']
+          end
         when 'JOB_STATE'
-          job_post_object[:job_states] << entity['token'] unless job_post_object[:job_states].include?(entity['token'])
+          unless job_post_object[:job_states].include?(entity['token'])
+            job_post_object[:job_states] << entity['token']
+          end
         else
           puts "#{RED}Unexpected label: #{entity['label']}#{RESET}"
         end
@@ -185,7 +193,7 @@ class JobPostService
         education: [],
         experience: []
       }
-    
+
       corrected_qualifications.each do |entity|
         case entity['label']
         when 'QUALIFICATIONS'
@@ -242,13 +250,21 @@ class JobPostService
         when 'COMMITMENT'
           job_post_object[:commitment] = entity['token']
         when 'JOB_SETTING'
-          job_post_object[:job_settings] << entity['token'] unless job_post_object[:job_settings].include?(entity['token'])
+          unless job_post_object[:job_settings].include?(entity['token'])
+            job_post_object[:job_settings] << entity['token']
+          end
         when 'JOB_COUNTRY'
-          job_post_object[:job_countries] << entity['token'] unless job_post_object[:job_countries].include?(entity['token'])
+          unless job_post_object[:job_countries].include?(entity['token'])
+            job_post_object[:job_countries] << entity['token']
+          end
         when 'JOB_CITY'
-          job_post_object[:job_cities] << entity['token'] unless job_post_object[:job_cities].include?(entity['token'])
+          unless job_post_object[:job_cities].include?(entity['token'])
+            job_post_object[:job_cities] << entity['token']
+          end
         when 'JOB_STATE'
-          job_post_object[:job_states] << entity['token'] unless job_post_object[:job_states].include?(entity['token'])
+          unless job_post_object[:job_states].include?(entity['token'])
+            job_post_object[:job_states] << entity['token']
+          end
         when 'COMPENSATION'
           job_post_object[:job_compensation] = entity['token']
         when 'RETIREMENT'

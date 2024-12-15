@@ -84,13 +84,13 @@ class AiUpdater
             if job_post_data[:team_id].nil? && job_team
               job_post_data[:team_id] =
                 Team.find_team(job_team, 'JobPost', job_post_data[:job_url])&.id
-                updated_by_ai = true
+              updated_by_ai = true
             end
 
             if job_post_data[:department_id].nil? && job_dept
               job_post_data[:department_id] =
                 Department.find_department(job_dept, 'JobPost', job_post_data[:job_url])&.id
-                updated_by_ai = true
+              updated_by_ai = true
             end
 
             if job_seniority
@@ -115,31 +115,31 @@ class AiUpdater
 
             countries.each do |country|
               job_post_countries ||= []
-              unless job_post_countries.include?(country)
-                country_id = Country.find_or_adjudicate_country(
-                  country_code: nil, country_name: country, company_id: company.id, job_url: job_post_data[:job_url]
-                )&.id
-                job_post_countries << country_id if country_id
-                updated_by_ai = true
-              end
+              next if job_post_countries.include?(country)
+
+              country_id = Country.find_or_adjudicate_country(
+                country_code: nil, country_name: country, company_id: company.id, job_url: job_post_data[:job_url]
+              )&.id
+              job_post_countries << country_id if country_id
+              updated_by_ai = true
             end
-        
+
             cities.each do |city|
               job_post_cities ||= []
-              unless job_post_cities.include?(city)
-                city_id = City.find_or_create_city(city, job_post_data).id
-                job_post_cities << city_id if city_id
-                updated_by_ai = true
-              end
+              next if job_post_cities.include?(city)
+
+              city_id = City.find_or_create_city(city, job_post_data).id
+              job_post_cities << city_id if city_id
+              updated_by_ai = true
             end
-        
+
             states.each do |state|
               job_post_states ||= []
-              unless job_post_states.include?(state)
-                state_id = State.find_or_create_state(state, job_post_data).id
-                job_post_states << state_id if state_id
-                updated_by_ai = true
-              end
+              next if job_post_states.include?(state)
+
+              state_id = State.find_or_create_state(state, job_post_data).id
+              job_post_states << state_id if state_id
+              updated_by_ai = true
             end
           end
           puts "description / job post data is #{job_post_data}"
@@ -149,7 +149,7 @@ class AiUpdater
           puts "value is #{value}"
 
           responsibilities = value[:responsibilities]
-          
+
           if responsibilities
             job_post_data[:job_responsibilities] = responsibilities
             updated_by_ai = true
@@ -166,7 +166,7 @@ class AiUpdater
             credentials = value[:credentials]
             education = value[:education]
             experience = value[:experience]
-              
+
             if qualifications
               qualifications.each do |qualification|
                 job_post_data[:job_qualifications] >> qualification
@@ -237,31 +237,31 @@ class AiUpdater
 
           countries.each do |country|
             job_post_countries ||= []
-            unless job_post_countries.include?(country)
-              country_id = Country.find_or_adjudicate_country(
-                country_code: nil, country_name: country, company_id: company.id, job_url: job_post_data[:job_url]
-              )&.id
-              job_post_countries << country_id if country_id
-              updated_by_ai = true
-            end
+            next if job_post_countries.include?(country)
+
+            country_id = Country.find_or_adjudicate_country(
+              country_code: nil, country_name: country, company_id: company.id, job_url: job_post_data[:job_url]
+            )&.id
+            job_post_countries << country_id if country_id
+            updated_by_ai = true
           end
-        
+
           cities.each do |city|
             job_post_cities ||= []
-            unless job_post_cities.include?(city)
-              city_id = City.find_or_create_city(city, job_post_data)&.id
-              job_post_cities << city_id if city_id
-              updated_by_ai = true
-            end
+            next if job_post_cities.include?(city)
+
+            city_id = City.find_or_create_city(city, job_post_data)&.id
+            job_post_cities << city_id if city_id
+            updated_by_ai = true
           end
-        
+
           states.each do |state|
             job_post_states ||= []
-            unless job_post_states.include?(state)
-              state_id = State.find_or_create_state(state, job_post_data)&.id
-              job_post_states << state_id if state_id
-              updated_by_ai = true
-            end
+            next if job_post_states.include?(state)
+
+            state_id = State.find_or_create_state(state, job_post_data)&.id
+            job_post_states << state_id if state_id
+            updated_by_ai = true
           end
 
           if commitment
