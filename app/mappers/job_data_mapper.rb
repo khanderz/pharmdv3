@@ -42,7 +42,7 @@ class JobDataMapper
       job_description: job['descriptionBodyPlain'] || nil,
       job_responsibilities: ResponsibilitiesExtractor.extract_responsibilities(job, source),
       job_additional: job['additionalPlain'] || nil,
-      # job_qualifications: nil,
+      job_qualifications: [],
 
       job_posted: JobPost.parse_datetime(job['created_at'] || job['createdAt']),
       job_updated: JobPost.parse_datetime(job['updated_at'] || job['updatedAt']),
@@ -56,7 +56,7 @@ class JobDataMapper
       team_id: team_var,
 
       job_commitment_id: JobCommitment.find_job_commitment(job['categories']&.dig('commitment')) || nil,
-      job_setting: location_info[:location_type] || nil,
+      job_setting: location_info[:location_type] || [],
 
       job_salary_min: nil,
       job_salary_max: nil,

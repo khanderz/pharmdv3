@@ -103,11 +103,10 @@ class LocationMapper
   def log_location_error(location, job_post, company)
     error_message = "Location '#{location}' not found for #{company.company_name} for job #{job_post.job_title}"
 
-    Adjudication.create!(
+    Adjudication.log_error(
       adjudicatable_type: 'JobPost',
       adjudicatable_id: job_post.id,
-      error_details: error_message,
-      resolved: false
+      error_details: error_message
     )
     puts "Error for #{company.company_name} job post: #{error_message}"
   end

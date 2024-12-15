@@ -122,25 +122,21 @@ class JobPost < ApplicationRecord
 
     def log_job_error(job_post, company, error_message, job_post_instance = nil)
       if job_post_instance.nil?
-        Adjudication.create!(
+        Adjudication.log_error(
           adjudicatable_type: 'JobPost',
           adjudicatable_id: job_post.id,
-          error_details: error_message,
-          resolved: false
+          error_details: error_message
         )
-        puts "#{RED}Adjudication created for existing job post: #{company.company_name} #{job_post.id}.#{RESET}"
       else
         job_post_instance = JobPost.create!(job_post.attributes)
 
         puts "#{GREEN}New job post created for #{company.company_name}.#{RESET}"
 
-        Adjudication.create!(
+        Adjudication.log_error(
           adjudicatable_type: 'JobPost',
           adjudicatable_id: job_post_instance.id,
-          error_details: error_message,
-          resolved: false
+          error_details: error_message
         )
-        puts "#{RED}Adjudication created for new job post: #{company.company_name} #{job_post_instance.id}.#{RESET}"
       end
     end
   end

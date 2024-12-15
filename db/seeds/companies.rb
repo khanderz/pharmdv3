@@ -49,14 +49,12 @@ def log_adjudication(entity_type, entity_name, company_name, adjudicatable)
     return existing_adjudication
   end
 
-  adjudication = Adjudication.create!(
+  adjudication = Adjudication.log_error(
     adjudicatable_type: adjudicatable.class.name,
     adjudicatable_id: adjudicatable.id,
-    error_details: error_details,
-    resolved: false
+    error_details: error_details
   )
 
-  puts "#{ORANGE}Logged adjudication for #{entity_type}: #{entity_name}, company: #{company_name}#{RESET}"
   adjudication
 rescue ActiveRecord::RecordInvalid => e
   puts "#{RED}Failed to create adjudication for #{entity_type} '#{entity_name}' and company '#{company_name}': #{e.message}#{RESET}"

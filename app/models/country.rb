@@ -22,12 +22,12 @@ class Country < ApplicationRecord
         error_details: "Country with code '#{country_code}' or name '#{country_name}' not found for Company ID #{company_id}, Job URL #{job_url}",
         resolved: false
       )
-      Adjudication.create!(
+      Adjudication.log_error(
         adjudicatable_type: 'JobPost',
         adjudicatable_id: new_country.id,
         error_details: "Country with code '#{country_code}' or name '#{country_name}' not found for Company ID #{company_id}, Job URL #{job_url}",
-        resolved: false
       )
+
       puts "--------Country with code '#{country_code}' or name '#{country_name}' not found. Logged to adjudications."
       return nil
     end

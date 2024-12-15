@@ -10,7 +10,7 @@ class AiUpdater
   # @param company [Object] The company object associated with the job.
   # @return [Boolean] True if the job post data was updated, otherwise false.
   def self.print_job_post_data(job_post_data)
-    puts "\n--- Job Post Data ---"
+    puts "\n--- Job Post Data in ai updater class ---"
     puts "Company ID: #{job_post_data[:company_id]}"
     puts "Job Title: #{job_post_data[:job_title]}"
     puts "Job URL: #{job_post_data[:job_url]}"
@@ -43,15 +43,15 @@ class AiUpdater
     print_job_post_data(job_post_data)
     puts "data from AI: #{ai_data}"
 
-    job_post_benefits = {}
-    job_post_cities = {}
-    job_post_countries = {}
-    job_post_credentials = {}
-    job_post_educations = {}
-    job_post_experiences = {}
-    job_post_seniorities = {}
-    job_post_skills = {}
-    job_post_states = {}
+    job_post_benefits = []
+    job_post_cities = []
+    job_post_countries = []
+    job_post_credentials = []
+    job_post_educations = []
+    job_post_experiences = []
+    job_post_seniorities = []
+    job_post_skills = []
+    job_post_states = []
 
     ai_data.each do |field_data|
       field_data.each do |key, value|
@@ -72,9 +72,7 @@ class AiUpdater
             city = value[:job_city]
             state = value[:job_state]
 
-            if description
-              job_post_data[:job_description] = description
-            end
+            job_post_data[:job_description] = description if description
 
             if job_post_data[:job_role_id].nil? && job_role
               job_post_data[:job_role_id] = JobRole.find_or_create_job_role(job_role, job_post_data[:job_url])&.id
@@ -90,30 +88,33 @@ class AiUpdater
 
             if job_seniority
               seniority_id = JobSeniority.find_by_name(job_seniority).id
+              job_post_seniorities << seniority if seniority
             end
 
             if job_post_data[:job_commitment_id].nil? && commitment
               commitment_id = JobCommitment.find_job_commitment(commitment).id
+              job_post_data[:job_commitment_id] = commitment_id
             end
 
             if setting 
-              job_post_data[:job_settings] ||= []
-              job_post_data[:job_settings].push(setting).uniq! if setting
+              job_post_data[:job_settings].push(setting).uniq!
             end
 
             if country
-              job_post_data[:job_countries] ||= []
-              job_post_data[:job_countries].push(country).uniq! if country
+              country_id = Country.find_or_adjudicate_country(
+                country_code: nil, country_name: country, company_id: company.id, job_url: job_post_data[:job_url]
+              ).id
+              job_post_countries << country if country
             end
 
             if city
-              job_post_data[:job_cities] ||= []
-              job_post_data[:job_cities].push(city).uniq! if city
+              city_id = City.find_city(city, job_post_data[:job_url], company).id
+              job_post_cities << city if city
             end
 
             if state
-              job_post_data[:job_states] ||= []
-              job_post_data[:job_states].push(state).uniq! if state
+              state_id = State.find_state(state, job_post_data[:job_url], company).id
+              job_post_states << state if state
             end
           end
           puts "description / job post data is #{job_post_data}"
@@ -142,6 +143,29 @@ class AiUpdater
             credentials = value[:credentials]
             education = value[:education]
             experience = value[:experience]
+
+            job_post_data[:job_qualifications] = qualifications if qualifications
+              
+              if credentials
+                credentials.each do |credential|
+                  credential_id = Credential.find_or_create_credential(credential, job_post_data[:job_url])&.id
+                  job_post_credentials << credential_id if credential_id
+                end
+              end
+  
+              if education
+                education.each do |edu|
+                  education_id = Education.find_or_create_education(edu, job_post_data[:job_url])&.id
+                  job_post_educations << education_id if education_id
+                end
+              end
+  
+              if experience
+                experience.each do |exp|
+                  experience_id = Experience.find_or_create_experience(exp, job_post_data[:job_url])&.id
+                  job_post_experiences << experience_id if experience_id
+                end
+              end
           end
           puts "qualifications / job post data is #{job_post_data}"
 
@@ -230,6 +254,17 @@ class AiUpdater
       #   job_post_data[:job_salary_interval_id] ||= nil
       # end
     end
+
+    puts "job post data is #{job_post_data}"
+    puts "job post benefits is #{job_post_benefits}"
+    puts "job post cities is #{job_post_cities}"
+    puts "job post countries is #{job_post_countries}"
+    puts "job post credentials is #{job_post_credentials}"
+    puts "job post educations is #{job_post_educations}"
+    puts "job post experiences is #{job_post_experiences}"
+    puts "job post seniorities is #{job_post_seniorities}"
+    puts "job post skills is #{job_post_skills}"
+    puts "job post states is #{job_post_states}"
 
     return {
       job_post_data: job_post_data,

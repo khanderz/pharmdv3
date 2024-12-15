@@ -32,13 +32,12 @@ class JobRole < ApplicationRecord
         error_details: "Job Role: #{cleaned_title} not found in existing records",
         resolved: false
       )
-      Adjudication.create!(
+      Adjudication.log_error(
         adjudicatable_type: 'JobRole',
         adjudicatable_id: job_role.id,
-        error_details: "Job Role: #{cleaned_title} for #{job_post_url} not found in existing records",
-        resolved: false
+        error_details: "Job Role: #{cleaned_title} for #{job_post_url} not found in existing records"
       )
-      puts "Adjudication created for new job role: #{cleaned_title}."
+
     end
 
     puts "Job Role: #{job_role.role_name} found."

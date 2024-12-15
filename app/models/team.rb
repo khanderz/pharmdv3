@@ -13,25 +13,19 @@ class Team < ApplicationRecord
 
     team = Team.find_by('LOWER(team_name) = ? OR LOWER(?) = ANY (SELECT LOWER(unnest(aliases)))',
                         cleaned_team_name.downcase, cleaned_team_name.downcase)
-    return team if team
-
-    begin
+    if team
+      return team
+    else
       team = Team.create!(
-        team_name: cleaned_team_name,
-        error_details: "Team #{team_name} for #{relation} not found in existing records",
-        resolved: false
+        team_name: cleaned_team_name
       )
 
-      Adjudication.create!(
+      Adjudication.log_error(
         adjudicatable_type: adjudicatable_type,
-        adjudicatable_id: team.id,
+        adjudicatable_id: relation.try(:id),
         error_details: "Team #{team_name} for #{relation} not found in existing records",
         resolved: false
       )
-      puts "Team #{team_name} created and logged to adjudications with adjudicatable_type #{adjudicatable_type}."
-      r
-      escue ActiveRecord::RecordInvalid => e
-      puts "Failed to create team #{team_name}: #{e.message}"
     end
     team
   end

@@ -19,13 +19,12 @@ class JobSalaryCurrency < ApplicationRecord
         error_details: "Currency with code or symbol '#{identifier}' not found and needs adjudication.",
         resolved: false
       )
-      Adjudication.create!(
+
+      Adjudication.log_error(
         adjudicatable_type: 'JobPost',
         adjudicatable_id: new_currency.id,
-        error_details: "Currency with identifier '#{identifier}' not found for Company ID #{company_id}, Job URL #{job_url}",
-        resolved: false
+        error_details: "Currency with code or symbol '#{identifier}' not found for Company ID #{company_id}, Job URL #{job_url}"
       )
-      puts "--------Currency with identifier '#{identifier}' not found. Logged to adjudications."
       return nil
     end
     currency.id

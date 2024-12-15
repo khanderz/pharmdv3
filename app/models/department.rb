@@ -19,11 +19,10 @@ class Department < ApplicationRecord
         error_details: "Department #{department_name} for #{relation} not found in existing records",
         resolved: false
       )
-      Adjudication.create!(
+      Adjudication.log_error(
         adjudicatable_type: adjudicatable_type,
         adjudicatable_id: department.id,
-        error_details: "Department #{department_name} for #{relation} not found in existing records",
-        resolved: false
+        error_details: "Department #{department_name} for #{relation} not found in existing records"
       )
       puts "#{RED}Department #{department_name} created and logged to adjudications with adjudicatable_type #{adjudicatable_type}.#{RESET}"
     end

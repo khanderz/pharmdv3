@@ -5,21 +5,13 @@ class City < ApplicationRecord
     city = where('LOWER(city_name) = ? OR LOWER(aliases::text) LIKE ?',
                  city_param.downcase, "%#{city_param.downcase}%").first
 
-    log_city_error(city_param, job_post, company) if city.nil?
-
-    city
-  end
-
-  def self.log_city_error(city_param, job_post, company)
     error_message = "City '#{city_param}' not found for #{company.company_name} for job #{job_post.job_title}"
-
-    Adjudication.create!(
+    Adjudication.log_error(
       adjudicatable_type: 'JobPost',
       adjudicatable_id: job_post.id,
-      error_details: error_message,
-      resolved: false
-    )
+      error_details: error_message
+    ) if city.nil?
 
-    puts "Error for #{company.company_name} job post: #{error_message}"
+    city
   end
 end
