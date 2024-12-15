@@ -366,6 +366,7 @@ class JobPostService
     loop do
       corrected_entities = []
       corrections_exist = false
+
       extracted_entities.each_with_index do |(label, tokens), _index|
         label = label.to_s
         token = tokens[0]
@@ -396,6 +397,7 @@ class JobPostService
 
           puts "Enter end index for '#{token}':"
           end_value = gets.strip.to_i
+          corrections_exist = false
         end
 
         corrected_entities << {
@@ -404,6 +406,7 @@ class JobPostService
           'label' => label,
           'token' => token
         }
+
       end
 
       loop do
@@ -414,27 +417,20 @@ class JobPostService
 
         puts 'Enter the token for the missing entity:'
         token = gets.strip
-        corrections_exist = true
 
-        puts "Is the label '#{label}' for token '#{token}' correct? (yes/no)"
-        label_confirmation = gets.strip.downcase
-        if label_confirmation != 'yes' && label_confirmation != 'y'
-          puts "Select the correct label for this token (#{token}):"
-          label_list.each_with_index do |lbl, idx|
-            puts "#{idx}: #{lbl}"
-          end
-          label_index = gets.strip.to_i
-          label = label_list[label_index] if label_index >= 0 && label_index < label_list.size
-          corrections_exist = true
+        puts "Select the correct label for this token (#{token}):"
+        label_list.each_with_index do |lbl, idx|
+          puts "#{idx}: #{lbl}"
+        label_index = gets.strip.to_i
+        label = label_list[label_index] if label_index >= 0 && label_index < label_list.size
         end
 
-        if corrections_exist
           puts "Enter start index for '#{token}':"
           start_value = gets.strip.to_i
 
           puts "Enter end index for '#{token}':"
           end_value = gets.strip.to_i
-        end
+
 
         corrected_entities << {
           'start' => start_value,
