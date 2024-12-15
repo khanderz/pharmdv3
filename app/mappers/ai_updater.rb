@@ -105,8 +105,6 @@ class AiUpdater
               updated_by_ai = true
             end
 
-            
-
             settings.each do |setting|
               job_post_data[:job_settings] ||= []
               unless job_post_data[:job_settings].include?(setting)
@@ -169,13 +167,19 @@ class AiUpdater
             education = value[:education]
             experience = value[:experience]
               
-            job_qualifications[:qualifications] = qualifications if qualifications
+            if qualifications
+              qualifications.each do |qualification|
+                job_post_data[:job_qualifications] >> qualification
+                updated_by_ai = true
+              end
+            end
 
             if credentials
               credentials.each do |credential|
                 credential_id = Credential.find_or_create_credential(credential,
                                                                      job_post_data)&.id
                 job_post_credentials << credential_id if credential_id
+                updated_by_ai = true
               end
             end
 
@@ -184,6 +188,7 @@ class AiUpdater
                 education_id = Education.find_or_create_education(edu,
                                                                   job_post_data)&.id
                 job_post_educations << education_id if education_id
+                updated_by_ai = true
               end
             end
 
@@ -192,6 +197,7 @@ class AiUpdater
                 experience_id = Experience.find_or_create_experience(exp,
                                                                      job_post_data)&.id
                 job_post_experiences << experience_id if experience_id
+                updated_by_ai = true
               end
             end
           end
@@ -225,6 +231,7 @@ class AiUpdater
             job_post_data[:job_settings] ||= []
             unless job_post_data[:job_settings].include?(setting)
               job_post_data[:job_settings] << setting
+              updated_by_ai = true
             end
           end
 
@@ -235,6 +242,7 @@ class AiUpdater
                 country_code: nil, country_name: country, company_id: company.id, job_url: job_post_data[:job_url]
               )&.id
               job_post_countries << country_id if country_id
+              updated_by_ai = true
             end
           end
         
@@ -243,6 +251,7 @@ class AiUpdater
             unless job_post_cities.include?(city)
               city_id = City.find_or_create_city(city, job_post_data)&.id
               job_post_cities << city_id if city_id
+              updated_by_ai = true
             end
           end
         
@@ -251,6 +260,7 @@ class AiUpdater
             unless job_post_states.include?(state)
               state_id = State.find_or_create_state(state, job_post_data)&.id
               job_post_states << state_id if state_id
+              updated_by_ai = true
             end
           end
 
@@ -258,21 +268,13 @@ class AiUpdater
             commitment_id = JobCommitment.find_job_commitment(commitment).id
             unless job_post_data[:job_commitment_id] == commitment_id
               job_post_data[:job_commitment_id] = commitment_id
+              updated_by_ai = true
             end
           end
 
           puts "benefits / job post data is #{job_post_data}"
 
         when 'salary'
-          #           SALARY_ENTITY_LABELS = [
-          #     "SALARY_MIN",
-          #     "SALARY_MAX",
-          #     "SALARY_SINGLE",
-          #     "CURRENCY",
-          #     "INTERVAL",
-          #     "COMMITMENT",
-          #     "JOB_COUNTRY",
-          # ]
           puts "key is #{key}"
           puts "value is #{value}"
 
@@ -286,31 +288,43 @@ class AiUpdater
 
           if salary_min
             job_post_data[:job_salary_min] = salary_min
+            updated_by_ai = true
           end
 
           if salary_max
             job_post_data[:job_salary_max] = salary_max
+            updated_by_ai = true
           end
 
           if salary_single
             job_post_data[:job_salary_single] = salary_single
+            updated_by_ai = true
           end
 
           if currency
             currency_id = JobSalaryCurrency.find_or_adjudicate_currency(
               currency, company.id, job_post_data[:job_url]
             )
-            job_post_data[:job_salary_currency_id] = currency_id
+            unless job_post_data[:job_salary_currency_id] == currency_id
+              job_post_data[:job_salary_currency_id] = currency_id
+              updated_by_ai = true
+            end
           end
 
           if interval
             interval_id = JobSalaryInterval.find_by(interval: interval)
-            job_post_data[:job_salary_interval_id] = interval_id
+            unless job_post_data[:job_salary_interval_id] == interval_id
+              job_post_data[:job_salary_interval_id] = interval_id
+              updated_by_ai = true
+            end
           end
 
           if commitment
             commitment_id = JobCommitment.find_job_commitment(commitment).id
-            job_post_data[:job_commitment_id] = commitment_id
+            unless job_post_data[:job_commitment_id] == commitment_id
+              job_post_data[:job_commitment_id] = commitment_id
+              updated_by_ai = true
+            end
           end
 
           if countries
@@ -320,6 +334,7 @@ class AiUpdater
               ).id
               unless job_post_countries.include?(country_id)
                 job_post_countries << country_id
+                updated_by_ai = true
               end
             end
           end
