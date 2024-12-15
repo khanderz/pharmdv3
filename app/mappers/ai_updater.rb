@@ -130,12 +130,6 @@ class AiUpdater
           puts "responsibilities / job post data is #{job_post_data}"
 
         when 'qualifications'
-          #           JOB_QUALIFICATION_ENTITY_LABELS = [
-          #     "QUALIFICATIONS",
-          #     "CREDENTIALS",
-          #     "EDUCATION",
-          #     "EXPERIENCE",
-          # ]
           puts "key is #{key}"
           puts "value is #{value}"
 
@@ -174,38 +168,63 @@ class AiUpdater
           puts "qualifications / job post data is #{job_post_data}"
 
         when 'benefits'
-          #           JOB_BENEFIT_ENTITY_LABELS = [
-          #     "COMMITMENT",
-          #     "JOB_SETTING",
-          #     "JOB_COUNTRY",
-          #     "JOB_CITY",
-          #     "JOB_STATE",
-          #     "COMPENSATION",
-          #     "RETIREMENT",
-          #     "OFFICE_LIFE",
-          #     "PROFESSIONAL_DEVELOPMENT",
-          #     "WELLNESS",
-          #     "PARENTAL",
-          #     "WORK_LIFE_BALANCE",
-          #     "VISA_SPONSORSHIP",
-          #     "ADDITIONAL_PERKS",
-          # ]
           puts "key is #{key}"
           puts "value is #{value}"
-          commitment = value[:commitment]
+
           setting = value[:setting]
           country = value[:country]
           city = value[:city]
           state = value[:state]
-          compensation = value[:compensation]
-          retirement = value[:retirement]
-          office_life = value[:office_life]
-          professional_development = value[:professional_development]
-          wellness = value[:wellness]
-          parental = value[:parental]
-          work_life_balance = value[:work_life_balance]
-          visa_sponsorship = value[:visa_sponsorship]
-          additional_perks = value[:additional_perks]
+          commitment = value[:commitment]
+
+          benefits = [
+            value[:compensation],
+            value[:retirement],
+            value[:office_life],
+            value[:professional_development],
+            value[:wellness],
+            value[:parental],
+            value[:work_life_balance],
+            value[:visa_sponsorship],
+            value[:additional_perks]
+          ].compact # remove nil values
+
+          job_post_benefits.concat(benefits)
+
+          if setting
+            job_post_data[:job_settings].push(setting).uniq!
+          end
+
+          if country
+            country_id = Country.find_or_adjudicate_country(
+              country_code: nil, country_name: country, company_id: company.id, job_url: job_post_data[:job_url]
+            ).id
+            unless job_post_countries.include?(country_id)
+              job_post_countries << country_id
+            end
+          end
+
+          if city
+            city_id = City.find_or_create_city(city, job_post_data).id
+            unless job_post_cities.include?(city_id)
+              job_post_cities << city_id
+            end
+          end
+
+          if state
+            state_id = State.find_or_create_state(state, job_post_data).id
+            unless job_post_states.include?(state_id)
+              job_post_states << state_id
+            end
+          end
+
+          if commitment
+            commitment_id = JobCommitment.find_job_commitment(commitment).id
+            unless job_post_data[:job_commitment_id] == commitment_id
+              job_post_data[:job_commitment_id] = commitment_id
+            end
+          end
+
           puts "benefits / job post data is #{job_post_data}"
 
         when 'salary'
@@ -220,43 +239,61 @@ class AiUpdater
           # ]
           puts "key is #{key}"
           puts "value is #{value}"
-          if value[:job_salary_min]
-            job_post_data[:job_salary_min] =
-              value[:job_salary_min]
-          end
-          if value[:job_salary_max]
-            job_post_data[:job_salary_max] =
-              value[:job_salary_max]
-          end
-          if value[:job_salary_single]
-            job_post_data[:job_salary_single] =
-              value[:job_salary_single]
+
+          salary_min = value[:job_salary_min]
+          salary_max = value[:job_salary_max]
+          salary_single = value[:job_salary_single]
+          currency = value[:job_salary_currency]
+          interval = value[:job_salary_interval]
+          commitment = value[:job_commitment]
+          countries = value[:job_post_countries]
+
+          if salary_min
+            job_post_data[:job_salary_min] = salary_min
           end
 
-          currency_id = if value[:job_salary_currency]
-                          JobSalaryCurrency.find_or_adjudicate_currency(
-                            value[:job_salary_currency], company.id, job_post_data[:job_url]
-                          )
-                        end
-          interval_id = value[:job_salary_interval] ? JobSalaryInterval.find_by(interval: value[:job_salary_interval]) : nil
+          if salary_max
+            job_post_data[:job_salary_max] = salary_max
+          end
 
-          job_post_data[:job_salary_currency_id] = currency_id
-          job_post_data[:job_salary_interval_id] = interval_id
-          updated = true
+          if salary_single
+            job_post_data[:job_salary_single] = salary_single
+          end
+
+          if currency
+            currency_id = JobSalaryCurrency.find_or_adjudicate_currency(
+              currency, company.id, job_post_data[:job_url]
+            )
+            job_post_data[:job_salary_currency_id] = currency_id
+          end
+
+          if interval
+            interval_id = JobSalaryInterval.find_by(interval: interval)
+            job_post_data[:job_salary_interval_id] = interval_id
+          end
+
+          if commitment
+            commitment_id = JobCommitment.find_job_commitment(commitment).id
+            job_post_data[:job_commitment_id] = commitment_id
+          end
+
+          if countries
+            countries.each do |country|
+              country_id = Country.find_or_adjudicate_country(
+                country_code: nil, country_name: country, company_id: company.id, job_url: job_post_data[:job_url]
+              ).id
+              unless job_post_countries.include?(country_id)
+                job_post_countries << country_id
+              end
+            end
+          end
+
           puts "salary / job post data is #{job_post_data}"
 
         else
           puts "#{RED}Unexpected key: #{key}.#{RESET}"
         end
       end
-
-      # unless updated_by_ai
-      #   job_post_data[:job_salary_min] ||= nil
-      #   job_post_data[:job_salary_max] ||= nil
-      #   job_post_data[:job_salary_single] ||= nil
-      #   job_post_data[:job_salary_currency_id] ||= nil
-      #   job_post_data[:job_salary_interval_id] ||= nil
-      # end
     end
 
     puts "job post data is #{job_post_data}"
