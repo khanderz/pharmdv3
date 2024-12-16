@@ -40,7 +40,7 @@ class AiUpdater
     ai_data = JobPostService.split_descriptions(job)
     updated = false
 
-    print_job_post_data(job_post_data)
+    # print_job_post_data(job)
     puts "data from AI: #{ai_data}"
 
     job_post_benefits = []
@@ -155,8 +155,10 @@ class AiUpdater
           if value
             if value.is_a?(Hash) && value[:responsibilities].is_a?(Array)
               job_post_data[:job_responsibilities] = value[:responsibilities]
+            elsif value.is_a?(Array) && value.all? { |item| item.is_a?(String) }
+              job_post_data[:job_responsibilities] = value
             elsif value.is_a?(String)
-              job_post_data[:job_responsibilities] = [value]  
+              job_post_data[:job_responsibilities] = [value]
             else
               puts "#{RED}Unexpected format for responsibilities value: #{value.inspect}#{RESET}"
             end
@@ -176,9 +178,12 @@ class AiUpdater
             experience = value[:experience]
 
             if qualifications
-              qualifications.each do |qualification|
-                job_post_data[:job_qualifications] << qualification
+              if qualifications.is_a?(Array) && qualifications.all? { |item| item.is_a?(String) }
+                job_post_data[:job_qualifications] ||= []
+                job_post_data[:job_qualifications].concat(qualifications)
                 updated_by_ai = true
+              else
+                puts "#{RED}Unexpected format for qualifications: #{qualifications.inspect}#{RESET}"
               end
             end
 

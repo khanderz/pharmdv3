@@ -402,7 +402,7 @@ class JobPostService
         label = label.to_s
         token = tokens[0]
 
-        puts "is token #{token} for label '#{label}' correct (yes/no)"
+        puts "is token #{ORANGE}#{token}#{RESET} for label #{ORANGE}#{label}#{RESET} correct (yes/no)"
         token_confirmation = gets.strip.downcase
         if token_confirmation != 'yes' && token_confirmation != 'y'
           puts 'Enter the correct token:'
@@ -410,10 +410,10 @@ class JobPostService
           corrections_exist = true
         end
 
-        puts "Is the label '#{label}' for token '#{token}' correct? (yes/no)"
+        puts "Is the label #{ORANGE}#{label}#{RESET} for token #{ORANGE}#{token}#{RESET} correct? (yes/no)"
         label_confirmation = gets.strip.downcase
         if label_confirmation != 'yes' && label_confirmation != 'y'
-          puts "Select the correct label for this token (#{token}):"
+          puts "Select the correct label for token #{ORANGE}#{token}#{RESET}:"
           label_list.each_with_index do |lbl, idx|
             puts "#{idx}: #{lbl}"
           end
@@ -423,10 +423,10 @@ class JobPostService
         end
 
         if corrections_exist
-          puts "Enter start index for '#{token}':"
+          puts "Enter start index for #{ORANGE}#{token}#{RESET}:"
           start_value = gets.strip.to_i
 
-          puts "Enter end index for '#{token}':"
+          puts "Enter end index for #{ORANGE}#{token}#{RESET}:"
           end_value = gets.strip.to_i
         end
 
@@ -447,17 +447,17 @@ class JobPostService
         puts 'Enter the token for the missing entity:'
         token = gets.strip
 
-        puts "Select the correct label for this token (#{token}):"
+        puts "Select the correct label for token #{ORANGE}#{token}#{RESET}:"
         label_list.each_with_index do |lbl, idx|
           puts "#{idx}: #{lbl}"
         end
         label_index = gets.strip.to_i
         label = label_list[label_index] if label_index >= 0 && label_index < label_list.size
 
-        puts "Enter start index for '#{token}':"
+        puts "Enter start index for #{ORANGE}#{token}#{RESET}:"
         start_value = gets.strip.to_i
 
-        puts "Enter end index for '#{token}':"
+        puts "Enter end index for #{ORANGE}#{token}#{RESET}:"
         end_value = gets.strip.to_i
 
         corrected_entities << {
