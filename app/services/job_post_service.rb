@@ -372,6 +372,7 @@ class JobPostService
       extracted_entities.each_with_index do |(label, tokens), _index|
         label = label.to_s
         token = tokens[0]
+        corrections_exist = false
 
         puts "is token #{token} for label '#{label}' correct (yes/no)"
         token_confirmation = gets.strip.downcase
@@ -399,7 +400,6 @@ class JobPostService
 
           puts "Enter end index for '#{token}':"
           end_value = gets.strip.to_i
-          corrections_exist = false
         end
 
         corrected_entities << {
@@ -408,7 +408,6 @@ class JobPostService
           'label' => label,
           'token' => token
         }
-        corrections_exist = true
       end
 
       loop do
