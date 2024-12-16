@@ -34,23 +34,15 @@ class LocationMapper
       }
     end
 
-    # handles case where location is just a country
-    if Country.exists?(country_name: input) || Country.exists?(aliases: input)
-      country = Country.find_or_adjudicate_country(nil, input, company.id, job['job_url'])
-      return {
-        city_name: nil,
-        state_name: nil,
-        state_code: nil,
-        country_name: country.country_name,
-        country_code: country.country_code,
-        location_type: 'Remote'
-      }
-    end
-
     city_name, state_name, country_name = parse_input(input)
-    return log_location_error(input, job, company) unless city_name && state_name
 
-    state = State.find_or_create_state(state_name, job)
+    puts "City: #{city_name}, State: #{state_name}, Country: #{country_name}"
+    city = City.find_or_create_city(city_name, company, job)
+    return unless city
+    puts "City: #{city}"
+
+    state = State.find_or_create_state(state_name, company, job)
+    puts "State: #{state}"
     # TODO: handle canadian states
     country_params = if state
                        { country_code: 'US', country_name: 'United States' }
@@ -59,18 +51,30 @@ class LocationMapper
                      else
                        { country_code: nil, country_name: country_input }
                      end
+    puts "Country Params: #{country_params}"
 
-    city = City.find_or_create_city(city_name, job)
-    return unless city
+    # handles case where location is just a country
+    # if Country.exists?(country_name: input || country_input ) || Country.exists?(aliases: input || country_input)
+    #   country = Country.find_or_adjudicate_country(nil, input || country_input, company, job['job_url'])
+    #   puts "Country: #{country}"
+    #   return {
+    #     city_name: nil,
+    #     state_name: nil,
+    #     state_code: nil,
+    #     country_name: country.country_name,
+    #     country_code: country.country_code,
+    #     location_type: 'Remote'
+    #   }
+    # end
 
     country = Country.find_or_adjudicate_country(
       country_params[:country_code],
       country_params[:country_name],
-      company.id,
+      company,
       job['job_url']
     )
     return unless country
-
+    puts "Country: #{country}"
     {
       city_name: city[:city_name],
       state_name: state[:state_name],
@@ -84,22 +88,22 @@ class LocationMapper
 
   def parse_input(input)
     parts = input.split(',').map(&:strip)
-    return nil if parts.length != 2
-
-    if parts.length == 3
+    
+    case parts.length
+    when 3
       city_name = parts[0]
       state_name = parts[1]
       country_name = parts[2]
-    elsif parts.length == 2
+      [city_name, state_name, country_name]
+    when 2
       city_name = parts[0]
       state_name = parts[1]
-      country_name = nil
+      [city_name, state_name, nil]
     else
-      return nil
+      nil
     end
-
-    [city_name, state_name, country_name]
   end
+  
 
   def log_location_error(location, job_post, company)
     error_message = "Location '#{location}' not found for #{company.company_name} for job #{job_post.job_title}"

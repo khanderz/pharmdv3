@@ -1,23 +1,24 @@
 # frozen_string_literal: true
 
 class City < ApplicationRecord
-  def self.find_or_create_city(city_param, job_post)
+  def self.find_or_create_city(city_param, company, job_post=nil)
     city = where('LOWER(city_name) = ? OR LOWER(aliases::text) LIKE ?',
                  city_param.downcase, "%#{city_param.downcase}%").first
 
-    if city
-      puts "#{GREEN}City #{city_param} found in existing records.#{RESET}"
-    else
-      error_message = "City '#{city_param}' not found for job #{job_post.job_title}"
+    unless city
+      puts "#{RED}City '#{city_param}' not found for job #{job_post} or company : #{company}.#{RESET}"
+      error_message = "City '#{city_param}' not found for job #{job_post} or company : #{company}"
+      adj_type = job_post ? 'JobPost' : 'Company'
 
-      city = create!(
+      new_city = City.create!(
         city_name: city_param,
         error_details: error_message,
         resolved: false
       )
+
       Adjudication.log_error(
-        adjudicatable_type: 'JobPost',
-        adjudicatable_id: city.id,
+        adjudicatable_type: adj_type,
+        adjudicatable_id: new_city.id,
         error_details: error_message
       )
     end

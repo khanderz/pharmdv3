@@ -31,6 +31,7 @@ class Company < ApplicationRecord
   validates :company_name, presence: true, uniqueness: true
   validates :linkedin_url, uniqueness: true, allow_blank: true
   validates :company_url, uniqueness: true, allow_blank: true
+  validates :ats_type_id, presence: true
 
   # Scopes
   scope :with_size, ->(size) { where(company_size_id: size.id) }

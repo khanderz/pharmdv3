@@ -33,90 +33,7 @@ def resolve_location(locations)
   locations.size == 1 ? locations.first : locations
 end
 
-def log_adjudication(entity_type, entity_name, company_name, adjudicatable)
-  raise ArgumentError, 'Adjudicatable must be persisted' unless adjudicatable.persisted?
-
-  error_details = "#{entity_type} '#{entity_name}' not found for Company #{company_name}"
-
-  existing_adjudication = Adjudication.find_by(
-    adjudicatable_type: adjudicatable.class.name,
-    adjudicatable_id: adjudicatable.id,
-    error_details: error_details
-  )
-
-  if existing_adjudication
-    puts "#{BLUE}Adjudication already exists for #{entity_type}: #{entity_name}, company: #{company_name}. Skipping creation.#{RESET}"
-    return existing_adjudication
-  end
-
-  Adjudication.log_error(
-    adjudicatable_type: adjudicatable.class.name,
-    adjudicatable_id: adjudicatable.id,
-    error_details: error_details
-  )
-rescue ActiveRecord::RecordInvalid => e
-  puts "#{RED}Failed to create adjudication for #{entity_type} '#{entity_name}' and company '#{company_name}': #{e.message}#{RESET}"
-  nil
-end
-
-def find_or_create_country(country_name, company_name)
-  Country.where(
-    'LOWER(country_code) = ? OR LOWER(country_name) = ? OR LOWER(?) = ANY(aliases)',
-    country_name.downcase, country_name.downcase, country_name.downcase
-  ).first || begin
-    puts "Creating new country: #{country_name}"
-    country = Country.create!(
-      country_code: country_name,
-      country_name: country_name,
-      error_details: "Country '#{country_name}' not found for Company #{company_name}",
-      resolved: false
-    )
-    log_adjudication('Country', country_name, company_name, country)
-    country
-  end
-end
-
-def find_or_create_state(state_name, company_name)
-  State.where(
-    'LOWER(state_name) = ? OR LOWER(state_code) = ?',
-    state_name.downcase, state_name.downcase
-  ).first || begin
-    puts "State not found for company: #{company_name} or name/code: #{state_name}"
-    state = State.create!(
-      state_name: state_name,
-      error_details: "State '#{state_name}' not found for Company #{company_name}",
-      resolved: false
-    )
-    if state.persisted?
-      log_adjudication('State', state_name, company_name, state)
-    else
-      puts "Failed to persist state: #{state_name}. Adjudication cannot be created."
-    end
-    state
-  end
-end
-
-def find_or_create_city(city_name, company_name)
-  City.where(
-    'LOWER(city_name) = ? OR LOWER(?) = ANY(aliases)',
-    city_name.downcase, city_name.downcase
-  ).first || begin
-    puts "Creating new city: #{city_name}"
-    city = City.create!(
-      city_name: city_name,
-      error_details: "City '#{city_name}' not found for Company #{company_name}",
-      resolved: false
-    )
-    if city.persisted?
-      log_adjudication('City', city_name, company_name, city)
-    else
-      puts "Failed to persist city: #{city_name}. Adjudication cannot be created."
-    end
-    city
-  end
-end
-
-def find_company_size(size_range, current_company_size)
+def find_company_size(size_range, current_company_size=nil)
   if size_range.to_s.match?(/^\d+$/)
     size = size_range.to_i
 
@@ -150,34 +67,39 @@ def find_company_size(size_range, current_company_size)
   end
 end
 
-def find_funding_type(funding_type_name, company_name, company)
+def find_funding_type(funding_type_name, company_name)
   return nil if funding_type_name.blank?
 
   funding_type = FundingType.where('LOWER(funding_type_name) = ?', funding_type_name.downcase).first
+
   unless funding_type
     puts "#{RED}Invalid funding type: '#{funding_type_name}' for company: #{company_name}#{RESET}"
-    log_adjudication(
-      'FundingType',
-      funding_type_name,
-      company_name,
-      company
+    error_details = "Invalid funding type: '#{funding_type_name}' for company: #{company_name}"
+    adj_id = company_name + funding_type_name
+    puts "#{RED}Adjudication ID: #{adj_id}#{RESET}"
+    Adjudication.log_error(
+      adjudicatable_type: 'FundingType',
+      adjudicatable_id: adj_id,
+      error_details: error_details
     )
   end
   funding_type
 end
 
-def find_or_create_company_type(company_type_name, company_name, company)
+def find_or_create_company_type(company_type_name, company_name)
   return nil if company_type_name.blank?
 
   company_type = CompanyType.find_by('LOWER(company_type_code) = ?', company_type_name.downcase)
 
   unless company_type
     puts "#{RED}Invalid company type: '#{company_type_name}' for company: #{company_name}#{RESET}"
-    log_adjudication(
-      'CompanyType',
-      company_type_name,
-      company_name,
-      company
+    error_details = "Invalid company type: '#{company_type_name}' for company: #{company_name}"
+    adj_id = company_name + company_type_name
+    puts  "#{RED}Adjudication ID: #{adj_id}#{RESET}"
+    Adjudication.log_error(
+      adjudicatable_type: 'CompanyType',
+      adjudicatable_id: adj_id,
+      error_details: error_details
     )
   end
 
@@ -187,11 +109,18 @@ end
 def update_join_tables(company, countries, states, cities, domains, specialties)
   changes_made = false
 
-  countries = countries.uniq(&:id)
-  states = states.uniq(&:id)
-  cities = cities.uniq(&:id)
-  domains = domains.uniq(&:id)
-  specialties = specialties.uniq(&:id)
+  # puts "company: #{company.company_name}"
+  # puts "countries: #{countries}"
+  # puts "states: #{states}"
+  # puts "cities: #{cities}"
+  # puts "domains: #{domains}"
+  # puts "specialties: #{specialties}"
+
+  countries = countries.compact.uniq(&:id)
+  states = states.compact.uniq(&:id)
+  cities = cities.compact.uniq(&:id)
+  domains = domains.compact.uniq(&:id)
+  specialties = specialties.compact.uniq(&:id)
 
   existing_countries = CompanyCountry.where(company_id: company.id).pluck(:country_id).sort
   new_countries = countries.map(&:id).sort
@@ -256,10 +185,9 @@ def update_existing_company(company, row_data, ats_type, countries, states, citi
     current_funding_type = company.funding_type
     current_company_type = company.company_type_id
 
-    company_size = find_company_size(row_data['company_size'], current_company_size)
-    funding_type = find_funding_type(row_data['last_funding_type'], company.company_name, company)
-    company_type = find_or_create_company_type(row_data['company_type'], company.company_name,
-                                               company)
+    company_size = find_company_size(row_data['company_size'])
+    funding_type = find_funding_type(row_data['last_funding_type'], row_data['company_name'])
+    company_type = find_or_create_company_type(row_data['company_type'], row_data['company_name']) 
 
     if company_size && company_size.id != current_company_size&.id
       company.assign_attributes(company_size_id: company_size.id)
@@ -314,9 +242,8 @@ end
 
 def create_new_company(row_data, ats_type, countries, states, cities, domains, specialties)
   company_size = find_company_size(row_data['company_size'])
-  funding_type = find_funding_type(row_data['last_funding_type'], company.company_name, company)
-  company_type = find_or_create_company_type(row_data['company_type_id'], row_data['company_name'],
-                                             nil)
+  funding_type = find_funding_type(row_data['last_funding_type'], row_data['company_name'])
+  company_type = find_or_create_company_type(row_data['company_type'], row_data['company_name'])
 
   new_company = Company.new(
     company_name: row_data['company_name'],
@@ -329,13 +256,13 @@ def create_new_company(row_data, ats_type, countries, states, cities, domains, s
     logo_url: row_data['logo_url'],
     company_description: row_data['company_description'],
     company_tagline: row_data['company_tagline'],
-    ats_type: ats_type,
+    ats_type_id: ats_type&.id,
     company_size_id: company_size&.id,
-    funding_type_id: funding_type&.id,
+    funding_type_id: funding_type&.id || nil,
     company_type_id: company_type&.id
   )
 
-  if new_company.save
+  if new_company.save 
     update_join_tables(new_company, countries, states, cities, domains, specialties)
     puts "#{GREEN}Added new company: #{new_company.company_name}.#{RESET}"
   else
@@ -352,13 +279,18 @@ def process_company_data(row_data, _headers)
     ats_type = AtsType.find_by(ats_type_code: row_data['company_ats_type'])
 
     countries = normalize_location_data(row_data['company_countries']).map do |name|
-      find_or_create_country(name, company_name)
+      puts "#{ORANGE}Country: #{name}#{RESET}"
+      Country.find_or_adjudicate_country(name, name, company_name)
     end
+
     states = normalize_location_data(row_data['company_states']).map do |name|
-      find_or_create_state(name, company_name)
+      puts  "#{ORANGE}State: #{name}#{RESET}"
+      State.find_or_create_state(name, company_name)
     end
+
     cities = normalize_location_data(row_data['company_cities']).map do |name|
-      find_or_create_city(name, company_name)
+      puts "#{ORANGE}City: #{name}#{RESET}"
+      City.find_or_create_city(name, company_name)
     end
 
     domains = (row_data['healthcare_domain'] || '').split(',').map(&:strip).map do |key|
@@ -370,9 +302,11 @@ def process_company_data(row_data, _headers)
     end
 
     if company
+      puts "#{GREEN}Company #{company_name} found in existing records.#{RESET}"
       update_existing_company(company, row_data, ats_type, countries, states, cities, domains,
                               specialties)
     else
+      puts "#{RED}Company '#{company_name}' not found in existing records.#{RESET}"
       create_new_company(row_data, ats_type, countries, states, cities, domains, specialties)
     end
   rescue ActiveRecord::RecordInvalid => e
