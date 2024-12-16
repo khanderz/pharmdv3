@@ -47,11 +47,12 @@ def split_job_description(text: str) -> Dict[str, str]:
             "summary",
             "overview",
             "position summary",
-            "role",
-            "role description",
-            "about the role",
+
         ],
         "responsibilities": [
+                        "role",
+            "role description",
+            "about the role",
             "responsibilities",
             "duties",
             "key responsibilities",
@@ -78,7 +79,10 @@ def split_job_description(text: str) -> Dict[str, str]:
 
     section_regex = re.compile(r"(?i)\b(" + "|".join(all_sections) + r")\b:?\s*")
 
+    # print(f" section regex: {section_regex}", file=sys.stderr)
+
     split_text = section_regex.split(text)
+    # print(f"Split text: {split_text}", file=sys.stderr)
 
     result = {
         "summary": "",
@@ -94,15 +98,23 @@ def split_job_description(text: str) -> Dict[str, str]:
 
         if header_match:
             # print("Header match:", header_match, file=sys.stderr)
-            matched_section = header_match.group(1).lower().replace(" ", "_")
+            matched_alias = header_match.group(1)
+            matched_section = None
             # print(f"Matched alias: {matched_alias}", file=sys.stderr)
-            if matched_section in result and (
+
+            for section, aliases in sections.items():
+                if matched_alias.lower() in aliases:
+                    matched_section = section
+                    break
+            
+
+            if (matched_section in result or matched_alias in result) and (
                 current_section is None
-                or list(result.keys()).index(matched_section)
+                or list(result.keys()).index(matched_section if matched_section in result else matched_alias)
                 > list(result.keys()).index(current_section)
             ):
-                current_section = matched_section
-                result[current_section] = ""
+                current_section = matched_section if matched_section in result else matched_alias
+                result[current_section] =  ""
         elif current_section:
             result[current_section] += part.strip() + " "
             # print(f"Current section '{current_section}': {result[current_section]}", file=sys.stderr)

@@ -40,7 +40,9 @@ class JobPostService
 
     # puts "data return  / summary: #{data_return}"
 
-    data_return << { 'responsibilities' => responsibilities } if responsibilities
+    processed_responsibilities = extract_responsibilities(responsibilities)
+    data_return << { 'responsibilities' => processed_responsibilities || responsibilities }
+    
     # puts "data return / responsibilities : #{data_return}"
 
     processed_qualifications = extract_qualifications(qualifications)
@@ -97,8 +99,10 @@ class JobPostService
       input_text: summary,
       predict: true
     )
+    # puts "description_data: #{description_data}"
 
     parsed_descriptions = description_data['entities']
+    # puts "parsed_descriptions: #{parsed_descriptions}"
     corrected_descriptions = validate_and_update_training_data(summary, parsed_descriptions,
                                                                'job_description')
 
@@ -158,8 +162,41 @@ class JobPostService
     job_post_object
   end
 
+  def self.extract_responsibilities(responsibilities)
+    puts "#{BLUE}Extracting responsibilities...#{RESET}"
+
+    responsibilities_data = call_inspect_predictions(
+      attribute_type: 'job_responsibilities',
+      input_text: responsibilities,
+      predict: true
+    )
+
+    parsed_responsibilities = responsibilities_data['entities']
+
+    corrected_responsibilities = validate_and_update_training_data(responsibilities,
+                                                                  parsed_responsibilities, 'job_responsibilities')
+
+    if responsibilities_data['status'] == 'success' && corrected_responsibilities.any?
+      job_post_object = {
+        responsibilities: []
+      }
+
+      corrected_responsibilities.each do |entity|
+        case entity['label']
+        when 'RESPONSIBILITIES'
+          job_post_object[:responsibilities] << entity['token']
+        else
+          puts "#{RED}Unexpected label: #{entity['label']}#{RESET}"
+        end
+      end
+    else
+      puts "#{RED}Failed to extract responsibilities data.#{RESET}"
+    end
+    job_post_object
+  end
+
   def self.extract_qualifications(qualifications)
-    puts "#{BLUE}Extracting qualifications from text: #{qualifications}...#{RESET}"
+    puts "#{BLUE}Extracting qualifications ...#{RESET}"
 
     qualification_data = call_inspect_predictions(
       attribute_type: 'job_qualifications',
@@ -496,12 +533,20 @@ class JobPostService
 
     input_data = data ? other_json : ''
 
+    # puts "attribute_type: #{attribute_type}"
+    # puts "encoded_data: #{encoded_data}"
+    # puts "encoded_validation_data: #{encoded_validation_data}"
+    # puts "predict_flag: #{predict_flag}"
+    # puts "train_flag: #{train_flag}"
+    # puts "input_data: #{input_data}"
+
+
     command = "python3 app/python/ai_processing/main.py '#{attribute_type}' '#{encoded_data}' #{encoded_validation_data} #{predict_flag} #{train_flag} '#{input_data}' "
 
     stdout, stderr, status = Open3.capture3(command)
-    # puts "stdout: #{stdout}"
-    # puts "stderr: #{stderr}"
-    # puts "status: #{status}"
+    puts "stdout: #{stdout}"
+    puts "stderr: #{stderr}"
+    puts "status: #{status}"
 
     if train_flag
       puts "#{BLUE}Training started in the background. Logs will be saved to 'training.log'.#{RESET}"

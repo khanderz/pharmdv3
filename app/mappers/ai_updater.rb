@@ -41,7 +41,7 @@ class AiUpdater
     updated = false
 
     # print_job_post_data(job_post_data)
-    # puts "data from AI: #{ai_data}"
+    puts "data from AI: #{ai_data}"
 
     job_post_benefits = []
     job_post_cities = []
@@ -153,7 +153,13 @@ class AiUpdater
           # puts "value is #{value}"
 
           if value
-            job_post_data[:job_responsibilities] = value
+            if value.is_a?(Hash) && value[:responsibilities].is_a?(Array)
+              job_post_data[:job_responsibilities] = value[:responsibilities]
+            elsif value.is_a?(String)
+              job_post_data[:job_responsibilities] = [value]  
+            else
+              puts "#{RED}Unexpected format for responsibilities value: #{value.inspect}#{RESET}"
+            end
             updated_by_ai = true
           end
 

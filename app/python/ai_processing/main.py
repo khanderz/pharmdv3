@@ -16,29 +16,18 @@ from app.python.ai_processing.utils.utils import (
 from app.python.ai_processing.utils.validation_utils import validate_entities
 from spacy.training import iob_to_biluo
 from transformers import LongformerTokenizer
-from app.python.ai_processing.job_qualifications.train_job_qualifications import (
-    qualifications_nlp,
-    QUALIFICATIONS_MODEL_SAVE_PATH,
-    qualification_examples,
-)
-from app.python.ai_processing.job_description.train_job_description import (
-    description_nlp,
-    DESCRIPTION_MODEL_SAVE_PATH,
-    description_examples,
-)
-from app.python.ai_processing.job_benefits.train_job_benefits import (
-    benefits_nlp,
-    BENEFITS_MODEL_SAVE_PATH,
-    benefits_examples,
-)
-from app.python.ai_processing.salary.train_salary import (
-    salary_nlp,
-    SALARY_MODEL_SAVE_PATH,
-    salary_examples,
-)
 
 tokenizer = LongformerTokenizer.from_pretrained("allenai/longformer-base-4096")
 MAX_SEQ_LENGTH = 4096
+
+# logging.basicConfig(
+#     filename="training.log",
+#     filemode="a",
+#     level=logging.INFO,
+#     format="%(asctime)s - %(levelname)s - %(message)s",
+# )
+
+# logging.info("Logging setup completed. Testing log output.")
 
 class DualLoggingHandler(logging.Handler):
     def __init__(self, file_handler, stdout_handler):
@@ -68,24 +57,55 @@ logging.info("Logging setup completed. Starting script.")
 
 def return_paths(attribute_type):
     if attribute_type == "job_qualifications":
+        from app.python.ai_processing.job_qualifications.train_job_qualifications import (
+            qualifications_nlp,
+            QUALIFICATIONS_MODEL_SAVE_PATH,
+            qualification_examples,
+        )
         return (
             qualifications_nlp,
             QUALIFICATIONS_MODEL_SAVE_PATH,
             qualification_examples,
         )
     elif attribute_type == "job_description":
+        from app.python.ai_processing.job_description.train_job_description import (
+            description_nlp,
+            DESCRIPTION_MODEL_SAVE_PATH,
+            description_examples,
+        )
         return (
             description_nlp,
             DESCRIPTION_MODEL_SAVE_PATH,
             description_examples,
         )
+    elif attribute_type == "job_responsibilities":
+        from app.python.ai_processing.job_responsibilities.train_responsibilities import (
+            responsibilities_nlp,
+            RESPONSIBILITIES_MODEL_SAVE_PATH,
+            responsibilities_examples,
+        )
+        return (
+            responsibilities_nlp,
+            RESPONSIBILITIES_MODEL_SAVE_PATH,
+            responsibilities_examples,
+        )
     elif attribute_type == "job_benefits":
+        from app.python.ai_processing.job_benefits.train_job_benefits import (
+            benefits_nlp,
+            BENEFITS_MODEL_SAVE_PATH,
+            benefits_examples,
+        )
         return (
             benefits_nlp,
             BENEFITS_MODEL_SAVE_PATH,
             benefits_examples,
         )
     elif attribute_type == "salary":
+        from app.python.ai_processing.salary.train_salary import (
+            salary_nlp,
+            SALARY_MODEL_SAVE_PATH,
+            salary_examples,
+        )
         return (
             salary_nlp,
             SALARY_MODEL_SAVE_PATH,
@@ -93,7 +113,6 @@ def return_paths(attribute_type):
         )
     else:
         raise ValueError("Invalid attribute type provided.")
-
 
 def convert_example_to_biluo(text, nlp, attribute_type):
     """Convert model predictions for the given text to BILUO format."""
@@ -256,13 +275,13 @@ def main(
         input_data = json.loads(base64.b64decode(encoded_data).decode("utf-8"))
         text = input_data.get("text", "")
 
-        # print(f"{BLUE}Running job post main predictions...{RESET}", file=sys.stderr)
+        print(f"{BLUE}Running job post main predictions...{RESET}", file=sys.stderr)
         predictions = inspect_job_post_predictions(text, nlp, attribute_type)
-
         output = {
-            "status": "success" if predictions else "failure",
-            "entities": predictions,
+            "status": "success",
+            "entities": predictions if predictions else [],
         }
+
 
         sys.stdout.write(json.dumps(output) + "\n")
 
