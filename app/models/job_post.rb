@@ -99,9 +99,20 @@ class JobPost < ApplicationRecord
     end
 
     def create_new_job(company, job_post_data, _job_url)
-      puts "job post data at job post model: #{job_post}"
+      puts "job post data at job post model: #{job_post_data}"
 
-      job_post = JobPost.new(job_post_data)
+      job_post_data_object = job_post_data[:job_post_data]
+      benefits = job_post_data[:job_post_benefits]
+      cities = job_post_data[:job_post_cities]
+      countries = job_post_data[:job_post_countries]
+      credentials = job_post_data[:job_post_credentials]
+      educations = job_post_data[:job_post_educations]
+      experiences = job_post_data[:job_post_experiences]
+      seniorities = job_post_data[:job_post_seniorities]
+      skills = job_post_data[:job_post_skills]
+      states = job_post_data[:job_post_states]
+
+      job_post = JobPost.new(job_post_data_object)
 
       begin
         if job_post.save

@@ -57,12 +57,12 @@ def handle_spacy_data(
                     ]
                     examples.append(Example.from_dict(doc, {"entities": entities}))
 
-            else:
-                print(f"{RED}No documents loaded from doc_bin.{RESET}")
+            # else:
+            #     print(f"{RED}No documents loaded from doc_bin.{RESET}")
 
             return doc_bin, examples
         else:
-            print(f"{BLUE}Training data has changed. Converting data now...{RESET}")
+            # print(f"{BLUE}Training data has changed. Converting data now...{RESET}")
             train_data = load_data(CONVERTED_FILE, FOLDER)
             doc_bin, examples = convert_to_spacy_format(
                 train_data,
@@ -75,7 +75,7 @@ def handle_spacy_data(
 
             try:
                 doc_bin.to_disk(SPACY_DATA_PATH)
-                print(f"{BLUE}Data saved to {SPACY_DATA_PATH}{RESET}")
+                # print(f"{BLUE}Data saved to {SPACY_DATA_PATH}{RESET}")
 
                 with open(last_hash_path, "w") as f:
                     f.write(current_hash)
@@ -83,9 +83,9 @@ def handle_spacy_data(
                 print(f"{RED}Error saving doc_bin: {e}{RESET}")
 
     else:
-        print(
-            f"{BLUE}Converted to spacy data does not exist. Converting data now...{RESET}"
-        )
+        # print(
+        #     f"{BLUE}Converted to spacy data does not exist. Converting data now...{RESET}"
+        # )
         train_data = load_data(CONVERTED_FILE, FOLDER)
         doc_bin, examples = convert_to_spacy_format(
             train_data,
@@ -98,7 +98,7 @@ def handle_spacy_data(
 
         try:
             doc_bin.to_disk(SPACY_DATA_PATH)
-            print(f"{BLUE}Data saved to {SPACY_DATA_PATH}{RESET}")
+            # print(f"{BLUE}Data saved to {SPACY_DATA_PATH}{RESET}")
 
             with open(last_hash_path, "w") as f:
                 f.write(current_hash)
@@ -120,7 +120,7 @@ def convert_to_spacy_format(
     db = DocBin()
     nlp = spacy.blank("en")
 
-    print(f"---------------CONVERTING TRAIN DATA TO SPACY FORMAT...")
+    # print(f"---------------CONVERTING TRAIN DATA TO SPACY FORMAT...")
 
     examples = []
     for _, entry in enumerate(train_data):
@@ -145,13 +145,13 @@ def convert_to_spacy_format(
         examples.append(example)
 
     if tokenizer and MAX_SEQ_LENGTH and longformer_model:
-        print(f"Processing embeddings for {len(examples)} examples...")
+        # print(f"Processing embeddings for {len(examples)} examples...")
         batch_size = 8
 
         for i in range(0, len(examples), batch_size):
             batch_docs = examples[i : i + batch_size]
             batch_texts = [example.reference.text for example in batch_docs]
-            print(f"Processing batch {i + 1} - {i + len(batch_docs)}...")
+            # print(f"Processing batch {i + 1} - {i + len(batch_docs)}...")
             batch_inputs = tokenizer(
                 batch_texts,
                 max_length=MAX_SEQ_LENGTH,
@@ -171,14 +171,14 @@ def convert_to_spacy_format(
 
             del batch_inputs, outputs, batch_embeddings
             torch.cuda.empty_cache()
-    print(f"---------------CONVERSION COMPLETE.")
+    # print(f"---------------CONVERSION COMPLETE.")
     db.to_disk(SPACY_DATA_PATH)
     loaded_db = DocBin().from_disk(SPACY_DATA_PATH)
     loaded_docs = list(loaded_db.get_docs(nlp.vocab))
 
-    if not list(loaded_db.get_docs(nlp.vocab)):
-        print(f"{RED}Warning: No documents were added to `doc_bin`.{RESET}")
-    else:
-        print(f"{BLUE}{len(loaded_docs)} documents saved/added to `doc_bin`.{RESET}")
+    # if not list(loaded_db.get_docs(nlp.vocab)):
+    #     print(f"{RED}Warning: No documents were added to `doc_bin`.{RESET}")
+    # else:
+    #     print(f"{BLUE}{len(loaded_docs)} documents saved/added to `doc_bin`.{RESET}")
 
     return db, examples

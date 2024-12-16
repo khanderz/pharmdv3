@@ -40,8 +40,8 @@ class AiUpdater
     ai_data = JobPostService.split_descriptions(job)
     updated = false
 
-    print_job_post_data(job_post_data)
-    puts "data from AI: #{ai_data}"
+    # print_job_post_data(job_post_data)
+    # puts "data from AI: #{ai_data}"
 
     job_post_benefits = []
     job_post_cities = []
@@ -57,8 +57,8 @@ class AiUpdater
       field_data.each do |key, value|
         case key
         when 'description'
-          puts "key is #{key}"
-          puts "value is #{value}"
+          # puts "key is #{key}"
+          # puts "value is #{value}"
 
           if value.is_a?(Hash)
             description = value[:job_description]
@@ -146,24 +146,22 @@ class AiUpdater
               updated_by_ai = true
             end
           end
-          puts "description / job post data is #{job_post_data}"
+          # puts "description / job post data is #{job_post_data}"
 
         when 'responsibilities'
-          puts "key is #{key}"
-          puts "value is #{value}"
+          # puts "key is #{key}"
+          # puts "value is #{value}"
 
-          responsibilities = value[:responsibilities]
-
-          if responsibilities
-            job_post_data[:job_responsibilities] = responsibilities
+          if value
+            job_post_data[:job_responsibilities] = value
             updated_by_ai = true
           end
 
-          puts "responsibilities / job post data is #{job_post_data}"
+          # puts "responsibilities / job post data is #{job_post_data}"
 
         when 'qualifications'
-          puts "key is #{key}"
-          puts "value is #{value}"
+          # puts "key is #{key}"
+          # puts "value is #{value}"
 
           if value.is_a?(Hash)
             qualifications = value[:qualifications]
@@ -205,11 +203,11 @@ class AiUpdater
               end
             end
           end
-          puts "qualifications / job post data is #{job_post_data}"
+          # puts "qualifications / job post data is #{job_post_data}"
 
         when 'benefits'
-          puts "key is #{key}"
-          puts "value is #{value}"
+          # puts "key is #{key}"
+          # puts "value is #{value}"
 
           settings = value[:job_settings]
           countries = value[:job_countries]
@@ -276,11 +274,11 @@ class AiUpdater
             end
           end
 
-          puts "benefits / job post data is #{job_post_data}"
+          # puts "benefits / job post data is #{job_post_data}"
 
         when 'salary'
-          puts "key is #{key}"
-          puts "value is #{value}"
+          # puts "key is #{key}"
+          # puts "value is #{value}"
 
           salary_min = value[:job_salary_min]
           salary_max = value[:job_salary_max]
@@ -343,24 +341,13 @@ class AiUpdater
             end
           end
 
-          puts "salary / job post data is #{job_post_data}"
+          # puts "salary / job post data is #{job_post_data}"
 
         else
           puts "#{RED}Unexpected key: #{key}.#{RESET}"
         end
       end
     end
-
-    puts "job post data is #{job_post_data}"
-    puts "job post benefits is #{job_post_benefits}"
-    puts "job post cities is #{job_post_cities}"
-    puts "job post countries is #{job_post_countries}"
-    puts "job post credentials is #{job_post_credentials}"
-    puts "job post educations is #{job_post_educations}"
-    puts "job post experiences is #{job_post_experiences}"
-    puts "job post seniorities is #{job_post_seniorities}"
-    puts "job post skills is #{job_post_skills}"
-    puts "job post states is #{job_post_states}"
 
     {
       job_post_data: job_post_data,

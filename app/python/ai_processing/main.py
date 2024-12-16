@@ -6,7 +6,6 @@ import sys
 import warnings
 import threading
 import logging
-import os
 import spacy
 from app.python.ai_processing.utils.logger import BLUE, RESET
 from app.python.ai_processing.utils.trainer import train_spacy_model
@@ -41,14 +40,31 @@ from app.python.ai_processing.salary.train_salary import (
 tokenizer = LongformerTokenizer.from_pretrained("allenai/longformer-base-4096")
 MAX_SEQ_LENGTH = 4096
 
-logging.basicConfig(
-    filename="training.log",
-    filemode="a",
-    level=logging.INFO,
-    format="%(asctime)s - %(levelname)s - %(message)s",
-)
+class DualLoggingHandler(logging.Handler):
+    def __init__(self, file_handler, stdout_handler):
+        super().__init__()
+        self.file_handler = file_handler
+        self.stdout_handler = stdout_handler
 
-logging.info("Logging setup completed. Testing log output.")
+    def emit(self, record):
+        log_entry = self.format(record)
+        self.file_handler.emit(record)
+        if record.levelno != logging.INFO or not log_entry.startswith("{"):
+            self.stdout_handler.emit(record)
+
+file_handler = logging.FileHandler("training.log")
+file_handler.setFormatter(logging.Formatter("%(asctime)s - %(levelname)s - %(message)s"))
+
+stdout_handler = logging.StreamHandler(sys.stdout)
+stdout_handler.setFormatter(logging.Formatter("%(message)s"))
+
+logger = logging.getLogger()
+logger.setLevel(logging.INFO)  
+logger.handlers = []  
+logger.addHandler(DualLoggingHandler(file_handler, stdout_handler))
+
+logging.info("Logging setup completed. Starting script.")
+
 
 def return_paths(attribute_type):
     if attribute_type == "job_qualifications":
@@ -169,8 +185,8 @@ def inspect_job_post_predictions(text, nlp, attribute_type):
 
 def train_model_in_thread(MODEL_SAVE_PATH, nlp, examples):
     try:
-        print("\nTraining model in the background...")
-        logging.info("Training model started.")
+        # print("\nTraining model in the background...")
+        logging.info("Training model in the background...")
 
         train_spacy_model(MODEL_SAVE_PATH, nlp, examples, resume=True)
         logging.info("Training model completed successfully.")
@@ -190,10 +206,10 @@ def main(
     data=None,
 ):
     if data:
-        print(
-            f"{BLUE}Calculating entity indices for the provided data...{RESET}",
-            file=sys.stderr,
-        )
+        # print(
+        #     f"{BLUE}Calculating entity indices for the provided data...{RESET}",
+        #     file=sys.stderr,
+        # )
         if isinstance(data, str):
             data = json.loads(data)
 
@@ -202,10 +218,10 @@ def main(
         return
 
     if validate_data not in [None, "None", "", "null"]:
-        print(
-            f"{BLUE}Validating entities of the converted data only...{RESET}",
-            file=sys.stderr,
-        )
+        # print(
+        #     f"{BLUE}Validating entities of the converted data only...{RESET}",
+        #     file=sys.stderr,
+        # )
 
         decoded = json.loads(base64.b64decode(validate_data).decode("utf-8"))
         validation_result = validate_entities(decoded, nlp, file=sys.stdout)
@@ -225,10 +241,10 @@ def main(
         return
 
     if train_flag == "true":
-        print(
-            f"{BLUE}Isolating process to train the main extraction model...{RESET}",
-            file=sys.stderr,
-        )
+        # print(
+        #     f"{BLUE}Isolating process to train the main extraction model...{RESET}",
+        #     file=sys.stderr,
+        # )
         logging.info(f"Training model started for {attribute_type}...")
         training_thread = threading.Thread(
             target=train_model_in_thread, args=(MODEL_SAVE_PATH, nlp, examples)
@@ -240,7 +256,7 @@ def main(
         input_data = json.loads(base64.b64decode(encoded_data).decode("utf-8"))
         text = input_data.get("text", "")
 
-        print(f"{BLUE}Running job post main predictions...{RESET}", file=sys.stderr)
+        # print(f"{BLUE}Running job post main predictions...{RESET}", file=sys.stderr)
         predictions = inspect_job_post_predictions(text, nlp, attribute_type)
 
         output = {
@@ -253,10 +269,10 @@ def main(
 
 if __name__ == "__main__":
     warnings.filterwarnings("ignore")
-    print(
-        f"{BLUE}Running job post main extraction model inspection script...{RESET}",
-        file=sys.stderr,
-    )
+    # print(
+    #     f"{BLUE}Running job post main extraction model inspection script...{RESET}",
+    #     file=sys.stderr,
+    # )
     try:
         attribute_type = sys.argv[1]
         encoded_data = sys.argv[2]
@@ -289,5 +305,6 @@ if __name__ == "__main__":
         )
     except Exception as e:
         error_response = {"status": "error", "message": str(e)}
-        sys.stdout.write(json.dumps(error_response) + "\n")
+        print(json.dumps(error_response))  
+        logging.error(f"Error in main script: {e}")
         sys.exit(1)
