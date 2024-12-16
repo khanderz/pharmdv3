@@ -229,6 +229,7 @@ def main(
             f"{BLUE}Isolating process to train the main extraction model...{RESET}",
             file=sys.stderr,
         )
+        logging.info(f"Training model started for {attribute_type}...")
         training_thread = threading.Thread(
             target=train_model_in_thread, args=(MODEL_SAVE_PATH, nlp, examples)
         )

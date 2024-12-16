@@ -69,3 +69,4 @@ app/python/data_processing/*/model/*
 
 
 app/python/ai_processing/company_extraction/.DS_Store
+training.log
