@@ -421,16 +421,15 @@ class JobPostService
         puts "Select the correct label for this token (#{token}):"
         label_list.each_with_index do |lbl, idx|
           puts "#{idx}: #{lbl}"
+        end
         label_index = gets.strip.to_i
         label = label_list[label_index] if label_index >= 0 && label_index < label_list.size
-        end
 
-          puts "Enter start index for '#{token}':"
-          start_value = gets.strip.to_i
+        puts "Enter start index for '#{token}':"
+        start_value = gets.strip.to_i
 
-          puts "Enter end index for '#{token}':"
-          end_value = gets.strip.to_i
-
+        puts "Enter end index for '#{token}':"
+        end_value = gets.strip.to_i
 
         corrected_entities << {
           'start' => start_value,
