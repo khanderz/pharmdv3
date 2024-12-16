@@ -18,7 +18,7 @@ class JobSeniority < ApplicationRecord
         resolved: false
       )
       Adjudication.log_error(
-        adjudicatable_type: 'JobPost',
+        adjudicatable_type: 'JobSeniority',
         adjudicatable_id: job_seniority.id,
         error_details: error_details
       )

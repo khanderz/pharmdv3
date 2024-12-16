@@ -14,7 +14,7 @@ class Credential < ApplicationRecord
         resolved: false
       )
       Adjudication.log_error(
-        adjudicatable_type: 'JobPost',
+        adjudicatable_type: 'Credential',
         adjudicatable_id: credential.id,
         error_details: error_details
       )

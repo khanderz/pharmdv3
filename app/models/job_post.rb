@@ -32,7 +32,7 @@ class JobPost < ApplicationRecord
 
   belongs_to :job_commitment, optional: true
   belongs_to :department
-  belongs_to :team
+  belongs_to :team, optional: true
   belongs_to :company
   belongs_to :job_role
   belongs_to :job_salary_currency, optional: true
@@ -117,6 +117,43 @@ class JobPost < ApplicationRecord
       begin
         if job_post.save
           puts "#{GREEN}#{company.company_name} job post added#{RESET}"
+
+          benefits.each do |benefit_id|
+            JobPostBenefit.create!(job_post_id: job_post.id, benefit_id: benefit_id)
+          end
+    
+          cities.each do |city_id|
+            JobPostCity.create!(job_post_id: job_post.id, city_id: city_id)
+          end
+    
+          countries.each do |country_id|
+            JobPostCountry.create!(job_post_id: job_post.id, country_id: country_id)
+          end
+    
+          credentials.each do |credential_id|
+            JobPostCredential.create!(job_post_id: job_post.id, credential_id: credential_id)
+          end
+    
+          educations.each do |education_id|
+            JobPostEducation.create!(job_post_id: job_post.id, education_id: education_id)
+          end
+    
+          experiences.each do |experience_id|
+            JobPostExperience.create!(job_post_id: job_post.id, experience_id: experience_id)
+          end
+    
+          seniorities.each do |seniority_id|
+            JobPostSeniority.create!(job_post_id: job_post.id, job_seniority_id: seniority_id)
+          end
+    
+          skills.each do |skill_id|
+            JobPostSkill.create!(job_post_id: job_post.id, skill_id: skill_id)
+          end
+    
+          states.each do |state_id|
+            JobPostState.create!(job_post_id: job_post.id, state_id: state_id)
+          end
+    
         else
           log_job_error(job_post, company, job_post.errors.full_messages.join(', '), job_post)
         end

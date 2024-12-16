@@ -14,7 +14,7 @@ class Experience < ApplicationRecord
         resolved: false
       )
       Adjudication.log_error(
-        adjudicatable_type: 'JobPost',
+        adjudicatable_type: 'Experience',
         adjudicatable_id: experience.id,
         error_details: error_details
       )

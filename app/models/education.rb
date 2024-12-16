@@ -14,7 +14,7 @@ class Education < ApplicationRecord
         resolved: false
       )
       Adjudication.log_error(
-        adjudicatable_type: 'JobPost',
+        adjudicatable_type: 'Education',
         adjudicatable_id: education.id,
         error_details: error_details
       )
