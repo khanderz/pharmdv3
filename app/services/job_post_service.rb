@@ -53,9 +53,10 @@ class JobPostService
     data_return << { 'benefits' => processed_benefits } if processed_benefits
 
     # puts "data return /benefits : #{data_return}"
-
-    salary_data = extract_salary(processed_benefits[:job_compensation])
-    data_return << { 'salary' => salary_data } if salary_data
+    if processed_benefits[:job_compensation]
+      salary_data = extract_salary(processed_benefits[:job_compensation])
+      data_return << { 'salary' => salary_data } if salary_data
+    end
     # puts "data return / salary / final : #{data_return}"
 
     data_return
@@ -172,7 +173,7 @@ class JobPostService
       predict: true
     )
 
-    puts "responsibilities_data: #{responsibilities_data}"
+    # puts "responsibilities_data: #{responsibilities_data}"
 
     parsed_responsibilities = responsibilities_data['entities']
 
