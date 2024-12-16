@@ -43,10 +43,12 @@ MAX_SEQ_LENGTH = 4096
 
 logging.basicConfig(
     filename="training.log",
+    filemode="a",
     level=logging.INFO,
     format="%(asctime)s - %(levelname)s - %(message)s",
 )
 
+logging.info("Logging setup completed. Testing log output.")
 
 def return_paths(attribute_type):
     if attribute_type == "job_qualifications":

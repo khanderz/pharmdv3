@@ -372,7 +372,6 @@ class JobPostService
       extracted_entities.each_with_index do |(label, tokens), _index|
         label = label.to_s
         token = tokens[0]
-        corrections_exist = false
 
         puts "is token #{token} for label '#{label}' correct (yes/no)"
         token_confirmation = gets.strip.downcase
@@ -453,6 +452,7 @@ class JobPostService
         return corrected_entities
       end
 
+      puts "#{BLUE}Validating entities...#{RESET}"
       validation_result = call_inspect_predictions(
         attribute_type: entity_type,
         input_text: input_text,
@@ -460,7 +460,7 @@ class JobPostService
       )
 
       if validation_result && validation_result['status'] == 'success'
-        # puts "validation result on rb : #{validation_result}"
+        puts "validation result on rb : #{validation_result}"
         message = validation_result['message'].to_s.strip
         puts "#{GREEN}Validation completed successfully: #{message}#{RESET}"
 
