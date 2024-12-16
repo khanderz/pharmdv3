@@ -157,7 +157,8 @@ class JobPostService
         end
       end
     else
-      puts "#{RED}Failed to extract description data.#{RESET}"
+      puts "#{ORANGE}No entities, skipping.#{RESET}"
+      job_post_object = nil
     end
     job_post_object
   end
@@ -170,6 +171,8 @@ class JobPostService
       input_text: responsibilities,
       predict: true
     )
+
+    puts "responsibilities_data: #{responsibilities_data}"
 
     parsed_responsibilities = responsibilities_data['entities']
 
@@ -190,7 +193,8 @@ class JobPostService
         end
       end
     else
-      puts "#{RED}Failed to extract responsibilities data.#{RESET}"
+      puts "#{ORANGE}No entities, skipping.#{RESET}"
+      job_post_object = nil
     end
     job_post_object
   end
@@ -232,7 +236,8 @@ class JobPostService
         end
       end
     else
-      puts "#{RED}Failed to extract qualifications data.#{RESET}"
+      puts "#{ORANGE}No entities, skipping.#{RESET}"
+      job_post_object = nil
     end
     job_post_object
   end
@@ -311,7 +316,8 @@ class JobPostService
         end
       end
     else
-      puts "#{RED}Failed to extract benefits data.#{RESET}"
+      puts "#{ORANGE}No entities, skipping.#{RESET}"
+      job_post_object = nil
     end
     job_post_object
   end
@@ -360,7 +366,8 @@ class JobPostService
         end
       end
     else
-      puts "#{RED}Failed to extract compensation data.#{RESET}"
+      puts "#{ORANGE}No entities, skipping.#{RESET}"
+      job_post_object = nil
     end
     job_post_object
   end
@@ -544,9 +551,9 @@ class JobPostService
     command = "python3 app/python/ai_processing/main.py '#{attribute_type}' '#{encoded_data}' #{encoded_validation_data} #{predict_flag} #{train_flag} '#{input_data}' "
 
     stdout, stderr, status = Open3.capture3(command)
-    puts "stdout: #{stdout}"
-    puts "stderr: #{stderr}"
-    puts "status: #{status}"
+    # puts "stdout: #{stdout}"
+    # puts "stderr: #{stderr}"
+    # puts "status: #{status}"
 
     if train_flag
       puts "#{BLUE}Training started in the background. Logs will be saved to 'training.log'.#{RESET}"

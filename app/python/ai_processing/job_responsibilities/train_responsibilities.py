@@ -43,7 +43,7 @@ MAX_SEQ_LENGTH = 4096
 
 responsibilities_converted_data = load_data(CONVERTED_FILE, FOLDER)
 responsibilities_nlp = load_spacy_model(
-    MODEL_SAVE_PATH, MAX_SEQ_LENGTH, model_name="allenai/longformer-base-4096"
+    RESPONSIBILITIES_MODEL_SAVE_PATH, MAX_SEQ_LENGTH, model_name="allenai/longformer-base-4096"
 )
 
 if "ner" not in responsibilities_nlp.pipe_names:
@@ -66,9 +66,9 @@ if "ner" not in responsibilities_nlp.pipe_names:
 
     responsibilities_nlp.initialize(get_examples=lambda: examples)
 
-    os.makedirs(MODEL_SAVE_PATH, exist_ok=True)
-    responsibilities_nlp.to_disk(MODEL_SAVE_PATH)
-    print(f"{GREEN}Model saved to {MODEL_SAVE_PATH} with NER component added.{RESET}")
+    os.makedirs(RESPONSIBILITIES_MODEL_SAVE_PATH, exist_ok=True)
+    responsibilities_nlp.to_disk(RESPONSIBILITIES_MODEL_SAVE_PATH)
+    print(f"{GREEN}Model saved to {RESPONSIBILITIES_MODEL_SAVE_PATH} with NER component added.{RESET}")
 else:
     ner = responsibilities_nlp.get_pipe("ner")
     print(f"{GREEN}NER pipe already exists in blank model: {responsibilities_nlp.pipe_names}{RESET}")
@@ -83,8 +83,10 @@ else:
         transformer,
     )
 
+    responsibilities_examples  = examples
+
 # ------------------- TRAIN MODEL -------------------
-# train_spacy_model(MODEL_SAVE_PATH, responsibilities_nlp, examples, resume=True)
+# train_spacy_model(RESPONSIBILITIES_MODEL_SAVE_PATH, responsibilities_nlp, examples, resume=True)
 
 # ------------------- VALIDATE TRAINER -------------------
 # evaluate_model(responsibilities_nlp, responsibilities_converted_data)
@@ -92,106 +94,106 @@ else:
 
 
 # ------------------- TEST EXAMPLES -------------------
-def convert_example_to_biluo(text):
-    """Convert model predictions for the given text to BILUO format."""
-    tokens = tokenizer(
-        text,
-        max_length=MAX_SEQ_LENGTH,
-        truncation=True,
-        padding="max_length",
-        return_tensors="pt",
-    )
+# def convert_example_to_biluo(text):
+#     """Convert model predictions for the given text to BILUO format."""
+#     tokens = tokenizer(
+#         text,
+#         max_length=MAX_SEQ_LENGTH,
+#         truncation=True,
+#         padding="max_length",
+#         return_tensors="pt",
+#     )
 
-    decoded_text = tokenizer.decode(tokens["input_ids"][0], skip_special_tokens=True)
+#     decoded_text = tokenizer.decode(tokens["input_ids"][0], skip_special_tokens=True)
 
-    doc = responsibilities_nlp(decoded_text)
+#     doc = responsibilities_nlp(decoded_text)
 
-    iob_tags = [
-        token.ent_iob_ + "-" + token.ent_type_ if token.ent_type_ else "O"
-        for token in doc
-    ]
-    biluo_tags = iob_to_biluo(iob_tags)
+#     iob_tags = [
+#         token.ent_iob_ + "-" + token.ent_type_ if token.ent_type_ else "O"
+#         for token in doc
+#     ]
+#     biluo_tags = iob_to_biluo(iob_tags)
 
-    return doc, biluo_tags
-
-
-def inspect_job_responsibility_predictions(text):
-    """Inspect model predictions for job responsibility text."""
-
-    doc, biluo_tags = convert_example_to_biluo(text)
-
-    print("Token Predictions:")
-    print(f"{'Token':<15}{'Predicted Label':<20}{'BILUO Tag':<20}")
-    print("-" * 50)
-
-    entity_data = {}
-    current_entity = None
-    current_tokens = []
-
-    for token, biluo_tag in zip(doc, biluo_tags):
-        if biluo_tag != "O":
-            entity_label = biluo_tag.split("-")[-1]
-
-            if biluo_tag.startswith("B-"):
-                if current_entity:
-                    if current_entity not in entity_data:
-                        entity_data[current_entity] = []
-                    entity_data[current_entity].append(" ".join(current_tokens))
-
-                current_entity = entity_label
-                current_tokens = [token.text]
-
-            elif biluo_tag.startswith("I-"):
-                current_tokens.append(token.text)
-
-            elif biluo_tag.startswith("L-"):
-                current_tokens.append(token.text)
-                if current_entity:
-                    if current_entity not in entity_data:
-                        entity_data[current_entity] = []
-                    entity_data[current_entity].append(" ".join(current_tokens))
-                current_entity = None
-                current_tokens = []
-        else:
-            if current_entity:
-                if current_entity not in entity_data:
-                    entity_data[current_entity] = []
-                entity_data[current_entity].append(" ".join(current_tokens))
-                current_entity = None
-                current_tokens = []
-
-        print(
-            f"{token.text:<15}{token.ent_type_ if token.ent_type_ else 'O':<20}{biluo_tag:<20}"
-        )
-    if current_entity:
-        if current_entity not in entity_data:
-            entity_data[current_entity] = []
-        entity_data[current_entity].append(" ".join(current_tokens))
-
-    return entity_data
+#     return doc, biluo_tags
 
 
-if __name__ == "__main__":
-    warnings.filterwarnings("ignore")
-    print(
-        "\nRunning job responsibilities extraction model inspection script...",
-        file=sys.stderr,
-    )
+# def inspect_job_responsibility_predictions(text):
+#     """Inspect model predictions for job responsibility text."""
 
-    try:
-        encoded_input = sys.argv[1]
-        input_data = json.loads(base64.b64decode(encoded_input).decode("utf-8"))
-        text = input_data.get("text", "")
+#     doc, biluo_tags = convert_example_to_biluo(text)
 
-        entity_data = inspect_job_responsibility_predictions(text)
+#     print("Token Predictions:")
+#     print(f"{'Token':<15}{'Predicted Label':<20}{'BILUO Tag':<20}")
+#     print("-" * 50)
 
-        output = {
-            "status": "success" if entity_data else "failure",
-            "entities": entity_data,
-        }
+#     entity_data = {}
+#     current_entity = None
+#     current_tokens = []
 
-        print(json.dumps(output))
-    except Exception as e:
-        error_response = {"status": "error", "message": str(e)}
-        print(json.dumps(error_response))
-        sys.exit(1)
+#     for token, biluo_tag in zip(doc, biluo_tags):
+#         if biluo_tag != "O":
+#             entity_label = biluo_tag.split("-")[-1]
+
+#             if biluo_tag.startswith("B-"):
+#                 if current_entity:
+#                     if current_entity not in entity_data:
+#                         entity_data[current_entity] = []
+#                     entity_data[current_entity].append(" ".join(current_tokens))
+
+#                 current_entity = entity_label
+#                 current_tokens = [token.text]
+
+#             elif biluo_tag.startswith("I-"):
+#                 current_tokens.append(token.text)
+
+#             elif biluo_tag.startswith("L-"):
+#                 current_tokens.append(token.text)
+#                 if current_entity:
+#                     if current_entity not in entity_data:
+#                         entity_data[current_entity] = []
+#                     entity_data[current_entity].append(" ".join(current_tokens))
+#                 current_entity = None
+#                 current_tokens = []
+#         else:
+#             if current_entity:
+#                 if current_entity not in entity_data:
+#                     entity_data[current_entity] = []
+#                 entity_data[current_entity].append(" ".join(current_tokens))
+#                 current_entity = None
+#                 current_tokens = []
+
+#         print(
+#             f"{token.text:<15}{token.ent_type_ if token.ent_type_ else 'O':<20}{biluo_tag:<20}"
+#         )
+#     if current_entity:
+#         if current_entity not in entity_data:
+#             entity_data[current_entity] = []
+#         entity_data[current_entity].append(" ".join(current_tokens))
+
+#     return entity_data
+
+
+# if __name__ == "__main__":
+#     warnings.filterwarnings("ignore")
+#     print(
+#         "\nRunning job responsibilities extraction model inspection script...",
+#         file=sys.stderr,
+#     )
+
+#     try:
+#         encoded_input = sys.argv[1]
+#         input_data = json.loads(base64.b64decode(encoded_input).decode("utf-8"))
+#         text = input_data.get("text", "")
+
+#         entity_data = inspect_job_responsibility_predictions(text)
+
+#         output = {
+#             "status": "success" if entity_data else "failure",
+#             "entities": entity_data,
+#         }
+
+#         print(json.dumps(output))
+#     except Exception as e:
+#         error_response = {"status": "error", "message": str(e)}
+#         print(json.dumps(error_response))
+#         sys.exit(1)

@@ -62,7 +62,7 @@ def validate_entities(data, nlp, file=sys.stdout):
     if fails:
         result = {
             "status": "failure",
-            "message": f"Validation failed for {len(fails)} entities.",
+            "message": f"Validation failed for {len(fails)} entities. fails are {fails}",
         }
     else:
         result = {"status": "success", "message": "Validation passed for all entities."}
