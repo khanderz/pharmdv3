@@ -40,7 +40,7 @@ class AiUpdater
     ai_data = JobPostService.split_descriptions(job)
     updated = false
 
-    # print_job_post_data(job_post_data)
+    print_job_post_data(job_post_data)
     puts "data from AI: #{ai_data}"
 
     job_post_benefits = []
@@ -177,7 +177,7 @@ class AiUpdater
 
             if qualifications
               qualifications.each do |qualification|
-                job_post_data[:job_qualifications] >> qualification
+                job_post_data[:job_qualifications] << qualification
                 updated_by_ai = true
               end
             end

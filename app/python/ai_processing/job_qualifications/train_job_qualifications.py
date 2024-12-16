@@ -1,4 +1,4 @@
-#  app/python/ai_processing/job_qualifications/train_job_qualifications.py.py
+#  app/python/ai_processing/job_qualifications/train_job_qualifications.py
 
 import base64
 import json
@@ -62,7 +62,7 @@ qualification_examples = []
 
 if "ner" not in qualifications_nlp.pipe_names:
     ner = qualifications_nlp.add_pipe("ner")
-    print(f"{RED}Added NER pipe to blank model: {qualifications_nlp.pipe_names}{RESET}")
+    # print(f"{RED}Added NER pipe to blank model: {qualifications_nlp.pipe_names}{RESET}")
 
     for label in get_label_list(entity_type="job_qualifications"):
         ner.add_label(label)
@@ -83,14 +83,14 @@ if "ner" not in qualifications_nlp.pipe_names:
 
     os.makedirs(QUALIFICATIONS_MODEL_SAVE_PATH, exist_ok=True)
     qualifications_nlp.to_disk(QUALIFICATIONS_MODEL_SAVE_PATH)
-    print(
-        f"{GREEN}Model saved to {QUALIFICATIONS_MODEL_SAVE_PATH} with NER component added.{RESET}"
-    )
+    # print(
+    #     f"{GREEN}Model saved to {QUALIFICATIONS_MODEL_SAVE_PATH} with NER component added.{RESET}"
+    # )
 else:
     ner = qualifications_nlp.get_pipe("ner")
-    # print(
-    #     f"{GREEN}NER pipe already exists in blank model: {qualifications_nlp.pipe_names}{RESET}"
-    # )
+    print(
+        f"{GREEN}NER pipe already exists in blank model: {qualifications_nlp.pipe_names}{RESET}"
+    )
 
     doc_bin, examples = handle_spacy_data(
         SPACY_DATA_PATH,

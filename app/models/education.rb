@@ -7,7 +7,7 @@ class Education < ApplicationRecord
     if education
       puts "#{GREEN}Education #{education_param} found in existing records.#{RESET}"
     else
-      error_details = "Education #{education_param} for #{job_post.job_url} not found in existing records"
+      error_details = "Education #{education_param} for #{job_post} not found in existing records"
       education = create!(
         education_name: education_param,
         error_details: error_details,

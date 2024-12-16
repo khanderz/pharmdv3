@@ -11,7 +11,7 @@ class JobSeniority < ApplicationRecord
     if job_seniority
       puts "#{GREEN}Job Seniority #{name} found in existing records.#{RESET}"
     else
-      error_details = "Job Seniority #{name} for #{job_post.job_url} not found in existing records"
+      error_details = "Job Seniority #{name} for #{job_post} not found in existing records"
       job_seniority = JobSeniority.create!(
         job_seniority_label: name,
         error_details: error_details,

@@ -62,7 +62,7 @@ description_examples = []
 
 if "ner" not in description_nlp.pipe_names:
     ner = description_nlp.add_pipe("ner")
-    print(f"{RED}Added NER pipe to blank model: {description_nlp.pipe_names}{RESET}")
+    # print(f"{RED}Added NER pipe to blank model: {description_nlp.pipe_names}{RESET}")
 
     for label in get_label_list(entity_type="job_description"):
         ner.add_label(label)
@@ -84,9 +84,9 @@ if "ner" not in description_nlp.pipe_names:
 
     os.makedirs(DESCRIPTION_MODEL_SAVE_PATH, exist_ok=True)
     description_nlp.to_disk(DESCRIPTION_MODEL_SAVE_PATH)
-    print(
-        f"{GREEN}Model saved to {DESCRIPTION_MODEL_SAVE_PATH} with NER component added.{RESET}"
-    )
+    # print(
+    #     f"{GREEN}Model saved to {DESCRIPTION_MODEL_SAVE_PATH} with NER component added.{RESET}"
+    # )
 else:
     ner = description_nlp.get_pipe("ner")
     # print(

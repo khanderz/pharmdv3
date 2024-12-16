@@ -7,7 +7,7 @@ class Experience < ApplicationRecord
     if experience
       puts "#{GREEN}Experience #{experience_param} found in existing records.#{RESET}"
     else
-      error_details = "Experience #{experience_param} for #{job_post.job_url} not found in existing records"
+      error_details = "Experience #{experience_param} for #{job_post} not found in existing records"
       experience = create!(
         experience_name: experience_param,
         error_details: error_details,

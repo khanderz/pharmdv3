@@ -51,7 +51,7 @@ salary_examples = []
 
 if "ner" not in salary_nlp.pipe_names:
     ner = salary_nlp.add_pipe("ner")
-    print(f"{RED}Added NER pipe to blank model: {salary_nlp.pipe_names}{RESET}")
+    # print(f"{RED}Added NER pipe to blank model: {salary_nlp.pipe_names}{RESET}")
 
     for label in get_label_list(entity_type="salary"):
         ner.add_label(label)
@@ -67,9 +67,9 @@ if "ner" not in salary_nlp.pipe_names:
 
     os.makedirs(SALARY_MODEL_SAVE_PATH, exist_ok=True)
     salary_nlp.to_disk(SALARY_MODEL_SAVE_PATH)
-    print(
-        f"{GREEN}Model saved to {SALARY_MODEL_SAVE_PATH} with NER component added.{RESET}"
-    )
+    # print(
+    #     f"{GREEN}Model saved to {SALARY_MODEL_SAVE_PATH} with NER component added.{RESET}"
+    # )
 else:
     ner = salary_nlp.get_pipe("ner")
     # print(
@@ -96,8 +96,8 @@ else:
 
 
 # ------------------- VALIDATE TRAINER -------------------
-# evaluate_model(salary_nlp, converted_data)
-# validate_entities(converted_data, salary_nlp)
+# evaluate_model(salary_nlp, salary_converted_data)
+# validate_entities(salary_converted_data, salary_nlp)
 
 
 # ------------------- TEST EXAMPLES -------------------

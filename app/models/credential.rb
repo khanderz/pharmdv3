@@ -7,7 +7,7 @@ class Credential < ApplicationRecord
     if credential
       puts "#{GREEN}Credential #{credential_param} found in existing records.#{RESET}"
     else
-      error_details = "Credential #{credential_param} for #{job_post.job_url} not found in existing records"
+      error_details = "Credential #{credential_param} for #{job_post} not found in existing records"
       credential = create!(
         credential_name: credential_param,
         error_details: error_details,
