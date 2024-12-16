@@ -8,7 +8,7 @@ class City < ApplicationRecord
     unless city
       puts "#{RED}City '#{city_param}' not found for job #{job_post} or company : #{company}.#{RESET}"
       error_message = "City '#{city_param}' not found for job #{job_post} or company : #{company}"
-      adj_type = job_post ? 'JobPost' : 'Company'
+      adj_type = job_post ? 'City' : 'Company'
 
       new_city = City.create!(
         city_name: city_param,

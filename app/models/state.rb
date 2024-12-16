@@ -8,7 +8,7 @@ class State < ApplicationRecord
     unless state
       puts "#{RED}State #{state_param} not found for #{job_post} or company : #{company}.#{RESET}"
       error_details = "State #{state_param} for #{job_post} or company : #{company} not found in existing records"
-      adj_type = job_post ? 'JobPost' : 'Company'
+      adj_type = job_post ? 'State' : 'Company'
 
       new_state = State.create!(
         state_name: state_param,

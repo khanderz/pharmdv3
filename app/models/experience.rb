@@ -2,8 +2,9 @@
 
 class Experience < ApplicationRecord
   def self.find_or_create_experience(experience_param, job_post)
-    experience = where('LOWER(experience_name) = ?', experience_param.downcase).first
-
+    experience = where('LOWER(experience_name) = ?', experience_param.downcase)
+                 .or(where('LOWER(experience_code) = ?', experience_param.downcase))
+                 .first
     if experience
       puts "#{GREEN}Experience #{experience_param} found in existing records.#{RESET}"
     else

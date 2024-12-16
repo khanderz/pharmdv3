@@ -2,12 +2,12 @@
 
 class JobSeniority < ApplicationRecord
   def self.find_or_create_seniority(name, job_post)
-    name = name.downcase
+    param = param.downcase
 
-    job_seniority = JobSeniority.where('LOWER(job_seniority_label) = ?', name).first
-
-    job_seniority ||= JobSeniority.where('aliases @> ?', "{#{name}}").first
-
+    job_seniority = where('LOWER(job_seniority_label) = ?', param)
+                    .or(where('LOWER(job_seniority_code) = ?', param))
+                    .or(where('aliases @> ?', "{#{param}}"))
+                    .first
     if job_seniority
       puts "#{GREEN}Job Seniority #{name} found in existing records.#{RESET}"
     else

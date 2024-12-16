@@ -18,7 +18,7 @@ class Country < ApplicationRecord
     unless country
       puts "#{RED}Country with code '#{country_code}' or name '#{country_name}' not found for Company #{company}, Job URL #{job_url}.#{RESET}"
       error_details = "Country with code '#{country_code}' or name '#{country_name}' not found for Company #{company}, Job URL #{job_url}"
-      adj_type = job_url ? 'JobPost' : 'Company'
+      adj_type = job_url ? 'Country' : 'Company'
 
       new_country = Country.create!(
         country_code: country_code,

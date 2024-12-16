@@ -2,8 +2,9 @@
 
 class Credential < ApplicationRecord
   def self.find_or_create_credential(credential_param, job_post)
-    credential = where('LOWER(credential_name) = ?', credential_param.downcase).first
-
+    credential = where('LOWER(credential_name) = ?', credential_param.downcase)
+                 .or(where('LOWER(credential_code) = ?', credential_param.downcase))
+                 .first
     if credential
       puts "#{GREEN}Credential #{credential_param} found in existing records.#{RESET}"
     else
