@@ -42,7 +42,7 @@ class JobPostService
 
     processed_responsibilities = extract_responsibilities(responsibilities)
     data_return << { 'responsibilities' => processed_responsibilities || responsibilities }
-    
+
     # puts "data return / responsibilities : #{data_return}"
 
     processed_qualifications = extract_qualifications(qualifications)
@@ -178,7 +178,7 @@ class JobPostService
     parsed_responsibilities = responsibilities_data['entities']
 
     corrected_responsibilities = validate_and_update_training_data(responsibilities,
-                                                                  parsed_responsibilities, 'job_responsibilities')
+                                                                   parsed_responsibilities, 'job_responsibilities')
 
     if responsibilities_data['status'] == 'success' && corrected_responsibilities.any?
       job_post_object = {
@@ -547,7 +547,6 @@ class JobPostService
     # puts "predict_flag: #{predict_flag}"
     # puts "train_flag: #{train_flag}"
     # puts "input_data: #{input_data}"
-
 
     command = "python3 app/python/ai_processing/main.py '#{attribute_type}' '#{encoded_data}' #{encoded_validation_data} #{predict_flag} #{train_flag} '#{input_data}' "
 

@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 class City < ApplicationRecord
-  def self.find_or_create_city(city_param, company, job_post=nil)
+  def self.find_or_create_city(city_param, company, job_post = nil)
     city = where('LOWER(city_name) = ? OR LOWER(aliases::text) LIKE ?',
                  city_param.downcase, "%#{city_param.downcase}%").first
 

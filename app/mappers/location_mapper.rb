@@ -39,6 +39,7 @@ class LocationMapper
     puts "City: #{city_name}, State: #{state_name}, Country: #{country_name}"
     city = City.find_or_create_city(city_name, company, job)
     return unless city
+
     puts "City: #{city}"
 
     state = State.find_or_create_state(state_name, company, job)
@@ -74,6 +75,7 @@ class LocationMapper
       job['job_url']
     )
     return unless country
+
     puts "Country: #{country}"
     {
       city_name: city[:city_name],
@@ -88,7 +90,7 @@ class LocationMapper
 
   def parse_input(input)
     parts = input.split(',').map(&:strip)
-    
+
     case parts.length
     when 3
       city_name = parts[0]
@@ -99,11 +101,8 @@ class LocationMapper
       city_name = parts[0]
       state_name = parts[1]
       [city_name, state_name, nil]
-    else
-      nil
     end
   end
-  
 
   def log_location_error(location, job_post, company)
     error_message = "Location '#{location}' not found for #{company.company_name} for job #{job_post.job_title}"

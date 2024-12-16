@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 class State < ApplicationRecord
-  def self.find_or_create_state(state_param, company, job_post=nil)
+  def self.find_or_create_state(state_param, company, job_post = nil)
     state = where('LOWER(state_name) = ? OR LOWER(state_code) = ?', state_param.downcase,
                   state_param.downcase).first
 

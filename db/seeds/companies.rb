@@ -33,7 +33,7 @@ def resolve_location(locations)
   locations.size == 1 ? locations.first : locations
 end
 
-def find_company_size(size_range, current_company_size=nil)
+def find_company_size(size_range, current_company_size = nil)
   if size_range.to_s.match?(/^\d+$/)
     size = size_range.to_i
 
@@ -95,7 +95,7 @@ def find_or_create_company_type(company_type_name, company_name)
     puts "#{RED}Invalid company type: '#{company_type_name}' for company: #{company_name}#{RESET}"
     error_details = "Invalid company type: '#{company_type_name}' for company: #{company_name}"
     adj_id = company_name + company_type_name
-    puts  "#{RED}Adjudication ID: #{adj_id}#{RESET}"
+    puts "#{RED}Adjudication ID: #{adj_id}#{RESET}"
     Adjudication.log_error(
       adjudicatable_type: 'CompanyType',
       adjudicatable_id: adj_id,
@@ -187,7 +187,7 @@ def update_existing_company(company, row_data, ats_type, countries, states, citi
 
     company_size = find_company_size(row_data['company_size'])
     funding_type = find_funding_type(row_data['last_funding_type'], row_data['company_name'])
-    company_type = find_or_create_company_type(row_data['company_type'], row_data['company_name']) 
+    company_type = find_or_create_company_type(row_data['company_type'], row_data['company_name'])
 
     if company_size && company_size.id != current_company_size&.id
       company.assign_attributes(company_size_id: company_size.id)
@@ -262,7 +262,7 @@ def create_new_company(row_data, ats_type, countries, states, cities, domains, s
     company_type_id: company_type&.id
   )
 
-  if new_company.save 
+  if new_company.save
     update_join_tables(new_company, countries, states, cities, domains, specialties)
     puts "#{GREEN}Added new company: #{new_company.company_name}.#{RESET}"
   else
@@ -284,7 +284,7 @@ def process_company_data(row_data, _headers)
     end
 
     states = normalize_location_data(row_data['company_states']).map do |name|
-      puts  "#{ORANGE}State: #{name}#{RESET}"
+      puts "#{ORANGE}State: #{name}#{RESET}"
       State.find_or_create_state(name, company_name)
     end
 

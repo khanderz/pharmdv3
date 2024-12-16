@@ -33,7 +33,9 @@ BASE_DIR = os.path.join(project_root, FOLDER)
 
 CONVERTED_FILE = "train_data_spacy.json"
 CONVERTED_FILE_PATH = os.path.join(BASE_DIR, "data", CONVERTED_FILE)
-RESPONSIBILITIES_MODEL_SAVE_PATH = os.path.join(BASE_DIR, "model", "spacy_job_responsibility_ner_model")
+RESPONSIBILITIES_MODEL_SAVE_PATH = os.path.join(
+    BASE_DIR, "model", "spacy_job_responsibility_ner_model"
+)
 SPACY_DATA_PATH = os.path.join(BASE_DIR, "data", "train.spacy")
 
 tokenizer = LongformerTokenizer.from_pretrained("allenai/longformer-base-4096")
@@ -43,12 +45,16 @@ MAX_SEQ_LENGTH = 4096
 
 responsibilities_converted_data = load_data(CONVERTED_FILE, FOLDER)
 responsibilities_nlp = load_spacy_model(
-    RESPONSIBILITIES_MODEL_SAVE_PATH, MAX_SEQ_LENGTH, model_name="allenai/longformer-base-4096"
+    RESPONSIBILITIES_MODEL_SAVE_PATH,
+    MAX_SEQ_LENGTH,
+    model_name="allenai/longformer-base-4096",
 )
 
 if "ner" not in responsibilities_nlp.pipe_names:
     ner = responsibilities_nlp.add_pipe("ner")
-    print(f"{RED}Added NER pipe to blank model: {responsibilities_nlp.pipe_names}{RESET}")
+    print(
+        f"{RED}Added NER pipe to blank model: {responsibilities_nlp.pipe_names}{RESET}"
+    )
 
     for label in get_label_list(entity_type="job_responsibilities"):
         ner.add_label(label)
@@ -68,10 +74,14 @@ if "ner" not in responsibilities_nlp.pipe_names:
 
     os.makedirs(RESPONSIBILITIES_MODEL_SAVE_PATH, exist_ok=True)
     responsibilities_nlp.to_disk(RESPONSIBILITIES_MODEL_SAVE_PATH)
-    print(f"{GREEN}Model saved to {RESPONSIBILITIES_MODEL_SAVE_PATH} with NER component added.{RESET}")
+    print(
+        f"{GREEN}Model saved to {RESPONSIBILITIES_MODEL_SAVE_PATH} with NER component added.{RESET}"
+    )
 else:
     ner = responsibilities_nlp.get_pipe("ner")
-    print(f"{GREEN}NER pipe already exists in blank model: {responsibilities_nlp.pipe_names}{RESET}")
+    print(
+        f"{GREEN}NER pipe already exists in blank model: {responsibilities_nlp.pipe_names}{RESET}"
+    )
 
     doc_bin, examples = handle_spacy_data(
         SPACY_DATA_PATH,
@@ -83,7 +93,7 @@ else:
         transformer,
     )
 
-    responsibilities_examples  = examples
+    responsibilities_examples = examples
 
 # ------------------- TRAIN MODEL -------------------
 # train_spacy_model(RESPONSIBILITIES_MODEL_SAVE_PATH, responsibilities_nlp, examples, resume=True)

@@ -10,7 +10,7 @@ class Country < ApplicationRecord
   validates :country_code, presence: true,
                            uniqueness: true
 
-  def self.find_or_adjudicate_country(country_code, country_name, company, job_url=nil)
+  def self.find_or_adjudicate_country(country_code, country_name, company, job_url = nil)
     country = Country.find_by(country_code: country_code) ||
               Country.find_by(country_name: country_name) ||
               Country.where('? = ANY(aliases)', country_name).first

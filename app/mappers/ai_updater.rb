@@ -95,7 +95,8 @@ class AiUpdater
 
             if job_seniorities
               job_seniorities.each do |job_seniority|
-                seniority_id = JobSeniority.find_or_create_seniority(job_seniority, job_post_data).id
+                seniority_id = JobSeniority.find_or_create_seniority(job_seniority,
+                                                                     job_post_data).id
                 unless job_post_seniorities.include?(seniority_id)
                   job_post_seniorities << seniority_id
                   updated_by_ai = true

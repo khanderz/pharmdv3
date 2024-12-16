@@ -6,6 +6,7 @@ from spacy.tokens import Doc
 if not Doc.has_extension("index"):
     Doc.set_extension("index", default=None)
 
+
 def train_spacy_model(MODEL_SAVE_PATH, nlp, examples, resume=False):
     """Train the spaCy model with the given examples."""
     if examples is None:

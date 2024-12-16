@@ -29,6 +29,7 @@ MAX_SEQ_LENGTH = 4096
 
 # logging.info("Logging setup completed. Testing log output.")
 
+
 class DualLoggingHandler(logging.Handler):
     def __init__(self, file_handler, stdout_handler):
         super().__init__()
@@ -41,15 +42,18 @@ class DualLoggingHandler(logging.Handler):
         if record.levelno != logging.INFO or not log_entry.startswith("{"):
             self.stdout_handler.emit(record)
 
+
 file_handler = logging.FileHandler("training.log")
-file_handler.setFormatter(logging.Formatter("%(asctime)s - %(levelname)s - %(message)s"))
+file_handler.setFormatter(
+    logging.Formatter("%(asctime)s - %(levelname)s - %(message)s")
+)
 
 stdout_handler = logging.StreamHandler(sys.stdout)
 stdout_handler.setFormatter(logging.Formatter("%(message)s"))
 
 logger = logging.getLogger()
-logger.setLevel(logging.INFO)  
-logger.handlers = []  
+logger.setLevel(logging.INFO)
+logger.handlers = []
 logger.addHandler(DualLoggingHandler(file_handler, stdout_handler))
 
 logging.info("Logging setup completed. Starting script.")
@@ -62,6 +66,7 @@ def return_paths(attribute_type):
             QUALIFICATIONS_MODEL_SAVE_PATH,
             qualification_examples,
         )
+
         return (
             qualifications_nlp,
             QUALIFICATIONS_MODEL_SAVE_PATH,
@@ -73,6 +78,7 @@ def return_paths(attribute_type):
             DESCRIPTION_MODEL_SAVE_PATH,
             description_examples,
         )
+
         return (
             description_nlp,
             DESCRIPTION_MODEL_SAVE_PATH,
@@ -84,6 +90,7 @@ def return_paths(attribute_type):
             RESPONSIBILITIES_MODEL_SAVE_PATH,
             responsibilities_examples,
         )
+
         return (
             responsibilities_nlp,
             RESPONSIBILITIES_MODEL_SAVE_PATH,
@@ -95,6 +102,7 @@ def return_paths(attribute_type):
             BENEFITS_MODEL_SAVE_PATH,
             benefits_examples,
         )
+
         return (
             benefits_nlp,
             BENEFITS_MODEL_SAVE_PATH,
@@ -106,6 +114,7 @@ def return_paths(attribute_type):
             SALARY_MODEL_SAVE_PATH,
             salary_examples,
         )
+
         return (
             salary_nlp,
             SALARY_MODEL_SAVE_PATH,
@@ -113,6 +122,7 @@ def return_paths(attribute_type):
         )
     else:
         raise ValueError("Invalid attribute type provided.")
+
 
 def convert_example_to_biluo(text, nlp, attribute_type):
     """Convert model predictions for the given text to BILUO format."""
@@ -282,7 +292,6 @@ def main(
             "entities": predictions if predictions else [],
         }
 
-
         sys.stdout.write(json.dumps(output) + "\n")
 
 
@@ -324,6 +333,6 @@ if __name__ == "__main__":
         )
     except Exception as e:
         error_response = {"status": "error", "message": str(e)}
-        print(json.dumps(error_response))  
+        print(json.dumps(error_response))
         logging.error(f"Error in main script: {e}")
         sys.exit(1)

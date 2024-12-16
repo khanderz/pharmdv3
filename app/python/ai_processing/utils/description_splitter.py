@@ -47,10 +47,9 @@ def split_job_description(text: str) -> Dict[str, str]:
             "summary",
             "overview",
             "position summary",
-
         ],
         "responsibilities": [
-                        "role",
+            "role",
             "role description",
             "about the role",
             "responsibilities",
@@ -106,15 +105,18 @@ def split_job_description(text: str) -> Dict[str, str]:
                 if matched_alias.lower() in aliases:
                     matched_section = section
                     break
-            
 
             if (matched_section in result or matched_alias in result) and (
                 current_section is None
-                or list(result.keys()).index(matched_section if matched_section in result else matched_alias)
+                or list(result.keys()).index(
+                    matched_section if matched_section in result else matched_alias
+                )
                 > list(result.keys()).index(current_section)
             ):
-                current_section = matched_section if matched_section in result else matched_alias
-                result[current_section] =  ""
+                current_section = (
+                    matched_section if matched_section in result else matched_alias
+                )
+                result[current_section] = ""
         elif current_section:
             result[current_section] += part.strip() + " "
             # print(f"Current section '{current_section}': {result[current_section]}", file=sys.stderr)
