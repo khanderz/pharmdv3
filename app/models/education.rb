@@ -4,7 +4,9 @@ class Education < ApplicationRecord
   def self.find_or_create_education(education_param, job_post)
     education = where('LOWER(education_name) = ?', education_param.downcase)
                 .or(where('LOWER(education_code) = ?', education_param.downcase))
-                .first
+                .or(
+                  where('EXISTS (SELECT 1 FROM UNNEST(aliases) AS alias WHERE LOWER(alias) = ?)', education_param.downcase)
+                ).first
 
     if education
       puts "#{GREEN}Education #{education_param} found in existing records.#{RESET}"

@@ -498,8 +498,8 @@ class JobPostService
           File.write(training_data_path, JSON.pretty_generate(training_data))
           puts "#{GREEN}Training data validated and saved successfully at #{training_data_path}.#{RESET}"
 
-          puts "#{BLUE} Now training model with new validated entities #{RESET}"
-          call_inspect_predictions(attribute_type: entity_type, input_text: input_text, train: true)
+          # puts "#{BLUE} Now training model with new validated entities #{RESET}"
+          # call_inspect_predictions(attribute_type: entity_type, input_text: input_text, train: true)
           # puts "corrected entities after training: #{corrected_entities}"
           return corrected_entities
           # break

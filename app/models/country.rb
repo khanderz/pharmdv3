@@ -11,9 +11,11 @@ class Country < ApplicationRecord
                            uniqueness: true
 
   def self.find_or_adjudicate_country(country_code, country_name, company, job_url = nil)
-    country = Country.find_by(country_code: country_code) ||
-              Country.find_by(country_name: country_name) ||
-              Country.where('? = ANY(aliases)', country_name).first
+    country = where('LOWER(country_code) = ?', country_code.downcase)
+              .or(where('LOWER(country_name) = ?', country_name.downcase))
+              .or(
+                where('EXISTS (SELECT 1 FROM UNNEST(aliases) AS alias WHERE LOWER(alias) = ?)', country_name.downcase)
+              ).first
 
     unless country
       puts "#{RED}Country with code '#{country_code}' or name '#{country_name}' not found for Company #{company}, Job URL #{job_url}.#{RESET}"

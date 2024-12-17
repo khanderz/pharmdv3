@@ -2,8 +2,10 @@
 
 class City < ApplicationRecord
   def self.find_or_create_city(city_param, company, job_post = nil)
-    city = where('LOWER(city_name) = ? OR LOWER(aliases::text) LIKE ?',
-                 city_param.downcase, "%#{city_param.downcase}%").first
+    city = where('LOWER(city_name) = ?', city_param.downcase)
+           .or(
+             where('EXISTS (SELECT 1 FROM UNNEST(aliases) AS alias WHERE LOWER(alias) = ?)', city_param.downcase)
+           ).first
 
     unless city
       puts "#{RED}City '#{city_param}' not found for job #{job_post} or company : #{company}.#{RESET}"

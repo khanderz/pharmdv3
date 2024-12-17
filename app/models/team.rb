@@ -11,8 +11,10 @@ class Team < ApplicationRecord
     titles = Utils::TitleCleaner.clean_title(team_name)
     cleaned_team_name = titles[:cleaned_title]
 
-    team = Team.find_by('LOWER(team_name) = ? OR LOWER(?) = ANY (SELECT LOWER(unnest(aliases)))',
-                        cleaned_team_name.downcase, cleaned_team_name.downcase)
+    team = where('LOWER(team_name) = ?', cleaned_team_name.downcase)
+           .or(
+             where('EXISTS (SELECT 1 FROM UNNEST(aliases) AS alias WHERE LOWER(alias) = ?)', cleaned_team_name.downcase)
+           ).first
     return team if team
 
     team = Team.create!(

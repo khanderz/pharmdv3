@@ -108,7 +108,7 @@ else:
     benefits_examples = examples
 
 # ------------------- TRAIN MODEL -------------------
-train_spacy_model(BENEFITS_MODEL_SAVE_PATH, benefits_nlp, examples, resume=True)
+# train_spacy_model(BENEFITS_MODEL_SAVE_PATH, benefits_nlp, examples, resume=True)
 
 # ------------------- VALIDATE TRAINER -------------------
 # evaluate_model(benefits_nlp, benefits_converted_data)

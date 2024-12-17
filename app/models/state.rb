@@ -2,8 +2,13 @@
 
 class State < ApplicationRecord
   def self.find_or_create_state(state_param, company, job_post = nil)
-    state = where('LOWER(state_name) = ? OR LOWER(state_code) = ?', state_param.downcase,
-                  state_param.downcase).first
+    param = state_param.downcase
+
+    state = where('LOWER(state_name) = ?', param)
+            .or(where('LOWER(state_code) = ?', param))
+            .or(
+              where('EXISTS (SELECT 1 FROM UNNEST(aliases) AS alias WHERE LOWER(alias) = ?)', param)
+            ).first
 
     unless state
       puts "#{RED}State #{state_param} not found for #{job_post} or company : #{company}.#{RESET}"

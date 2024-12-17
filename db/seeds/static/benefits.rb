@@ -6,26 +6,41 @@ benefits = [
 
   { benefit_name: 'Commission Bonus', benefit_category: 'COMPENSATION',
     aliases: ['Sales Bonus', 'Performance Bonus'] },
+
   { benefit_name: 'Stock Options', benefit_category: 'COMPENSATION',
     aliases: %w[Equity Shares] },
 
   { benefit_name: 'Dental Insurance', benefit_category: 'WELLNESS', aliases: ['Dental Coverage'] },
+
   { benefit_name: 'Medical Insurance', benefit_category: 'WELLNESS',
     aliases: ['Health Insurance', 'Healthcare'] },
+
   { benefit_name: 'Vision Insurance', benefit_category: 'WELLNESS', aliases: ['Vision Coverage'] },
+
   { benefit_name: 'Wellness Programs', benefit_category: 'WELLNESS',
     aliases: ['Gym Membership', 'Mental Health Support'] },
 
   { benefit_name: 'Parental Leave', benefit_category: 'PARENTAL',
-    aliases: ['Maternity Leave', 'Paternity Leave'] },
+    aliases: ['Maternity Leave', 'Paternity Leave', 'parental leave'] },
 
   { benefit_name: 'Commuter Benefits', benefit_category: 'ADDITIONAL_PERKS',
     aliases: ['Transit Reimbursement'] },
 
+    { benefit_name: 'Employee Discounts', benefit_category: 'ADDITIONAL_PERKS',
+    aliases: ['Discounts', 'Employee Perks'] },
+
+    {benefit_name: 'team building', 'benefit_category': 'ADDITIONAL_PERKS',
+    aliases: ['team building activities', 'team building events'] },
+
+    {benefit_name: 'company events', 'benefit_category': 'ADDITIONAL_PERKS',
+    aliases: ['company outings', 'company parties', 'offsites', 'team offsite'] },
+
   { benefit_name: 'Flexible Hours', benefit_category: 'WORK_LIFE_BALANCE',
     aliases: ['Flexible Scheduling'] },
+
   { benefit_name: 'Paid Time Off', benefit_category: 'WORK_LIFE_BALANCE',
-    aliases: ['Vacation Days', 'PTO'] },
+    aliases: ['Vacation Days', 'PTO', 'generous vacation', 'vacation', 'unlimited vacation', 'unlimited pto'] },
+
   { benefit_name: 'Remote Work', benefit_category: 'WORK_LIFE_BALANCE',
     aliases: ['Work From Home'] },
 
