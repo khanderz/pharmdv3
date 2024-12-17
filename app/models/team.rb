@@ -13,7 +13,8 @@ class Team < ApplicationRecord
 
     team = where('LOWER(team_name) = ?', cleaned_team_name.downcase)
            .or(
-             where('EXISTS (SELECT 1 FROM UNNEST(aliases) AS alias WHERE LOWER(alias) = ?)', cleaned_team_name.downcase)
+             where('EXISTS (SELECT 1 FROM UNNEST(aliases) AS alias WHERE LOWER(alias) = ?)',
+                   cleaned_team_name.downcase)
            ).first
     return team if team
 

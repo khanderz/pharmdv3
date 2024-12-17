@@ -5,7 +5,8 @@ class Education < ApplicationRecord
     education = where('LOWER(education_name) = ?', education_param.downcase)
                 .or(where('LOWER(education_code) = ?', education_param.downcase))
                 .or(
-                  where('EXISTS (SELECT 1 FROM UNNEST(aliases) AS alias WHERE LOWER(alias) = ?)', education_param.downcase)
+                  where('EXISTS (SELECT 1 FROM UNNEST(aliases) AS alias WHERE LOWER(alias) = ?)',
+                        education_param.downcase)
                 ).first
 
     if education

@@ -4,7 +4,8 @@ class Benefit < ApplicationRecord
   def self.find_or_create_benefit(benefit_name, company, job_post = nil)
     benefit = where('LOWER(benefit_name) = ?', benefit_name.downcase)
               .or(
-                where('EXISTS (SELECT 1 FROM UNNEST(aliases) AS alias WHERE LOWER(alias) = ?)', benefit_name.downcase)
+                where('EXISTS (SELECT 1 FROM UNNEST(aliases) AS alias WHERE LOWER(alias) = ?)',
+                      benefit_name.downcase)
               ).first
 
     unless benefit

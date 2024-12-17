@@ -11,7 +11,8 @@ ORANGE = "\033[38;2;255;165;0m"
 RED = "\033[31m"
 
 class TrainModelsService
-  PYTHON_SCRIPT_PATH = Rails.root.join('app', 'python', 'ai_processing', 'train_all_models.py').to_s.freeze
+  PYTHON_SCRIPT_PATH = Rails.root.join('app', 'python', 'ai_processing',
+                                       'train_all_models.py').to_s.freeze
 
   def self.call
     new.call
@@ -35,7 +36,8 @@ class TrainModelsService
         puts "#{BLUE}Model training completed successfully.#{RESET}"
       else
         puts "#{RED}Error occurred during model training.#{RESET}"
-        raise StandardError, "#{RED}Model training failed. Check Python script output for errors.#{RESET}"
+        raise StandardError,
+              "#{RED}Model training failed. Check Python script output for errors.#{RESET}"
       end
     end
   end

@@ -89,7 +89,6 @@ all_states.each do |state|
     state_record.save!
     seeded_count += 1
   end
-  
 rescue StandardError => e
   puts "Error seeding state: #{state[:state_name]} - #{e.message}"
 end

@@ -5,7 +5,8 @@ class Credential < ApplicationRecord
     credential = where('LOWER(credential_name) = ?', credential_param.downcase)
                  .or(where('LOWER(credential_code) = ?', credential_param.downcase))
                  .or(
-                   where('EXISTS (SELECT 1 FROM UNNEST(aliases) AS alias WHERE LOWER(alias) = ?)', credential_param.downcase)
+                   where('EXISTS (SELECT 1 FROM UNNEST(aliases) AS alias WHERE LOWER(alias) = ?)',
+                         credential_param.downcase)
                  ).first
 
     if credential

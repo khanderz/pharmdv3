@@ -5,7 +5,8 @@ class Experience < ApplicationRecord
     experience = where('LOWER(experience_name) = ?', experience_param.downcase)
                  .or(where('LOWER(experience_code) = ?', experience_param.downcase))
                  .or(
-                   where('EXISTS (SELECT 1 FROM UNNEST(aliases) AS alias WHERE LOWER(alias) = ?)', experience_param.downcase)
+                   where('EXISTS (SELECT 1 FROM UNNEST(aliases) AS alias WHERE LOWER(alias) = ?)',
+                         experience_param.downcase)
                  ).first
 
     if experience

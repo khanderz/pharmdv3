@@ -11,9 +11,10 @@ class Department < ApplicationRecord
   def self.find_department(department_name, adjudicatable_type, job_url = nil)
     department = where('LOWER(dept_name) = ?', department_name.downcase)
                  .or(
-                   where('EXISTS (SELECT 1 FROM UNNEST(aliases) AS alias WHERE LOWER(alias) = ?)', department_name.downcase)
+                   where('EXISTS (SELECT 1 FROM UNNEST(aliases) AS alias WHERE LOWER(alias) = ?)',
+                         department_name.downcase)
                  ).first
-                 
+
     if department
       puts "#{GREEN}Department #{department_name} found in existing records.#{RESET}"
     else

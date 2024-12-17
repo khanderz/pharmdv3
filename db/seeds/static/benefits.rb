@@ -26,13 +26,13 @@ benefits = [
   { benefit_name: 'Commuter Benefits', benefit_category: 'ADDITIONAL_PERKS',
     aliases: ['Transit Reimbursement'] },
 
-    { benefit_name: 'Employee Discounts', benefit_category: 'ADDITIONAL_PERKS',
+  { benefit_name: 'Employee Discounts', benefit_category: 'ADDITIONAL_PERKS',
     aliases: ['Discounts', 'Employee Perks'] },
 
-    {benefit_name: 'team building', 'benefit_category': 'ADDITIONAL_PERKS',
+  { benefit_name: 'team building', 'benefit_category': 'ADDITIONAL_PERKS',
     aliases: ['team building activities', 'team building events'] },
 
-    {benefit_name: 'company events', 'benefit_category': 'ADDITIONAL_PERKS',
+  { benefit_name: 'company events', 'benefit_category': 'ADDITIONAL_PERKS',
     aliases: ['company outings', 'company parties', 'offsites', 'team offsite'] },
 
   { benefit_name: 'Flexible Hours', benefit_category: 'WORK_LIFE_BALANCE',

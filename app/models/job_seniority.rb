@@ -7,10 +7,11 @@ class JobSeniority < ApplicationRecord
     job_seniority = where('LOWER(job_seniority_label) = ?', param)
                     .or(where('LOWER(job_seniority_code) = ?', param))
                     .or(
-                      where('EXISTS (SELECT 1 FROM UNNEST(aliases) AS alias WHERE LOWER(alias) = ?)', param)
+                      where(
+                        'EXISTS (SELECT 1 FROM UNNEST(aliases) AS alias WHERE LOWER(alias) = ?)', param
+                      )
                     ).first
 
-                         
     if job_seniority
       puts "#{GREEN}Job Seniority #{name} found in existing records.#{RESET}"
     else

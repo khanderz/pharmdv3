@@ -46,19 +46,19 @@ class LocationMapper
     # puts "State: #{state}"
 
     country_params = if state
-            if state[:country_code] == 'US' || state[:state_code].match?(/^[A-Z]{2}$/)
-              { country_code: 'US', country_name: 'United States' }
-            elsif state[:country_code] == 'CA' || canadian_provinces.include?(state[:state_code])
-              { country_code: 'CA', country_name: 'Canada' }
-            else
-              { country_code: nil, country_name: country_input }
-            end
-            elsif country_name
-              { country_code: nil, country_name: country_name }
-            else
-              { country_code: nil, country_name: country_input }
-            end
-      # puts "Country Params: #{country_params}"
+                       if state[:country_code] == 'US' || state[:state_code].match?(/^[A-Z]{2}$/)
+                         { country_code: 'US', country_name: 'United States' }
+                       elsif state[:country_code] == 'CA' || canadian_provinces.include?(state[:state_code])
+                         { country_code: 'CA', country_name: 'Canada' }
+                       else
+                         { country_code: nil, country_name: country_input }
+                       end
+                     elsif country_name
+                       { country_code: nil, country_name: country_name }
+                     else
+                       { country_code: nil, country_name: country_input }
+                     end
+    # puts "Country Params: #{country_params}"
 
     # handles case where location is just a country
     # if Country.exists?(country_name: input || country_input ) || Country.exists?(aliases: input || country_input)

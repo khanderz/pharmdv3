@@ -5,10 +5,10 @@ class Skill < ApplicationRecord
     skill_param = skill_param.downcase
 
     skill = where('LOWER(skill_name) = ?', param)
-    .or(where('LOWER(skill_code) = ?', param))
-    .or(
-      where('EXISTS (SELECT 1 FROM UNNEST(aliases) AS alias WHERE LOWER(alias) = ?)', param)
-    ).first
+            .or(where('LOWER(skill_code) = ?', param))
+            .or(
+              where('EXISTS (SELECT 1 FROM UNNEST(aliases) AS alias WHERE LOWER(alias) = ?)', param)
+            ).first
 
     if skill
       puts "#{GREEN}Skill #{skill_param} found in existing records.#{RESET}"
