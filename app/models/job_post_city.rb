@@ -2,5 +2,5 @@
 
 class JobPostCity < ApplicationRecord
   belongs_to :job_post
-  belongs_to :city
+  belongs_to :city, optional: true 
 end

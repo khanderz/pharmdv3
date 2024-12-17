@@ -2,5 +2,5 @@
 
 class JobRolesTeam < ApplicationRecord
   belongs_to :job_role
-  belongs_to :team
+  belongs_to :team, optional: true
 end

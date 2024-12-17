@@ -20,15 +20,15 @@ class JobPost < ApplicationRecord
   has_many :job_post_skills, dependent: :destroy
   has_many :job_post_states, dependent: :destroy
 
-  has_many :benefits, through: :job_post_benefits, optional: true
-  has_many :cities, through: :job_post_cities, optional: true
+  has_many :benefits, through: :job_post_benefits
+  has_many :cities, through: :job_post_cities
   has_many :countries, through: :job_post_countries
-  has_many :credentials, through: :job_post_credentials, optional: true
-  has_many :educations, through: :job_post_educations, optional: true
-  has_many :experiences, through: :job_post_experiences, optional: true
-  has_many :seniorities, through: :job_post_seniorities, optional: true
-  has_many :skills, through: :job_post_skills, optional: true
-  has_many :states, through: :job_post_states, optional: true
+  has_many :credentials, through: :job_post_credentials
+  has_many :educations, through: :job_post_educations
+  has_many :experiences, through: :job_post_experiences
+  has_many :seniorities, through: :job_post_seniorities
+  has_many :skills, through: :job_post_skills
+  has_many :states, through: :job_post_states
 
   belongs_to :job_commitment, optional: true
   belongs_to :department

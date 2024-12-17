@@ -2,5 +2,5 @@
 
 class JobPostBenefit < ApplicationRecord
   belongs_to :job_post
-  belongs_to :benefit
+  belongs_to :benefit, optional: true
 end
