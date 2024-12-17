@@ -1,4 +1,3 @@
-
 import gc
 import torch
 from app.python.ai_processing.utils.logger import (
@@ -20,6 +19,7 @@ tokenizer = LongformerTokenizer.from_pretrained("allenai/longformer-base-4096")
 transformer = LongformerModel.from_pretrained("allenai/longformer-base-4096")
 
 MAX_SEQ_LENGTH = 4096
+
 
 def return_paths(attribute_type):
     if attribute_type == "job_qualifications":
@@ -121,7 +121,6 @@ def convert_example_to_biluo(text, nlp, attribute_type):
     return doc, biluo_tags
 
 
-
 def train_models_sequentially():
     """
     Train each model one at a time to avoid overloading memory.
@@ -142,8 +141,10 @@ def train_models_sequentially():
         try:
             train_spacy_model(model_save_path, nlp_model, examples, resume=False)
         except Exception as e:
-            print(f"{RED}Error during training {attribute_type}: {str(e)}{RESET}", flush=True)
-
+            print(
+                f"{RED}Error during training {attribute_type}: {str(e)}{RESET}",
+                flush=True,
+            )
 
         print(f"{BLUE}Saving model to {model_save_path}{RESET}", flush=True)
         nlp_model.to_disk(model_save_path)
