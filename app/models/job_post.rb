@@ -123,57 +123,49 @@ class JobPost < ApplicationRecord
             JobPostBenefit.create!(job_post_id: job_post.id, benefit_id: benefit.id) if benefit
           end
 
-          cities&.each do |city_name|
-            city = City.find_or_create_city(city_name, company, job_post)
-            JobPostCity.create!(job_post_id: job_post.id, city_id: city.id) if city
+          cities&.each do |city_id|
+            JobPostCity.create!(job_post_id: job_post.id, city_id: city_id) if city_id
           end
 
-          countries&.each do |country_name|
-            country = Country.find_or_adjudicate_country(nil, country_name, company,
-                                                         job_post.job_url)
-            JobPostCountry.create!(job_post_id: job_post.id, country_id: country.id) if country
+          countries&.each do |country_id|
+            JobPostCountry.create!(job_post_id: job_post.id, country_id: country_id) if country_id
           end
 
-          credentials&.each do |credential_name|
-            credential = Credential.find_or_create_credential(credential_name, job_post)
-            if credential
+          credentials&.each do |credential_id|
+            if credential_id
               JobPostCredential.create!(job_post_id: job_post.id,
-                                        credential_id: credential.id)
+                                        credential_id: credential_id)
             end
           end
 
-          educations&.each do |education_name|
-            education = Education.find_or_create_education(education_name, job_post)
-            if education
+          educations&.each do |education_id|
+            if education_id
               JobPostEducation.create!(job_post_id: job_post.id,
-                                       education_id: education.id)
+                                       education_id: education_id)
             end
           end
 
-          experiences&.each do |experience_name|
-            experience = Experience.find_or_create_experience(experience_name, job_post)
-            if experience
+          experiences&.each do |experience_id|
+            if experience_id
               JobPostExperience.create!(job_post_id: job_post.id,
-                                        experience_id: experience.id)
+                                        experience_id: experience_id)
             end
           end
 
-          seniorities&.each do |seniority_name|
-            seniority = JobSeniority.find_or_create_seniority(seniority_name, job_post)
-            if seniority
+          seniorities&.each do |seniority_id|
+            if seniority_id
               JobPostSeniority.create!(job_post_id: job_post.id,
-                                       job_seniority_id: seniority.id)
+                                       job_seniority_id: seniority_id)
             end
           end
 
-          skills&.each do |skill_name|
-            skill = Skill.find_or_create_skill(skill_name, job_post)
-            JobPostSkill.create!(job_post_id: job_post.id, skill_id: skill.id) if skill
-          end
+          # skills&.each do |skill_name|
+          #   skill = Skill.find_or_create_skill(skill_name, job_post)
+          #   JobPostSkill.create!(job_post_id: job_post.id, skill_id: skill.id) if skill
+          # end
 
-          states&.each do |state_name|
-            state = State.find_or_create_state(state_name, company, job_post)
-            JobPostState.create!(job_post_id: job_post.id, state_id: state.id) if state
+          states&.each do |state_id|
+            JobPostState.create!(job_post_id: job_post.id, state_id: state_id) if state_id
           end
 
         else

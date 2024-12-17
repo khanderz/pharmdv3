@@ -6,9 +6,7 @@ class State < ApplicationRecord
 
     state = where('LOWER(state_name) = ?', param)
             .or(where('LOWER(state_code) = ?', param))
-            .or(
-              where('EXISTS (SELECT 1 FROM UNNEST(aliases) AS alias WHERE LOWER(alias) = ?)', param)
-            ).first
+            .first
 
     unless state
       puts "#{RED}State #{state_param} not found for #{job_post} or company : #{company}.#{RESET}"
