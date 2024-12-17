@@ -135,23 +135,23 @@ def train_models_sequentially():
     ]
 
     for attribute_type in attribute_types:
-        print(f"{BLUE}Training model for {attribute_type}...{RESET}")
+        print(f"{BLUE}Training model for {attribute_type}...{RESET}", flush=True)
 
         nlp_model, model_save_path, examples = return_paths(attribute_type)
 
         try:
             train_spacy_model(model_save_path, nlp_model, examples, resume=False)
         except Exception as e:
-            print(f"{RED}Error during training {attribute_type}: {str(e)}{RESET}")
+            print(f"{RED}Error during training {attribute_type}: {str(e)}{RESET}", flush=True)
 
 
-        print(f"{BLUE}Saving model to {model_save_path}{RESET}")
+        print(f"{BLUE}Saving model to {model_save_path}{RESET}", flush=True)
         nlp_model.to_disk(model_save_path)
 
         del nlp_model
         torch.cuda.empty_cache()
         gc.collect()
-        print(f"{BLUE}Finished training for {attribute_type}.\n{RESET}")
+        print(f"{BLUE}Finished training for {attribute_type}.\n{RESET}", flush=True)
 
 
 if __name__ == "__main__":

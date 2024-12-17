@@ -36,23 +36,29 @@ class LocationMapper
 
     city_name, state_name, country_name = parse_input(input)
 
-    puts "City: #{city_name}, State: #{state_name}, Country: #{country_name}"
+    # puts "City: #{city_name}, State: #{state_name}, Country: #{country_name}"
     city = City.find_or_create_city(city_name, company, job)
     return unless city
 
-    puts "City: #{city}"
+    # puts "City: #{city}"
 
     state = State.find_or_create_state(state_name, company, job)
-    puts "State: #{state}"
-    # TODO: handle canadian states
+    # puts "State: #{state}"
+
     country_params = if state
-                       { country_code: 'US', country_name: 'United States' }
-                     elsif country_name
-                       { country_code: nil, country_name: country_name }
-                     else
-                       { country_code: nil, country_name: country_input }
-                     end
-    puts "Country Params: #{country_params}"
+            if state[:country_code] == 'US' || state[:state_code].match?(/^[A-Z]{2}$/)
+              { country_code: 'US', country_name: 'United States' }
+            elsif state[:country_code] == 'CA' || canadian_provinces.include?(state[:state_code])
+              { country_code: 'CA', country_name: 'Canada' }
+            else
+              { country_code: nil, country_name: country_input }
+            end
+            elsif country_name
+              { country_code: nil, country_name: country_name }
+            else
+              { country_code: nil, country_name: country_input }
+            end
+      # puts "Country Params: #{country_params}"
 
     # handles case where location is just a country
     # if Country.exists?(country_name: input || country_input ) || Country.exists?(aliases: input || country_input)
