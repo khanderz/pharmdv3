@@ -207,6 +207,7 @@ class AiUpdater
             end
 
             if experience
+              # add exp mapping for min and max years
               experience.each do |exp|
                 experience_id = Experience.find_or_create_experience(exp,
                                                                      job_post_data)&.id
