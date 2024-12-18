@@ -101,98 +101,53 @@ class JobPost < ApplicationRecord
       seniorities = job_post_data[:job_post_seniorities]
       skills = job_post_data[:job_post_skills]
       states = job_post_data[:job_post_states]
-    
+
       existing_job.update!(job_post_data_object)
 
       begin
-        benefits&.each do |benefit_name|
-          benefit = Benefit.find_or_create_benefit(benefit_name, company, existing_job)
-          next unless benefit
-    
-          join_record = existing_job.job_post_benefits.find_by(benefit_id: benefit.id)
-          unless join_record
-            JobPostBenefit.create!(job_post_id: existing_job.id, benefit_id: benefit.id)
-          end
+        update_join_table(existing_job, benefits, :job_post_benefits, :benefit_id, 'Benefits')
+        update_join_table(existing_job, cities, :job_post_cities, :city_id, 'Cities')
+        update_join_table(existing_job, countries, :job_post_countries, :country_id, 'Countries')
+        update_join_table(existing_job, credentials, :job_post_credentials, :credential_id,
+                          'Credentials')
+        update_join_table(existing_job, educations, :job_post_educations, :education_id,
+                          'Educations')
+        update_join_table(existing_job, experiences, :job_post_experiences, :experience_id,
+                          'Experiences')
+        update_join_table(existing_job, seniorities, :job_post_seniorities, :job_seniority_id,
+                          'Seniorities')
+        update_join_table(existing_job, skills, :job_post_skills, :skill_id, 'Skills')
+        update_join_table(existing_job, states, :job_post_states, :state_id, 'States')
 
-          cities&.each do |city_id|
-            next unless city_id
-      
-            join_record = existing_job.job_post_cities.find_by(city_id: city_id)
-            unless join_record
-              JobPostCity.create!(job_post_id: existing_job.id, city_id: city_id)
-            end
-          end
-
-          countries&.each do |country_id|
-            next unless country_id
-      
-            join_record = existing_job.job_post_countries.find_by(country_id: country_id)
-            unless join_record
-              JobPostCountry.create!(job_post_id: existing_job.id, country_id: country_id)
-            end
-          end
-
-          credentials&.each do |credential_id|
-            next unless credential_id
-      
-            join_record = existing_job.job_post_credentials.find_by(credential_id: credential_id)
-            unless join_record
-              JobPostCredential.create!(job_post_id: existing_job.id, credential_id: credential_id)
-            end
-          end
-
-          educations&.each do |education_id|
-            next unless education_id
-      
-            join_record = existing_job.job_post_educations.find_by(education_id: education_id)
-            unless join_record
-              JobPostEducation.create!(job_post_id: existing_job.id, education_id: education_id)
-            end
-          end
-
-          experiences&.each do |experience_id|
-            next unless experience_id
-      
-            join_record = existing_job.job_post_experiences.find_by(experience_id: experience_id)
-            unless join_record
-              JobPostExperience.create!(job_post_id: existing_job.id, experience_id: experience_id)
-            end
-          end
-
-          seniorities&.each do |seniority_id|
-            next unless seniority_id
-      
-            join_record = existing_job.job_post_seniorities.find_by(job_seniority_id: seniority_id)
-            unless join_record
-              JobPostSeniority.create!(job_post_id: existing_job.id, job_seniority_id: seniority_id)
-            end
-          end
-
-              # skills&.each do |skill_name|
-          #   skill = Skill.find_or_create_skill(skill_name, existing_job)
-          #   next unless skill
-
-          #   join_record = existing_job.job_post_skills.find_by(skill_id: skill.id)
-          #   unless join_record
-          #     JobPostSkill.create!(job_post_id: existing_job.id, skill_id: skill.id)
-          #   end
-          # end
-
-    states&.each do |state_id|
-      next unless state_id
-
-      join_record = existing_job.job_post_states.find_by(state_id: state_id)
-      unless join_record
-        JobPostState.create!(job_post_id: existing_job.id, state_id: state_id)
+        puts "#{ORANGE}Updated job post for URL: #{existing_job.job_url}#{RESET}"
+      rescue StandardError => e
+        log_job_error(existing_job, company, e.message)
       end
     end
 
-      puts "#{ORANGE}Updated job post for URL: #{existing_job.job_url}#{RESET}"
-    rescue StandardError => e
-      log_job_error(existing_job, company, e.message)
+    def update_join_table(job_post, new_values, join_table_name, foreign_key, label)
+      existing_records = job_post.send(join_table_name).pluck(foreign_key)
+
+      new_values ||= []
+      new_values_to_add = new_values - existing_records
+      stale_values_to_remove = existing_records - new_values
+
+      new_values_to_add.each do |value|
+        job_post.send(join_table_name).create!(foreign_key => value)
+      end
+
+      stale_values_to_remove.each do |value|
+        job_post.send(join_table_name).find_by(foreign_key => value).destroy
+      end
+
+      unless new_values_to_add.empty?
+        puts "#{GREEN}Added #{label}: #{new_values_to_add.join(', ')}#{RESET}"
+      end
+
+      return if stale_values_to_remove.empty?
+
+      puts "#{RED}Removed #{label}: #{stale_values_to_remove.join(', ')}#{RESET}"
     end
-  end
-end
 
     def create_new_job(company, job_post_data)
       puts "job post data at job post model: #{job_post_data}"
