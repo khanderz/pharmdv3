@@ -11,13 +11,21 @@ class LocationMapper
   def self.extract_location(job, source = 'greenhouse')
     case source.downcase
     when 'lever'
-      location_input = job['categories']&.dig('location') || job['categories']&.dig('allLocations') || ''
-      location_input.empty? ? nil : location_input
+      locations = []
+      location_input = job['categories']&.dig('location')
+      all_locations = job['categories']&.dig('allLocations')
+      single_location = job.dig('location', 'name')
+  
+      locations << location_input if location_input.present?
+      locations += Array(all_locations) if all_locations.present?
+      locations << single_location if single_location.present?
+  
+      locations.compact.uniq
     when 'greenhouse'
       if job['offices'].is_a?(Array) && job['offices'].any?
-        job['offices'].first['location']
+        job['offices'].map { |office| office['location'] }.compact.uniq
       else
-        job.dig('location', 'name')
+        Array(job.dig('location', 'name')).compact
       end
     end
   end

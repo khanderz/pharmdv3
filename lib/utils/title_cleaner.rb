@@ -29,6 +29,10 @@ module Utils
 
       employment_pattern = /\b(#{employment_terms.join('|')})\b/i
       cleaned_title.gsub!(employment_pattern, '')
+
+      roman_numerals_pattern = /\b(I{1,3})\b/
+      cleaned_title.gsub!(roman_numerals_pattern, '')
+
       modified_title = original_title.gsub(/,/, ' of')
 
       {

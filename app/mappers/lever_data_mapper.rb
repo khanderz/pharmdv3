@@ -2,7 +2,7 @@
 
 class LeverDataMapper
   def self.map(job, company)
-    location_input = LocationHelper.extract_location(job, 'lever')
+    location_input = LocationMapper.extract_location(job, 'lever')
     location_info = LocationMapper.new.match_location(location_input, job, company, job['country'])
 
     job_post_data = JobPostDataMapper.map_basic_data(job, company, location_info, 'lever')
