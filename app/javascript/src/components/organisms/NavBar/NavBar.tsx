@@ -45,9 +45,6 @@ function NavBar() {
     setAnchorMobileEl(null);
   };
 
-  console.log({ anchorElUser });
-  console.log({ anchorMobileEl });
-
   return (
     <AppBar position="static" sx={{ boxShadow: 'none' }}>
       <Container>

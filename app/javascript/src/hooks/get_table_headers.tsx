@@ -5,20 +5,26 @@ import { KeyboardArrowUp, KeyboardArrowDown } from '@mui/icons-material';
 interface TableHeaderProps {
   open: boolean;
 }
-export const dataHeaders = ({ open }: TableHeaderProps): GridColDef[] => {
-  type GridNativeColTypes =
-    | 'string'
-    | 'number'
-    | 'date'
-    | 'dateTime'
-    | 'boolean'
-    | 'singleSelect';
 
+export interface HeaderProps {
+  headerName: string;
+  field: string;
+  nestedKey: string | null;
+  flex: number;
+  type: string;
+  headerAlign: string;
+  align: string;
+  renderCell?: (params: GridCellParams) => React.ReactNode;
+}
+
+export const dataHeaders: HeaderProps[] = ({
+  open,
+}: TableHeaderProps): GridColDef[] => {
   type GridAlignment = 'left' | 'right' | 'center';
 
   return [
     {
-      headerName: 'Open Jobs',
+      headerName: '',
       field: 'openJobs',
       flex: 0.5,
       type: 'singleSelect',
@@ -26,36 +32,29 @@ export const dataHeaders = ({ open }: TableHeaderProps): GridColDef[] => {
       align: 'center',
       renderCell: (params: GridCellParams) =>
         open ? <KeyboardArrowUp /> : <KeyboardArrowDown />,
-      // valueGetter: (params: GridValueGetterParams) =>
-      // `${params.row.firstName || ""} ${params.row.lastName || ""}`,
     },
     {
       headerName: 'Company Name',
-      field: 'companyName',
+      field: 'company_name',
+      nestedKey: null,
       flex: 1,
       type: 'string',
       headerAlign: 'center' as GridAlignment,
       align: 'center',
     },
     {
-      headerName: 'Company Type',
-      field: 'companyType',
+      headerName: 'Healthcare Domains',
+      field: 'healthcare_domains',
+      nestedKey: 'value',
       flex: 1,
-      type: 'string',
+      type: 'array',
       headerAlign: 'center' as GridAlignment,
       align: 'center',
     },
-    // {
-    //   headerName: 'Company ATS Type',
-    //   field: 'companyAtsType',
-    //   flex: 1,
-    //   type: 'string',
-    //   headerAlign: 'center' as GridAlignment,
-    //   align: 'center',
-    // },
     {
       headerName: 'Company Size',
-      field: 'companySize',
+      field: 'company_size',
+      nestedKey: 'size_range',
       flex: 1,
       type: 'number',
       headerAlign: 'center' as GridAlignment,
@@ -63,7 +62,8 @@ export const dataHeaders = ({ open }: TableHeaderProps): GridColDef[] => {
     },
     {
       headerName: 'Company Active',
-      field: 'operatingStatus',
+      field: 'operating_status',
+      nestedKey: null,
       flex: 1,
       type: 'boolean',
       headerAlign: 'center' as GridAlignment,

@@ -43,10 +43,17 @@ export const DirectoryTable = ({
   const [open, setOpen] = useState(false);
   const apiRef = useGridApiRef();
 
-  const renderDataHeaders = dataHeaders({ open });
-  const dataAccessors = renderDataHeaders.map((key: any) => key['field']);
+  const renderDataHeaders: HeaderProps = dataHeaders({ open });
+  const dataAccessors = renderDataHeaders.map((header: GridColDef) => {
+    // if (header.nestedKey) {
+    //   return (row: any) => {
+    //     return row[header.field][header.nestedKey];
+    //   };
+    // }
+    return (row: any) => row[header.field];
+  });
+
   const tableData = getTableData({ data, dataAccessors });
-  console.log({ data });
 
   const handleUpdateRow = (
     params: GridRowParams,

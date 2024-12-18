@@ -2,37 +2,21 @@ import { Company } from '@customtypes/company/company.types';
 
 interface TableDataProps {
   data: Array<Company>;
-  dataAccessors: Array<string>;
+  dataAccessors: Array<(row: HeaderProps) => any>;
 }
 
 export const getTableData = ({
   data,
   dataAccessors,
 }: TableDataProps): Array<Company> => {
-  function snakeToCamel(obj: any): any {
-    if (Array.isArray(obj)) {
-      return obj.map((item) => snakeToCamel(item));
-    } else if (obj !== null && typeof obj === 'object') {
-      return Object.keys(obj).reduce((acc, key) => {
-        const camelKey = key.replace(/_([a-z])/g, (match, p1) =>
-          p1.toUpperCase()
-        );
-        acc[camelKey] = snakeToCamel(obj[key]);
-        return acc;
-      }, {} as any);
-    }
-    return obj;
-  }
-
-  const parsedData = snakeToCamel(data);
-
-  const TableData = parsedData?.map((value: any) => {
+  const tableData = data.map((value: Company) => {
     const row: Company = {
-      id: value?.id || 0,
-      companyName: value?.companyName || '',
-      companyType: value?.companyType || '',
-      companySize: value?.companySize || 0,
-      operatingStatus: value?.operatingStatus || false,
+      company_id: value?.company_id || 0,
+      company_name: value?.company_name || '',
+      healthcare_domains:
+        value?.healthcare_domains.map((obj) => obj.value) || [],
+      company_size: value?.company_size.size_range || 0,
+      operating_status: value?.operating_status || false,
     };
     dataAccessors?.forEach((key: string, indexNumber: number) => {
       (row as any)[key] = value[key];
@@ -41,5 +25,5 @@ export const getTableData = ({
     return row;
   });
 
-  return TableData;
+  return tableData;
 };

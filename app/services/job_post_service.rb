@@ -104,10 +104,11 @@ class JobPostService
 
     parsed_descriptions = description_data['entities']
     # puts "parsed_descriptions: #{parsed_descriptions}"
-    corrected_descriptions = validate_and_update_training_data(summary, parsed_descriptions,
-                                                               'job_description')
+    # corrected_descriptions = validate_and_update_training_data(summary, parsed_descriptions,
+    #                                                            'job_description')
 
-    if description_data['status'] == 'success' && corrected_descriptions.any?
+    # if description_data['status'] == 'success' && corrected_descriptions.any?
+    if description_data['status'] == 'success' && parsed_descriptions.any?
       job_post_object = {
         job_description: nil,
         job_role: nil,
@@ -121,7 +122,8 @@ class JobPostService
         job_states: []
       }
 
-      corrected_descriptions.each do |entity|
+      # corrected_descriptions.each do |entity|
+      parsed_descriptions.each do |entity|
         case entity['label']
         when 'DESCRIPTION'
           job_post_object[:job_description] = entity['token']
@@ -177,15 +179,17 @@ class JobPostService
 
     parsed_responsibilities = responsibilities_data['entities']
 
-    corrected_responsibilities = validate_and_update_training_data(responsibilities,
-                                                                   parsed_responsibilities, 'job_responsibilities')
+    # corrected_responsibilities = validate_and_update_training_data(responsibilities,
+    #                                                                parsed_responsibilities, 'job_responsibilities')
 
-    if responsibilities_data['status'] == 'success' && corrected_responsibilities.any?
+    # if responsibilities_data['status'] == 'success' && corrected_responsibilities.any?
+    if responsibilities_data['status'] == 'success' && parsed_responsibilities.any?
       job_post_object = {
         responsibilities: []
       }
 
-      corrected_responsibilities.each do |entity|
+      # corrected_responsibilities.each do |entity|
+      parsed_responsibilities.each do |entity|
         case entity['label']
         when 'RESPONSIBILITIES'
           job_post_object[:responsibilities] << entity['token']
@@ -211,10 +215,11 @@ class JobPostService
 
     parsed_qualifications = qualification_data['entities']
 
-    corrected_qualifications = validate_and_update_training_data(qualifications,
-                                                                 parsed_qualifications, 'job_qualifications')
+    # corrected_qualifications = validate_and_update_training_data(qualifications,
+    #                                                              parsed_qualifications, 'job_qualifications')
 
-    if qualification_data['status'] == 'success' && corrected_qualifications.any?
+    # if qualification_data['status'] == 'success' && corrected_qualifications.any?
+    if qualification_data['status'] == 'success' && parsed_qualifications.any?
       job_post_object = {
         qualifications: [],
         credentials: [],
@@ -222,7 +227,8 @@ class JobPostService
         experience: []
       }
 
-      corrected_qualifications.each do |entity|
+      # corrected_qualifications.each do |entity|
+      parsed_qualifications.each do |entity|
         case entity['label']
         when 'QUALIFICATIONS'
           job_post_object[:qualifications] << entity['token']
@@ -253,10 +259,11 @@ class JobPostService
     )
 
     parsed_benefits = benefits_data['entities']
-    corrected_benefits = validate_and_update_training_data(benefits, parsed_benefits,
-                                                           'job_benefits')
+    # corrected_benefits = validate_and_update_training_data(benefits, parsed_benefits,
+    #                                                        'job_benefits')
 
-    if benefits_data['status'] == 'success' && corrected_benefits.any?
+    # if benefits_data['status'] == 'success' && corrected_benefits.any?
+    if benefits_data['status'] == 'success' && parsed_benefits.any?
       job_post_object = {
         commitment: nil,
         job_settings: [],
@@ -274,7 +281,8 @@ class JobPostService
         additional_perks: nil,
       }
 
-      corrected_benefits.each do |entity|
+      # corrected_benefits.each do |entity|
+      parsed_benefits.each do |entity|
         case entity['label']
         when 'COMMITMENT'
           job_post_object[:commitment] = entity['token']
@@ -333,8 +341,8 @@ class JobPostService
       predict: true
     )
 
-    corrected_compensation_data = validate_and_update_training_data(salary,
-                                                                    compensation_data['entities'], 'salary')
+    # corrected_compensation_data = validate_and_update_training_data(salary,
+    #                                                                 compensation_data['entities'], 'salary')
 
     job_post_object = {
       job_salary_min: nil,
@@ -345,8 +353,10 @@ class JobPostService
       job_commitment: nil,
       job_post_countries: []
     }
-    if compensation_data['status'] == 'success' && corrected_compensation_data.any?
-      corrected_compensation_data.each do |entity|
+    # if compensation_data['status'] == 'success' && corrected_compensation_data.any?
+    if compensation_data['status'] == 'success' && compensation_data['entities'].any?
+      # corrected_compensation_data.each do |entity|
+      compensation_data['entities'].each do |entity|
         case entity['label']
         when 'SALARY_MIN'
           job_post_object[:job_salary_min] = entity['token'].gsub(',', '').to_i
