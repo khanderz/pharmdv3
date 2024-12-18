@@ -228,7 +228,7 @@ export const CompanyDetailsPanel = (companyId: GridRowId) => {
 
         <Box sx={{ marginTop: 2 }}>
           <Typography variant="h6">Job Posts</Typography>
-          <ul>
+          <ul key={companyData.id}>
             {companyData.job_posts?.map((job: any) => (
               <li key={job.id}>
                 {job.job_title} - {job.job_description} (
