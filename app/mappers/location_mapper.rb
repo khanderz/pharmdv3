@@ -23,7 +23,7 @@ class LocationMapper
   end
 
   def match_location(input, job, company, country_input = nil)
-    if input.strip.casecmp?('Remote')
+    if input.nil? || input.strip.empty? || input.strip.casecmp?('Remote')
       return {
         city_name: nil,
         state_name: nil,
@@ -80,9 +80,17 @@ class LocationMapper
       company,
       job['job_url']
     )
-    return unless country
-
     # puts "Country: #{country}"
+
+    return {
+      city_name: nil,
+      state_name: nil,
+      state_code: nil,
+      country_name: country&.country_name,
+      country_code: country&.country_code,
+      location_type: 'Remote'
+    } unless country || city || state
+
     {
       city_name: city[:city_name],
       state_name: state[:state_name],

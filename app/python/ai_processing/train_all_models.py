@@ -139,7 +139,7 @@ def train_models_sequentially():
         nlp_model, model_save_path, examples = return_paths(attribute_type)
 
         try:
-            train_spacy_model(model_save_path, nlp_model, examples, resume=False)
+            train_spacy_model(model_save_path, nlp_model, examples, resume=True)
         except Exception as e:
             print(
                 f"{RED}Error during training {attribute_type}: {str(e)}{RESET}",
