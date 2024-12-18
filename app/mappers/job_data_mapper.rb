@@ -32,6 +32,8 @@ class JobDataMapper
                  Team.find_team(job['categories']&.dig('team'), 'JobPost',
                                 job['hosted_url'])&.id
                end
+    
+    location_type = location_info.is_a?(Array) ? location_info.first[:location_type] : 'Unknown'
 
     {
       company_id: company.id,
@@ -56,7 +58,7 @@ class JobDataMapper
       team_id: team_var,
 
       job_commitment_id: JobCommitment.find_job_commitment(job['categories']&.dig('commitment')) || nil,
-      job_setting: location_info[:location_type] || [],
+      job_setting: location_type,
 
       job_salary_min: nil,
       job_salary_max: nil,

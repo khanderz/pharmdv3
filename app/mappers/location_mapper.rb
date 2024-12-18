@@ -40,10 +40,18 @@ class LocationMapper
       parsed[1].present? || parsed[2].present?
     end
 
+    puts "contains_remote: #{contains_remote}"
+    puts "contains_city: #{contains_city}"
+    puts "contains_state_or_country: #{contains_state_or_country}"
+
     location_type = if contains_remote && contains_city
                       'Hybrid'
                     elsif contains_remote && contains_state_or_country
                       'Flexible'
+                    elsif contains_remote
+                      'Remote'
+                    else
+                      'On-Site'
                     end
 
     matched_locations = inputs.map do |single_input|
@@ -57,16 +65,17 @@ class LocationMapper
           location_type: location_type || 'Remote'
         }
       else
-        process_single_location(single_input, job, company, country_input)
+        process_single_location(single_input, job, company, country_input, location_type)
       end
     end
 
+    puts "matched_locations: #{matched_locations}"
     matched_locations.compact
   end
 
   private
 
-  def process_single_location(input, job, company, country_input)
+  def process_single_location(input, job, company, country_input, location_type)
     city_name, state_name, country_name = parse_input(input)
 
     city = City.find_or_create_city(city_name, company, job)
@@ -93,34 +102,13 @@ class LocationMapper
       job['job_url']
     )
 
-    if city && !state && !country && !input.casecmp?('Remote')
-      return {
-        city_name: city[:city_name],
-        state_name: nil,
-        state_code: nil,
-        country_name: nil,
-        country_code: nil,
-        location_type: 'On-Site'
-      }
-    end
-
-    unless country || city || state
-      return {
-        city_name: nil,
-        state_name: nil,
-        state_code: nil,
-        country_name: country&.country_name,
-        country_code: country&.country_code,
-        location_type: 'Remote'
-      }
-    end
-
     {
       city_name: city[:city_name],
       state_name: state[:state_name],
       state_code: state[:state_code],
       country_name: country[:country_name],
-      country_code: country[:country_code]
+      country_code: country[:country_code],
+      location_type: location_type
     }
   end
 

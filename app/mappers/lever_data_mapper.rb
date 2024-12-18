@@ -7,7 +7,7 @@ class LeverDataMapper
 
     job_post_data = JobPostDataMapper.map_basic_data(job, company, location_info, 'lever')
 
-    updated_by_ai = AiUpdater.update_with_ai(job_post_data, job, company)
+    updated_by_ai = AiUpdater.update_with_ai(job_post_data, job, company, location_info)
 
     unless updated_by_ai
       job_post_data[:job_salary_min] ||= job['salaryRange']&.dig('min')

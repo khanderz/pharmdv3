@@ -10,9 +10,7 @@ class Experience < ApplicationRecord
 
     if experience
       puts "#{GREEN}Experience #{experience_param} found in existing records.#{RESET}"
-      if min_years || max_years
-        experience.update!(min_years: min_years, max_years: max_years)
-      end
+      experience.update!(min_years: min_years, max_years: max_years) if min_years || max_years
     else
       error_details = "Experience #{experience_param} for #{job_post} not found in existing records"
       experience = create!(
@@ -31,8 +29,6 @@ class Experience < ApplicationRecord
 
     experience
   end
-
-  private
 
   def self.extract_years(input)
     years_match = input.match(/(\d+)(?:\s*-\s*(\d+))?\s*years?/i)
