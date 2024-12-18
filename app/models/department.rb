@@ -24,7 +24,7 @@ class Department < ApplicationRecord
         resolved: false
       )
       Adjudication.log_error(
-        adjudicatable_type: "Department",
+        adjudicatable_type: 'Department',
         adjudicatable_id: department.id,
         error_details: "Department #{department_name} for #{job_url} not found in existing records"
       )

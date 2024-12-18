@@ -98,10 +98,10 @@ job_roles = [
     team_names: ['Care Operations'] },
   { role_name: 'Chief Compliance Officer', aliases: ['CCO'], department_names: ['Legal'],
     team_names: ['Legal'] },
-    {
-      role_name: 'Chief Data Officer', aliases: ['CDO', 'chief of data', 'chief of data science'], department_names: ['Data Science'],
-      team_names: ['Data Science']
-    },
+  {
+    role_name: 'Chief Data Officer', aliases: ['CDO', 'chief of data', 'chief of data science'], department_names: ['Data Science'],
+    team_names: ['Data Science']
+  },
   { role_name: 'Chief Executive Officer', aliases: ['CEO'], department_names: ['Executive'],
     team_names: ['Executive'] },
   { role_name: 'Chief Financial Officer', aliases: ['CFO'], department_names: ['Finance'],
@@ -118,12 +118,12 @@ job_roles = [
     team_names: ['Product'] },
   { role_name: 'Chief Revenue Officer', aliases: ['CRO'], department_names: ['Sales'],
     team_names: ['Sales'] },
-    { role_name: 'Chief Staff Officer', aliases: ['COS', 'chief of human resources', 'chief of staff'], department_names: ['Executive', 'Human Resources'],
+  { role_name: 'Chief Staff Officer', aliases: ['COS', 'chief of human resources', 'chief of staff'], department_names: ['Executive', 'Human Resources'],
     team_names: ['Executive'] },
   { role_name: 'Chief Technology Officer', aliases: ['CTO'], department_names: ['Engineering'],
     team_names: ['Engineering'] },
 
-    { role_name: 'Director of Business Development', aliases: ['Business Development Director'],
+  { role_name: 'Director of Business Development', aliases: ['Business Development Director'],
     department_names: ['Sales', 'Business Development'], team_names: ['Sales', 'Business Development'] },
   { role_name: 'Director of Data Science', aliases: ['Data Science Director', 'data officer'],
     department_names: ['Data Science'], team_names: ['Data Science'] },
@@ -142,13 +142,13 @@ job_roles = [
   { role_name: 'Director of Communications', aliases: ['Communications Director'],
     department_names: ['Communications'], team_names: ['Communications'] },
   { role_name: 'Director of Finance and Accounting', aliases: ['Finance Director', 'Accounting Director'],
-    department_names: ['Finance', 'Accounting'], team_names: ['Finance', 'Accounting'] },
+    department_names: %w[Finance Accounting], team_names: %w[Finance Accounting] },
   { role_name: 'Director of Science', aliases: ['Science Director', 'director of protein therapeutics'],
     department_names: ['Science'], team_names: ['Science'] },
   { role_name: 'Director of Information Technology', aliases: ['IT Director', 'Information Technology Director', 'director of it', 'director of information technology'],
     department_names: ['Information Technology', 'IT'], team_names: ['IT'] },
 
-    { role_name: 'Head of Customer Success', aliases: ['Customer Success Lead'],
+  { role_name: 'Head of Customer Success', aliases: ['Customer Success Lead'],
     department_names: ['Customer Support'], team_names: ['Client Services'] },
   { role_name: 'Head of DevOps', aliases: ['DevOps Lead'], department_names: %w[IT Engineering],
     team_names: ['DevOps'] },
@@ -159,7 +159,7 @@ job_roles = [
   { role_name: 'Head of Science', aliases: ['Head of Research', 'head of ai research', 'head of ai science'],
     department_names: ['Science'], team_names: ['Science'] },
 
-    { role_name: 'President of Engineering', aliases: ['President of Engineering'],
+  { role_name: 'President of Engineering', aliases: ['President of Engineering'],
     department_names: ['Engineering'], team_names: ['Software Engineering'] },
   { role_name: 'President of Finance', aliases: ['President of Finance'],
     department_names: ['Finance'], team_names: ['Finance'] },
@@ -171,8 +171,8 @@ job_roles = [
     department_names: ['Sales'], team_names: ['Sales'] },
   { role_name: 'President of Science', aliases: ['President of Research', 'president of ai research', 'president of ai science'],
     department_names: ['Science'], team_names: ['Science'] },
-    
-    { role_name: 'Vice President of Engineering', aliases: ['VP Engineering'],
+
+  { role_name: 'Vice President of Engineering', aliases: ['VP Engineering'],
     department_names: ['Engineering'], team_names: ['Software Engineering'] },
   { role_name: 'Vice President of Finance',
     aliases: ['VP Financial Operations', 'Vice President, Analytics & Financial Operations', 'Vice President, Financial Planning & Analysis', 'VP Financial Planning & Analysis'],
@@ -183,8 +183,8 @@ job_roles = [
     department_names: ['Product Management'], team_names: ['Product'] },
   { role_name: 'Vice President of Sales', aliases: ['VP Sales'],
     department_names: ['Sales'], team_names: ['Sales'] },
-  { role_name: 'Vice President of Science', aliases: ['VP Research', 'VP AI Research', 'VP AI Science', 
-  'vice president of ai research', 'vice president of ai science', 'vice president of research'],
+  { role_name: 'Vice President of Science', aliases: ['VP Research', 'VP AI Research', 'VP AI Science',
+                                                      'vice president of ai research', 'vice president of ai science', 'vice president of research'],
     department_names: ['Science'], team_names: ['Science'] }
 ]
 

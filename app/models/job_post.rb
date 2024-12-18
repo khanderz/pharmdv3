@@ -102,6 +102,7 @@ class JobPost < ApplicationRecord
       skills = job_post_data[:job_post_skills]
       states = job_post_data[:job_post_states]
 
+      puts "job post data at job post model: #{job_post_data}"
       existing_job.update!(job_post_data_object)
 
       begin
@@ -169,9 +170,8 @@ class JobPost < ApplicationRecord
         if job_post.save
           puts "#{GREEN}#{company.company_name} job post added#{RESET}"
 
-          benefits&.each do |benefit_name|
-            benefit = Benefit.find_or_create_benefit(benefit_name, company, job_post)
-            JobPostBenefit.create!(job_post_id: job_post.id, benefit_id: benefit.id) if benefit
+          benefits&.each do |benefit_id|
+            JobPostBenefit.create!(job_post_id: job_post.id, benefit_id: benefit_id) if benefit_id
           end
 
           cities&.each do |city_id|

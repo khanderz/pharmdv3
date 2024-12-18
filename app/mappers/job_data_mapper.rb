@@ -53,7 +53,7 @@ class JobDataMapper
       job_url_id: job['id'] || nil,
 
       department_id: Department.find_department(
-        job['departments']&.first&.dig('name') || job['categories']['department'],  job['absolute_url'] || job['hostedUrl']
+        job['departments']&.first&.dig('name') || job['categories']['department'], job['absolute_url'] || job['hostedUrl']
       ).id,
       team_id: team_var,
 

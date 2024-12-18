@@ -263,7 +263,7 @@ class AiUpdater
             value[:additional_perks]
           ].compact # remove nil values
 
-          job_post_benefits.concat(benefits)
+          # job_post_benefits.concat(benefits)
 
           settings.each do |setting|
             unless job_post_data[:job_settings].include?(setting)
@@ -300,6 +300,12 @@ class AiUpdater
               job_post_data[:job_commitment_id] = commitment_id
               updated = true
             end
+          end
+
+          benefits&.each do |benefit_name|
+            benefit = Benefit.find_or_create_benefit(benefit_name, company)&.id
+            job_post_benefits << benefit if benefit
+            updated = true
           end
 
           # puts "benefits / job post data is #{job_post_data}"
