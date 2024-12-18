@@ -40,9 +40,9 @@ class LocationMapper
       parsed[1].present? || parsed[2].present?
     end
 
-    puts "contains_remote: #{contains_remote}"
-    puts "contains_city: #{contains_city}"
-    puts "contains_state_or_country: #{contains_state_or_country}"
+    # puts "contains_remote: #{contains_remote}"
+    # puts "contains_city: #{contains_city}"
+    # puts "contains_state_or_country: #{contains_state_or_country}"
 
     location_type = if contains_remote && contains_city
                       'Hybrid'
@@ -69,7 +69,7 @@ class LocationMapper
       end
     end
 
-    puts "matched_locations: #{matched_locations}"
+    # puts "matched_locations: #{matched_locations}"
     matched_locations.compact
   end
 

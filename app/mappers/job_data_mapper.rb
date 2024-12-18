@@ -32,7 +32,7 @@ class JobDataMapper
                  Team.find_team(job['categories']&.dig('team'), 'JobPost',
                                 job['hosted_url'])&.id
                end
-    
+
     location_type = location_info.is_a?(Array) ? location_info.first[:location_type] : 'Unknown'
 
     {
@@ -53,7 +53,7 @@ class JobDataMapper
       job_url_id: job['id'] || nil,
 
       department_id: Department.find_department(
-        job['departments']&.first&.dig('name') || job['categories']['department'], 'JobPost', job['absolute_url'] || job['hostedUrl']
+        job['departments']&.first&.dig('name') || job['categories']['department'],  job['absolute_url'] || job['hostedUrl']
       ).id,
       team_id: team_var,
 

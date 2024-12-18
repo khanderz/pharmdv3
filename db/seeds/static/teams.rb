@@ -28,6 +28,7 @@ teams = [
   { team_name: 'Product Management', aliases: ['PM Team', 'Product Team'] },
   { team_name: 'Quality Assurance', aliases: ['QA Team', 'Quality Control', 'QA'] },
   { team_name: 'Sales', aliases: ['Business Development', 'Sales Team'] },
+  { team_name: 'Science', aliases: ['Research', 'R&D', 'Scientific Research'] },
   { team_name: 'Software Engineering',
     aliases: ['Development Team', 'Engineering Team', 'Engineering'] },
   { team_name: 'Technical Support', aliases: ['Tech Support', 'Help Desk', 'IT Support'] }
