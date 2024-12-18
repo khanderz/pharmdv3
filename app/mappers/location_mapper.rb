@@ -15,11 +15,11 @@ class LocationMapper
       location_input = job['categories']&.dig('location')
       all_locations = job['categories']&.dig('allLocations')
       single_location = job.dig('location', 'name')
-  
+
       locations << location_input if location_input.present?
       locations += Array(all_locations) if all_locations.present?
       locations << single_location if single_location.present?
-  
+
       locations.compact.uniq
     when 'greenhouse'
       if job['offices'].is_a?(Array) && job['offices'].any?
@@ -31,27 +31,46 @@ class LocationMapper
   end
 
   def match_location(input, job, company, country_input = nil)
-    if input.nil? || input.strip.empty? || input.strip.casecmp?('Remote')
-      return {
-        city_name: nil,
-        state_name: nil,
-        state_code: nil,
-        country_name: nil,
-        country_code: nil,
-        location_type: 'Remote'
-      }
+    inputs = Array(input).map(&:strip)
+
+    contains_remote = inputs.any? { |location| location.casecmp?('Remote') }
+    contains_city = inputs.any? { |location| parse_input(location)[0].present? }
+    contains_state_or_country = inputs.any? do |location|
+      parsed = parse_input(location)
+      parsed[1].present? || parsed[2].present?
     end
 
+    location_type = if contains_remote && contains_city
+                      'Hybrid'
+                    elsif contains_remote && contains_state_or_country
+                      'Flexible'
+                    end
+
+    matched_locations = inputs.map do |single_input|
+      if single_input.empty? || single_input.casecmp?('Remote')
+        {
+          city_name: nil,
+          state_name: nil,
+          state_code: nil,
+          country_name: nil,
+          country_code: nil,
+          location_type: location_type || 'Remote'
+        }
+      else
+        process_single_location(single_input, job, company, country_input)
+      end
+    end
+
+    matched_locations.compact
+  end
+
+  private
+
+  def process_single_location(input, job, company, country_input)
     city_name, state_name, country_name = parse_input(input)
 
-    # puts "City: #{city_name}, State: #{state_name}, Country: #{country_name}"
     city = City.find_or_create_city(city_name, company, job)
-    return unless city
-
-    # puts "City: #{city}"
-
     state = State.find_or_create_state(state_name, company, job)
-    # puts "State: #{state}"
 
     country_params = if state
                        if state[:country_code] == 'US' || state[:state_code].match?(/^[A-Z]{2}$/)
@@ -66,21 +85,6 @@ class LocationMapper
                      else
                        { country_code: nil, country_name: country_input }
                      end
-    # puts "Country Params: #{country_params}"
-
-    # handles case where location is just a country
-    # if Country.exists?(country_name: input || country_input ) || Country.exists?(aliases: input || country_input)
-    #   country = Country.find_or_adjudicate_country(nil, input || country_input, company, job['job_url'])
-    #   puts "Country: #{country}"
-    #   return {
-    #     city_name: nil,
-    #     state_name: nil,
-    #     state_code: nil,
-    #     country_name: country.country_name,
-    #     country_code: country.country_code,
-    #     location_type: 'Remote'
-    #   }
-    # end
 
     country = Country.find_or_adjudicate_country(
       country_params[:country_code],
@@ -88,16 +92,28 @@ class LocationMapper
       company,
       job['job_url']
     )
-    # puts "Country: #{country}"
 
-    return {
-      city_name: nil,
-      state_name: nil,
-      state_code: nil,
-      country_name: country&.country_name,
-      country_code: country&.country_code,
-      location_type: 'Remote'
-    } unless country || city || state
+    if city && !state && !country && !input.casecmp?('Remote')
+      return {
+        city_name: city[:city_name],
+        state_name: nil,
+        state_code: nil,
+        country_name: nil,
+        country_code: nil,
+        location_type: 'On-Site'
+      }
+    end
+
+    unless country || city || state
+      return {
+        city_name: nil,
+        state_name: nil,
+        state_code: nil,
+        country_name: country&.country_name,
+        country_code: country&.country_code,
+        location_type: 'Remote'
+      }
+    end
 
     {
       city_name: city[:city_name],
@@ -107,8 +123,6 @@ class LocationMapper
       country_code: country[:country_code]
     }
   end
-
-  private
 
   def parse_input(input)
     parts = input.split(',').map(&:strip)
