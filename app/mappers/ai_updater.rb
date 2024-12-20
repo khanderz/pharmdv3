@@ -52,7 +52,8 @@ class AiUpdater
     job_post_seniorities = []
     job_post_skills = []
     job_post_states = []
-    job_post_data[:job_setting] ||= []
+    job_post_data[:job_setting] = Array(job_post_data[:job_setting])
+
 
     puts "location info is #{location_info}"
 
@@ -139,7 +140,9 @@ class AiUpdater
             end
 
             settings.each do |setting|
-              unless job_post_data[:job_setting].include?(setting)
+              normalized_setting = setting.downcase
+
+              unless job_post_data[:job_setting].map(&:downcase).include?(normalized_setting)
                 job_post_data[:job_setting] << setting
                 updated = true
               end
@@ -263,7 +266,9 @@ class AiUpdater
           # job_post_benefits.concat(benefits)
 
           settings.each do |setting|
-            unless job_post_data[:job_setting].include?(setting)
+            normalized_setting = setting.downcase
+
+            unless job_post_data[:job_setting].map(&:downcase).include?(normalized_setting)
               job_post_data[:job_setting] << setting
               updated = true
             end

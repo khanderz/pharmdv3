@@ -15,6 +15,7 @@ educations = [
   { education_code: 'DO', education_name: 'Doctor of Osteopathic Medicine' },
   { education_code: 'DPT', education_name: 'Doctor of Physical Therapy' },
   { education_code: 'EdD', education_name: 'Doctor of Education' },
+  { education_code: 'FELLOW', education_name: 'Fellowship Program' },
   { education_code: 'GED', education_name: 'General Education Diploma' },
   { education_code: 'HS', education_name: 'High School' },
   { education_code: 'JD', education_name: 'Juris Doctor' },
@@ -27,6 +28,7 @@ educations = [
   { education_code: 'PhD', education_name: 'Doctor of Philosophy' },
   { education_code: 'PharmD', education_name: 'Doctor of Pharmacy' },
   { education_code: 'POSTDOC', education_name: 'Postdoctoral Fellowship' },
+  { education_code: 'RES', education_name: 'Residency Program' },
   { education_code: 'RN', education_name: 'Registered Nurse Program' }
 ]
 

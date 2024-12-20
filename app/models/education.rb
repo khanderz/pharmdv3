@@ -2,8 +2,10 @@
 
 class Education < ApplicationRecord
   def self.find_or_create_education(education_param, job_post)
-    education = where('LOWER(education_name) = ?', education_param.downcase)
-                .or(where('LOWER(education_code) = ?', education_param.downcase))
+    cleaned_param = clean_education_param(education_param)
+
+    education = where('LOWER(education_name) = ?', cleaned_param.downcase)
+                .or(where('LOWER(education_code) = ?', cleaned_param.downcase))
                 .first
 
     if education
@@ -23,5 +25,26 @@ class Education < ApplicationRecord
     end
 
     education
+  end
+
+  def self.clean_education_param(education_param)
+    normalized_param = education_param.to_s
+                                       .strip
+                                       .downcase
+                                       .gsub(/[’‘]/, "'")  
+                                       .gsub(/[^a-z0-9\s']/i, '')
+
+    degree_code_matches = Education.pluck(:education_code).map(&:downcase)
+                                   .select { |code| normalized_param.include?(code) }
+
+    degree_name_matches = Education.pluck(:education_name).map(&:downcase)
+                                   .select { |name| normalized_param.include?(name) }
+
+    matches = (degree_code_matches + degree_name_matches).uniq
+
+    prioritized_matches = matches.select { |match| %w[postdoc fellowship residency].include?(match) }
+    return prioritized_matches.first.split.map(&:capitalize).join(' ') if prioritized_matches.any?
+    
+    matches.first&.split&.map(&:capitalize)&.join(' ') || education_param.strip
   end
 end

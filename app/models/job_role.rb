@@ -29,13 +29,13 @@ class JobRole < ApplicationRecord
     if job_role.nil?
       job_role = JobRole.create!(
         role_name: cleaned_title,
-        error_details: "Job Role: #{cleaned_title} not found in existing records",
+        error_details: "Job Role: #{titles} not found in existing records",
         resolved: false
       )
       Adjudication.log_error(
         adjudicatable_type: 'JobRole',
         adjudicatable_id: job_role.id,
-        error_details: "Job Role: #{cleaned_title} for #{job_post_url} not found in existing records"
+        error_details: "Job Role: #{titles} for #{job_post_url} not found in existing records"
       )
 
     end
