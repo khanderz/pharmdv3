@@ -3,11 +3,21 @@
     "browser": true,
     "es2021": true
   },
+  // "extends": [
+  //   "eslint:recommended",
+  //   "plugin:@typescript-eslint/recommended",
+  //   "plugin:react/recommended",
+  //   "plugin:prettier/recommended",
+  //   "prettier"
+  // ],
   "extends": [
-    "eslint:recommended",
-    "plugin:@typescript-eslint/recommended",
-    "plugin:react/recommended",
-    "plugin:prettier/recommended"
+    // "plugin:react/recommended",
+    "plugin:@typescript-eslint/recommended", // Uses the recommended rules from the @typescript-eslint/eslint-plugin
+    "prettier/@typescript-eslint", // Uses eslint-config-prettier to disable ESLint rules from @typescript-eslint/eslint-plugin that would conflict with prettier
+    "plugin:import/recommended",
+    "plugin:import/errors",
+    "plugin:import/typescript",
+    "plugin:prettier/recommended" // Enables eslint-plugin-prettier and eslint-config-prettier. This will display prettier errors as ESLint errors. Make sure this is always the last configuration in the extends array.
   ],
   "parser": "@typescript-eslint/parser",
   "parserOptions": {
@@ -15,16 +25,67 @@
     "sourceType": "module"
   },
   "plugins": ["@typescript-eslint", "react"],
+  // "rules": {
+  //   "no-undef": "error",
+  //   "@typescript-eslint/no-unused-vars": "off",
+  //   "no-nested-ternary": ["off"],
+  //   "prefer-spread": ["warn"],
+  //   "@typescript-eslint/no-explicit-any": "off",
+  //   "@typescript-eslint/ban-ts-ignore": "off",
+  //   "react/jsx-filename-extension": [
+  //     1,
+  //     {
+  //       "extensions": [".js", ".jsx", ".ts", ".tsx"]
+  //     }
+  //   ]
+  // }
   "rules": {
+    "@typescript-eslint/explicit-function-return-type": "off",
+    "@typescript-eslint/camelcase": "off",
     "@typescript-eslint/no-unused-vars": "off",
+    "@typescript-eslint/no-empty-function": "off",
+    "@typescript-eslint/no-var-requires": "warn",
+    "@typescript-eslint/ban-ts-comment": "warn",
+    "@typescript-eslint/ban-types": "warn",
+    "@typescript-eslint/prefer-as-const": "warn",
+    "ordered-imports": "off",
+    "object-literal-sort-keys": "off",
+    "arrow-parens": ["warn", "as-needed"],
+    "interface-name": "off",
+    "no-empty": "off",
+    "jsx-no-lambda": "off",
+    "jsx-boolean-value": "off",
+    "no-empty-interface": "off",
+    "interface-over-type-literal": "off",
+    "@emotion/syntax-preference": [2, "string"],
+    "@emotion/pkg-renaming": "error",
+    "prettier/prettier": "error",
+    "no-debugger": ["warn"],
+    "react/prefer-stateless-function": ["off"],
+    "no-underscore-dangle": ["off"],
+    "import/no-named-as-default": ["off"],
     "no-nested-ternary": ["off"],
     "prefer-spread": ["warn"],
-    "@typescript-eslint/no-explicit-any": "off",
-    "@typescript-eslint/ban-ts-ignore": "off",
-    "react/jsx-filename-extension": [
-      1,
+    "prefer-destructuring": ["warn"],
+    "camelcase": ["off"],
+    "react/no-multi-comp": ["off"],
+    "import/prefer-default-export": ["off"],
+    "react/destructuring-assignment": ["off"],
+    "react-hooks/rules-of-hooks": "warn", // Checks rules of Hooks
+    "react-hooks/exhaustive-deps": "warn", // Checks effect dependencies,
+    "import/order": [
+      "warn",
       {
-        "extensions": [".js", ".jsx", ".ts", ".tsx"]
+        "groups": [
+          "builtin",
+          "external",
+          "internal",
+          "parent",
+          "sibling",
+          "index",
+          "object",
+          "type"
+        ]
       }
     ]
   }

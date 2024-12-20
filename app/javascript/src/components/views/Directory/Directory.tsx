@@ -36,7 +36,7 @@ export const Directory = () => {
 
   return (
     <Container dataTestId="directory">
-      <Box
+      {/* <Box
         sx={{
           justifySelf: 'flex-start',
           alignSelf: 'flex-start',
@@ -49,7 +49,23 @@ export const Directory = () => {
         ) : (
           <DirectoryTable data={companies} rows={companies?.length} />
         )}
-      </Box>
+      </Box> */}
+
+      <Grid container spacing={4} data-testid="search-page-container">
+        <Grid item xs={12} data-testid="filter-panel-grid">
+          <FilterPanel
+            resetFilters={resetAndHandlePageChange}
+            onSortByDate={onSortByDate}
+          />
+        </Grid>
+        <Grid item xs={12} data-testid="companies-grid-item">
+          {companies?.length === 0 ? (
+            <Typography>No companies found.</Typography>
+          ) : (
+            <DirectoryTable data={companies} rows={companies?.length} />
+          )}
+        </Grid>
+      </Grid>
     </Container>
   );
 };

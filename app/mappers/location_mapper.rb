@@ -16,6 +16,8 @@ class LocationMapper
 
   def match_location(input, job, company, country_input = nil)
     puts "#{BLUE}location input: #{input} country_input: #{country_input} #{RESET}"
+    return [default_location(nil)] if input.is_a?(Array) && input.empty?
+
     inputs = Array(input).map(&:strip)
 
     location_type = determine_location_type(inputs)
