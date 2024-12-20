@@ -1,5 +1,5 @@
-import { useState, useEffect } from 'react';
-import { useAtsTypes } from '@javascript/hooks';
+import { useState, useEffect } from "react";
+import { useAtsTypes } from "@javascript/hooks";
 
 const [atsTypes, setAtsTypes] = useState<
   {
@@ -24,9 +24,9 @@ export type AtsTypes = (typeof atsTypes)[number];
 
 export interface AtsType {
   id: number;
-  ats_type_code: AtsTypes['ats_type_code'];
-  ats_type_name: AtsTypes['ats_type_name'];
-  domain_matched_url?: AtsTypes['domain_matched_url'];
-  redirect_url?: AtsTypes['redirect_url'];
-  post_match_url?: AtsTypes['post_match_url'];
+  ats_type_code: AtsTypes["ats_type_code"];
+  ats_type_name: AtsTypes["ats_type_name"];
+  domain_matched_url?: AtsTypes["domain_matched_url"];
+  redirect_url?: AtsTypes["redirect_url"];
+  post_match_url?: AtsTypes["post_match_url"];
 }

@@ -1,7 +1,7 @@
 // app/javascript/src/types/company/funding_type.types.ts
 
-import { useState, useEffect } from 'react';
-import { useFundingTypes } from '@javascript/hooks';
+import { useState, useEffect } from "react";
+import { useFundingTypes } from "@javascript/hooks";
 
 const [fundingTypes, setFundingTypes] = useState<
   {
@@ -23,6 +23,6 @@ export type FundingTypes = (typeof fundingTypes)[number];
 
 export interface FundingType {
   id: number;
-  funding_type_code: FundingTypes['funding_type_code'];
-  funding_type_name: FundingTypes['funding_type_name'];
+  funding_type_code: FundingTypes["funding_type_code"];
+  funding_type_name: FundingTypes["funding_type_name"];
 }

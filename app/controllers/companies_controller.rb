@@ -5,42 +5,23 @@ class CompaniesController < ApplicationController
 
   # GET /companies or /companies.json
   def index
-    # Check if a domain filter is applied
-    @companies = if params[:domain_id].present?
-                   # Filter companies that have the selected healthcare domain
-                   Company.joins(:healthcare_domains)
-                          .where(healthcare_domains: { id: params[:domain_id] })
-                          .includes(
-                            :job_posts,
-                            :company_size,
-                            :ats_type,
-                            :funding_type,
-                            :company_type,
-                            :company_cities,
-                            :company_states,
-                            :company_countries,
-                            :company_specializations,
-                            :company_domains,
-                            :healthcare_domains
-                          )
-                 else
-                   # No filter applied, return all companies
-                   Company.includes(
-                     :job_posts,
-                     :company_size,
-                     :ats_type,
-                     :funding_type,
-                     :company_type,
-                     :company_cities,
-                     :company_states,
-                     :company_countries,
-                     :company_specializations,
-                     :company_domains,
-                     :healthcare_domains
-                   ).all
-                 end
+    @companies = Company.includes(
+      :job_posts,
+      :company_size,
+      :ats_type,
+      :funding_type,
+      :company_type,
+      :company_cities,
+      :company_states,
+      :company_countries,
+      :company_specializations,
+      :company_domains,
+      :healthcare_domains
+    )
 
-    # Render JSON with nested relationships
+    @companies = apply_filters(@companies)
+
+
     render json: @companies.as_json(
       include: {
         job_posts: { only: %i[job_title job_description job_active] },
@@ -107,6 +88,36 @@ end
 # Use callbacks to share common setup or constraints between actions.
 def set_company
   @company = Company.find(params[:id])
+end
+
+def apply_filters(companies)
+  companies = companies.joins(:healthcare_domains).where(healthcare_domains: { id: params[:domain_id] }) if params[:domain_id].present?
+  companies = companies.where(company_size_id: params[:company_size_id]) if params[:company_size_id].present?
+  companies = companies.where(operating_status: params[:operating_status]) if params[:operating_status].present?
+  companies = companies.where(funding_type_id: params[:funding_type_id]) if params[:funding_type_id].present?
+  companies = companies.where(year_founded: params[:year_founded]) if params[:year_founded].present?
+  companies = companies.where('company_description ILIKE ?', "%#{params[:company_description]}%") if params[:company_description].present?
+  companies = companies.where('company_tagline ILIKE ?', "%#{params[:company_tagline]}%") if params[:company_tagline].present?
+  companies = companies.where(is_completely_remote: params[:is_completely_remote]) if params[:is_completely_remote].present?
+
+  # Filter by associated models
+  if params[:city_id].present?
+    companies = companies.joins(:company_cities).where(company_cities: { city_id: params[:city_id] })
+  end
+
+  if params[:country_id].present?
+    companies = companies.joins(:company_countries).where(company_countries: { country_id: params[:country_id] })
+  end
+
+  if params[:state_id].present?
+    companies = companies.joins(:company_states).where(company_states: { state_id: params[:state_id] })
+  end
+
+  if params[:specialization_id].present?
+    companies = companies.joins(:company_specializations).where(company_specializations: { company_specialty_id: params[:specialization_id] })
+  end
+
+  companies
 end
 
 # Only allow a list of trusted parameters through.

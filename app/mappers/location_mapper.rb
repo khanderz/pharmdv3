@@ -51,11 +51,16 @@ class LocationMapper
 
   def determine_location_type(inputs)
     contains_remote = inputs.any? { |location| location.casecmp?('Remote') }
-    contains_city = inputs.any? { |location| parse_input(location).first.present? }
-    contains_state_or_country = inputs.any? do |location|
-      parsed = parse_input(location)
-      parsed[1].present? || parsed[2].present?
+    contains_city = inputs.any? do |location|
+      city, = parse_input(location)
+      city.present?
     end
+    contains_state_or_country = inputs.any? do |location|
+      _, state, country = parse_input(location)
+      state.present? || country.present?
+    end
+
+    puts "#{BLUE}contains_remote: #{contains_remote} contains_city: #{contains_city} contains_state_or_country: #{contains_state_or_country} #{RESET}"
 
     if contains_remote && contains_city
       'Hybrid'
@@ -80,7 +85,7 @@ class LocationMapper
   end
 
   def process_single_location(input, job, company, country_input, location_type)
-    city_name, state_name, country_name = parse_input(input)
+    city_name, state_name, country_name, job_setting = parse_input(input)
 
     city = City.find_or_create_city(city_name, company, job)
     state = State.find_or_create_state(state_name, company, job)
@@ -99,7 +104,7 @@ class LocationMapper
       state_code: state&.[](:state_code),
       country_name: country&.[](:country_name),
       country_code: country&.[](:country_code),
-      location_type: location_type
+      location_type: job_setting || location_type
     }
   end
 
@@ -122,7 +127,7 @@ class LocationMapper
   def parse_input(input)
     return find_location(*input) if input.is_a?(Array)
 
-    return [nil, nil, nil] if input.blank?
+    return [nil, nil, nil, nil] if input.blank?
 
     parts = input.split(',').map(&:strip)
 
@@ -130,7 +135,7 @@ class LocationMapper
     when 3 then find_location(parts[0], parts[1], parts[2])
     when 2 then find_location(parts[0], parts[1])
     when 1 then find_single_location(parts[0])
-    else [nil, nil, nil]
+    else [nil, nil, nil, nil]
     end
   end
 
@@ -138,20 +143,29 @@ class LocationMapper
     city = City.find_city_only(city_name)
     state = state_name ? State.find_state_only(state_name) : nil
     country = country_name ? Country.find_country_only(nil, country_name) : nil
+    setting = JobSetting.find_setting(city_name)
 
-    [city&.city_name, state&.state_name, country&.country_name]
+    [city&.city_name, state&.state_name, country&.country_name, setting&.setting_name]
   end
 
   def find_single_location(input)
+    return [nil, nil, nil, nil] if input.blank?
+
     city = City.find_city_only(input)
+    state = State.find_state_only(input)
+    country = Country.find_country_only(input, input)
     setting = JobSetting.find_setting(input)
 
     if city
-      [city.city_name, nil, nil]
+      [city.city_name, nil, nil, nil]
+    elsif state
+      [nil, state.state_name, nil, nil]
+    elsif country
+      [nil, nil, country.country_name, nil]
     elsif setting
-      [nil, nil, setting.setting_name]
+      [nil, nil, nil, setting.setting_name]
     else
-      [nil, nil, nil]
+      [nil, nil, nil, nil]
     end
   end
 end

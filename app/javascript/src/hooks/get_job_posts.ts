@@ -1,8 +1,8 @@
-import { useState, useEffect } from 'react';
-import { JobPost } from '@customtypes/job_post';
-import { HealthcareDomain } from '@customtypes/company';
+import { useState, useEffect } from "react";
+import { JobPost } from "@customtypes/job_post";
+import { HealthcareDomain } from "@customtypes/company";
 
-export const useJobPosts = (domainIds: HealthcareDomain['id'][] | null) => {
+export const useJobPosts = (domainIds: HealthcareDomain["id"][] | null) => {
   const [jobPosts, setJobPosts] = useState<JobPost[]>([]);
   const [filteredJobPosts, setFilteredJobPosts] = useState<JobPost[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
@@ -12,12 +12,12 @@ export const useJobPosts = (domainIds: HealthcareDomain['id'][] | null) => {
     const fetchJobPosts = async () => {
       try {
         setLoading(true);
-        let url = '/job_posts.json';
+        let url = "/job_posts.json";
 
         if (domainIds && domainIds.length > 0) {
           const domainParams = domainIds
-            .map((id) => `domain_ids[]=${id}`)
-            .join('&');
+            .map(id => `domain_ids[]=${id}`)
+            .join("&");
           url += `?${domainParams}`;
         }
 
@@ -32,7 +32,7 @@ export const useJobPosts = (domainIds: HealthcareDomain['id'][] | null) => {
         setError(null);
       } catch (err) {
         setError(
-          err instanceof Error ? err.message : 'An unknown error occurred'
+          err instanceof Error ? err.message : "An unknown error occurred",
         );
       } finally {
         setLoading(false);

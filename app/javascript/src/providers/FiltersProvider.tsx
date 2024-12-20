@@ -4,20 +4,20 @@ import React, {
   useEffect,
   useMemo,
   useState,
-} from 'react';
+} from "react";
 import {
   Company,
   CompanySize,
   CompanySpecialty,
   HealthcareDomain,
-} from '@customtypes/company';
+} from "@customtypes/company";
 import {
   JobSetting,
   JobCommitment,
   JobPost,
   JobSalaryCurrency,
-} from '@customtypes/job_post';
-import { Department, JobRole } from '@customtypes/job_role';
+} from "@customtypes/job_post";
+import { Department, JobRole } from "@customtypes/job_role";
 import {
   useJobPosts,
   useHealthcareDomains,
@@ -27,9 +27,10 @@ import {
   useJobSettings,
   useCompanySizes,
   getCurrencies,
-} from '@javascript/hooks';
-import dayjs from 'dayjs';
-import { AutocompleteOption } from '@components/atoms/Autocomplete';
+  useCompanies,
+} from "@hooks";
+import dayjs from "dayjs";
+import { AutocompleteOption } from "@components/atoms/Autocomplete";
 
 interface FiltersContextProps {
   selectedCompanies: Company[];
@@ -52,13 +53,13 @@ interface FiltersContextProps {
   setSelectedCompanySize: (size: CompanySize[]) => void;
   selectedSalaryCurrency: Omit<
     JobSalaryCurrency,
-    'error_details' | 'reference_id' | 'resolved'
+    "error_details" | "reference_id" | "resolved"
   > | null;
   setSelectedSalaryCurrency: (
     currency: Omit<
       JobSalaryCurrency,
-      'error_details' | 'reference_id' | 'resolved'
-    >
+      "error_details" | "reference_id" | "resolved"
+    >,
   ) => void;
   selectedSalaryRange: [number, number] | null;
   setSelectedSalaryRange: (range: [number, number] | null) => void;
@@ -108,7 +109,7 @@ export const FiltersContext = createContext<FiltersContextProps>({
   setSelectedJobSettings: () => {},
   selectedJobCommitments: [],
   setSelectedJobCommitments: () => {},
-  selectedDatePosted: '',
+  selectedDatePosted: "",
   setSelectedDatePosted: () => {},
   selectedCompanySize: [],
   setSelectedCompanySize: () => {},
@@ -141,9 +142,9 @@ export const FiltersContext = createContext<FiltersContextProps>({
   filteredJobPosts: [],
   resetFilters: () => {},
   noMatchingResults: false,
-  getNoResultsMessage: () => '',
+  getNoResultsMessage: () => "",
   setFilteredJobPosts: () => {},
-  searchQuery: '',
+  searchQuery: "",
   setSearchQuery: () => {},
 } as FiltersContextProps);
 
@@ -156,16 +157,22 @@ export const MAX_SALARY = 300000;
 
 export function FiltersProvider({ children }: FiltersProviderProps) {
   const [selectedDomains, setSelectedDomains] = useState<HealthcareDomain[]>(
-    []
+    [],
   );
 
   const domainIds = useMemo(() => {
     return selectedDomains.length > 0
-      ? selectedDomains.map((domain) => domain.id)
+      ? selectedDomains.map(domain => domain.id)
       : null;
   }, [selectedDomains]);
 
   /* --------------------- Hooks --------------------- */
+  const {
+    companies: allCompanies,
+    loading: companiesLoading,
+    error: companiesError,
+  } = useCompanies();
+
   const { jobPosts, filteredJobPosts, setFilteredJobPosts, loading, error } =
     useJobPosts(domainIds);
 
@@ -218,31 +225,31 @@ export function FiltersProvider({ children }: FiltersProviderProps) {
     CompanySpecialty[]
   >([]);
   const [selectedDepartments, setSelectedDepartments] = useState<Department[]>(
-    []
+    [],
   );
   const [selectedJobRoles, setSelectedJobRoles] = useState<JobRole[]>([]);
   const [selectedJobSettings, setSelectedJobSettings] = useState<JobSetting[]>(
-    []
+    [],
   );
   const [selectedJobCommitments, setSelectedJobCommitments] = useState<
     JobCommitment[]
   >([]);
   const [selectedDatePosted, setSelectedDatePosted] = useState<string | null>(
-    null
+    null,
   );
   const [selectedCompanySize, setSelectedCompanySize] = useState<CompanySize[]>(
-    []
+    [],
   );
   const [selectedSalaryCurrency, setSelectedSalaryCurrency] = useState<Omit<
     JobSalaryCurrency,
-    'error_details' | 'reference_id' | 'resolved'
+    "error_details" | "reference_id" | "resolved"
   > | null>(null);
   const [selectedSalaryRange, setSelectedSalaryRange] = useState<
     [number, number] | null
   >(null);
   const [selectedLocation, setSelectedLocation] =
     useState<AutocompleteOption | null>(null);
-  const [searchQuery, setSearchQuery] = useState<string>('');
+  const [searchQuery, setSearchQuery] = useState<string>("");
 
   /* --------------------- Constants --------------------- */
 
@@ -270,110 +277,152 @@ export function FiltersProvider({ children }: FiltersProviderProps) {
 
   const uniqueCompanies: Company[] = Array.from(
     new Map(
-      jobPosts.map((jobPost) => [jobPost.company.id, jobPost.company])
-    ).values()
+      jobPosts.map(jobPost => [jobPost.company.id, jobPost.company]),
+    ).values(),
   );
 
   const uniqueSpecialties: CompanySpecialty[] = Array.from(
     new Map(
       jobPosts
-        .flatMap((jobPost) => jobPost.company.company_specialties ?? [])
-        .map((specialty) => [specialty.value, specialty])
-    ).values()
+        .flatMap(jobPost => jobPost.company.company_specialties ?? [])
+        .map(specialty => [specialty.value, specialty]),
+    ).values(),
   ).filter(Boolean);
 
   const uniqueJobRoles: JobRole[] = Array.from(
     jobPosts
       .reduce((map, jobPost) => {
-        const jobRole = jobRoles.find(
-          (role) => role.id === jobPost.job_role_id
-        );
+        const jobRole = jobRoles.find(role => role.id === jobPost.job_role_id);
         if (jobRole && !map.has(jobRole.id)) {
           map.set(jobRole.id, jobRole);
         }
         return map;
       }, new Map<number, JobRole>())
-      .values()
+      .values(),
   );
 
   /* --------------------- Handles --------------------- */
-  const filterJobPosts = () => {
-    let filtered = [...jobPosts];
+  const filterCompanies = () => {
+    let filtered = [...allCompanies];
 
     if (selectedCompanies.length > 0) {
-      filtered = filtered.filter((jobPost) =>
-        selectedCompanies.some((company) => jobPost.company.id === company.id)
+      filtered = filtered.filter(company =>
+        selectedCompanies.some(selected => selected.id === company.id),
       );
     }
 
     if (selectedSpecialties.length > 0) {
-      filtered = filtered.filter((jobPost) =>
-        jobPost.company.company_specialties?.some((spec) =>
-          selectedSpecialties.some(
-            (selectedSpec) => selectedSpec.id === spec.id
-          )
-        )
+      filtered = filtered.filter(company =>
+        company.company_specialties?.some(spec =>
+          selectedSpecialties.some(selectedSpec => selectedSpec.id === spec.id),
+        ),
       );
     }
 
     if (selectedDomains.length > 0) {
-      filtered = filtered.filter((jobPost) =>
-        jobPost.company.company_domains?.some((dom) =>
+      filtered = filtered.filter(company =>
+        company.company_domains?.some(domain =>
           selectedDomains.some(
-            (selectedDomain) => selectedDomain.id === dom.healthcare_domain_id
-          )
-        )
+            selectedDomain => selectedDomain.id === domain.healthcare_domain_id,
+          ),
+        ),
+      );
+    }
+
+    if (selectedCompanySize.length > 0) {
+      filtered = filtered.filter(company =>
+        selectedCompanySize.some(size => company.company_size_id === size.id),
+      );
+    }
+
+    if (selectedLocation) {
+      filtered = filtered.filter(company =>
+        company.company_locations?.some(location =>
+          Array.isArray(location)
+            ? location.includes(selectedLocation.value as string)
+            : location === selectedLocation.value,
+        ),
+      );
+    }
+
+    return filtered;
+  };
+
+  const filterJobPosts = () => {
+    let filtered = [...jobPosts];
+
+    if (selectedCompanies.length > 0) {
+      filtered = filtered.filter(jobPost =>
+        selectedCompanies.some(company => jobPost.company.id === company.id),
+      );
+    }
+
+    if (selectedSpecialties.length > 0) {
+      filtered = filtered.filter(jobPost =>
+        jobPost.company.company_specialties?.some(spec =>
+          selectedSpecialties.some(selectedSpec => selectedSpec.id === spec.id),
+        ),
+      );
+    }
+
+    if (selectedDomains.length > 0) {
+      filtered = filtered.filter(jobPost =>
+        jobPost.company.company_domains?.some(dom =>
+          selectedDomains.some(
+            selectedDomain => selectedDomain.id === dom.healthcare_domain_id,
+          ),
+        ),
       );
     }
 
     if (selectedDepartments.length > 0) {
-      filtered = filtered.filter((jobPost) =>
-        selectedDepartments.some((dept) => jobPost.department_id === dept.id)
+      filtered = filtered.filter(jobPost =>
+        selectedDepartments.some(dept => jobPost.department_id === dept.id),
       );
     }
 
     if (selectedJobRoles.length > 0) {
-      filtered = filtered.filter((jobPost) =>
-        selectedJobRoles.some((role) => jobPost.job_role_id === role.id)
+      filtered = filtered.filter(jobPost =>
+        selectedJobRoles.some(role => jobPost.job_role_id === role.id),
       );
     }
 
     if (selectedJobSettings.length > 0) {
-      filtered = filtered.filter((jobPost) =>
+      filtered = filtered.filter(jobPost =>
         selectedJobSettings.some(
-          (setting) => jobPost.job_setting_id === setting.id
-        )
+          setting => jobPost.job_setting_id === setting.id,
+        ),
       );
     }
 
     if (selectedJobCommitments.length > 0) {
-      filtered = filtered.filter((jobPost) =>
+      filtered = filtered.filter(jobPost =>
         selectedJobCommitments.some(
-          (commitment) => jobPost.job_commitment_id === commitment.id
-        )
+          commitment => jobPost.job_commitment_id === commitment.id,
+        ),
       );
     }
 
     if (selectedDatePosted) {
       const now = dayjs();
 
-      filtered = filtered.filter((jobPost) => {
+      filtered = filtered.filter(jobPost => {
         const postDate = dayjs(jobPost.job_posted);
 
         if (!postDate.isValid()) {
-          console.warn('Invalid job_posted date:', jobPost.job_posted);
+          console.warn("Invalid job_posted date:", jobPost.job_posted);
           return false;
         }
 
         switch (selectedDatePosted) {
-          case 'Past 24 hours':
-            return now.diff(postDate, 'hour') <= 24;
-          case 'Past 3 days':
-            return now.diff(postDate, 'day') <= 3;
-          case 'Past week':
-            return now.diff(postDate, 'day') <= 7;
-          case 'Past month':
-            return now.diff(postDate, 'day') <= 30;
+          case "Past 24 hours":
+            return now.diff(postDate, "hour") <= 24;
+          case "Past 3 days":
+            return now.diff(postDate, "day") <= 3;
+          case "Past week":
+            return now.diff(postDate, "day") <= 7;
+          case "Past month":
+            return now.diff(postDate, "day") <= 30;
           default:
             return true;
         }
@@ -382,32 +431,32 @@ export function FiltersProvider({ children }: FiltersProviderProps) {
 
     if (selectedCompanySize.length > 0) {
       filtered = filtered.filter(
-        (jobPost) =>
+        jobPost =>
           jobPost.company.company_size_id !== undefined &&
           selectedCompanySize
-            .map((size) => size.id)
-            .includes(jobPost.company.company_size_id)
+            .map(size => size.id)
+            .includes(jobPost.company.company_size_id),
       );
     }
 
     if (selectedSalaryRange) {
       const [min, max] = selectedSalaryRange;
       filtered = filtered.filter(
-        (jobPost) =>
-          jobPost.job_salary_min >= min && jobPost.job_salary_max <= max
+        jobPost =>
+          jobPost.job_salary_min >= min && jobPost.job_salary_max <= max,
       );
     }
 
     if (selectedSalaryCurrency) {
       filtered = filtered.filter(
-        (jobPost) =>
-          jobPost.job_salary_currency_id === selectedSalaryCurrency.key
+        jobPost =>
+          jobPost.job_salary_currency_id === selectedSalaryCurrency.key,
       );
     }
 
     if (selectedSalaryRange) {
       const [minSalary, maxSalary] = selectedSalaryRange;
-      filtered = filtered.filter((jobPost) => {
+      filtered = filtered.filter(jobPost => {
         const salaryMin = jobPost.job_salary_min || MIN_SALARY;
         const salaryMax = jobPost.job_salary_max || MAX_SALARY;
         return (
@@ -420,7 +469,7 @@ export function FiltersProvider({ children }: FiltersProviderProps) {
     }
 
     if (selectedLocation) {
-      filtered = filtered.filter((jobPost) => {
+      filtered = filtered.filter(jobPost => {
         const locationValue = (selectedLocation as AutocompleteOption).value;
 
         if (Array.isArray(jobPost.job_locations)) {
@@ -433,7 +482,7 @@ export function FiltersProvider({ children }: FiltersProviderProps) {
 
     if (searchQuery) {
       const lowerQuery = searchQuery.toLowerCase();
-      filtered = filtered.filter((jobPost) => {
+      filtered = filtered.filter(jobPost => {
         const fieldsToSearch = [
           jobPost.job_title,
           jobPost.job_description,
@@ -445,7 +494,7 @@ export function FiltersProvider({ children }: FiltersProviderProps) {
         ];
 
         return fieldsToSearch.some(
-          (field) => field && field.toLowerCase().includes(lowerQuery)
+          field => field && field.toLowerCase().includes(lowerQuery),
         );
       });
     }
@@ -466,7 +515,7 @@ export function FiltersProvider({ children }: FiltersProviderProps) {
     setSelectedSalaryCurrency(null);
     setSelectedSalaryRange(null);
     setSelectedLocation(null);
-    setSearchQuery('');
+    setSearchQuery("");
   };
 
   const getNoResultsMessage = () => {
@@ -474,43 +523,43 @@ export function FiltersProvider({ children }: FiltersProviderProps) {
 
     if (selectedCompanies.length > 0) {
       filters.push(
-        `for companies ${selectedCompanies.map((c) => c.company_name).join(', ')}`
+        `for companies ${selectedCompanies.map(c => c.company_name).join(", ")}`,
       );
     }
 
     if (selectedSpecialties.length > 0) {
       filters.push(
-        `with specialties ${selectedSpecialties.map((s) => s.value).join(', ')}`
+        `with specialties ${selectedSpecialties.map(s => s.value).join(", ")}`,
       );
     }
 
     if (selectedDomains.length > 0) {
       filters.push(
-        `in domains ${selectedDomains.map((d) => d.value).join(', ')}`
+        `in domains ${selectedDomains.map(d => d.value).join(", ")}`,
       );
     }
 
     if (selectedDepartments.length > 0) {
       filters.push(
-        `in departments ${selectedDepartments.map((d) => d.dept_name).join(', ')}`
+        `in departments ${selectedDepartments.map(d => d.dept_name).join(", ")}`,
       );
     }
 
     if (selectedJobRoles.length > 0) {
       filters.push(
-        `for job roles ${selectedJobRoles.map((r) => r.role_name).join(', ')}`
+        `for job roles ${selectedJobRoles.map(r => r.role_name).join(", ")}`,
       );
     }
 
     if (selectedJobSettings.length > 0) {
       filters.push(
-        `for job settings ${selectedJobSettings.map((s) => s.setting_name).join(', ')}`
+        `for job settings ${selectedJobSettings.map(s => s.setting_name).join(", ")}`,
       );
     }
 
     if (selectedJobCommitments.length > 0) {
       filters.push(
-        `for job commitments ${selectedJobCommitments.map((c) => c.commitment_name).join(', ')}`
+        `for job commitments ${selectedJobCommitments.map(c => c.commitment_name).join(", ")}`,
       );
     }
 
@@ -520,18 +569,18 @@ export function FiltersProvider({ children }: FiltersProviderProps) {
 
     if (selectedCompanySize.length > 0) {
       const selectedSizeNames = selectedCompanySize.map(
-        (size) =>
-          companySizeObjects.find((s) => s.id === size.id)?.size_range ?? ''
+        size =>
+          companySizeObjects.find(s => s.id === size.id)?.size_range ?? "",
       );
 
       if (selectedSizeNames.length > 0) {
-        filters.push(`for company size ${selectedSizeNames.join(', ')}`);
+        filters.push(`for company size ${selectedSizeNames.join(", ")}`);
       }
     }
 
     if (selectedSalaryRange) {
       filters.push(
-        `with salary range between ${selectedSalaryRange[0]} and ${selectedSalaryRange[1]}`
+        `with salary range between ${selectedSalaryRange[0]} and ${selectedSalaryRange[1]}`,
       );
     }
 
@@ -547,10 +596,10 @@ export function FiltersProvider({ children }: FiltersProviderProps) {
       filters.push(`with search query ${searchQuery}`);
     }
 
-    let message = 'No matching job posts';
+    let message = "No matching job posts";
 
     if (filters.length > 0) {
-      message += ` ${filters.join(', ')}.`;
+      message += ` ${filters.join(", ")}.`;
     }
 
     return message;
@@ -676,7 +725,7 @@ export function useFiltersContext() {
   const context = useContext(FiltersContext);
 
   if (!context) {
-    throw new Error('useFiltersContext must be used within a FiltersProvider');
+    throw new Error("useFiltersContext must be used within a FiltersProvider");
   }
 
   return context;

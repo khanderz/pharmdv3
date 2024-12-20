@@ -1,5 +1,5 @@
-import { useState, useEffect } from 'react';
-import { FundingType } from '@customtypes/funding_types';
+import { useState, useEffect } from "react";
+import { FundingType } from "@customtypes/company";
 
 export const useFundingTypes = () => {
   const [fundingTypes, setFundingTypes] = useState<FundingType[]>([]);
@@ -12,7 +12,7 @@ export const useFundingTypes = () => {
         setLoading(true);
         setError(null);
 
-        const response = await fetch('/funding_types.json');
+        const response = await fetch("/funding_types.json");
         if (!response.ok) {
           throw new Error(`Error fetching funding types: ${response.status}`);
         }
@@ -21,7 +21,7 @@ export const useFundingTypes = () => {
         setFundingTypes(data);
       } catch (err) {
         setError(
-          err instanceof Error ? err.message : 'An unknown error occurred'
+          err instanceof Error ? err.message : "An unknown error occurred",
         );
       } finally {
         setLoading(false);

@@ -4,6 +4,8 @@
 
 class GreenhouseDataMapper
   def self.map(job, company)
+    puts "\n--- Greenhouse Data Mapper ---"
+    puts "Job: #{job}"
     location_input = LocationMapper.extract_location(job, 'greenhouse')
     location_info = LocationMapper.new.match_location(location_input, job, company)
 
