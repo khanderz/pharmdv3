@@ -11,11 +11,14 @@ class Country < ApplicationRecord
                            uniqueness: true
 
   def self.find_or_adjudicate_country(country_code, country_name, company, job_url = nil)
-    country = where('LOWER(country_code) = ?', country_code.downcase)
-              .or(where('LOWER(country_name) = ?', country_name.downcase))
+    country_code_down = country_code&.downcase
+    country_name_down = country_name&.downcase
+
+    country = where('LOWER(country_code) = ?', country_code_down)
+              .or(where('LOWER(country_name) = ?', country_name_down))
               .or(
                 where('EXISTS (SELECT 1 FROM UNNEST(aliases) AS alias WHERE LOWER(alias) = ?)',
-                      country_name.downcase)
+                      country_name_down)
               ).first
 
     unless country
@@ -41,11 +44,14 @@ class Country < ApplicationRecord
   end
 
   def self.find_country_only(country_code, country_name)
-    country = where('LOWER(country_code) = ?', country_code.downcase)
-              .or(where('LOWER(country_name) = ?', country_name.downcase))
+    country_code_down = country_code&.downcase
+    country_name_down = country_name&.downcase
+
+    country = where('LOWER(country_code) = ?', country_code_down)
+              .or(where('LOWER(country_name) = ?', country_name_down))
               .or(
                 where('EXISTS (SELECT 1 FROM UNNEST(aliases) AS alias WHERE LOWER(alias) = ?)',
-                      country_name.downcase)
+                      country_name_down)
               ).first
   end
 end

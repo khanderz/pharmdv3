@@ -5,6 +5,9 @@ class LeverDataMapper
     location_input = LocationMapper.extract_location(job, 'lever')
     location_info = LocationMapper.new.match_location(location_input, job, company, job['country'])
 
+    puts "\n--- Location Info ---"
+    puts " returned Location Info: #{location_info}"  
+    
     job_post_data = JobPostDataMapper.map_basic_data(job, company, location_info, 'lever')
 
     updated_by_ai = AiUpdater.update_with_ai(job_post_data, job, company, location_info)
