@@ -8,7 +8,7 @@ class GreenhouseDataMapper
     location_info = LocationMapper.new.match_location(location_input, job, company)
 
     puts "\n--- Location Info ---"
-    puts " returned Location Info: #{location_info}"  
+    puts " returned Location Info: #{location_info}"
     job_post_data = JobDataMapper.map_basic_data(job, company, location_info, 'greenhouse')
     print_job_post_data(job_post_data)
 

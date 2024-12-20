@@ -119,11 +119,11 @@ class LocationMapper
 
   def parse_input(input)
     return find_location(*input) if input.is_a?(Array)
-  
+
     return [nil, nil, nil] if input.blank?
-  
+
     parts = input.split(',').map(&:strip)
-  
+
     case parts.length
     when 3 then find_location(parts[0], parts[1], parts[2])
     when 2 then find_location(parts[0], parts[1])
@@ -131,7 +131,6 @@ class LocationMapper
     else [nil, nil, nil]
     end
   end
-  
 
   def find_location(city_name, state_name = nil, country_name = nil)
     city = City.find_city_only(city_name)
