@@ -20,14 +20,8 @@ class LocationMapper
 
     inputs = Array(input).map(&:strip)
 
-    location_type = determine_location_type(inputs)
-
     inputs.map do |single_input|
-      if single_input.empty? || single_input.casecmp?('Remote')
-        default_location(location_type)
-      else
-        process_single_location(single_input, job, company, country_input, location_type)
-      end
+      process_single_location(single_input, job, company, country_input)
     end.compact
   end
 
@@ -49,16 +43,11 @@ class LocationMapper
     end
   end
 
-  def determine_location_type(inputs)
-    contains_remote = inputs.any? { |location| location.casecmp?('Remote') }
-    contains_city = inputs.any? do |location|
-      city, = parse_input(location)
-      city.present?
-    end
-    contains_state_or_country = inputs.any? do |location|
-      _, state, country = parse_input(location)
-      state.present? || country.present?
-    end
+  def determine_location_type(city_name, state_name, country_name, job_setting)
+    puts "determine_location_type : city_name: #{city_name} state_name: #{state_name} country_name: #{country_name} job_setting: #{job_setting}"
+    contains_remote = job_setting == 'Remote'
+    contains_city = city_name.present?
+    contains_state_or_country = if state_name.present? || country_name.present?
 
     puts "#{BLUE}contains_remote: #{contains_remote} contains_city: #{contains_city} contains_state_or_country: #{contains_state_or_country} #{RESET}"
 
@@ -68,9 +57,12 @@ class LocationMapper
       'Flexible'
     elsif contains_remote
       'Remote'
+    elsif contains_city && !contains_remote
+      "On-site"
     else
-      'On-Site'
+      job_setting
     end
+  end
   end
 
   def default_location(location_type)
@@ -84,7 +76,9 @@ class LocationMapper
     }
   end
 
-  def process_single_location(input, job, company, country_input, location_type)
+  def process_single_location(input, job, company, country_input)
+    return default_location('Remote') if input.casecmp?('Remote')
+
     city_name, state_name, country_name, job_setting = parse_input(input)
 
     city = City.find_or_create_city(city_name, company, job)
@@ -98,13 +92,16 @@ class LocationMapper
       job['job_url']
     )
 
+    location_type = determine_location_type(city_name, state_name, country_name, job_setting)
+
+
     {
       city_name: city&.[](:city_name),
       state_name: state&.[](:state_name),
       state_code: state&.[](:state_code),
       country_name: country&.[](:country_name),
       country_code: country&.[](:country_code),
-      location_type: job_setting || location_type
+      location_type: location_type
     }
   end
 
