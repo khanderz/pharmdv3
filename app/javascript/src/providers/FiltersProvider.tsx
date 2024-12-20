@@ -92,6 +92,11 @@ interface FiltersContextProps {
   setFilteredJobPosts: (jobPosts: JobPost[]) => void;
   searchQuery: string;
   setSearchQuery: (query: string) => void;
+  filteredCompanies: Company[];
+  setFilteredCompanies: (companies: Company[]) => void;
+  filterCompanies: () => void;
+  companiesLoading: boolean;
+  companiesError: string | null;
 }
 
 export const FiltersContext = createContext<FiltersContextProps>({
@@ -146,6 +151,11 @@ export const FiltersContext = createContext<FiltersContextProps>({
   setFilteredJobPosts: () => {},
   searchQuery: "",
   setSearchQuery: () => {},
+  filteredCompanies: [],
+  setFilteredCompanies: () => {},
+  filterCompanies: () => {},
+  companiesLoading: false,
+  companiesError: null,
 } as FiltersContextProps);
 
 interface FiltersProviderProps {
@@ -167,11 +177,6 @@ export function FiltersProvider({ children }: FiltersProviderProps) {
   }, [selectedDomains]);
 
   /* --------------------- Hooks --------------------- */
-  const {
-    companies: allCompanies,
-    loading: companiesLoading,
-    error: companiesError,
-  } = useCompanies();
 
   const { jobPosts, filteredJobPosts, setFilteredJobPosts, loading, error } =
     useJobPosts(domainIds);
@@ -252,6 +257,37 @@ export function FiltersProvider({ children }: FiltersProviderProps) {
   const [searchQuery, setSearchQuery] = useState<string>("");
 
   /* --------------------- Constants --------------------- */
+  const companyFilters = useMemo(() => {
+    const filters: any = {};
+
+    if (selectedDomains.length > 0) {
+      filters.domain_id = selectedDomains.map(domain => domain.id);
+    }
+    if (selectedCompanySize.length > 0) {
+      filters.company_size_id = selectedCompanySize.map(size => size.id);
+    }
+    if (selectedSpecialties.length > 0) {
+      filters.specialization_id = selectedSpecialties.map(spec => spec.id);
+    }
+    if (selectedLocation) {
+      filters.city_id = selectedLocation.value;
+    }
+
+    return filters;
+  }, [
+    selectedDomains,
+    selectedCompanySize,
+    selectedSpecialties,
+    selectedLocation,
+  ]);
+
+  const {
+    companies,
+    filteredCompanies,
+    setFilteredCompanies,
+    loading: companiesLoading,
+    error: companiesError,
+  } = useCompanies(companyFilters);
 
   const noMatchingResults = filteredJobPosts.length === 0;
 
@@ -263,7 +299,8 @@ export function FiltersProvider({ children }: FiltersProviderProps) {
     jobCommitmentsLoading ||
     jobSettingsLoading ||
     companySizesLoading ||
-    currenciesLoading;
+    currenciesLoading ||
+    companiesLoading;
 
   const errors =
     error ||
@@ -273,7 +310,8 @@ export function FiltersProvider({ children }: FiltersProviderProps) {
     jobCommitmentsError ||
     jobSettingsError ||
     companySizesError ||
-    currenciesError;
+    currenciesError ||
+    companiesError;
 
   const uniqueCompanies: Company[] = Array.from(
     new Map(
@@ -303,49 +341,16 @@ export function FiltersProvider({ children }: FiltersProviderProps) {
 
   /* --------------------- Handles --------------------- */
   const filterCompanies = () => {
-    let filtered = [...allCompanies];
+    let filtered = [...companies];
 
-    if (selectedCompanies.length > 0) {
+    if (searchQuery) {
+      const lowerQuery = searchQuery.toLowerCase();
       filtered = filtered.filter(company =>
-        selectedCompanies.some(selected => selected.id === company.id),
+        company.company_name.toLowerCase().includes(lowerQuery),
       );
     }
 
-    if (selectedSpecialties.length > 0) {
-      filtered = filtered.filter(company =>
-        company.company_specialties?.some(spec =>
-          selectedSpecialties.some(selectedSpec => selectedSpec.id === spec.id),
-        ),
-      );
-    }
-
-    if (selectedDomains.length > 0) {
-      filtered = filtered.filter(company =>
-        company.company_domains?.some(domain =>
-          selectedDomains.some(
-            selectedDomain => selectedDomain.id === domain.healthcare_domain_id,
-          ),
-        ),
-      );
-    }
-
-    if (selectedCompanySize.length > 0) {
-      filtered = filtered.filter(company =>
-        selectedCompanySize.some(size => company.company_size_id === size.id),
-      );
-    }
-
-    if (selectedLocation) {
-      filtered = filtered.filter(company =>
-        company.company_locations?.some(location =>
-          Array.isArray(location)
-            ? location.includes(selectedLocation.value as string)
-            : location === selectedLocation.value,
-        ),
-      );
-    }
-
-    return filtered;
+    setFilteredCompanies(filtered);
   };
 
   const filterJobPosts = () => {
@@ -626,6 +631,10 @@ export function FiltersProvider({ children }: FiltersProviderProps) {
     jobPosts,
   ]);
 
+  useEffect(() => {
+    filterCompanies();
+  }, [companies, searchQuery]);
+
   const value = useMemo(() => {
     return {
       selectedCompanies,
@@ -679,6 +688,11 @@ export function FiltersProvider({ children }: FiltersProviderProps) {
       setFilteredJobPosts,
       searchQuery,
       setSearchQuery,
+      filteredCompanies,
+      setFilteredCompanies,
+      filterCompanies,
+      companiesLoading,
+      companiesError,
     };
   }, [
     selectedCompanies,
@@ -714,6 +728,10 @@ export function FiltersProvider({ children }: FiltersProviderProps) {
     currenciesError,
     filteredJobPosts,
     noMatchingResults,
+    filteredCompanies,
+    filterCompanies,
+    companiesLoading,
+    companiesError,
   ]);
 
   return (

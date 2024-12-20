@@ -1,12 +1,13 @@
 import React, { useEffect, useState } from "react";
 import { Typography } from "@mui/material";
 import { LicenseInfo } from "@mui/x-license-pro";
-import { Container, Grid } from "@mui/material";
+import { Container, Grid, Pagination } from "@mui/material";
 import { DirectoryTable } from "./DirectoryTable";
 import { FilterPanel } from "@components/organisms/FilterPanel/FilterPanel";
 import { useApiKey } from "@hooks/get_api_var";
-import { useCompanies } from "@hooks/get_companies";
 import { useFiltersContext } from "@javascript/providers/FiltersProvider";
+
+const COMPANIES_PER_PAGE = 10;
 
 export const Directory = () => {
   /* --------------------- MUI-X --------------------- */
@@ -21,6 +22,7 @@ export const Directory = () => {
 
   /* --------------------- Hooks --------------------- */
   const {
+    filteredCompanies,
     errors,
     currentlyLoading,
     noMatchingResults,
@@ -28,15 +30,14 @@ export const Directory = () => {
     resetFilters,
   } = useFiltersContext();
 
-  const { companies, loading, error } = useCompanies();
   const [currentPage, setCurrentPage] = useState(1);
 
   /* --------------------- Constants --------------------- */
-  const totalPages = Math.ceil(filteredJobPosts.length / POSTS_PER_PAGE);
+  const totalPages = Math.ceil(filteredCompanies.length / COMPANIES_PER_PAGE);
 
-  const paginatedJobPosts = filteredJobPosts.slice(
-    (currentPage - 1) * POSTS_PER_PAGE,
-    currentPage * POSTS_PER_PAGE,
+  const paginatedCompanies = filteredCompanies.slice(
+    (currentPage - 1) * COMPANIES_PER_PAGE,
+    currentPage * COMPANIES_PER_PAGE,
   );
 
   /* --------------------- Handles --------------------- */
@@ -53,19 +54,12 @@ export const Directory = () => {
     setCurrentPage(1);
   };
 
-  // console.log({ companies });
-  // useEffect(() => {
-  //   setCompanies(companiesData);
-  //   setLoading(loadingReturn);
-  //   setError(errorReturn);
-  // }, [companiesData, loadingReturn, errorReturn]);
-
-  if (loading) {
+  if (currentlyLoading) {
     return <Typography>Loading...</Typography>;
   }
 
-  if (error) {
-    return <Typography>Error: {error.message}</Typography>;
+  if (errors) {
+    return <Typography>Error: {errors}</Typography>;
   }
 
   return (
@@ -87,18 +81,28 @@ export const Directory = () => {
 
       <Grid container spacing={4} data-testid="search-page-container">
         <Grid item xs={12} data-testid="filter-panel-grid">
-          <FilterPanel
-            resetFilters={resetAndHandlePageChange}
-            onSortByDate={onSortByDate}
-          />
+          <FilterPanel resetFilters={resetAndHandlePageChange} />
         </Grid>
         <Grid item xs={12} data-testid="companies-grid-item">
-          {companies?.length === 0 ? (
+          {paginatedCompanies?.length === 0 ? (
             <Typography>No companies found.</Typography>
           ) : (
-            <DirectoryTable data={companies} rows={companies?.length} />
+            <DirectoryTable
+              data={paginatedCompanies}
+              rows={filteredCompanies?.length}
+            />
           )}
         </Grid>
+        {totalPages > 1 && (
+          <Grid item xs={12} data-testid="pagination-grid">
+            <Pagination
+              count={totalPages}
+              page={currentPage}
+              onChange={handlePageChange}
+              color="primary"
+            />
+          </Grid>
+        )}
       </Grid>
     </Container>
   );

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState } from "react";
 import {
   Typography,
   AccordionDetails,
@@ -6,8 +6,8 @@ import {
   Box,
   Grid,
   IconButton,
-} from '@mui/material';
-import { FilterList, Sort } from '@mui/icons-material';
+} from "@mui/material";
+import { FilterList, Sort } from "@mui/icons-material";
 import {
   CompanyFilter,
   DomainFilter,
@@ -19,11 +19,11 @@ import {
   CompanySizeFilter,
   SalaryRangeFilter,
   LocationFilter,
-} from '@components/molecules/Filters';
-import { SearchPanel } from '@components/molecules/SearchPanel/SearchPanel';
-import { Accordion } from '@components/atoms/Accordion';
-import { Button } from '@components/atoms';
-import { DateFilter } from '@components/molecules/Filters/DateFilter';
+} from "@components/molecules/Filters";
+import { SearchPanel } from "@components/molecules/SearchPanel/SearchPanel";
+import { Accordion } from "@components/atoms/Accordion";
+import { Button } from "@components/atoms";
+import { DateFilter } from "@components/molecules/Filters/DateFilter";
 
 interface FilterPanelProps {
   resetFilters: () => void;
@@ -52,12 +52,12 @@ export const FilterPanel = ({
         aria-controls="more-filters-content"
         id="more-filters-header"
         sx={{
-          '&.MuiButtonBase-root, & .MuiAccordionSummary-root, & .MuiAccordionSummary-content':
+          "&.MuiButtonBase-root, & .MuiAccordionSummary-root, & .MuiAccordionSummary-content":
             {
-              cursor: 'default',
+              cursor: "default",
             },
-          '&.Mui-focused, &:focus, &:hover, &.Mui-focusVisible': {
-            backgroundColor: 'transparent',
+          "&.Mui-focused, &:focus, &:hover, &.Mui-focusVisible": {
+            backgroundColor: "transparent",
           },
         }}
       >
@@ -66,40 +66,40 @@ export const FilterPanel = ({
           flexDirection="column"
           rowGap={2}
           sx={{
-            display: 'flex',
-            width: '100%',
+            display: "flex",
+            width: "100%",
           }}
         >
           <Box
             flexDirection="row"
             sx={{
-              display: 'flex',
-              justifyContent: 'space-between',
-              alignItems: 'center',
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
             }}
           >
             <Typography variant="h5">Filters</Typography>
             <Box
               flexDirection="row"
               sx={{
-                display: 'flex',
-                justifyContent: 'space-between',
-                alignItems: 'center',
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
               }}
             >
               <IconButton
                 onClick={toggleSortOrder}
-                sx={{ color: 'primary.main' }}
+                sx={{ color: "primary.main" }}
               >
                 <Sort
                   sx={{
-                    transform: isAscending ? 'rotate(0deg)' : 'rotate(180deg)',
+                    transform: isAscending ? "rotate(0deg)" : "rotate(180deg)",
                   }}
                 />
               </IconButton>
               <IconButton
                 onClick={toggleAccordion}
-                sx={{ color: 'primary.main' }}
+                sx={{ color: "primary.main" }}
               >
                 <FilterList />
               </IconButton>
@@ -107,7 +107,7 @@ export const FilterPanel = ({
                 data-testid={`filter-panel-reset-button`}
                 variant="contained"
                 color="secondary"
-                sx={{ m: 2, float: 'right' }}
+                sx={{ m: 2, float: "right" }}
                 onClick={() => {
                   resetFilters();
                   setExpanded(false);

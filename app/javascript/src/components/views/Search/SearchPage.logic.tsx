@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
-import { useFiltersContext } from '@javascript/providers/FiltersProvider';
-import dayjs from 'dayjs';
+import React, { useState } from "react";
+import { useFiltersContext } from "@javascript/providers/FiltersProvider";
+import dayjs from "dayjs";
 
 const POSTS_PER_PAGE = 10;
 
@@ -27,14 +27,14 @@ export const useSearchPageLogic = () => {
 
   const paginatedJobPosts = filteredJobPosts.slice(
     (currentPage - 1) * POSTS_PER_PAGE,
-    currentPage * POSTS_PER_PAGE
+    currentPage * POSTS_PER_PAGE,
   );
 
   /* --------------------- Handles --------------------- */
 
   const handlePageChange = (
     event: React.ChangeEvent<unknown>,
-    page: number
+    page: number,
   ) => {
     setCurrentPage(page);
   };
