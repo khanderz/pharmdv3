@@ -3,6 +3,19 @@
     "browser": true,
     "es2021": true
   },
+  "settings": {
+    "import/resolver": {
+      "node": {
+        "extensions": [".js", ".jsx", ".ts", ".tsx"]
+      },
+      "typescript": {
+        "project": "./tsconfig.json"
+      },
+      "webpack": {
+        "config": "config/webpack/webpackConfig.js"
+      }
+    }
+  },
   // "extends": [
   //   "eslint:recommended",
   //   "plugin:@typescript-eslint/recommended",
@@ -11,19 +24,20 @@
   //   "prettier"
   // ],
   "extends": [
+    "eslint:recommended",
     "plugin:react/recommended",
-    "prettier/@typescript-eslint",
-    "plugin:import/recommended",
-    "plugin:import/errors",
-    "plugin:import/typescript",
-    "plugin:prettier/recommended"
+    "plugin:prettier/recommended",
+    "prettier"
   ],
   "parser": "@typescript-eslint/parser",
   "parserOptions": {
-    "ecmaVersion": "latest",
+    "ecmaFeatures": {
+      "jsx": true
+    },
+    "ecmaVersion": 12,
     "sourceType": "module"
   },
-  "plugins": ["@typescript-eslint", "react"],
+  "plugins": ["react", "@typescript-eslint", "prettier", "import"],
   // "rules": {
   //   "no-undef": "error",
   //   "@typescript-eslint/no-unused-vars": "off",
@@ -39,7 +53,14 @@
   //   ]
   // }
   "rules": {
+    "prettier/prettier": "error",
+    "no-unused-vars": [
+      "warn",
+      { "vars": "all", "args": "after-used", "ignoreRestSiblings": false }
+    ],
+    "react/prop-types": "off",
     "import/no-unresolved": "error",
+    "import/named": "error",
     "no-undef": "error",
     "@typescript-eslint/explicit-function-return-type": "off",
     "@typescript-eslint/camelcase": "off",
@@ -58,9 +79,6 @@
     "jsx-boolean-value": "off",
     "no-empty-interface": "off",
     "interface-over-type-literal": "off",
-    "@emotion/syntax-preference": [2, "string"],
-    "@emotion/pkg-renaming": "error",
-    "prettier/prettier": "error",
     "no-debugger": ["warn"],
     "react/prefer-stateless-function": ["off"],
     "no-underscore-dangle": ["off"],
@@ -71,23 +89,21 @@
     "camelcase": ["off"],
     "react/no-multi-comp": ["off"],
     "import/prefer-default-export": ["off"],
-    "react/destructuring-assignment": ["off"],
-    "react-hooks/rules-of-hooks": "warn",
-    "react-hooks/exhaustive-deps": "warn",
-    "import/order": [
-      "warn",
-      {
-        "groups": [
-          "builtin",
-          "external",
-          "internal",
-          "parent",
-          "sibling",
-          "index",
-          "object",
-          "type"
-        ]
-      }
-    ]
+    "react/destructuring-assignment": ["off"]
+    // "import/order": [
+    //   "warn",
+    //   {
+    //     "groups": [
+    //       "builtin",
+    //       "external",
+    //       "internal",
+    //       "parent",
+    //       "sibling",
+    //       "index",
+    //       "object",
+    //       "type"
+    //     ]
+    //   }
+    // ]
   }
 }

@@ -52,6 +52,7 @@ class AiUpdater
     job_post_seniorities = []
     job_post_skills = []
     job_post_states = []
+    job_post_data[:job_setting] ||= []
 
     puts "location info is #{location_info}"
 
@@ -79,10 +80,6 @@ class AiUpdater
         job_post_countries << country_id if country_id && !job_post_countries.include?(country_id)
       end
     end
-
-    puts "job post cities is #{job_post_cities}"
-    puts "job post states is #{job_post_states}"
-    puts "job post countries is #{job_post_countries}"
 
     ai_data.each do |field_data|
       field_data.each do |key, value|
@@ -142,8 +139,8 @@ class AiUpdater
             end
 
             settings.each do |setting|
-              unless job_post_data[:job_settings].include?(setting)
-                job_post_data[:job_settings] << setting
+              unless job_post_data[:job_setting].include?(setting)
+                job_post_data[:job_setting] << setting
                 updated = true
               end
             end
@@ -266,8 +263,8 @@ class AiUpdater
           # job_post_benefits.concat(benefits)
 
           settings.each do |setting|
-            unless job_post_data[:job_settings].include?(setting)
-              job_post_data[:job_settings] << setting
+            unless job_post_data[:job_setting].include?(setting)
+              job_post_data[:job_setting] << setting
               updated = true
             end
           end

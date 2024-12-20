@@ -1,21 +1,20 @@
-import React from 'react';
-import { Box, Grid, Pagination, Typography } from '@mui/material';
-import { FilterPanel } from '@components/organisms/FilterPanel/FilterPanel';
-import { JobCard } from '@components/organisms/JobCard/JobCard';
+import React from "react";
+import { Box, Grid, Pagination, Typography } from "@mui/material";
+import { FilterPanel } from "@components/organisms/FilterPanel/FilterPanel";
+import { JobCard } from "@components/organisms/JobCard/JobCard";
 import {
   JobCommitment,
   JobSalaryInterval,
   JobSetting,
   JobSalaryCurrency,
-} from '@customtypes/job_post';
+} from "@customtypes/job_post";
 import {
   LoadingState,
   ErrorState,
   NoMatchState,
-} from '@components/views/index';
-import { Container } from '@components/atoms/Paper';
-import { useSearchPageLogic } from './SearchPage.logic';
-import { useFiltersContext } from '@javascript/providers/FiltersProvider';
+} from "@components/views/index";
+import { Container } from "@components/atoms/Paper";
+import { useSearchPageLogic } from "./SearchPage.logic";
 
 export const SearchPage = () => {
   const {
@@ -37,8 +36,8 @@ export const SearchPage = () => {
     <Container
       dataTestId="search"
       sx={{
-        flexDirection: 'column',
-        justifyContent: 'flex-start',
+        flexDirection: "column",
+        justifyContent: "flex-start",
       }}
     >
       {errors ? (
@@ -73,27 +72,27 @@ export const SearchPage = () => {
               ) : (
                 <>
                   <Grid container spacing={3} data-testid="job-cards-container">
-                    {paginatedJobPosts.map((jobPost) => {
+                    {paginatedJobPosts.map(jobPost => {
                       const jobCommitmentType = jobCommitments.find(
-                        (commitment) =>
-                          commitment.id === jobPost.job_commitment_id
+                        commitment =>
+                          commitment.id === jobPost.job_commitment_id,
                       );
 
                       const companySpecialties =
                         jobPost.company.company_specialties.map(
-                          (specialty) => specialty.value
+                          specialty => specialty.value,
                         );
 
                       const jobSetting = jobSettings.find(
-                        (setting) => setting.id === jobPost.job_setting_id
+                        setting => setting.id === jobPost.job_setting_id,
                       );
 
                       const domains = jobPost.company.company_domains.map(
-                        (domain) => domain.healthcare_domain['value']
+                        domain => domain.healthcare_domain["value"],
                       );
 
                       const locations = Array.isArray(jobPost.job_locations)
-                        ? jobPost.job_locations.map((location) => location)
+                        ? jobPost.job_locations.map(location => location)
                         : [jobPost.job_locations];
 
                       return (
@@ -106,10 +105,10 @@ export const SearchPage = () => {
                             job_posted={jobPost.job_posted}
                             job_location={locations}
                             job_setting={
-                              jobSetting?.setting_name as JobSetting['setting_name']
+                              jobSetting?.setting_name as JobSetting["setting_name"]
                             }
                             job_commitment={
-                              jobCommitmentType?.commitment_name as JobCommitment['commitment_name']
+                              jobCommitmentType?.commitment_name as JobCommitment["commitment_name"]
                             }
                             healthcare_domains={domains}
                           />
@@ -119,7 +118,7 @@ export const SearchPage = () => {
                   </Grid>
 
                   <Box
-                    sx={{ my: 4, display: 'flex', justifyContent: 'center' }}
+                    sx={{ my: 4, display: "flex", justifyContent: "center" }}
                     data-testid="pagination-box"
                   >
                     <Pagination
