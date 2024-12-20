@@ -28,4 +28,12 @@ class City < ApplicationRecord
 
     city
   end
+
+  def self.find_city_only(city_param)
+    where('LOWER(city_name) = ?', city_param.downcase)
+      .or(
+        where('EXISTS (SELECT 1 FROM UNNEST(aliases) AS alias WHERE LOWER(alias) = ?)',
+              city_param.downcase)
+      ).first
+  end
 end

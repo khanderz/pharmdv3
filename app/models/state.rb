@@ -28,4 +28,12 @@ class State < ApplicationRecord
 
     state
   end
+
+  def self.find_state_only(state_param)
+    param = state_param.downcase
+
+    where('LOWER(state_name) = ?', param)
+      .or(where('LOWER(state_code) = ?', param))
+      .first
+  end
 end

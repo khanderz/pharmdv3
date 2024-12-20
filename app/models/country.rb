@@ -39,4 +39,13 @@ class Country < ApplicationRecord
     end
     country
   end
+
+  def self.find_country_only(country_code, country_name)
+    country = where('LOWER(country_code) = ?', country_code.downcase)
+              .or(where('LOWER(country_name) = ?', country_name.downcase))
+              .or(
+                where('EXISTS (SELECT 1 FROM UNNEST(aliases) AS alias WHERE LOWER(alias) = ?)',
+                      country_name.downcase)
+              ).first
+  end
 end

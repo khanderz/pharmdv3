@@ -33,8 +33,13 @@ class LocationMapper
   def match_location(input, job, company, country_input = nil)
     inputs = Array(input).map(&:strip)
 
+    puts  "inputs: #{inputs}"
+
     contains_remote = inputs.any? { |location| location.casecmp?('Remote') }
-    contains_city = inputs.any? { |location| parse_input(location)[0].present? }
+    contains_city = inputs.any? do |location|
+      parsed = parse_input(location)
+      parsed[0].present?
+    end
     contains_state_or_country = inputs.any? do |location|
       parsed = parse_input(location)
       parsed[1].present? || parsed[2].present?
@@ -113,8 +118,10 @@ class LocationMapper
   end
 
   def parse_input(input)
+    return [nil, nil, nil] if input.nil? || input.strip.empty?
+  
     parts = input.split(',').map(&:strip)
-
+  
     case parts.length
     when 3
       city_name = parts[0]
@@ -125,8 +132,14 @@ class LocationMapper
       city_name = parts[0]
       state_name = parts[1]
       [city_name, state_name, nil]
+    when 1
+      city_name = parts[0]
+      [city_name, nil, nil]
+    else
+      [nil, nil, nil]
     end
   end
+  
 
   def log_location_error(location, job_post, company)
     error_message = "Location '#{location}' not found for #{company.company_name} for job #{job_post.job_title}"
