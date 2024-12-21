@@ -29,7 +29,7 @@ class JobPostServiceWithValidation
     processed_description = extract_descriptions(summary)
     data_return << { 'description' => processed_description } if processed_description
 
-    # puts "data return / processed_description: #{data_return}"
+    puts "data return / processed_description: #{data_return}"
 
     if summary
       description_object = data_return.find { |item| item.key?('description') }
@@ -38,12 +38,12 @@ class JobPostServiceWithValidation
       end
     end
 
-    # puts "data return  / summary: #{data_return}"
+    puts "data return  / summary: #{data_return}"
 
     processed_responsibilities = extract_responsibilities(responsibilities)
     data_return << { 'responsibilities' => processed_responsibilities || responsibilities }
 
-    # puts "data return / responsibilities : #{data_return}"
+    puts "data return / responsibilities : #{data_return}"
 
     processed_qualifications = extract_qualifications(qualifications)
     data_return << { 'qualifications' => processed_qualifications } if processed_qualifications
@@ -375,7 +375,6 @@ class JobPostServiceWithValidation
 
   def self.validate_and_update_training_data(input_text, extracted_entities, entity_type)
     puts "#{BLUE}Validating #{entity_type} entities...#{RESET}"
-    # puts "Extracted entities: #{extracted_entities}"
 
     training_data_path = "app/python/ai_processing/#{entity_type}/data/train_data_spacy.json"
     training_data = []
@@ -394,133 +393,264 @@ class JobPostServiceWithValidation
     max_attempts = 3
     corrections_exist = false
 
-    loop do
-      corrected_entities = []
-      corrections_exist = false
+    tokens_is_array = extracted_entities.any? do |_, tokens|
+      tokens.is_a?(Array) && tokens.size > 1
+    end
 
-      extracted_entities.each_with_index do |(label, tokens), _index|
-        label = label.to_s
-        token = tokens[0]
+    puts "tokens_is_array: #{tokens_is_array}"
 
-        puts "Is token #{TOKEN_COLOR}'#{token}'#{RESET} for label #{LABEL_COLOR}'#{label}'#{RESET} correct? (yes/no)"
-        token_confirmation = gets.strip.downcase
-        if token_confirmation != 'yes' && token_confirmation != 'y'
-          puts 'Enter the correct token:'
-          token = gets.strip
-          corrections_exist = true
+    if tokens_is_array
+      puts ' --------- 1 tokens are array'
+      puts " extracted_entities: #{extracted_entities}"
+      puts "extracted_entities length: #{extracted_entities.length}"
+
+      loop do
+        corrected_entities = []
+        corrections_exist = false
+
+        extracted_entities.each_with_index do |(label, tokens), _index|
+          puts "tokens : #{tokens}"
+          puts "tokens.length: #{tokens.length}"
+
+          Array(tokens).each do |token|
+            puts "token : #{token}"
+            label = label.to_s
+
+            puts "Is token #{TOKEN_COLOR}'#{token}'#{RESET} for label #{LABEL_COLOR}'#{label}'#{RESET} correct? (yes/no)"
+            token_confirmation = gets.strip.downcase
+            if token_confirmation != 'yes' && token_confirmation != 'y'
+              puts 'Enter the correct token:'
+              token = gets.strip
+              corrections_exist = true
+            end
+
+            puts "Is the label #{LABEL_COLOR}'#{label}'#{RESET} for token #{TOKEN_COLOR}'#{token}'#{RESET} correct? (yes/no)"
+            label_confirmation = gets.strip.downcase
+            if label_confirmation != 'yes' && label_confirmation != 'y'
+              puts "Select the correct label for this token #{TOKEN_COLOR}'#{token}'#{RESET}:"
+              label_list.each_with_index do |lbl, idx|
+                puts "#{idx}: #{lbl}"
+              end
+              label_index = gets.strip.to_i
+              label = label_list[label_index] if label_index >= 0 && label_index < label_list.size
+              corrections_exist = true
+            end
+
+            if corrections_exist
+              puts "Enter start index for #{TOKEN_COLOR}'#{token}'#{RESET}:"
+              start_value = gets.strip.to_i
+
+              puts "Enter end index for #{TOKEN_COLOR}'#{token}'#{RESET}:"
+              end_value = gets.strip.to_i
+            end
+
+            corrected_entities << {
+              'start' => start_value,
+              'end' => end_value,
+              'label' => label,
+              'token' => token
+            }
+          end
         end
 
-        puts "Is the label #{LABEL_COLOR}'#{label}'#{RESET} for token #{TOKEN_COLOR}'#{token}'#{RESET} correct? (yes/no)"
-        label_confirmation = gets.strip.downcase
-        if label_confirmation != 'yes' && label_confirmation != 'y'
+        loop do
+          puts 'Are there any missing entities? (yes/no)'
+          missing_entities_confirmation = gets.strip.downcase
+
+          break if missing_entities_confirmation != 'yes' && missing_entities_confirmation != 'y'
+
+          puts 'Enter the token for the missing entity:'
+          token = gets.strip
+
           puts "Select the correct label for this token #{TOKEN_COLOR}'#{token}'#{RESET}:"
           label_list.each_with_index do |lbl, idx|
             puts "#{idx}: #{lbl}"
           end
           label_index = gets.strip.to_i
           label = label_list[label_index] if label_index >= 0 && label_index < label_list.size
-          corrections_exist = true
-        end
 
-        if corrections_exist
           puts "Enter start index for #{TOKEN_COLOR}'#{token}'#{RESET}:"
           start_value = gets.strip.to_i
 
           puts "Enter end index for #{TOKEN_COLOR}'#{token}'#{RESET}:"
           end_value = gets.strip.to_i
+
+          corrected_entities << {
+            'start' => start_value,
+            'end' => end_value,
+            'label' => label,
+            'token' => token
+          }
+
+          corrections_exist = true
         end
 
-        corrected_entities << {
-          'start' => start_value,
-          'end' => end_value,
-          'label' => label,
-          'token' => token
+        new_training_data = {
+          'text' => text,
+          'entities' => corrected_entities
         }
+
+        if corrections_exist == false
+          puts "#{ORANGE}No entities to validate. Skipping validation and proceeding to next step.#{RESET}"
+          return corrected_entities
+        end
+
+        puts "#{BLUE}Validating entities...#{RESET}"
+        validation_result = call_inspect_predictions(
+          attribute_type: entity_type,
+          input_text: input_text,
+          validate: [new_training_data]
+        )
+
+        if validation_result && validation_result['status'] == 'success'
+          puts "validation result on rb : #{validation_result}"
+          message = validation_result['message'].to_s.strip
+          puts "#{GREEN}Validation completed successfully: #{message}#{RESET}"
+
+          if message.include?('Validation passed for all entities.')
+            training_data << new_training_data
+            File.write(training_data_path, JSON.pretty_generate(training_data))
+            puts "#{GREEN}Training data validated and saved successfully at #{training_data_path}.#{RESET}"
+            return corrected_entities
+          else
+            puts "#{RED}Validation completed with warnings: #{message}#{RESET}"
+          end
+        else
+          puts "#{RED}Validation failed: #{validation_result&.dig('message') || 'Unknown error'}#{RESET}"
+        end
+
+        validation_attempts += 1
+        break if validation_attempts >= max_attempts
+
+        puts 'Would you like to redo the corrections? (yes/no)'
+        redo_correction = gets.strip.downcase
+        break unless %w[yes y].include?(redo_correction)
       end
+    else
+      puts ' --------- 2 tokens are not array'
+      puts " extracted_entities: #{extracted_entities}"
+      puts "extracted_entities length: #{extracted_entities.length}"
 
       loop do
-        puts 'Are there any missing entities? (yes/no)'
-        missing_entities_confirmation = gets.strip.downcase
+        corrected_entities = []
+        corrections_exist = false
 
-        break if missing_entities_confirmation != 'yes' && missing_entities_confirmation != 'y'
+        extracted_entities.each_with_index do |(label, tokens), _index|
+          label = label.to_s
+          token = tokens[0]
 
-        puts 'Enter the token for the missing entity:'
-        token = gets.strip
+          puts "Is token #{TOKEN_COLOR}'#{token}'#{RESET} for label #{LABEL_COLOR}'#{label}'#{RESET} correct? (yes/no)"
+          token_confirmation = gets.strip.downcase
+          if token_confirmation != 'yes' && token_confirmation != 'y'
+            puts 'Enter the correct token:'
+            token = gets.strip
+            corrections_exist = true
+          end
 
-        puts "Select the correct label for this token #{TOKEN_COLOR}'#{token}'#{RESET}:"
-        label_list.each_with_index do |lbl, idx|
-          puts "#{idx}: #{lbl}"
+          puts "Is the label #{LABEL_COLOR}'#{label}'#{RESET} for token #{TOKEN_COLOR}'#{token}'#{RESET} correct? (yes/no)"
+          label_confirmation = gets.strip.downcase
+          if label_confirmation != 'yes' && label_confirmation != 'y'
+            puts "Select the correct label for this token #{TOKEN_COLOR}'#{token}'#{RESET}:"
+            label_list.each_with_index do |lbl, idx|
+              puts "#{idx}: #{lbl}"
+            end
+            label_index = gets.strip.to_i
+            label = label_list[label_index] if label_index >= 0 && label_index < label_list.size
+            corrections_exist = true
+          end
+
+          if corrections_exist
+            puts "Enter start index for #{TOKEN_COLOR}'#{token}'#{RESET}:"
+            start_value = gets.strip.to_i
+
+            puts "Enter end index for #{TOKEN_COLOR}'#{token}'#{RESET}:"
+            end_value = gets.strip.to_i
+          end
+
+          corrected_entities << {
+            'start' => start_value,
+            'end' => end_value,
+            'label' => label,
+            'token' => token
+          }
         end
-        label_index = gets.strip.to_i
-        label = label_list[label_index] if label_index >= 0 && label_index < label_list.size
 
-        puts "Enter start index for #{TOKEN_COLOR}'#{token}'#{RESET}:"
-        start_value = gets.strip.to_i
+        loop do
+          puts 'Are there any missing entities? (yes/no)'
+          missing_entities_confirmation = gets.strip.downcase
 
-        puts "Enter end index for #{TOKEN_COLOR}'#{token}'#{RESET}:"
-        end_value = gets.strip.to_i
+          break if missing_entities_confirmation != 'yes' && missing_entities_confirmation != 'y'
 
-        corrected_entities << {
-          'start' => start_value,
-          'end' => end_value,
-          'label' => label,
-          'token' => token
+          puts 'Enter the token for the missing entity:'
+          token = gets.strip
+
+          puts "Select the correct label for this token #{TOKEN_COLOR}'#{token}'#{RESET}:"
+          label_list.each_with_index do |lbl, idx|
+            puts "#{idx}: #{lbl}"
+          end
+          label_index = gets.strip.to_i
+          label = label_list[label_index] if label_index >= 0 && label_index < label_list.size
+
+          puts "Enter start index for #{TOKEN_COLOR}'#{token}'#{RESET}:"
+          start_value = gets.strip.to_i
+
+          puts "Enter end index for #{TOKEN_COLOR}'#{token}'#{RESET}:"
+          end_value = gets.strip.to_i
+
+          corrected_entities << {
+            'start' => start_value,
+            'end' => end_value,
+            'label' => label,
+            'token' => token
+          }
+
+          corrections_exist = true
+        end
+
+        new_training_data = {
+          'text' => text,
+          'entities' => corrected_entities
         }
 
-        corrections_exist = true
-      end
-
-      new_training_data = {
-        'text' => text,
-        'entities' => corrected_entities
-      }
-      # puts "new_training_data: #{new_training_data}"
-
-      if corrections_exist == false
-        puts "#{ORANGE}No entities to validate. Skipping validation and proceeding to next step.#{RESET}"
-        return corrected_entities
-      end
-
-      puts "#{BLUE}Validating entities...#{RESET}"
-      validation_result = call_inspect_predictions(
-        attribute_type: entity_type,
-        input_text: input_text,
-        validate: [new_training_data]
-      )
-
-      if validation_result && validation_result['status'] == 'success'
-        puts "validation result on rb : #{validation_result}"
-        message = validation_result['message'].to_s.strip
-        puts "#{GREEN}Validation completed successfully: #{message}#{RESET}"
-
-        if message.include?('Validation passed for all entities.')
-          training_data << new_training_data
-          File.write(training_data_path, JSON.pretty_generate(training_data))
-          puts "#{GREEN}Training data validated and saved successfully at #{training_data_path}.#{RESET}"
-
-          # puts "#{BLUE} Now training model with new validated entities #{RESET}"
-          # call_inspect_predictions(attribute_type: entity_type, input_text: input_text, train: true)
-          # puts "corrected entities after training: #{corrected_entities}"
+        if corrections_exist == false
+          puts "#{ORANGE}No entities to validate. Skipping validation and proceeding to next step.#{RESET}"
           return corrected_entities
-          # break
-        else
-          puts "#{RED}Validation completed with warnings: #{message}#{RESET}"
         end
-      else
-        puts "#{RED}Validation failed: #{validation_result&.dig('message') || 'Unknown error'}#{RESET}"
+
+        puts "#{BLUE}Validating entities...#{RESET}"
+        validation_result = call_inspect_predictions(
+          attribute_type: entity_type,
+          input_text: input_text,
+          validate: [new_training_data]
+        )
+
+        if validation_result && validation_result['status'] == 'success'
+          puts "validation result on rb : #{validation_result}"
+          message = validation_result['message'].to_s.strip
+          puts "#{GREEN}Validation completed successfully: #{message}#{RESET}"
+
+          if message.include?('Validation passed for all entities.')
+            training_data << new_training_data
+            File.write(training_data_path, JSON.pretty_generate(training_data))
+            puts "#{GREEN}Training data validated and saved successfully at #{training_data_path}.#{RESET}"
+            return corrected_entities
+          else
+            puts "#{RED}Validation completed with warnings: #{message}#{RESET}"
+          end
+        else
+          puts "#{RED}Validation failed: #{validation_result&.dig('message') || 'Unknown error'}#{RESET}"
+        end
+
+        validation_attempts += 1
+        break if validation_attempts >= max_attempts
+
+        puts 'Would you like to redo the corrections? (yes/no)'
+        redo_correction = gets.strip.downcase
+        break unless %w[yes y].include?(redo_correction)
       end
-
-      validation_attempts += 1
-      break if validation_attempts >= max_attempts
-
-      puts 'Would you like to redo the corrections? (yes/no)'
-      redo_correction = gets.strip.downcase
-      break unless %w[yes y].include?(redo_correction)
     end
 
     puts "#{RED}Validation failed after #{max_attempts} attempts. Exiting...#{RESET}"
-
-    # puts "corrected entities after training 2: #{corrected_entities}"
     corrected_entities
   end
 
