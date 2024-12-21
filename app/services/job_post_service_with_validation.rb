@@ -372,33 +372,33 @@ class JobPostServiceWithValidation
 
   def self.validate_and_update_training_data(input_text, extracted_entities, entity_type)
     puts "#{BLUE}Validating #{entity_type} entities...#{RESET}"
-  
+
     training_data_path = "app/python/ai_processing/#{entity_type}/data/train_data_spacy.json"
     training_data = File.exist?(training_data_path) ? JSON.parse(File.read(training_data_path)) : []
-  
+
     text = clean_text(input_text)
     print_indices(entity_type, text)
-  
+
     label_list = get_labels_from_python(entity_type)
     if label_list.empty?
       puts "#{RED}Failed to get label for entity type: #{entity_type}#{RESET}"
       return []
     end
-  
+
     validation_attempts = 0
     max_attempts = 3
     corrected_entities = []
-  
+
     loop do
       corrections_exist = false
-  
+
       puts "Extracted entities count: #{extracted_entities.length}"
       puts "Extracted entities: #{extracted_entities}"
-  
+
       extracted_entities.each do |label, tokens|
         puts "tokens length #{tokens.length}"
         label = label.to_s
-  
+
         if tokens.is_a?(Array) && tokens.length > 1
           tokens.each do |token|
             corrections_exist = process_token(label, token, label_list, corrected_entities)
@@ -408,35 +408,34 @@ class JobPostServiceWithValidation
           corrections_exist = process_token(label, token, label_list, corrected_entities)
         end
       end
-  
+
       puts 'Are there any missing entities? (yes/no)'
       while %w[yes y].include?(gets.strip.downcase)
         corrections_exist = process_missing_entity(label_list, corrected_entities)
       end
-  
+
       break unless corrections_exist
-  
-      validation_result = validate_and_save_entities(entity_type, text, corrected_entities, training_data, training_data_path)
-      if validation_result
-        return corrected_entities
-      end
-  
+
+      validation_result = validate_and_save_entities(entity_type, text, corrected_entities,
+                                                     training_data, training_data_path)
+      return corrected_entities if validation_result
+
       validation_attempts += 1
       if validation_attempts >= max_attempts
         puts "#{RED}Validation failed after #{max_attempts} attempts. Exiting...#{RESET}"
         break
       end
-  
+
       puts 'Would you like to redo the corrections? (yes/no)'
       break unless %w[yes y].include?(gets.strip.downcase)
     end
-  
+
     corrected_entities
   end
-  
+
   def self.process_token(label, token, label_list, corrected_entities)
     corrections_exist = false
-  
+
     puts "Is token #{TOKEN_COLOR}'#{token}'#{RESET} for label #{LABEL_COLOR}'#{label}'#{RESET} correct? (yes/no)"
     token_confirmation = gets.strip.downcase
     if %w[no n].include?(token_confirmation)
@@ -444,7 +443,7 @@ class JobPostServiceWithValidation
       token = gets.strip
       corrections_exist = true
     end
-  
+
     puts "Is the label #{LABEL_COLOR}'#{label}'#{RESET} for token #{TOKEN_COLOR}'#{token}'#{RESET} correct? (yes/no)"
     label_confirmation = gets.strip.downcase
     if %w[no n].include?(label_confirmation)
@@ -454,14 +453,14 @@ class JobPostServiceWithValidation
       label = label_list[label_index] if label_index.between?(0, label_list.size - 1)
       corrections_exist = true
     end
-  
+
     if corrections_exist
       puts "Enter start index for #{TOKEN_COLOR}'#{token}'#{RESET}:"
       start_value = gets.strip.to_i
-  
+
       puts "Enter end index for #{TOKEN_COLOR}'#{token}'#{RESET}:"
       end_value = gets.strip.to_i
-  
+
       corrected_entities << {
         'start' => start_value,
         'end' => end_value,
@@ -469,48 +468,48 @@ class JobPostServiceWithValidation
         'token' => token
       }
     end
-  
+
     corrections_exist
   end
-  
+
   def self.process_missing_entity(label_list, corrected_entities)
     puts 'Enter the token for the missing entity:'
     token = gets.strip
-  
+
     puts "Select the correct label for this token #{TOKEN_COLOR}'#{token}'#{RESET}:"
     label_list.each_with_index { |lbl, idx| puts "#{idx}: #{lbl}" }
     label_index = gets.strip.to_i
     label = label_list[label_index] if label_index.between?(0, label_list.size - 1)
-  
+
     puts "Enter start index for #{TOKEN_COLOR}'#{token}'#{RESET}:"
     start_value = gets.strip.to_i
-  
+
     puts "Enter end index for #{TOKEN_COLOR}'#{token}'#{RESET}:"
     end_value = gets.strip.to_i
-  
+
     corrected_entities << {
       'start' => start_value,
       'end' => end_value,
       'label' => label,
       'token' => token
     }
-  
+
     true
   end
-  
+
   def self.validate_and_save_entities(entity_type, text, corrected_entities, training_data, training_data_path)
     new_training_data = { 'text' => text, 'entities' => corrected_entities }
-  
+
     validation_result = call_inspect_predictions(
       attribute_type: entity_type,
       input_text: text,
       validate: [new_training_data]
     )
-  
+
     if validation_result && validation_result['status'] == 'success'
       message = validation_result['message'].to_s.strip
       puts "#{GREEN}Validation completed successfully: #{message}#{RESET}"
-  
+
       if message.include?('Validation passed for all entities.')
         training_data << new_training_data
         File.write(training_data_path, JSON.pretty_generate(training_data))
@@ -522,10 +521,10 @@ class JobPostServiceWithValidation
     else
       puts "#{RED}Validation failed: #{validation_result&.dig('message') || 'Unknown error'}#{RESET}"
     end
-  
+
     false
   end
-  
+
   def self.call_inspect_predictions(attribute_type:, input_text:, validate: nil, predict: false, train: false, data: nil)
     puts "#{BLUE}Calling inspect predictions for #{attribute_type}...#{RESET}"
 
