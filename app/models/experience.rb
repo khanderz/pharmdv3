@@ -5,8 +5,9 @@ class Experience < ApplicationRecord
     min_years, max_years = extract_years(experience_param)
 
     experience = if min_years
-      where('min_years <= ? AND (max_years >= ? OR max_years IS NULL)', min_years, max_years || min_years).first
-    end
+                   where('min_years <= ? AND (max_years >= ? OR max_years IS NULL)', min_years,
+                         max_years || min_years).first
+                 end
 
     if experience
       puts "#{GREEN}Matched experience '#{experience.experience_name}' for '#{experience_param}'.#{RESET}"
@@ -16,28 +17,31 @@ class Experience < ApplicationRecord
                    .or(where('LOWER(experience_code) = ?', experience_param.downcase))
                    .first
 
-                   if experience
-                    puts "#{GREEN}Experience '#{experience_param}' found in existing records.#{RESET}"
-                    experience.update!(min_years: min_years, max_years: max_years) if min_years || max_years
-                  else
-                    # Create a new experience if no match found
-                    error_details = "Experience '#{experience_param}' for '#{job_post}' not found in existing records"
-                    experience = create!(
-                      experience_name: experience_param,
-                      min_years: min_years,
-                      max_years: max_years,
-                      error_details: error_details,
-                      resolved: false
-                    )
-                    Adjudication.log_error(
-                      adjudicatable_type: 'Experience',
-                      adjudicatable_id: experience.id,
-                      error_details: error_details
-                    )
-                  end
-                end
-              
-                experience
+      if experience
+        puts "#{GREEN}Experience '#{experience_param}' found in existing records.#{RESET}"
+        if min_years || max_years
+          experience.update!(min_years: min_years,
+                             max_years: max_years)
+        end
+      else
+        # Create a new experience if no match found
+        error_details = "Experience '#{experience_param}' for '#{job_post}' not found in existing records"
+        experience = create!(
+          experience_name: experience_param,
+          min_years: min_years,
+          max_years: max_years,
+          error_details: error_details,
+          resolved: false
+        )
+        Adjudication.log_error(
+          adjudicatable_type: 'Experience',
+          adjudicatable_id: experience.id,
+          error_details: error_details
+        )
+      end
+    end
+
+    experience
   end
 
   def self.extract_years(input)
