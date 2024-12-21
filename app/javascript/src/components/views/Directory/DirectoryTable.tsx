@@ -1,11 +1,11 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from "react";
 import {
   DataGridPro,
   GridRowParams,
   MuiEvent,
   useGridApiRef,
   DataGridProProps,
-} from '@mui/x-data-grid-pro';
+} from "@mui/x-data-grid-pro";
 
 import {
   Box,
@@ -18,12 +18,12 @@ import {
   Typography,
   CircularProgress,
   Grid,
-} from '@mui/material';
-import { TableProps } from './DirectoryTable.types';
-import { getTableData } from '../../../hooks/get_table_data';
-import { dataHeaders } from '../../../hooks/get_table_headers';
-import { Company } from '@customtypes/company';
-import axios from 'axios';
+} from "@mui/material";
+import { TableProps } from "./DirectoryTable.types";
+import { getTableData } from "../../../hooks/get_table_data";
+import { dataHeaders } from "../../../hooks/get_table_headers";
+import { Company } from "@customtypes/company";
+import axios from "axios";
 
 // import {
 //   Jobs,
@@ -57,19 +57,19 @@ export const DirectoryTable = ({
 
   const handleUpdateRow = (
     params: GridRowParams,
-    event: MuiEvent<React.MouseEvent>
+    event: MuiEvent<React.MouseEvent>,
   ) => {
     setOpen(!open);
   };
 
-  const companyToPass = (companyId: Company['id']) => {
-    const company = data.find((company) => company.id === companyId);
+  const companyToPass = (companyId: Company["id"]) => {
+    const company = data.find(company => company.id === companyId);
     console.log({ company });
     return company;
   };
 
   const getDetailPanelContent = React.useCallback<
-    NonNullable<DataGridProProps['getDetailPanelContent']>
+    NonNullable<DataGridProProps["getDetailPanelContent"]>
   >(({ id, row, columns }) => <CompanyDetailsPanel companyId={id} />, []);
 
   const getDetailPanelHeight = React.useCallback(() => 400, []);
@@ -83,7 +83,7 @@ export const DirectoryTable = ({
         getRowId={(row: Company) => row.id}
         onRowClick={(
           params: GridRowParams<any>,
-          event: MuiEvent<React.MouseEvent<Element, MouseEvent>>
+          event: MuiEvent<React.MouseEvent<Element, MouseEvent>>,
         ) => handleUpdateRow(params, event)}
         getDetailPanelContent={getDetailPanelContent}
         getDetailPanelHeight={getDetailPanelHeight}
@@ -120,11 +120,11 @@ export const CompanyDetailsPanel = (companyId: GridRowId) => {
   const fetchCompanyDetails = async (id: number) => {
     try {
       setLoading(true);
-      const response = await axios.get(`/companies/${companyId['companyId']}`);
+      const response = await axios.get(`/companies/${companyId["companyId"]}`);
       setCompanyData(response.data);
       setError(null);
     } catch (err) {
-      setError('Failed to fetch company details.');
+      setError("Failed to fetch company details.");
     } finally {
       setLoading(false);
     }
@@ -140,9 +140,9 @@ export const CompanyDetailsPanel = (companyId: GridRowId) => {
     return (
       <Box
         sx={{
-          display: 'flex',
-          justifyContent: 'center',
-          alignItems: 'center',
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
           height: 200,
         }}
       >
@@ -153,7 +153,7 @@ export const CompanyDetailsPanel = (companyId: GridRowId) => {
 
   if (error) {
     return (
-      <Box sx={{ textAlign: 'center', color: 'red', padding: 2 }}>
+      <Box sx={{ textAlign: "center", color: "red", padding: 2 }}>
         <Typography variant="h6">{error}</Typography>
       </Box>
     );
@@ -161,7 +161,7 @@ export const CompanyDetailsPanel = (companyId: GridRowId) => {
 
   if (!companyData) {
     return (
-      <Box sx={{ textAlign: 'center', padding: 2 }}>
+      <Box sx={{ textAlign: "center", padding: 2 }}>
         <Typography variant="h6">No company data available.</Typography>
       </Box>
     );
@@ -209,21 +209,21 @@ export const CompanyDetailsPanel = (companyId: GridRowId) => {
   // year_founded: 2018
 
   return (
-    <Box sx={{ height: 400, width: '100%' }}>
+    <Box sx={{ height: 400, width: "100%" }}>
       <Grid container>
         <Typography variant="h6">{companyData.company_name}</Typography>
         <Typography variant="body1">
           Description: {companyData.company_description}
         </Typography>
         <Typography variant="body1">
-          Size: {companyData.company_size?.size_range || 'N/A'}
+          Size: {companyData.company_size?.size_range || "N/A"}
         </Typography>
         <Typography variant="body1">
-          Founded: {companyData.year_founded || 'N/A'}
+          Founded: {companyData.year_founded || "N/A"}
         </Typography>
         <Typography variant="body1">
-          Location:{' '}
-          {`${companyData.city?.city_name || ''}, ${companyData.state?.state_name || ''}, ${companyData.country?.country_name || ''}`}
+          Location:{" "}
+          {`${companyData.city?.city_name || ""}, ${companyData.state?.state_name || ""}, ${companyData.country?.country_name || ""}`}
         </Typography>
 
         <Box sx={{ marginTop: 2 }}>
@@ -232,7 +232,7 @@ export const CompanyDetailsPanel = (companyId: GridRowId) => {
             {companyData.job_posts?.map((job: any) => (
               <li key={job.id}>
                 {job.job_title} - {job.job_description} (
-                {job.job_active ? 'Active' : 'Inactive'})
+                {job.job_active ? "Active" : "Inactive"})
               </li>
             ))}
           </ul>

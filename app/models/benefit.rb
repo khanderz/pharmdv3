@@ -5,7 +5,7 @@ class Benefit < ApplicationRecord
     return nil if benefit_name.nil? || benefit_name.strip.empty?
 
     normalized_benefit_name = benefit_name.strip.downcase
-    
+
     benefit = Benefit.all.find do |b|
       b.benefit_name.downcase.include?(normalized_benefit_name) ||
         b.aliases.any? { |alias_name| alias_name.downcase.include?(normalized_benefit_name) }

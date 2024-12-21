@@ -1,6 +1,6 @@
-import ReactOnRails from 'react-on-rails';
+import ReactOnRails from "react-on-rails";
 
-import Directory from '../bundles/DirectoryBundle';
+import Directory from "../bundles/DirectoryBundle";
 
 ReactOnRails.register({
   Directory,

@@ -1,5 +1,5 @@
-import { useState, useEffect } from 'react';
-import { JobSetting } from '@customtypes/job_post';
+import { useState, useEffect } from "react";
+import { JobSetting } from "@customtypes/job_post";
 
 export const useJobSettings = () => {
   const [jobSettings, setJobSettings] = useState<JobSetting[]>([]);
@@ -12,7 +12,7 @@ export const useJobSettings = () => {
         setLoading(true);
         setError(null);
 
-        const response = await fetch('/job_settings.json');
+        const response = await fetch("/job_settings.json");
         if (!response.ok) {
           throw new Error(`Error fetching job settings: ${response.status}`);
         }
@@ -21,7 +21,7 @@ export const useJobSettings = () => {
         setJobSettings(data);
       } catch (err) {
         setError(
-          err instanceof Error ? err.message : 'An unknown error occurred'
+          err instanceof Error ? err.message : "An unknown error occurred",
         );
       } finally {
         setLoading(false);

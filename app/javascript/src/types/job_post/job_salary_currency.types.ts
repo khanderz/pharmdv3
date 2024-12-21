@@ -1,14 +1,14 @@
-import { useState, useEffect } from 'react';
-import { Adjudicated } from '../adjudication.types';
-import { getCurrencies } from '@javascript/hooks';
+import { useState, useEffect } from "react";
+import { Adjudicated } from "../adjudication.types";
+import { getCurrencies } from "@javascript/hooks";
 
 const [currencies, setCurrencies] = useState<
   {
     key: number;
     label: string;
-    error_details: Adjudicated['error_details'];
-    reference_id: Adjudicated['reference_id'];
-    resolved: Adjudicated['resolved'];
+    error_details: Adjudicated["error_details"];
+    reference_id: Adjudicated["reference_id"];
+    resolved: Adjudicated["resolved"];
   }[]
 >([]);
 
@@ -23,6 +23,6 @@ useEffect(() => {
 export type JobSalaryCurrencies = (typeof currencies)[number];
 
 export interface JobSalaryCurrency extends Adjudicated {
-  key: JobSalaryCurrencies['key'];
-  label: JobSalaryCurrencies['label'];
+  key: JobSalaryCurrencies["key"];
+  label: JobSalaryCurrencies["label"];
 }

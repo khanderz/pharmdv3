@@ -52,7 +52,7 @@ class JobPost < ApplicationRecord
 
   # Class Methods
   class << self
-    def fetch_and_save_jobs(company)
+    def fetch_and_save_jobs(company, use_validation: false)
       jobs = JobFetcher.fetch(company)
       return unless jobs
 
@@ -60,7 +60,7 @@ class JobPost < ApplicationRecord
         process_job(
           company,
           JobDataMapper.url(company, job),
-          JobDataMapper.map(company, job)
+          JobDataMapper.map(company, job, use_validation)
         )
       end.compact
 

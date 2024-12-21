@@ -1,5 +1,5 @@
-import { useState, useEffect } from 'react';
-import { useCompanySizes } from '@javascript/hooks';
+import { useState, useEffect } from "react";
+import { useCompanySizes } from "@javascript/hooks";
 
 const [companySizes, setCompanySizes] = useState<
   {
@@ -20,5 +20,5 @@ export type CompanySizes = (typeof companySizes)[number];
 
 export interface CompanySize {
   id: number;
-  size_range: CompanySizes['size_range'];
+  size_range: CompanySizes["size_range"];
 }

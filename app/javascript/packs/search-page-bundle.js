@@ -1,6 +1,6 @@
-import ReactOnRails from 'react-on-rails';
+import ReactOnRails from "react-on-rails";
 
-import SearchPage from '../bundles/SearchPageBundle';
+import SearchPage from "../bundles/SearchPageBundle";
 
 ReactOnRails.register({
   SearchPage,

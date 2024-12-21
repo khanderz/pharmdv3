@@ -1,4 +1,4 @@
-export interface Adjudication extends Omit<Adjudicated, 'reference_id'> {
+export interface Adjudication extends Omit<Adjudicated, "reference_id"> {
   id: number;
   adjudicatable_type: string;
   adjudicatable_id: number;

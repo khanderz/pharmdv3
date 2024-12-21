@@ -1,5 +1,5 @@
-import { useState, useEffect } from 'react';
-import { Team } from '@customtypes/job_role';
+import { useState, useEffect } from "react";
+import { Team } from "@customtypes/job_role";
 
 export const useTeams = () => {
   const [teams, setTeams] = useState<Team[]>([]);
@@ -12,7 +12,7 @@ export const useTeams = () => {
         setLoading(true);
         setError(null);
 
-        const response = await fetch('/teams.json');
+        const response = await fetch("/teams.json");
         if (!response.ok) {
           throw new Error(`Error fetching teams: ${response.status}`);
         }
@@ -21,7 +21,7 @@ export const useTeams = () => {
         setTeams(data);
       } catch (err) {
         setError(
-          err instanceof Error ? err.message : 'An unknown error occurred'
+          err instanceof Error ? err.message : "An unknown error occurred",
         );
       } finally {
         setLoading(false);

@@ -1,29 +1,29 @@
-import React from 'react';
-import { Autocomplete } from '@components/atoms/index';
-import { useFiltersContext } from '@javascript/providers/FiltersProvider';
-import { AutocompleteOption } from '@components/atoms/Autocomplete';
+import React from "react";
+import { Autocomplete } from "@components/atoms/index";
+import { useFiltersContext } from "@javascript/providers/FiltersProvider";
+import { AutocompleteOption } from "@components/atoms/Autocomplete";
 
 export const SpecialtyFilter = () => {
   const { selectedSpecialties, setSelectedSpecialties, uniqueSpecialties } =
     useFiltersContext();
 
-  const options = uniqueSpecialties.map((specialty) => ({
+  const options = uniqueSpecialties.map(specialty => ({
     key: specialty.key,
     value: specialty.value,
   }));
 
-  const selectedOptions = selectedSpecialties.map((selected) => {
+  const selectedOptions = selectedSpecialties.map(selected => {
     const specialty = uniqueSpecialties.find(
-      (specialty) => specialty.key === selected.key
+      specialty => specialty.key === selected.key,
     );
     return {
-      key: specialty?.key ?? '',
-      value: specialty?.value ?? '',
+      key: specialty?.key ?? "",
+      value: specialty?.value ?? "",
     };
   });
   return (
     <Autocomplete
-      id={'specialty-autocomplete'}
+      id={"specialty-autocomplete"}
       multiple
       inputLabel="Specialties"
       options={options}
@@ -31,8 +31,8 @@ export const SpecialtyFilter = () => {
       onChange={(e, value) => {
         const selectedValues = (value as AutocompleteOption[]).filter(Boolean);
 
-        const selected = uniqueSpecialties.filter((specialty) =>
-          selectedValues.some((el) => el.value === specialty.value)
+        const selected = uniqueSpecialties.filter(specialty =>
+          selectedValues.some(el => el.value === specialty.value),
         );
 
         setSelectedSpecialties(selected);

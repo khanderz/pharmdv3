@@ -1,14 +1,14 @@
-import { useState, useEffect } from 'react';
-import { Adjudicated } from '../adjudication.types';
-import { useDepartments } from '@javascript/hooks';
+import { useState, useEffect } from "react";
+import { Adjudicated } from "../adjudication.types";
+import { useDepartments } from "@javascript/hooks";
 
 const [departments, setDepartments] = useState<
   {
     id: number;
     dept_name: string;
-    error_details: Adjudicated['error_details'];
-    reference_id: Adjudicated['reference_id'];
-    resolved: Adjudicated['resolved'];
+    error_details: Adjudicated["error_details"];
+    reference_id: Adjudicated["reference_id"];
+    resolved: Adjudicated["resolved"];
   }[]
 >([]);
 
@@ -24,5 +24,5 @@ export type Departments = (typeof departments)[number];
 
 export interface Department extends Adjudicated {
   id: number;
-  dept_name: Departments['dept_name'];
+  dept_name: Departments["dept_name"];
 }

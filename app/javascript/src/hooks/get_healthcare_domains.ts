@@ -1,5 +1,5 @@
-import { useState, useEffect } from 'react';
-import { HealthcareDomain } from '@customtypes/company';
+import { useState, useEffect } from "react";
+import { HealthcareDomain } from "@customtypes/company";
 
 export const useHealthcareDomains = () => {
   const [allDomains, setAllDomains] = useState<HealthcareDomain[]>([]);
@@ -12,10 +12,10 @@ export const useHealthcareDomains = () => {
         setLoading(true);
         setError(null);
 
-        const response = await fetch('/healthcare_domains.json');
+        const response = await fetch("/healthcare_domains.json");
         if (!response.ok) {
           throw new Error(
-            `Error fetching healthcare domains: ${response.status}`
+            `Error fetching healthcare domains: ${response.status}`,
           );
         }
 
@@ -23,7 +23,7 @@ export const useHealthcareDomains = () => {
         setAllDomains(data);
       } catch (err) {
         setError(
-          err instanceof Error ? err.message : 'An unknown error occurred'
+          err instanceof Error ? err.message : "An unknown error occurred",
         );
       } finally {
         setLoading(false);

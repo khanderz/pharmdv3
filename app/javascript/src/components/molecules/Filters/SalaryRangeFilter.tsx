@@ -1,30 +1,30 @@
-import React from 'react';
-import { Box as MuiBox, Typography, Slider, IconButton } from '@mui/material';
-import ClearIcon from '@mui/icons-material/Clear';
+import React from "react";
+import { Box as MuiBox, Typography, Slider, IconButton } from "@mui/material";
+import ClearIcon from "@mui/icons-material/Clear";
 import {
   MAX_SALARY,
   MIN_SALARY,
   useFiltersContext,
-} from '@javascript/providers/FiltersProvider';
-import { CurrencyFilter } from './CurrencyFilter';
-import { Box } from '@components/atoms';
+} from "@javascript/providers/FiltersProvider";
+import { CurrencyFilter } from "./CurrencyFilter";
+import { Box } from "@components/atoms";
 
 const currencySymbols: { [key: string]: string } = {
-  USD: '$',
-  EUR: '€',
-  GBP: '£',
-  CAD: '$',
-  JPY: '¥',
-  CNY: '¥',
-  SGD: 'S$',
-  INR: '₹',
-  AUD: 'A$',
-  BRL: 'R$',
-  CHF: 'CHF',
-  KRW: '₩',
-  NZD: 'NZ$',
-  SEK: 'kr',
-  ZAR: 'R',
+  USD: "$",
+  EUR: "€",
+  GBP: "£",
+  CAD: "$",
+  JPY: "¥",
+  CNY: "¥",
+  SGD: "S$",
+  INR: "₹",
+  AUD: "A$",
+  BRL: "R$",
+  CHF: "CHF",
+  KRW: "₩",
+  NZD: "NZ$",
+  SEK: "kr",
+  ZAR: "R",
 };
 
 export const SalaryRangeFilter = () => {
@@ -42,8 +42,8 @@ export const SalaryRangeFilter = () => {
     setSelectedSalaryRange([MIN_SALARY, MAX_SALARY]);
   };
 
-  const selectedCurrency = selectedSalaryCurrency?.label || 'USD';
-  const currencySymbol = currencySymbols[selectedCurrency] || '$';
+  const selectedCurrency = selectedSalaryCurrency?.label || "USD";
+  const currencySymbol = currencySymbols[selectedCurrency] || "$";
   const min = selectedSalaryRange ? selectedSalaryRange[0] : MIN_SALARY;
   const max = selectedSalaryRange ? selectedSalaryRange[1] : MAX_SALARY;
 

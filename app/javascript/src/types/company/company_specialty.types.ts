@@ -1,6 +1,6 @@
-import { useState, useEffect } from 'react';
-import { HealthcareDomain } from './healthcare_domain.types';
-import { useCompanySpecialties } from '@javascript/hooks';
+import { useState, useEffect } from "react";
+import { HealthcareDomain } from "./healthcare_domain.types";
+import { useCompanySpecialties } from "@javascript/hooks";
 
 const [companySpecialties, setCompanySpecialties] = useState<
   { id: number; key: string; value: string }[]
@@ -18,6 +18,6 @@ export type CompanySpecialties = (typeof companySpecialties)[number];
 
 export interface CompanySpecialty {
   id: number;
-  key: HealthcareDomain['key'];
-  value: CompanySpecialties['value'];
+  key: HealthcareDomain["key"];
+  value: CompanySpecialties["value"];
 }

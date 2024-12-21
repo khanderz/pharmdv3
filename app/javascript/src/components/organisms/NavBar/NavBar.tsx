@@ -1,4 +1,4 @@
-import React, { useState, MouseEvent } from 'react';
+import React, { useState, MouseEvent } from "react";
 import {
   AppBar,
   Box,
@@ -16,17 +16,17 @@ import {
   ListItem,
   ListItemButton,
   ListItemText,
-} from '@mui/material';
-import MenuIcon from '@mui/icons-material/Menu';
-import logo from '../../logo2.png';
+} from "@mui/material";
+import MenuIcon from "@mui/icons-material/Menu";
+import logo from "../../logo2.png";
 
-const pages = ['Search', 'Directory'];
-const settings = ['Profile', 'Account', 'Dashboard', 'Logout'];
+const pages = ["Search", "Directory"];
+const settings = ["Profile", "Account", "Dashboard", "Logout"];
 
 function NavBar() {
   const [anchorElUser, setAnchorElUser] = useState<null | HTMLElement>(null);
   const [anchorMobileEl, setAnchorMobileEl] = useState<null | HTMLElement>(
-    null
+    null,
   );
 
   const handleOpenUserMenu = (event: MouseEvent<HTMLElement>) => {
@@ -46,15 +46,15 @@ function NavBar() {
   };
 
   return (
-    <AppBar position="static" sx={{ boxShadow: 'none' }}>
+    <AppBar position="static" sx={{ boxShadow: "none" }}>
       <Container>
-        <Toolbar sx={{ justifyContent: 'space-between' }}>
+        <Toolbar sx={{ justifyContent: "space-between" }}>
           <Button
             href="/"
             sx={{
-              textTransform: 'none',
+              textTransform: "none",
               padding: 0,
-              textAlign: 'left',
+              textAlign: "left",
             }}
           >
             <img
@@ -64,13 +64,13 @@ function NavBar() {
                 width: 50,
                 height: 50,
                 marginRight: 10,
-                borderRadius: '4px',
+                borderRadius: "4px",
               }}
             />
             <Typography
               variant="title"
               component="div"
-              sx={{ color: 'primary.contrastText' }}
+              sx={{ color: "primary.contrastText" }}
             >
               PharmDs in IT
             </Typography>
@@ -79,19 +79,19 @@ function NavBar() {
           {/* Desktop Navigation */}
           <Box
             sx={{
-              display: { xs: 'none', md: 'flex' },
-              justifyContent: 'center',
+              display: { xs: "none", md: "flex" },
+              justifyContent: "center",
             }}
           >
-            {pages.map((page) => (
+            {pages.map(page => (
               <Button
                 key={page}
                 href={`/${page.toLowerCase()}`}
                 sx={{
                   m: 2,
-                  color: 'primary.contrastText',
-                  display: 'block',
-                  letterSpacing: '0.05em',
+                  color: "primary.contrastText",
+                  display: "block",
+                  letterSpacing: "0.05em",
                 }}
               >
                 {page}
@@ -105,7 +105,7 @@ function NavBar() {
             color="inherit"
             aria-label="menu"
             onClick={handleOpenMobileMenu}
-            sx={{ display: { xs: 'flex', md: 'none' } }}
+            sx={{ display: { xs: "flex", md: "none" } }}
           >
             <Tooltip title="Open navigation menu">
               <MenuIcon />
@@ -114,20 +114,20 @@ function NavBar() {
 
           {/* Mobile Navigation Menu */}
           <Menu
-            sx={{ mt: '45px' }}
+            sx={{ mt: "45px" }}
             anchorEl={anchorMobileEl}
             anchorOrigin={{
-              vertical: 'top',
-              horizontal: 'right',
+              vertical: "top",
+              horizontal: "right",
             }}
             transformOrigin={{
-              vertical: 'top',
-              horizontal: 'right',
+              vertical: "top",
+              horizontal: "right",
             }}
             open={Boolean(anchorMobileEl)}
             onClose={handleCloseMobileMenu}
           >
-            {pages.map((page) => (
+            {pages.map(page => (
               <MenuItem key={page} onClick={handleCloseMobileMenu}>
                 <Button href={`/${page.toLowerCase()}`}>{page}</Button>
               </MenuItem>
@@ -141,22 +141,22 @@ function NavBar() {
               </IconButton>
             </Tooltip>
             <Menu
-              sx={{ mt: '45px' }}
+              sx={{ mt: "45px" }}
               id="menu-appbar"
               anchorEl={anchorElUser}
               anchorOrigin={{
-                vertical: 'top',
-                horizontal: 'right',
+                vertical: "top",
+                horizontal: "right",
               }}
               keepMounted
               transformOrigin={{
-                vertical: 'top',
-                horizontal: 'right',
+                vertical: "top",
+                horizontal: "right",
               }}
               open={Boolean(anchorElUser)}
               onClose={handleCloseUserMenu}
             >
-              {settings.map((setting) => (
+              {settings.map(setting => (
                 <MenuItem key={setting} onClick={handleCloseUserMenu}>
                   <Button key={setting} href={`/${setting.toLowerCase()}`}>
                     {setting}

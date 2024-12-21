@@ -1,5 +1,5 @@
-import { useState, useEffect } from 'react';
-import { Department } from '@customtypes/job_role';
+import { useState, useEffect } from "react";
+import { Department } from "@customtypes/job_role";
 
 export const useDepartments = () => {
   const [departments, setDepartments] = useState<Department[]>([]);
@@ -12,7 +12,7 @@ export const useDepartments = () => {
         setLoading(true);
         setError(null);
 
-        const response = await fetch('/departments.json');
+        const response = await fetch("/departments.json");
         if (!response.ok) {
           throw new Error(`Error fetching departments: ${response.status}`);
         }
@@ -21,7 +21,7 @@ export const useDepartments = () => {
         setDepartments(data);
       } catch (err) {
         setError(
-          err instanceof Error ? err.message : 'An unknown error occurred'
+          err instanceof Error ? err.message : "An unknown error occurred",
         );
       } finally {
         setLoading(false);

@@ -49,20 +49,20 @@ class LocationMapper
     contains_city = city_name.present?
     contains_state_or_country = if state_name.present? || country_name.present?
 
-    puts "#{BLUE}contains_remote: #{contains_remote} contains_city: #{contains_city} contains_state_or_country: #{contains_state_or_country} #{RESET}"
+                                  puts "#{BLUE}contains_remote: #{contains_remote} contains_city: #{contains_city} contains_state_or_country: #{contains_state_or_country} #{RESET}"
 
-    if contains_remote && contains_city
-      'Hybrid'
-    elsif contains_remote && contains_state_or_country
-      'Flexible'
-    elsif contains_remote
-      'Remote'
-    elsif contains_city && !contains_remote
-      "On-site"
-    else
-      job_setting
-    end
-  end
+                                  if contains_remote && contains_city
+                                    'Hybrid'
+                                  elsif contains_remote && contains_state_or_country
+                                    'Flexible'
+                                  elsif contains_remote
+                                    'Remote'
+                                  elsif contains_city && !contains_remote
+                                    'On-site'
+                                  else
+                                    job_setting
+                                  end
+                                end
   end
 
   def default_location(location_type)
@@ -93,7 +93,6 @@ class LocationMapper
     )
 
     location_type = determine_location_type(city_name, state_name, country_name, job_setting)
-
 
     {
       city_name: city&.[](:city_name),

@@ -2,14 +2,14 @@
 // https://github.com/shakacode/react_on_rails_demo_ssr_hmr/blob/master/babel.config.js
 
 module.exports = function (api) {
-  const defaultConfigFunc = require('shakapacker/package/babel/preset.js');
+  const defaultConfigFunc = require("shakapacker/package/babel/preset.js");
   const resultConfig = defaultConfigFunc(api);
-  const isProductionEnv = api.env('production');
+  const isProductionEnv = api.env("production");
 
   const changesOnDefault = {
     presets: [
       [
-        '@babel/preset-react',
+        "@babel/preset-react",
         {
           development: !isProductionEnv,
           useBuiltIns: true,
@@ -17,9 +17,9 @@ module.exports = function (api) {
       ],
     ].filter(Boolean),
     plugins: [
-      process.env.WEBPACK_SERVE && 'react-refresh/babel',
+      process.env.WEBPACK_SERVE && "react-refresh/babel",
       isProductionEnv && [
-        'babel-plugin-transform-react-remove-prop-types',
+        "babel-plugin-transform-react-remove-prop-types",
         {
           removeImport: true,
         },

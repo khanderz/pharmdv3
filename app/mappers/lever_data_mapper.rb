@@ -1,7 +1,9 @@
 # frozen_string_literal: true
 
 class LeverDataMapper
-  def self.map(job, company)
+  def self.map(job, company, use_validation: false)
+    puts "\n--- Lever Data Mapper ---"
+    puts "Job: #{job}"
     location_input = LocationMapper.extract_location(job, 'lever')
     location_info = LocationMapper.new.match_location(location_input, job, company, job['country'])
 
@@ -10,7 +12,8 @@ class LeverDataMapper
 
     job_post_data = JobPostDataMapper.map_basic_data(job, company, location_info, 'lever')
 
-    updated_by_ai = AiUpdater.update_with_ai(job_post_data, job, company, location_info)
+    updated_by_ai = AiUpdater.update_with_ai(job_post_data, job, company, location_info,
+                                             use_validation)
 
     unless updated_by_ai
       job_post_data[:job_salary_min] ||= job['salaryRange']&.dig('min')

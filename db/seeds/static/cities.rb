@@ -9,7 +9,7 @@ cities = [
   { city_name: 'Charlotte' },
   { city_name: 'Chicago',
     aliases: ['Loop', 'River North', 'Lincoln Park', 'Wicker Park', 'South Loop'] },
-    { city_name: 'Cincinnati' },
+  { city_name: 'Cincinnati' },
   { city_name: 'Dallas' },
   { city_name: 'Denver', aliases: ['LoDo', 'Capitol Hill', 'Cherry Creek', 'Highlands', 'RiNo'] },
   { city_name: 'Detroit' },
@@ -21,7 +21,7 @@ cities = [
               'Silver Lake', 'west hollywood'] },
   { city_name: 'Miami',
     aliases: ['Brickell', 'Wynwood', 'Little Havana', 'Coconut Grove', 'South Beach'] },
-    { city_name: 'Memphis' },
+  { city_name: 'Memphis' },
   { city_name: 'Minneapolis' },
   { city_name: 'Nashville' },
   { city_name: 'New York',
@@ -41,7 +41,7 @@ cities = [
   { city_name: 'Savannah' },
   { city_name: 'Seattle',
     aliases: ['Capitol Hill', 'Belltown', 'Ballard', 'Fremont', 'Queen Anne', 'South Lake Union'] },
-    { city_name: 'Tampa'},
+  { city_name: 'Tampa' },
   { city_name: 'Washington',
     aliases: ['Georgetown', 'Dupont Circle', 'Capitol Hill', 'Foggy Bottom', 'Adams Morgan',
               'Columbia Heights', 'washington dc', 'washington d.c.'] },
@@ -53,8 +53,8 @@ cities = [
   { city_name: 'Berlin' },  # Germany
   { city_name: 'Dublin' },  # Ireland
   { city_name: 'Johannesburg' }, # South Africa
-  { city_name: 'Lisbon' },  # Portugal
-  { city_name: 'London', aliases: ['greater london'] },  # United Kingdom
+  { city_name: 'Lisbon' }, # Portugal
+  { city_name: 'London', aliases: ['greater london'] }, # United Kingdom
   { city_name: 'Melbourne' }, # Australia
   { city_name: 'Mexico City' }, # Mexico
   { city_name: 'Munich' },  # Germany

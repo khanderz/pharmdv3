@@ -37,7 +37,7 @@ class AiUpdater
   end
 
   def self.update_with_ai(job_post_data, job, company, location_info)
-    ai_data = JobPostService.split_descriptions(job)
+    ai_data = JobPostService.split_descriptions(job, use_validation: false)
     updated = false
 
     # print_job_post_data(job)
@@ -53,7 +53,6 @@ class AiUpdater
     job_post_skills = []
     job_post_states = []
     job_post_data[:job_setting] = Array(job_post_data[:job_setting])
-
 
     puts "location info is #{location_info}"
 

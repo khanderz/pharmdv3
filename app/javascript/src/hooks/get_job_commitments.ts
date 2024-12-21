@@ -1,5 +1,5 @@
-import { useState, useEffect } from 'react';
-import { JobCommitment } from '@customtypes/job_post';
+import { useState, useEffect } from "react";
+import { JobCommitment } from "@customtypes/job_post";
 
 export const useJobCommitments = () => {
   const [jobCommitments, setJobCommitments] = useState<JobCommitment[]>([]);
@@ -12,7 +12,7 @@ export const useJobCommitments = () => {
         setLoading(true);
         setError(null);
 
-        const response = await fetch('/job_commitments.json');
+        const response = await fetch("/job_commitments.json");
         if (!response.ok) {
           throw new Error(`Error fetching job commitments: ${response.status}`);
         }
@@ -21,7 +21,7 @@ export const useJobCommitments = () => {
         setJobCommitments(data);
       } catch (err) {
         setError(
-          err instanceof Error ? err.message : 'An unknown error occurred'
+          err instanceof Error ? err.message : "An unknown error occurred",
         );
       } finally {
         setLoading(false);

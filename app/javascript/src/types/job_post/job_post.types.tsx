@@ -3,11 +3,11 @@ import {
   JobSalaryInterval,
   JobSetting,
   JobSalaryCurrency,
-} from '.';
-import { Adjudicated } from '../adjudication.types';
-import { Country } from '../location.types';
-import { Department, JobRole, Team } from '../job_role';
-import { Company } from '../company/company.types';
+} from ".";
+import { Adjudicated } from "../adjudication.types";
+import { Country } from "../location.types";
+import { Department, JobRole, Team } from "../job_role";
+import { Company } from "../company/company.types";
 
 export interface JobPost extends Adjudicated {
   id: number;
@@ -29,13 +29,13 @@ export interface JobPost extends Adjudicated {
   job_applyUrl: string;
   job_additional: string;
 
-  job_role_id: JobRole['id'];
+  job_role_id: JobRole["id"];
   job_salary_interval_id: JobSalaryInterval;
-  job_salary_currency_id: JobSalaryCurrency['id'];
-  job_commitment_id: JobCommitment['id'];
-  job_setting_id: JobSetting['id'];
-  team_id: Team['id'];
-  department_id: Department['id'];
+  job_salary_currency_id: JobSalaryCurrency["id"];
+  job_commitment_id: JobCommitment["id"];
+  job_setting_id: JobSetting["id"];
+  team_id: Team["id"];
+  department_id: Department["id"];
   country: Country;
 
   created_at: Date;

@@ -1,5 +1,5 @@
-import { useState, useEffect } from 'react';
-import { useHealthcareDomains } from '@javascript/hooks';
+import { useState, useEffect } from "react";
+import { useHealthcareDomains } from "@javascript/hooks";
 
 const [healthcareDomains, setHealthcareDomains] = useState<
   { id: number; key: string; value: string }[]
@@ -17,6 +17,6 @@ export type HealthcareDomains = (typeof healthcareDomains)[number];
 
 export interface HealthcareDomain {
   id: number;
-  key: HealthcareDomains['key'];
-  value: HealthcareDomains['value'];
+  key: HealthcareDomains["key"];
+  value: HealthcareDomains["value"];
 }

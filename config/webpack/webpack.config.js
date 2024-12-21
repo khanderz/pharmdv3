@@ -1,6 +1,6 @@
-const { env } = require('shakapacker');
-const { existsSync } = require('fs');
-const { resolve } = require('path');
+const { env } = require("shakapacker");
+const { existsSync } = require("fs");
+const { resolve } = require("path");
 
 const envSpecificConfig = () => {
   const path = resolve(__dirname, `${env.nodeEnv}.js`);

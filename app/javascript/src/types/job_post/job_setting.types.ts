@@ -1,4 +1,4 @@
-import { JobSettingEnum } from '@components/molecules/Filters/JobSettingEnum';
+import { JobSettingEnum } from "@components/molecules/Filters/JobSettingEnum";
 
 export interface JobSetting {
   id: number;

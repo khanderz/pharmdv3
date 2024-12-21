@@ -1,5 +1,5 @@
-import { useState, useEffect } from 'react';
-import { States } from '@customtypes/location.types';
+import { useState, useEffect } from "react";
+import { States } from "@customtypes/location.types";
 
 export const useStates = () => {
   const [states, setStates] = useState<States[]>([]);
@@ -12,7 +12,7 @@ export const useStates = () => {
         setLoading(true);
         setError(null);
 
-        const response = await fetch('/states.json');
+        const response = await fetch("/states.json");
         if (!response.ok) {
           throw new Error(`Error fetching states: ${response.status}`);
         }
@@ -21,7 +21,7 @@ export const useStates = () => {
         setStates(data);
       } catch (err) {
         setError(
-          err instanceof Error ? err.message : 'An unknown error occurred'
+          err instanceof Error ? err.message : "An unknown error occurred",
         );
       } finally {
         setLoading(false);

@@ -29,10 +29,10 @@ class Education < ApplicationRecord
 
   def self.clean_education_param(education_param)
     normalized_param = education_param.to_s
-                                       .strip
-                                       .downcase
-                                       .gsub(/[’‘]/, "'")  
-                                       .gsub(/[^a-z0-9\s']/i, '')
+                                      .strip
+                                      .downcase
+                                      .gsub(/[’‘]/, "'")
+                                      .gsub(/[^a-z0-9\s']/i, '')
 
     degree_code_matches = Education.pluck(:education_code).map(&:downcase)
                                    .select { |code| normalized_param.include?(code) }
@@ -42,9 +42,11 @@ class Education < ApplicationRecord
 
     matches = (degree_code_matches + degree_name_matches).uniq
 
-    prioritized_matches = matches.select { |match| %w[postdoc fellowship residency].include?(match) }
+    prioritized_matches = matches.select do |match|
+      %w[postdoc fellowship residency].include?(match)
+    end
     return prioritized_matches.first.split.map(&:capitalize).join(' ') if prioritized_matches.any?
-    
+
     matches.first&.split&.map(&:capitalize)&.join(' ') || education_param.strip
   end
 end

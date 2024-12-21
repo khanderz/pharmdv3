@@ -1,9 +1,9 @@
-import { Company } from './Directory.types';
+import { Company } from "./Directory.types";
 
-export const TABNAMES = ['Companies'];
+export const TABNAMES = ["Companies"];
 
-export const TABLEHEADERS = ['Job Role', 'Department', 'Location', 'Apply'];
-export type tableHeaderTypes = 'Job Role' | 'Department' | 'Location' | 'Apply';
+export const TABLEHEADERS = ["Job Role", "Department", "Location", "Apply"];
+export type tableHeaderTypes = "Job Role" | "Department" | "Location" | "Apply";
 
 export interface Jobs {
   jobTitle: string;

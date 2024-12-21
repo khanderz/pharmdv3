@@ -1,9 +1,9 @@
-import React from 'react';
+import React from "react";
 import {
   Autocomplete as MuiAutocomplete,
   TextField as MuiTextField,
   Box,
-} from '@mui/material';
+} from "@mui/material";
 
 export interface AutocompleteOption {
   key: string | number;
@@ -19,7 +19,7 @@ export type AutocompleteProps = {
   loading?: boolean;
   onChange: (
     event: React.SyntheticEvent<Element, Event>,
-    value: AutocompleteOption | AutocompleteOption[] | null
+    value: AutocompleteOption | AutocompleteOption[] | null,
   ) => void;
   sx?: Record<string, any>;
   inputValue?: string;
@@ -61,14 +61,14 @@ export const Autocomplete = ({
         loadingText="Loading..."
         loading={loading}
         sx={{
-          mt: '2em',
+          mt: "2em",
         }}
-        getOptionLabel={(option) => {
+        getOptionLabel={option => {
           return option?.value?.toString();
         }}
         inputValue={inputValue}
         onInputChange={onInputChange}
-        renderInput={(params) => (
+        renderInput={params => (
           <MuiTextField
             {...params}
             label={inputLabel}

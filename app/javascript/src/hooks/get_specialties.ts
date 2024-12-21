@@ -1,5 +1,5 @@
-import { useState, useEffect } from 'react';
-import { CompanySpecialty } from '@customtypes/company';
+import { useState, useEffect } from "react";
+import { CompanySpecialty } from "@customtypes/company";
 
 export const useCompanySpecialties = () => {
   const [companySpecialties, setCompanySpecialties] = useState<
@@ -14,10 +14,10 @@ export const useCompanySpecialties = () => {
         setLoading(true);
         setError(null);
 
-        const response = await fetch('/company_specialties.json');
+        const response = await fetch("/company_specialties.json");
         if (!response.ok) {
           throw new Error(
-            `Error fetching company specialties: ${response.status}`
+            `Error fetching company specialties: ${response.status}`,
           );
         }
 
@@ -25,7 +25,7 @@ export const useCompanySpecialties = () => {
         setCompanySpecialties(data);
       } catch (err) {
         setError(
-          err instanceof Error ? err.message : 'An unknown error occurred'
+          err instanceof Error ? err.message : "An unknown error occurred",
         );
       } finally {
         setLoading(false);
