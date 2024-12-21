@@ -82,6 +82,62 @@ class JobPostService
     nil
   end
 
+  def self.initialize_object(type)
+    case type
+    when :descriptions
+      {
+        job_description: nil,
+        job_role: nil,
+        job_seniorities: [],
+        job_dept: nil,
+        job_team: nil,
+        job_commitment: nil,
+        job_settings: [],
+        job_countries: [],
+        job_cities: [],
+        job_states: []
+      }
+    when :responsibilities
+      { responsibilities: [] }
+    when :qualifications
+      {
+        qualifications: [],
+        credentials: [],
+        education: [],
+        experience: []
+      }
+    when :benefits
+      {
+        commitment: nil,
+        job_settings: [],
+        job_countries: [],
+        job_cities: [],
+        job_states: [],
+        job_compensation: nil,
+        retirement: nil,
+        office_life: nil,
+        professional_development: nil,
+        wellness: nil,
+        parental: nil,
+        work_life_balance: nil,
+        visa_sponsorship: nil,
+        additional_perks: nil
+      }
+    when :salary
+      {
+        job_salary_min: nil,
+        job_salary_max: nil,
+        job_salary_single: nil,
+        job_salary_currency: nil,
+        job_salary_interval: nil,
+        job_commitment: nil,
+        job_post_countries: []
+      }
+    else
+      raise ArgumentError, "Invalid object type: #{type}"
+    end
+  end
+
   def self.extract_descriptions(summary, use_validation = false)
     puts "#{BLUE}Extracting descriptions...#{RESET}"
 
@@ -93,44 +149,31 @@ class JobPostService
 
     parsed_descriptions = description_data['entities']
     if use_validation
-
-      corrected_descriptions = validate_and_update_training_data(summary, parsed_descriptions,
-                                                                 'job_description')
+      corrected_descriptions = validate_and_update_training_data(
+        summary,
+        parsed_descriptions,
+        'job_description'
+      )
 
       if description_data['status'] == 'success' && corrected_descriptions.any?
-        job_post_object = {
-          job_description: nil,
-          job_role: nil,
-          job_seniorities: [],
-          job_dept: nil,
-          job_team: nil,
-          job_commitment: nil,
-          job_settings: [],
-          job_countries: [],
-          job_cities: [],
-          job_states: []
-        }
+        job_post_object = initialize_object(:descriptions)
+
         corrected_descriptions.each do |entity|
           case entity['label']
           when 'DESCRIPTION'
-            job_post_object[:job_description] =
-              entity['token']
+            job_post_object[:job_description] = entity['token']
           when 'JOB_ROLE'
-            job_post_object[:job_role] =
-              entity['token']
+            job_post_object[:job_role] = entity['token']
           when 'JOB_SENIORITY'
             unless job_post_object[:job_seniorities].include?(entity['token'])
               job_post_object[:job_seniorities] << entity['token']
             end
           when 'JOB_DEPT'
-            job_post_object[:job_dept] =
-              entity['token']
+            job_post_object[:job_dept] = entity['token']
           when 'JOB_TEAM'
-            job_post_object[:job_team] =
-              entity['token']
+            job_post_object[:job_team] = entity['token']
           when 'JOB_COMMITMENT'
-            job_post_object[:job_commitment] =
-              entity['token']
+            job_post_object[:job_commitment] = entity['token']
           when 'JOB_SETTING'
             unless job_post_object[:job_settings].include?(entity['token'])
               job_post_object[:job_settings] << entity['token']
@@ -155,22 +198,11 @@ class JobPostService
         puts "#{ORANGE}No entities, skipping.#{RESET}"
         job_post_object = nil
       end
-      job_post_object
+      return job_post_object
     end
 
     if description_data['status'] == 'success' && parsed_descriptions.any?
-      job_post_object = {
-        job_description: nil,
-        job_role: nil,
-        job_seniorities: [],
-        job_dept: nil,
-        job_team: nil,
-        job_commitment: nil,
-        job_settings: [],
-        job_countries: [],
-        job_cities: [],
-        job_states: []
-      }
+      job_post_object = initialize_object(:descriptions)
 
       parsed_descriptions.each do |label, tokens|
         next unless tokens.is_a?(Array)
@@ -215,6 +247,7 @@ class JobPostService
       job_post_object
     else
       puts "#{ORANGE}No entities, skipping.#{RESET}"
+      nil
     end
   end
 
@@ -227,8 +260,6 @@ class JobPostService
       predict: true
     )
 
-    # puts "responsibilities_data: #{responsibilities_data}"
-
     parsed_responsibilities = responsibilities_data['entities']
 
     if use_validation
@@ -239,7 +270,7 @@ class JobPostService
       )
 
       if responsibilities_data['status'] == 'success' && corrected_responsibilities.any?
-        job_post_object = { responsibilities: [] }
+        job_post_object = initialize_object(:responsibilities)
 
         corrected_responsibilities.each do |entity|
           case entity['label']
@@ -257,7 +288,7 @@ class JobPostService
     end
 
     if responsibilities_data['status'] == 'success' && parsed_responsibilities.any?
-      job_post_object = { responsibilities: [] }
+      job_post_object = initialize_object(:responsibilities)
 
       parsed_responsibilities.each do |label, tokens|
         next unless tokens.is_a?(Array)
@@ -273,8 +304,8 @@ class JobPostService
     end
   end
 
-  def self.extract_qualifications(qualifications)
-    puts "#{BLUE}Extracting qualifications ...#{RESET}"
+  def self.extract_qualifications(qualifications, use_validation = false)
+    puts "#{BLUE}Extracting qualifications...#{RESET}"
 
     qualification_data = call_inspect_predictions(
       attribute_type: 'job_qualifications',
@@ -292,12 +323,7 @@ class JobPostService
       )
 
       if qualification_data['status'] == 'success' && corrected_qualifications.any?
-        job_post_object = {
-          qualifications: [],
-          credentials: [],
-          education: [],
-          experience: []
-        }
+        job_post_object = initialize_object(:qualifications)
 
         corrected_qualifications.each do |entity|
           case entity['label']
@@ -321,12 +347,7 @@ class JobPostService
     end
 
     if qualification_data['status'] == 'success' && parsed_qualifications.any?
-      job_post_object = {
-        qualifications: [],
-        credentials: [],
-        education: [],
-        experience: []
-      }
+      job_post_object = initialize_object(:qualifications)
 
       parsed_qualifications.each do |label, tokens|
         next unless tokens.is_a?(Array)
@@ -372,7 +393,7 @@ class JobPostService
       )
 
       if benefits_data['status'] == 'success' && corrected_benefits.any?
-        job_post_object = initialize_benefits_object
+        job_post_object = initialize_object(:benefits)
 
         corrected_benefits.each do |entity|
           case entity['label']
@@ -424,7 +445,7 @@ class JobPostService
     end
 
     if benefits_data['status'] == 'success' && parsed_benefits.any?
-      job_post_object = initialize_benefits_object
+      job_post_object = initialize_object(:benefits)
 
       parsed_benefits.each do |label, tokens|
         next unless tokens.is_a?(Array)
@@ -479,25 +500,6 @@ class JobPostService
     end
   end
 
-  def self.initialize_benefits_object
-    {
-      commitment: nil,
-      job_settings: [],
-      job_countries: [],
-      job_cities: [],
-      job_states: [],
-      job_compensation: nil,
-      retirement: nil,
-      office_life: nil,
-      professional_development: nil,
-      wellness: nil,
-      parental: nil,
-      work_life_balance: nil,
-      visa_sponsorship: nil,
-      additional_perks: nil
-    }
-  end
-
   def self.extract_salary(salary, use_validation = false)
     puts "#{BLUE}Extracting salary...#{RESET}"
 
@@ -517,7 +519,7 @@ class JobPostService
       )
 
       if compensation_data['status'] == 'success' && corrected_compensation.any?
-        job_post_object = initialize_salary_object
+        job_post_object = initialize_object(:salary)
 
         corrected_compensation.each do |entity|
           case entity['label']
@@ -547,7 +549,7 @@ class JobPostService
     end
 
     if compensation_data['status'] == 'success' && parsed_compensation.any?
-      job_post_object = initialize_salary_object
+      job_post_object = initialize_object(:salary)
 
       parsed_compensation.each do |label, tokens|
         next unless tokens.is_a?(Array)
@@ -578,18 +580,6 @@ class JobPostService
       puts "#{ORANGE}No entities, skipping.#{RESET}"
       nil
     end
-  end
-
-  def self.initialize_salary_object
-    {
-      job_salary_min: nil,
-      job_salary_max: nil,
-      job_salary_single: nil,
-      job_salary_currency: nil,
-      job_salary_interval: nil,
-      job_commitment: nil,
-      job_post_countries: []
-    }
   end
 
   def self.validate_and_update_training_data(input_text, extracted_entities, entity_type)
