@@ -3,7 +3,7 @@
 # app/mappers/greenhouse_data_mapper.rb
 
 class GreenhouseDataMapper
-  def self.map(job, company, use_validation)
+  def self.map(job, company)
     puts "\n--- Greenhouse Data Mapper ---"
     puts "Job: #{job}"
     location_input = LocationMapper.extract_location(job, 'greenhouse')
@@ -14,8 +14,8 @@ class GreenhouseDataMapper
     job_post_data = JobDataMapper.map_basic_data(job, company, location_info, 'greenhouse')
     print_job_post_data(job_post_data)
 
-    job_post_data = AiUpdater.update_with_ai(job_post_data, job, company, location_info,
-                                             use_validation)
+    job_post_data = AiUpdater.update_with_ai(job_post_data, job, company, location_info
+                                             )
 
     print_job_post_data(job_post_data)
     job_post_data

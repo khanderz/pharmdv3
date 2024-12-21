@@ -36,8 +36,9 @@ class AiUpdater
     puts '--- End of Job Post Data ---'
   end
 
-  def self.update_with_ai(job_post_data, job, company, location_info, use_validation)
-    ai_data = JobPostService.split_descriptions(job, use_validation)
+  def self.update_with_ai(job_post_data, job, company, location_info)
+    use_validation = true
+    ai_data = use_validation ? JobPostServiceWithValidation.split_descriptions(job) : JobPostService.split_descriptions(job)
     updated = false
 
     # print_job_post_data(job)

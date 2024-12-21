@@ -4,7 +4,7 @@ require 'open3'
 require 'json'
 require 'base64'
 
-class JobPostService
+class JobPostServiceWithValidation
   def self.split_descriptions(job_post)
     puts "#{BLUE}Preprocessing job description...#{RESET}"
     # puts "job post: #{job_post}"
@@ -40,9 +40,7 @@ class JobPostService
 
     # puts "data return  / summary: #{data_return}"
 
-    processed_responsibilities = extract_responsibilities(responsibilities)
-    data_return << { 'responsibilities' => processed_responsibilities || responsibilities }
-
+    data_return << { 'responsibilities' => responsibilities } if responsibilities
     # puts "data return / responsibilities : #{data_return}"
 
     processed_qualifications = extract_qualifications(qualifications)
@@ -53,10 +51,9 @@ class JobPostService
     data_return << { 'benefits' => processed_benefits } if processed_benefits
 
     # puts "data return /benefits : #{data_return}"
-    if processed_benefits[:job_compensation]
-      salary_data = extract_salary(processed_benefits[:job_compensation])
-      data_return << { 'salary' => salary_data } if salary_data
-    end
+
+    salary_data = extract_salary(processed_benefits[:job_compensation])
+    data_return << { 'salary' => salary_data } if salary_data
     # puts "data return / salary / final : #{data_return}"
 
     data_return
@@ -72,11 +69,9 @@ class JobPostService
 
     stdout, stderr, status = Open3.capture3(command)
 
-
     if status.success? && !stdout.strip.empty?
       begin
         result = JSON.parse(stdout)
-
         return result
       rescue JSON::ParserError => e
         puts "#{RED}Error parsing JSON from description splitter: #{e.message}#{RESET}"
@@ -98,8 +93,10 @@ class JobPostService
     )
 
     parsed_descriptions = description_data['entities']
+    corrected_descriptions = validate_and_update_training_data(summary, parsed_descriptions,
+                                                               'job_description')
 
-    if description_data['status'] == 'success' && parsed_descriptions.any?
+    if description_data['status'] == 'success' && corrected_descriptions.any?
       job_post_object = {
         job_description: nil,
         job_role: nil,
@@ -113,84 +110,50 @@ class JobPostService
         job_states: []
       }
 
-      parsed_descriptions.each do |label, tokens|
-        next unless tokens.is_a?(Array)
-
-        tokens.each do |token|
-          case label
-          when 'DESCRIPTION'
-            job_post_object[:job_description] = token
-          when 'JOB_ROLE'
-            job_post_object[:job_role] = token
-          when 'JOB_SENIORITY'
-            unless job_post_object[:job_seniorities].include?(token)
-              job_post_object[:job_seniorities] << token
-            end
-          when 'JOB_DEPT'
-            job_post_object[:job_dept] = token
-          when 'JOB_TEAM'
-            job_post_object[:job_team] = token
-          when 'JOB_COMMITMENT'
-            job_post_object[:job_commitment] = token
-          when 'JOB_SETTING'
-            unless job_post_object[:job_settings].include?(token)
-              job_post_object[:job_settings] << token
-            end
-          when 'JOB_COUNTRY'
-            unless job_post_object[:job_countries].include?(token)
-              job_post_object[:job_countries] << token
-            end
-          when 'JOB_CITY'
-            unless job_post_object[:job_cities].include?(token)
-              job_post_object[:job_cities] << token
-            end
-          when 'JOB_STATE'
-            unless job_post_object[:job_states].include?(token)
-              job_post_object[:job_states] << token
-            end
-          else
-            puts "#{RED}Unexpected label: #{label}#{RESET}"
+      corrected_descriptions.each do |entity|
+        case entity['label']
+        when 'DESCRIPTION'
+          job_post_object[:job_description] = entity['token']
+        when 'JOB_ROLE'
+          job_post_object[:job_role] = entity['token']
+        when 'JOB_SENIORITY'
+          unless job_post_object[:job_seniorities].include?(entity['token'])
+            job_post_object[:job_seniorities] << entity['token']
           end
+        when 'JOB_DEPT'
+          job_post_object[:job_dept] = entity['token']
+        when 'JOB_TEAM'
+          job_post_object[:job_team] = entity['token']
+        when 'JOB_COMMITMENT'
+          job_post_object[:job_commitment] = entity['token']
+        when 'JOB_SETTING'
+          unless job_post_object[:job_settings].include?(entity['token'])
+            job_post_object[:job_settings] << entity['token']
+          end
+        when 'JOB_COUNTRY'
+          unless job_post_object[:job_countries].include?(entity['token'])
+            job_post_object[:job_countries] << entity['token']
+          end
+        when 'JOB_CITY'
+          unless job_post_object[:job_cities].include?(entity['token'])
+            job_post_object[:job_cities] << entity['token']
+          end
+        when 'JOB_STATE'
+          unless job_post_object[:job_states].include?(entity['token'])
+            job_post_object[:job_states] << entity['token']
+          end
+        else
+          puts "#{RED}Unexpected label: #{entity['label']}#{RESET}"
         end
       end
     else
-      puts "#{ORANGE}No entities, skipping.#{RESET}"
-      job_post_object = nil
+      puts "#{RED}Failed to extract description data.#{RESET}"
     end
     job_post_object
   end
 
-  def self.extract_responsibilities(responsibilities)
-    puts "#{BLUE}Extracting responsibilities...#{RESET}"
-
-    responsibilities_data = call_inspect_predictions(
-      attribute_type: 'job_responsibilities',
-      input_text: responsibilities,
-      predict: true
-    )
-
-
-    parsed_responsibilities = responsibilities_data['entities']
-
-    if responsibilities_data['status'] == 'success' && parsed_responsibilities.any?
-      job_post_object = { responsibilities: [] }
-
-      parsed_responsibilities.each do |label, tokens|
-        next unless tokens.is_a?(Array)
-
-        tokens.each do |token|
-          job_post_object[:responsibilities] << token if label == 'RESPONSIBILITIES'
-        end
-      end
-      job_post_object
-    else
-      puts "#{ORANGE}No entities, skipping.#{RESET}"
-      nil
-    end
-  end
-
   def self.extract_qualifications(qualifications)
-    puts "#{BLUE}Extracting qualifications ...#{RESET}"
+    puts "#{BLUE}Extracting qualifications...#{RESET}"
 
     qualification_data = call_inspect_predictions(
       attribute_type: 'job_qualifications',
@@ -200,7 +163,10 @@ class JobPostService
 
     parsed_qualifications = qualification_data['entities']
 
-    if qualification_data['status'] == 'success' && parsed_qualifications.any?
+    corrected_qualifications = validate_and_update_training_data(qualifications,
+                                                                 parsed_qualifications, 'job_qualifications')
+
+    if qualification_data['status'] == 'success' && corrected_qualifications.any?
       job_post_object = {
         qualifications: [],
         credentials: [],
@@ -208,33 +174,28 @@ class JobPostService
         experience: []
       }
 
-      parsed_qualifications.each do |label, tokens|
-        next unless tokens.is_a?(Array)
-
-        tokens.each do |token|
-          case label
-          when 'QUALIFICATIONS'
-            job_post_object[:qualifications] << token
-          when 'CREDENTIALS'
-            job_post_object[:credentials] << token
-          when 'EDUCATION'
-            job_post_object[:education] << token
-          when 'EXPERIENCE'
-            job_post_object[:experience] << token
-          else
-            puts "#{RED}Unexpected label: #{label}#{RESET}"
-          end
+      corrected_qualifications.each do |entity|
+        case entity['label']
+        when 'QUALIFICATIONS'
+          job_post_object[:qualifications] << entity['token']
+        when 'CREDENTIALS'
+          job_post_object[:credentials] << entity['token']
+        when 'EDUCATION'
+          job_post_object[:education] << entity['token']
+        when 'EXPERIENCE'
+          job_post_object[:experience] << entity['token']
+        else
+          puts "#{RED}Unexpected label: #{entity['label']}#{RESET}"
         end
       end
-      job_post_object
     else
-      puts "#{ORANGE}No entities, skipping.#{RESET}"
-      nil
+      puts "#{RED}Failed to extract qualifications data.#{RESET}"
     end
+    job_post_object.to_json
   end
 
   def self.extract_benefits(benefits)
-    puts 'Starting extraction for benefits...'
+    puts 'Starting validation for benefits...'
 
     benefits_data = call_inspect_predictions(
       attribute_type: 'job_benefits',
@@ -243,8 +204,10 @@ class JobPostService
     )
 
     parsed_benefits = benefits_data['entities']
+    corrected_benefits = validate_and_update_training_data(benefits, parsed_benefits,
+                                                           'job_benefits')
 
-    if benefits_data['status'] == 'success' && parsed_benefits.any?
+    if benefits_data['status'] == 'success' && corrected_benefits.any?
       job_post_object = {
         commitment: nil,
         job_settings: [],
@@ -262,67 +225,66 @@ class JobPostService
         additional_perks: nil,
       }
 
-      parsed_benefits.each do |label, tokens|
-        next unless tokens.is_a?(Array)
-
-        tokens.each do |token|
-          case label
-          when 'COMMITMENT'
-            job_post_object[:commitment] = token
-          when 'JOB_SETTING'
-            unless job_post_object[:job_settings].include?(token)
-              job_post_object[:job_settings] << token
-            end
-          when 'JOB_COUNTRY'
-            unless job_post_object[:job_countries].include?(token)
-              job_post_object[:job_countries] << token
-            end
-          when 'JOB_CITY'
-            unless job_post_object[:job_cities].include?(token)
-              job_post_object[:job_cities] << token
-            end
-          when 'JOB_STATE'
-            unless job_post_object[:job_states].include?(token)
-              job_post_object[:job_states] << token
-            end
-          when 'COMPENSATION'
-            job_post_object[:job_compensation] = token
-          when 'RETIREMENT'
-            job_post_object[:retirement] = token
-          when 'OFFICE_LIFE'
-            job_post_object[:office_life] = token
-          when 'PROFESSIONAL_DEVELOPMENT'
-            job_post_object[:professional_development] = token
-          when 'WELLNESS'
-            job_post_object[:wellness] = token
-          when 'PARENTAL'
-            job_post_object[:parental] = token
-          when 'WORK_LIFE_BALANCE'
-            job_post_object[:work_life_balance] = token
-          when 'VISA_SPONSORSHIP'
-            job_post_object[:visa_sponsorship] = token
-          when 'ADDITIONAL_PERKS'
-            job_post_object[:additional_perks] = token
-          else
-            puts "#{RED}Unexpected label: #{label}#{RESET}"
+      corrected_benefits.each do |entity|
+        case entity['label']
+        when 'COMMITMENT'
+          job_post_object[:commitment] = entity['token']
+        when 'JOB_SETTING'
+          unless job_post_object[:job_settings].include?(entity['token'])
+            job_post_object[:job_settings] << entity['token']
           end
+        when 'JOB_COUNTRY'
+          unless job_post_object[:job_countries].include?(entity['token'])
+            job_post_object[:job_countries] << entity['token']
+          end
+        when 'JOB_CITY'
+          unless job_post_object[:job_cities].include?(entity['token'])
+            job_post_object[:job_cities] << entity['token']
+          end
+        when 'JOB_STATE'
+          unless job_post_object[:job_states].include?(entity['token'])
+            job_post_object[:job_states] << entity['token']
+          end
+        when 'COMPENSATION'
+          job_post_object[:job_compensation] = entity['token']
+        when 'RETIREMENT'
+          job_post_object[:retirement] = entity['token']
+        when 'OFFICE_LIFE'
+          job_post_object[:office_life] = entity['token']
+        when 'PROFESSIONAL_DEVELOPMENT'
+          job_post_object[:professional_development] = entity['token']
+        when 'WELLNESS'
+          job_post_object[:wellness] = entity['token']
+        when 'PARENTAL'
+          job_post_object[:parental] = entity['token']
+        when 'WORK_LIFE_BALANCE'
+          job_post_object[:work_life_balance] = entity['token']
+        when 'VISA_SPONSORSHIP'
+          job_post_object[:visa_sponsorship] = entity['token']
+        when 'ADDITIONAL_PERKS'
+          job_post_object[:additional_perks] = entity['token']
+        else
+          puts "#{RED}Unexpected label: #{entity['label']}#{RESET}"
         end
       end
-      job_post_object
     else
-      puts "#{ORANGE}No entities, skipping.#{RESET}"
-      nil
+      puts "#{RED}Failed to extract benefits data.#{RESET}"
     end
+    job_post_object
   end
 
   def self.extract_salary(salary)
     puts 'Starting validation for benefits...'
 
+    # puts "Salary: #{salary}"
     compensation_data = call_inspect_predictions(
       attribute_type: 'salary',
       input_text: salary,
       predict: true
     )
+
+    corrected_compensation_data = validate_and_update_training_data(salary,
+                                                                    compensation_data['entities'], 'salary')
 
     job_post_object = {
       job_salary_min: nil,
@@ -334,40 +296,35 @@ class JobPostService
       job_post_countries: []
     }
     if compensation_data['status'] == 'success' && corrected_compensation_data.any?
-      compensation_data['entities'].each do |label, tokens|
-        next unless tokens.is_a?(Array)
-
-        tokens.each do |token|
-          case label
-          when 'SALARY_MIN'
-            job_post_object[:job_salary_min] = token.gsub(',', '').to_i
-          when 'SALARY_MAX'
-            job_post_object[:job_salary_max] = token.gsub(',', '').to_i
-          when 'SALARY_SINGLE'
-            job_post_object[:job_salary_single] = token.gsub(',', '').to_i
-          when 'CURRENCY'
-            job_post_object[:job_salary_currency] = token
-          when 'INTERVAL'
-            job_post_object[:job_salary_interval] = token
-          when 'COMMITMENT'
-            job_post_object[:job_commitment] = token
-          when 'JOB_COUNTRY'
-            job_post_object[:job_post_countries] << token if token
-          else
-            puts "#{RED}Unexpected label: #{label}#{RESET}"
-          end
+      corrected_compensation_data.each do |entity|
+        case entity['label']
+        when 'SALARY_MIN'
+          job_post_object[:job_salary_min] = entity['token'].gsub(',', '').to_i
+        when 'SALARY_MAX'
+          job_post_object[:job_salary_max] = entity['token'].gsub(',', '').to_i
+        when 'SALARY_SINGLE'
+          job_post_object[:job_salary_single] = entity['token'].gsub(',', '').to_i
+        when 'CURRENCY'
+          job_post_object[:job_salary_currency] = entity['token']
+        when 'INTERVAL'
+          job_post_object[:job_salary_interval] = entity['token']
+        when 'COMMITMENT'
+          job_post_object[:job_commitment] = entity['token']
+        when 'JOB_COUNTRY'
+          job_post_object[:job_post_countries] << entity['token'] if entity['token']
+        else
+          puts "#{RED}Unexpected label: #{entity['label']}#{RESET}"
         end
       end
-      job_post_object
     else
-      puts "#{ORANGE}No entities, skipping.#{RESET}"
-      nil
+      puts "#{RED}Failed to extract compensation data.#{RESET}"
     end
+    job_post_object
   end
 
   def self.validate_and_update_training_data(input_text, extracted_entities, entity_type)
     puts "#{BLUE}Validating #{entity_type} entities...#{RESET}"
-    # puts "Extracted entities: #{extracted_entities}"
+    puts "Extracted entities: #{extracted_entities}"
 
     training_data_path = "app/python/ai_processing/#{entity_type}/data/train_data_spacy.json"
     training_data = []
@@ -393,8 +350,9 @@ class JobPostService
       extracted_entities.each_with_index do |(label, tokens), _index|
         label = label.to_s
         token = tokens[0]
+        corrections_exist = false
 
-        puts "is token #{ORANGE}#{token}#{RESET} for label #{ORANGE}#{label}#{RESET} correct (yes/no)"
+        puts "is token #{token} for label '#{label}' correct (yes/no)"
         token_confirmation = gets.strip.downcase
         if token_confirmation != 'yes' && token_confirmation != 'y'
           puts 'Enter the correct token:'
@@ -402,10 +360,10 @@ class JobPostService
           corrections_exist = true
         end
 
-        puts "Is the label #{ORANGE}#{label}#{RESET} for token #{ORANGE}#{token}#{RESET} correct? (yes/no)"
+        puts "Is the label '#{label}' for token '#{token}' correct? (yes/no)"
         label_confirmation = gets.strip.downcase
         if label_confirmation != 'yes' && label_confirmation != 'y'
-          puts "Select the correct label for token #{ORANGE}#{token}#{RESET}:"
+          puts "Select the correct label for this token (#{token}):"
           label_list.each_with_index do |lbl, idx|
             puts "#{idx}: #{lbl}"
           end
@@ -415,10 +373,10 @@ class JobPostService
         end
 
         if corrections_exist
-          puts "Enter start index for #{ORANGE}#{token}#{RESET}:"
+          puts "Enter start index for '#{token}':"
           start_value = gets.strip.to_i
 
-          puts "Enter end index for #{ORANGE}#{token}#{RESET}:"
+          puts "Enter end index for '#{token}':"
           end_value = gets.strip.to_i
         end
 
@@ -439,17 +397,17 @@ class JobPostService
         puts 'Enter the token for the missing entity:'
         token = gets.strip
 
-        puts "Select the correct label for token #{ORANGE}#{token}#{RESET}:"
+        puts "Select the correct label for this token (#{token}):"
         label_list.each_with_index do |lbl, idx|
           puts "#{idx}: #{lbl}"
         end
         label_index = gets.strip.to_i
         label = label_list[label_index] if label_index >= 0 && label_index < label_list.size
 
-        puts "Enter start index for #{ORANGE}#{token}#{RESET}:"
+        puts "Enter start index for '#{token}':"
         start_value = gets.strip.to_i
 
-        puts "Enter end index for #{ORANGE}#{token}#{RESET}:"
+        puts "Enter end index for '#{token}':"
         end_value = gets.strip.to_i
 
         corrected_entities << {
@@ -472,7 +430,6 @@ class JobPostService
         return corrected_entities
       end
 
-      puts "#{BLUE}Validating entities...#{RESET}"
       validation_result = call_inspect_predictions(
         attribute_type: entity_type,
         input_text: input_text,
@@ -480,7 +437,6 @@ class JobPostService
       )
 
       if validation_result && validation_result['status'] == 'success'
-        puts "validation result on rb : #{validation_result}"
         message = validation_result['message'].to_s.strip
         puts "#{GREEN}Validation completed successfully: #{message}#{RESET}"
 
