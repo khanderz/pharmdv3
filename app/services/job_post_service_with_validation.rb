@@ -391,7 +391,7 @@ class JobPostServiceWithValidation
     corrections_exist = false
     corrected_entities = []
 
-    if entity_type == 'responsibilities'
+    if entity_type == 'job_responsibilities'
       loop do
         corrections_exist = false
         puts "Extracted entities: #{extracted_entities.length}"
@@ -400,7 +400,9 @@ class JobPostServiceWithValidation
         extracted_entities.each do |label, tokens|
           label = label.to_s
 
-          Array(tokens).each do |token|
+          tokens.each do |token|
+            puts "token entities: #{tokens.length}"
+            puts "token entities: #{token}"
             corrections_exist = false
 
             puts "Is token #{TOKEN_COLOR}'#{token}'#{RESET} for label #{LABEL_COLOR}'#{label}'#{RESET} correct? (yes/no)"
