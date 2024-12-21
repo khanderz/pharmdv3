@@ -14,9 +14,8 @@ class GreenhouseDataMapper
     job_post_data = JobDataMapper.map_basic_data(job, company, location_info, 'greenhouse')
     print_job_post_data(job_post_data)
 
-    job_post_data = AiUpdater.update_with_ai(job_post_data, job, company, location_info)
+    AiUpdater.update_with_ai(job_post_data, job, company, location_info)
 
-    print_job_post_data(job_post_data)
     job_post_data
   end
 

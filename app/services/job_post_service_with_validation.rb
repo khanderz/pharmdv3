@@ -64,6 +64,7 @@ class JobPostServiceWithValidation
 
   def self.preprocess_job_description(job_description)
     puts "#{BLUE}Running description splitter...#{RESET}"
+    # puts "job_description: #{job_description}"
 
     python_script_path = 'app/python/ai_processing/utils/description_splitter.py'
     input_json = { text: job_description }.to_json
@@ -94,8 +95,10 @@ class JobPostServiceWithValidation
       input_text: summary,
       predict: true
     )
+    # puts "description_data: #{description_data}"
 
     parsed_descriptions = description_data['entities']
+    # puts "parsed_descriptions: #{parsed_descriptions}"
     corrected_descriptions = validate_and_update_training_data(summary, parsed_descriptions,
                                                                'job_description')
 
@@ -165,12 +168,12 @@ class JobPostServiceWithValidation
       predict: true
     )
 
+    # puts "responsibilities_data: #{responsibilities_data}"
+
     parsed_responsibilities = responsibilities_data['entities']
-    corrected_responsibilities = validate_and_update_training_data(
-      responsibilities,
-      parsed_responsibilities,
-      'job_responsibilities'
-    )
+
+    corrected_responsibilities = validate_and_update_training_data(responsibilities,
+                                                                   parsed_responsibilities, 'job_responsibilities')
 
     if responsibilities_data['status'] == 'success' && corrected_responsibilities.any?
       job_post_object = {
@@ -193,7 +196,7 @@ class JobPostServiceWithValidation
   end
 
   def self.extract_qualifications(qualifications)
-    puts "#{BLUE}Extracting qualifications...#{RESET}"
+    puts "#{BLUE}Extracting qualifications ...#{RESET}"
 
     qualification_data = call_inspect_predictions(
       attribute_type: 'job_qualifications',
@@ -249,6 +252,7 @@ class JobPostServiceWithValidation
                                                            'job_benefits')
 
     if benefits_data['status'] == 'success' && corrected_benefits.any?
+
       job_post_object = {
         commitment: nil,
         job_settings: [],
@@ -328,18 +332,17 @@ class JobPostServiceWithValidation
     corrected_compensation_data = validate_and_update_training_data(salary,
                                                                     compensation_data['entities'], 'salary')
 
+    job_post_object = {
+      job_salary_min: nil,
+      job_salary_max: nil,
+      job_salary_single: nil,
+      job_salary_currency: nil,
+      job_salary_interval: nil,
+      job_commitment: nil,
+      job_post_countries: []
+    }
     if compensation_data['status'] == 'success' && corrected_compensation_data.any?
-      job_post_object = {
-        job_salary_min: nil,
-        job_salary_max: nil,
-        job_salary_single: nil,
-        job_salary_currency: nil,
-        job_salary_interval: nil,
-        job_commitment: nil,
-        job_post_countries: []
-      }
-
-      corrected_compensation.each do |entity|
+      corrected_compensation_data.each do |entity|
         case entity['label']
         when 'SALARY_MIN'
           job_post_object[:job_salary_min] = entity['token'].gsub(',', '').to_i
@@ -372,9 +375,11 @@ class JobPostServiceWithValidation
 
   def self.validate_and_update_training_data(input_text, extracted_entities, entity_type)
     puts "#{BLUE}Validating #{entity_type} entities...#{RESET}"
+    # puts "Extracted entities: #{extracted_entities}"
 
     training_data_path = "app/python/ai_processing/#{entity_type}/data/train_data_spacy.json"
-    training_data = File.exist?(training_data_path) ? JSON.parse(File.read(training_data_path)) : []
+    training_data = []
+    training_data = JSON.parse(File.read(training_data_path)) if File.exist?(training_data_path)
 
     text = clean_text(input_text)
     print_indices(entity_type, text)
@@ -387,142 +392,136 @@ class JobPostServiceWithValidation
 
     validation_attempts = 0
     max_attempts = 3
-    corrected_entities = []
-
-    loop do
-      corrections_exist = false
-
-      puts "Extracted entities count: #{extracted_entities.length}"
-      puts "Extracted entities: #{extracted_entities}"
-
-      extracted_entities.each do |label, tokens|
-        puts "tokens length #{tokens.length}"
-        label = label.to_s
-
-        if tokens.is_a?(Array) && tokens.length > 1
-          tokens.each do |token|
-            corrections_exist = process_token(label, token, label_list, corrected_entities)
-          end
-        else
-          token = tokens.is_a?(Array) ? tokens[0] : tokens
-          corrections_exist = process_token(label, token, label_list, corrected_entities)
-        end
-      end
-
-      puts 'Are there any missing entities? (yes/no)'
-      while %w[yes y].include?(gets.strip.downcase)
-        corrections_exist = process_missing_entity(label_list, corrected_entities)
-      end
-
-      break unless corrections_exist
-
-      validation_result = validate_and_save_entities(entity_type, text, corrected_entities,
-                                                     training_data, training_data_path)
-      return corrected_entities if validation_result
-
-      validation_attempts += 1
-      if validation_attempts >= max_attempts
-        puts "#{RED}Validation failed after #{max_attempts} attempts. Exiting...#{RESET}"
-        break
-      end
-
-      puts 'Would you like to redo the corrections? (yes/no)'
-      break unless %w[yes y].include?(gets.strip.downcase)
-    end
-
-    corrected_entities
-  end
-
-  def self.process_token(label, token, label_list, corrected_entities)
     corrections_exist = false
 
-    puts "Is token #{TOKEN_COLOR}'#{token}'#{RESET} for label #{LABEL_COLOR}'#{label}'#{RESET} correct? (yes/no)"
-    token_confirmation = gets.strip.downcase
-    if %w[no n].include?(token_confirmation)
-      puts 'Enter the correct token:'
-      token = gets.strip
-      corrections_exist = true
-    end
+    loop do
+      corrected_entities = []
+      corrections_exist = false
 
-    puts "Is the label #{LABEL_COLOR}'#{label}'#{RESET} for token #{TOKEN_COLOR}'#{token}'#{RESET} correct? (yes/no)"
-    label_confirmation = gets.strip.downcase
-    if %w[no n].include?(label_confirmation)
-      puts "Select the correct label for this token #{TOKEN_COLOR}'#{token}'#{RESET}:"
-      label_list.each_with_index { |lbl, idx| puts "#{idx}: #{lbl}" }
-      label_index = gets.strip.to_i
-      label = label_list[label_index] if label_index.between?(0, label_list.size - 1)
-      corrections_exist = true
-    end
+      extracted_entities.each_with_index do |(label, tokens), _index|
+        label = label.to_s
+        token = tokens[0]
 
-    if corrections_exist
-      puts "Enter start index for #{TOKEN_COLOR}'#{token}'#{RESET}:"
-      start_value = gets.strip.to_i
+        puts "Is token #{TOKEN_COLOR}'#{token}'#{RESET} for label #{LABEL_COLOR}'#{label}'#{RESET} correct? (yes/no)"
+        token_confirmation = gets.strip.downcase
+        if token_confirmation != 'yes' && token_confirmation != 'y'
+          puts 'Enter the correct token:'
+          token = gets.strip
+          corrections_exist = true
+        end
 
-      puts "Enter end index for #{TOKEN_COLOR}'#{token}'#{RESET}:"
-      end_value = gets.strip.to_i
+        puts "Is the label #{LABEL_COLOR}'#{label}'#{RESET} for token #{TOKEN_COLOR}'#{token}'#{RESET} correct? (yes/no)"
+        label_confirmation = gets.strip.downcase
+        if label_confirmation != 'yes' && label_confirmation != 'y'
+          puts "Select the correct label for this token #{TOKEN_COLOR}'#{token}'#{RESET}:"
+          label_list.each_with_index do |lbl, idx|
+            puts "#{idx}: #{lbl}"
+          end
+          label_index = gets.strip.to_i
+          label = label_list[label_index] if label_index >= 0 && label_index < label_list.size
+          corrections_exist = true
+        end
 
-      corrected_entities << {
-        'start' => start_value,
-        'end' => end_value,
-        'label' => label,
-        'token' => token
-      }
-    end
+        if corrections_exist
+          puts "Enter start index for #{TOKEN_COLOR}'#{token}'#{RESET}:"
+          start_value = gets.strip.to_i
 
-    corrections_exist
-  end
+          puts "Enter end index for #{TOKEN_COLOR}'#{token}'#{RESET}:"
+          end_value = gets.strip.to_i
+        end
 
-  def self.process_missing_entity(label_list, corrected_entities)
-    puts 'Enter the token for the missing entity:'
-    token = gets.strip
-
-    puts "Select the correct label for this token #{TOKEN_COLOR}'#{token}'#{RESET}:"
-    label_list.each_with_index { |lbl, idx| puts "#{idx}: #{lbl}" }
-    label_index = gets.strip.to_i
-    label = label_list[label_index] if label_index.between?(0, label_list.size - 1)
-
-    puts "Enter start index for #{TOKEN_COLOR}'#{token}'#{RESET}:"
-    start_value = gets.strip.to_i
-
-    puts "Enter end index for #{TOKEN_COLOR}'#{token}'#{RESET}:"
-    end_value = gets.strip.to_i
-
-    corrected_entities << {
-      'start' => start_value,
-      'end' => end_value,
-      'label' => label,
-      'token' => token
-    }
-
-    true
-  end
-
-  def self.validate_and_save_entities(entity_type, text, corrected_entities, training_data, training_data_path)
-    new_training_data = { 'text' => text, 'entities' => corrected_entities }
-
-    validation_result = call_inspect_predictions(
-      attribute_type: entity_type,
-      input_text: text,
-      validate: [new_training_data]
-    )
-
-    if validation_result && validation_result['status'] == 'success'
-      message = validation_result['message'].to_s.strip
-      puts "#{GREEN}Validation completed successfully: #{message}#{RESET}"
-
-      if message.include?('Validation passed for all entities.')
-        training_data << new_training_data
-        File.write(training_data_path, JSON.pretty_generate(training_data))
-        puts "#{GREEN}Training data validated and saved successfully at #{training_data_path}.#{RESET}"
-        return true
-      else
-        puts "#{RED}Validation completed with warnings: #{message}#{RESET}"
+        corrected_entities << {
+          'start' => start_value,
+          'end' => end_value,
+          'label' => label,
+          'token' => token
+        }
       end
-    else
-      puts "#{RED}Validation failed: #{validation_result&.dig('message') || 'Unknown error'}#{RESET}"
+
+      loop do
+        puts 'Are there any missing entities? (yes/no)'
+        missing_entities_confirmation = gets.strip.downcase
+
+        break if missing_entities_confirmation != 'yes' && missing_entities_confirmation != 'y'
+
+        puts 'Enter the token for the missing entity:'
+        token = gets.strip
+
+        puts "Select the correct label for this token #{TOKEN_COLOR}'#{token}'#{RESET}:"
+        label_list.each_with_index do |lbl, idx|
+          puts "#{idx}: #{lbl}"
+        end
+        label_index = gets.strip.to_i
+        label = label_list[label_index] if label_index >= 0 && label_index < label_list.size
+
+        puts "Enter start index for #{TOKEN_COLOR}'#{token}'#{RESET}:"
+        start_value = gets.strip.to_i
+
+        puts "Enter end index for #{TOKEN_COLOR}'#{token}'#{RESET}:"
+        end_value = gets.strip.to_i
+
+        corrected_entities << {
+          'start' => start_value,
+          'end' => end_value,
+          'label' => label,
+          'token' => token
+        }
+
+        corrections_exist = true
+      end
+
+      new_training_data = {
+        'text' => text,
+        'entities' => corrected_entities
+      }
+      # puts "new_training_data: #{new_training_data}"
+
+      if corrections_exist == false
+        puts "#{ORANGE}No entities to validate. Skipping validation and proceeding to next step.#{RESET}"
+        return corrected_entities
+      end
+
+      puts "#{BLUE}Validating entities...#{RESET}"
+      validation_result = call_inspect_predictions(
+        attribute_type: entity_type,
+        input_text: input_text,
+        validate: [new_training_data]
+      )
+
+      if validation_result && validation_result['status'] == 'success'
+        puts "validation result on rb : #{validation_result}"
+        message = validation_result['message'].to_s.strip
+        puts "#{GREEN}Validation completed successfully: #{message}#{RESET}"
+
+        if message.include?('Validation passed for all entities.')
+          training_data << new_training_data
+          File.write(training_data_path, JSON.pretty_generate(training_data))
+          puts "#{GREEN}Training data validated and saved successfully at #{training_data_path}.#{RESET}"
+
+          # puts "#{BLUE} Now training model with new validated entities #{RESET}"
+          # call_inspect_predictions(attribute_type: entity_type, input_text: input_text, train: true)
+          # puts "corrected entities after training: #{corrected_entities}"
+          return corrected_entities
+          # break
+        else
+          puts "#{RED}Validation completed with warnings: #{message}#{RESET}"
+        end
+      else
+        puts "#{RED}Validation failed: #{validation_result&.dig('message') || 'Unknown error'}#{RESET}"
+      end
+
+      validation_attempts += 1
+      break if validation_attempts >= max_attempts
+
+      puts 'Would you like to redo the corrections? (yes/no)'
+      redo_correction = gets.strip.downcase
+      break unless %w[yes y].include?(redo_correction)
     end
 
-    false
+    puts "#{RED}Validation failed after #{max_attempts} attempts. Exiting...#{RESET}"
+
+    # puts "corrected entities after training 2: #{corrected_entities}"
+    corrected_entities
   end
 
   def self.call_inspect_predictions(attribute_type:, input_text:, validate: nil, predict: false, train: false, data: nil)
@@ -542,9 +541,19 @@ class JobPostServiceWithValidation
 
     input_data = data ? other_json : ''
 
+    # puts "attribute_type: #{attribute_type}"
+    # puts "encoded_data: #{encoded_data}"
+    # puts "encoded_validation_data: #{encoded_validation_data}"
+    # puts "predict_flag: #{predict_flag}"
+    # puts "train_flag: #{train_flag}"
+    # puts "input_data: #{input_data}"
+
     command = "python3 app/python/ai_processing/main.py '#{attribute_type}' '#{encoded_data}' #{encoded_validation_data} #{predict_flag} #{train_flag} '#{input_data}' "
 
     stdout, stderr, status = Open3.capture3(command)
+    # puts "stdout: #{stdout}"
+    # puts "stderr: #{stderr}"
+    # puts "status: #{status}"
 
     if train_flag
       puts "#{BLUE}Training started in the background. Logs will be saved to 'training.log'.#{RESET}"
@@ -592,6 +601,9 @@ class JobPostServiceWithValidation
   def self.get_labels_from_python(entity_type)
     command = "python3 -c \"from app.python.ai_processing.utils.label_mapping import get_label_list; import json; print(json.dumps(get_label_list('#{entity_type}', is_biluo=False)))\""
     stdout, stderr, status = Open3.capture3(command)
+    # puts "stdout: #{stdout}"
+    # puts "stderr: #{stderr}"
+    # puts "status: #{status}"
 
     if status.success?
       JSON.parse(stdout)
