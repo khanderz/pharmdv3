@@ -3,7 +3,7 @@
 # app/mappers/greenhouse_data_mapper.rb
 
 class GreenhouseDataMapper
-  def self.map(job, company, use_validation: false)
+  def self.map(job, company, use_validation)
     puts "\n--- Greenhouse Data Mapper ---"
     puts "Job: #{job}"
     location_input = LocationMapper.extract_location(job, 'greenhouse')

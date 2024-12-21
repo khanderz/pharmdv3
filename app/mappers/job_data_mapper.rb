@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 class JobDataMapper
-  def self.map(company, job, use_validation: false)
+  def self.map(company, job, use_validation)
     ats_code = company.ats_type.ats_type_code
     case ats_code
     when 'LEVER'

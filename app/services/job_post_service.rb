@@ -5,7 +5,7 @@ require 'json'
 require 'base64'
 
 class JobPostService
-  def self.split_descriptions(job_post, use_validation: false)
+  def self.split_descriptions(job_post, use_validation)
     puts "#{BLUE}Preprocessing job description...#{RESET}"
 
     structured_data = preprocess_job_description(job_post['content'])

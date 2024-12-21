@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 class LeverDataMapper
-  def self.map(job, company, use_validation: false)
+  def self.map(job, company, use_validation)
     puts "\n--- Lever Data Mapper ---"
     puts "Job: #{job}"
     location_input = LocationMapper.extract_location(job, 'lever')
