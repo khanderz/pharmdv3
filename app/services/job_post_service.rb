@@ -72,7 +72,6 @@ class JobPostService
 
     stdout, stderr, status = Open3.capture3(command)
 
-
     if status.success? && !stdout.strip.empty?
       begin
         result = JSON.parse(stdout)
@@ -168,7 +167,6 @@ class JobPostService
       input_text: responsibilities,
       predict: true
     )
-
 
     parsed_responsibilities = responsibilities_data['entities']
 

@@ -147,7 +147,44 @@ class JobPostServiceWithValidation
         end
       end
     else
-      puts "#{RED}Failed to extract description data.#{RESET}"
+      puts "#{ORANGE}No entities, skipping.#{RESET}"
+      job_post_object = nil
+    end
+    job_post_object
+  end
+
+  def self.extract_responsibilities(responsibilities)
+    puts "#{BLUE}Extracting responsibilities...#{RESET}"
+
+    responsibilities_data = call_inspect_predictions(
+      attribute_type: 'job_responsibilities',
+      input_text: responsibilities,
+      predict: true
+    )
+
+    parsed_responsibilities = responsibilities_data['entities']
+    corrected_responsibilities = validate_and_update_training_data(
+      responsibilities,
+      parsed_responsibilities,
+      'job_responsibilities'
+    )
+
+    if responsibilities_data['status'] == 'success' && corrected_responsibilities.any?
+      job_post_object = {
+        responsibilities: []
+      }
+
+      corrected_responsibilities.each do |entity|
+        case entity['label']
+        when 'RESPONSIBILITIES'
+          job_post_object[:responsibilities] << entity['token']
+        else
+          puts "#{RED}Unexpected label: #{entity['label']}#{RESET}"
+        end
+      end
+    else
+      puts "#{ORANGE}No entities, skipping.#{RESET}"
+      job_post_object = nil
     end
     job_post_object
   end
@@ -189,9 +226,10 @@ class JobPostServiceWithValidation
         end
       end
     else
-      puts "#{RED}Failed to extract qualifications data.#{RESET}"
+      puts "#{ORANGE}No entities, skipping.#{RESET}"
+      job_post_object = nil
     end
-    job_post_object.to_json
+    job_post_object
   end
 
   def self.extract_benefits(benefits)
@@ -268,7 +306,8 @@ class JobPostServiceWithValidation
         end
       end
     else
-      puts "#{RED}Failed to extract benefits data.#{RESET}"
+      puts "#{ORANGE}No entities, skipping.#{RESET}"
+      job_post_object = nil
     end
     job_post_object
   end
@@ -286,17 +325,18 @@ class JobPostServiceWithValidation
     corrected_compensation_data = validate_and_update_training_data(salary,
                                                                     compensation_data['entities'], 'salary')
 
-    job_post_object = {
-      job_salary_min: nil,
-      job_salary_max: nil,
-      job_salary_single: nil,
-      job_salary_currency: nil,
-      job_salary_interval: nil,
-      job_commitment: nil,
-      job_post_countries: []
-    }
     if compensation_data['status'] == 'success' && corrected_compensation_data.any?
-      corrected_compensation_data.each do |entity|
+      job_post_object = {
+        job_salary_min: nil,
+        job_salary_max: nil,
+        job_salary_single: nil,
+        job_salary_currency: nil,
+        job_salary_interval: nil,
+        job_commitment: nil,
+        job_post_countries: []
+      }
+
+      corrected_compensation.each do |entity|
         case entity['label']
         when 'SALARY_MIN'
           job_post_object[:job_salary_min] = entity['token'].gsub(',', '').to_i
@@ -317,7 +357,8 @@ class JobPostServiceWithValidation
         end
       end
     else
-      puts "#{RED}Failed to extract compensation data.#{RESET}"
+      puts "#{ORANGE}No entities, skipping.#{RESET}"
+      job_post_object = nil
     end
     job_post_object
   end
