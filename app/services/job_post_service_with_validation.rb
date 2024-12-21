@@ -40,7 +40,9 @@ class JobPostServiceWithValidation
 
     # puts "data return  / summary: #{data_return}"
 
-    data_return << { 'responsibilities' => responsibilities } if responsibilities
+    processed_responsibilities = extract_responsibilities(responsibilities)
+    data_return << { 'responsibilities' => processed_responsibilities || responsibilities }
+
     # puts "data return / responsibilities : #{data_return}"
 
     processed_qualifications = extract_qualifications(qualifications)
@@ -51,9 +53,10 @@ class JobPostServiceWithValidation
     data_return << { 'benefits' => processed_benefits } if processed_benefits
 
     # puts "data return /benefits : #{data_return}"
-
-    salary_data = extract_salary(processed_benefits[:job_compensation])
-    data_return << { 'salary' => salary_data } if salary_data
+    if processed_benefits[:job_compensation]
+      salary_data = extract_salary(processed_benefits[:job_compensation])
+      data_return << { 'salary' => salary_data } if salary_data
+    end
     # puts "data return / salary / final : #{data_return}"
 
     data_return
