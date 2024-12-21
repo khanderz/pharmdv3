@@ -611,33 +611,33 @@ class JobPostService
         label = label.to_s
         token = tokens[0]
 
-        if ENV['USE_VALIDATION'] == 'true' && $stdin.isatty
+        if $stdin.isatty
           puts "is token #{ORANGE}#{token}#{RESET} for label #{ORANGE}#{label}#{RESET} correct (yes/no)"
-          token_confirmation = gets.strip.downcase
+          token_confirmation = STDIN.gets.strip.downcase
           if token_confirmation != 'yes' && token_confirmation != 'y'
             puts 'Enter the correct token:'
-            token = gets.strip
+            token = STDIN.gets.strip
             corrections_exist = true
           end
 
           puts "Is the label #{ORANGE}#{label}#{RESET} for token #{ORANGE}#{token}#{RESET} correct? (yes/no)"
-          label_confirmation = gets.strip.downcase
+          label_confirmation = STDIN.gets.strip.downcase
           if label_confirmation != 'yes' && label_confirmation != 'y'
             puts "Select the correct label for token #{ORANGE}#{token}#{RESET}:"
             label_list.each_with_index do |lbl, idx|
               puts "#{idx}: #{lbl}"
             end
-            label_index = gets.strip.to_i
+            label_index = STDIN.gets.strip.to_i
             label = label_list[label_index] if label_index >= 0 && label_index < label_list.size
             corrections_exist = true
           end
 
           if corrections_exist
             puts "Enter start index for #{ORANGE}#{token}#{RESET}:"
-            start_value = gets.strip.to_i
+            start_value = STDIN.gets.strip.to_i
 
             puts "Enter end index for #{ORANGE}#{token}#{RESET}:"
-            end_value = gets.strip.to_i
+            end_value = STDIN.gets.strip.to_i
           end
 
           corrected_entities << {
@@ -648,28 +648,29 @@ class JobPostService
           }
         end
 
+        if $stdin.isatty
         loop do
           puts 'Are there any missing entities? (yes/no)'
-          missing_entities_confirmation = gets.strip.downcase
+          missing_entities_confirmation = STDIN.gets.strip.downcase
 
           break if missing_entities_confirmation != 'yes' && missing_entities_confirmation != 'y'
 
           puts 'Enter the token for the missing entity:'
-          token = gets.strip
+          token = STDIN.gets.strip
 
           puts "Select the correct label for token #{ORANGE}#{token}#{RESET}:"
           label_list.each_with_index do |lbl, idx|
             puts "#{idx}: #{lbl}"
           end
-          label_index = gets.strip.to_i
+          label_index = STDIN.gets.strip.to_i
           label = label_list[label_index] if label_index >= 0 && label_index < label_list.size
 
           puts "Enter start index for #{ORANGE}#{token}#{RESET}:"
-          start_value = gets.strip.to_i
+          start_value = STDIN.gets.strip.to_i
 
           puts "Enter end index for #{ORANGE}#{token}#{RESET}:"
-          end_value = gets.strip.to_i
-        end
+          end_value = STDIN.gets.strip.to_i
+
 
         corrected_entities << {
           'start' => start_value,
@@ -680,8 +681,8 @@ class JobPostService
 
         corrections_exist = true
       end
+    end
 
-      unless ENV['USE_VALIDATION'] == 'true' && $stdin.isatty
         new_training_data = {
           'text' => text,
           'entities' => corrected_entities
@@ -726,9 +727,13 @@ class JobPostService
       validation_attempts += 1
       break if validation_attempts >= max_attempts
 
-      puts 'Would you like to redo the corrections? (yes/no)'
-      redo_correction = gets.strip.downcase
-      break unless %w[yes y].include?(redo_correction)
+      if $stdin.isatty
+        puts 'Would you like to redo the corrections? (yes/no)'
+        redo_correction = STDIN.gets.strip.downcase
+        break unless %w[yes y].include?(redo_correction)
+      else
+        break
+      end
     end
 
     puts "#{RED}Validation failed after #{max_attempts} attempts. Exiting...#{RESET}"
