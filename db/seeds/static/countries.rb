@@ -9,6 +9,7 @@ countries = [
   { country_code: 'CH', country_name: 'Switzerland' },
   { country_code: 'DE', country_name: 'Germany' },
   { country_code: 'EG', country_name: 'Egypt' },
+  { country_code: 'EE', country_name: 'Estonia' },
   { country_code: 'ES', country_name: 'Spain' },
   { country_code: 'FR', country_name: 'France' },
   { country_code: 'GB', country_name: 'United Kingdom', aliases: ['UK', 'Great Britain'] },

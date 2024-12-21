@@ -4,20 +4,24 @@ cities = [
   { city_name: 'Atlanta' },
   { city_name: 'Austin',
     aliases: ['Downtown', 'East Austin', 'South Congress', 'Zilker', 'Hyde Park'] },
+  { city_name: 'Baltimore' },
   { city_name: 'Boston', aliases: ['Back Bay', 'South End', 'Fenway', 'Beacon Hill', 'Seaport'] },
   { city_name: 'Charlotte' },
   { city_name: 'Chicago',
     aliases: ['Loop', 'River North', 'Lincoln Park', 'Wicker Park', 'South Loop'] },
+    { city_name: 'Cincinnati' },
   { city_name: 'Dallas' },
   { city_name: 'Denver', aliases: ['LoDo', 'Capitol Hill', 'Cherry Creek', 'Highlands', 'RiNo'] },
   { city_name: 'Detroit' },
+  { city_name: 'Durham' },
   { city_name: 'Houston' },
   { city_name: 'Las Vegas' },
   { city_name: 'Los Angeles',
     aliases: ['Hollywood', 'Santa Monica', 'Beverly Hills', 'Venice', 'Downtown LA', 'Westwood',
-              'Silver Lake'] },
+              'Silver Lake', 'west hollywood'] },
   { city_name: 'Miami',
     aliases: ['Brickell', 'Wynwood', 'Little Havana', 'Coconut Grove', 'South Beach'] },
+    { city_name: 'Memphis' },
   { city_name: 'Minneapolis' },
   { city_name: 'Nashville' },
   { city_name: 'New York',
@@ -32,22 +36,25 @@ cities = [
   { city_name: 'San Diego' },
   { city_name: 'San Francisco',
     aliases: ['SOMA', 'Mission District', 'Financial District', 'Nob Hill', 'Castro',
-              'Pacific Heights', 'South San Fransisco'] },
+              'Pacific Heights', 'South San Fransisco', 'hayward'] },
   { city_name: 'San Jose' },
+  { city_name: 'Savannah' },
   { city_name: 'Seattle',
     aliases: ['Capitol Hill', 'Belltown', 'Ballard', 'Fremont', 'Queen Anne', 'South Lake Union'] },
+    { city_name: 'Tampa'},
   { city_name: 'Washington',
     aliases: ['Georgetown', 'Dupont Circle', 'Capitol Hill', 'Foggy Bottom', 'Adams Morgan',
-              'Columbia Heights'] },
+              'Columbia Heights', 'washington dc', 'washington d.c.'] },
 
   { city_name: 'Amsterdam' }, # Netherlands
+  { city_name: 'Barcelona' }, # Spain
   { city_name: 'Beijing' }, # China
   { city_name: 'Bengaluru' }, # India
   { city_name: 'Berlin' },  # Germany
   { city_name: 'Dublin' },  # Ireland
   { city_name: 'Johannesburg' }, # South Africa
   { city_name: 'Lisbon' },  # Portugal
-  { city_name: 'London' },  # United Kingdom
+  { city_name: 'London', aliases: ['greater london'] },  # United Kingdom
   { city_name: 'Melbourne' }, # Australia
   { city_name: 'Mexico City' }, # Mexico
   { city_name: 'Munich' },  # Germany

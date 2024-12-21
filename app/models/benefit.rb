@@ -2,11 +2,14 @@
 
 class Benefit < ApplicationRecord
   def self.find_or_create_benefit(benefit_name, company, job_post = nil)
-    benefit = where('LOWER(benefit_name) = ?', benefit_name.downcase)
-              .or(
-                where('EXISTS (SELECT 1 FROM UNNEST(aliases) AS alias WHERE LOWER(alias) = ?)',
-                      benefit_name.downcase)
-              ).first
+    return nil if benefit_name.nil? || benefit_name.strip.empty?
+
+    normalized_benefit_name = benefit_name.strip.downcase
+    
+    benefit = Benefit.all.find do |b|
+      b.benefit_name.downcase.include?(normalized_benefit_name) ||
+        b.aliases.any? { |alias_name| alias_name.downcase.include?(normalized_benefit_name) }
+    end
 
     unless benefit
       puts "#{RED}Benefit #{benefit_name} not found for #{job_post} or company : #{company}.#{RESET}"
