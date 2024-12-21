@@ -9,10 +9,11 @@ class Department < ApplicationRecord
   validates :dept_name, presence: true, uniqueness: true
 
   def self.find_department(department_name, job_url = nil)
-    department = where('LOWER(dept_name) = ?', department_name.downcase)
-    .or(where('LOWER(?) = ANY (aliases)', department_name.downcase))
-    .first
+    normalized_name = department_name.strip.downcase
 
+    department = where('LOWER(dept_name) = ?', normalized_name)
+                 .or(where('aliases::text ILIKE ?', "%#{normalized_name}%"))
+                 .first
     if department
       puts "#{GREEN}Department #{department_name} found in existing records.#{RESET}"
     else
