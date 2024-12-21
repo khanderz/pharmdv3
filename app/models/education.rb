@@ -35,15 +35,14 @@ class Education < ApplicationRecord
                                       .gsub(/[^a-z0-9\s']/i, '')
 
     degree_code_matches = Education.pluck(:education_code)
-                                      .compact
-                                      .map(&:downcase)
-                                      .select { |code| normalized_param.include?(code) }
-   
+                                   .compact
+                                   .map(&:downcase)
+                                   .select { |code| normalized_param.include?(code) }
+
     degree_name_matches = Education.pluck(:education_name)
-                                      .compact
-                                      .map(&:downcase)
-                                      .select { |name| normalized_param.include?(name) }
-   
+                                   .compact
+                                   .map(&:downcase)
+                                   .select { |name| normalized_param.include?(name) }
 
     matches = (degree_code_matches + degree_name_matches).uniq
 

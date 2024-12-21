@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class AddAliasesToStates < ActiveRecord::Migration[7.1]
   def change
     add_column :states, :aliases, :string, array: true, default: []
