@@ -9,6 +9,7 @@ states = [
   { state_code: 'CO', state_name: 'Colorado', country_code: 'US' },
   { state_code: 'CT', state_name: 'Connecticut', country_code: 'US' },
   { state_code: 'DE', state_name: 'Delaware', country_code: 'US' },
+  { state_code: 'DC', state_name: 'District of Columbia', country_code: 'US', aliases: ['Washington DC', 'Washington D.C.'] },
   { state_code: 'FL', state_name: 'Florida', country_code: 'US', aliases: ['Fla.'] },
   { state_code: 'GA', state_name: 'Georgia', country_code: 'US' },
   { state_code: 'HI', state_name: 'Hawaii', country_code: 'US' },
@@ -69,7 +70,18 @@ canadian_provinces = [
   { state_code: 'YT', state_name: 'Yukon', country_code: 'CA' }
 ]
 
-all_states = states + canadian_provinces
+australian_states = [
+  { state_code: 'ACT', state_name: 'Australian Capital Territory', country_code: 'AU' },
+  { state_code: 'NSW', state_name: 'New South Wales', country_code: 'AU' },
+  { state_code: 'NT', state_name: 'Northern Territory', country_code: 'AU' },
+  { state_code: 'QLD', state_name: 'Queensland', country_code: 'AU' },
+  { state_code: 'SA', state_name: 'South Australia', country_code: 'AU' },
+  { state_code: 'TAS', state_name: 'Tasmania', country_code: 'AU' },
+  { state_code: 'VIC', state_name: 'Victoria', country_code: 'AU' },
+  { state_code: 'WA', state_name: 'Western Australia', country_code: 'AU' }
+]
+
+all_states = states + canadian_provinces + australian_states
 
 seeded_count = 0
 existing_count = 0
