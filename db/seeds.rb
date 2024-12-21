@@ -41,6 +41,21 @@ load File.join(Rails.root, 'db', 'seeds', 'static', 'teams.rb')
 # 12. Job roles (depends on departments and teams)
 load File.join(Rails.root, 'db', 'seeds', 'static', 'job_roles.rb')
 
+#  Benefits
+load File.join(Rails.root, 'db', 'seeds', 'static', 'benefits.rb')
+
+#  Credentials
+load File.join(Rails.root, 'db', 'seeds', 'static', 'credentials.rb')
+
+# Educations
+load File.join(Rails.root, 'db', 'seeds', 'static', 'educations.rb')
+
+# Experiences
+load File.join(Rails.root, 'db', 'seeds', 'static', 'experiences.rb')
+
+# Skills
+load File.join(Rails.root, 'db', 'seeds', 'static', 'skills.rb')
+
 # 13. Job commitments
 load File.join(Rails.root, 'db', 'seeds', 'static', 'job_commitments.rb')
 
@@ -58,5 +73,8 @@ load File.join(Rails.root, 'db', 'seeds', 'static', 'job_seniorities.rb')
 
 # 18. Job posts (depends on companies, job roles, etc.)
 load File.join(Rails.root, 'db', 'seeds', 'job_posts.rb')
+
+# Membership types
+load File.join(Rails.root, 'db', 'seeds', 'static', 'membership_types.rb')
 
 puts '*************Seeding completed**************'
