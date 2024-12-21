@@ -5,11 +5,13 @@ states = [
   { state_code: 'AK', state_name: 'Alaska', country_code: 'US' },
   { state_code: 'AZ', state_name: 'Arizona', country_code: 'US' },
   { state_code: 'AR', state_name: 'Arkansas', country_code: 'US' },
-  { state_code: 'CA', state_name: 'California', country_code: 'US', aliases: ['Calif.', 'Golden State'] },
+  { state_code: 'CA', state_name: 'California', country_code: 'US',
+    aliases: ['Calif.', 'Golden State'] },
   { state_code: 'CO', state_name: 'Colorado', country_code: 'US' },
   { state_code: 'CT', state_name: 'Connecticut', country_code: 'US' },
   { state_code: 'DE', state_name: 'Delaware', country_code: 'US' },
-  { state_code: 'DC', state_name: 'District of Columbia', country_code: 'US', aliases: ['Washington DC', 'Washington D.C.'] },
+  { state_code: 'DC', state_name: 'District of Columbia', country_code: 'US',
+    aliases: ['Washington DC', 'Washington D.C.'] },
   { state_code: 'FL', state_name: 'Florida', country_code: 'US', aliases: ['Fla.'] },
   { state_code: 'GA', state_name: 'Georgia', country_code: 'US' },
   { state_code: 'HI', state_name: 'Hawaii', country_code: 'US' },
@@ -79,6 +81,21 @@ australian_states = [
   { state_code: 'TAS', state_name: 'Tasmania', country_code: 'AU' },
   { state_code: 'VIC', state_name: 'Victoria', country_code: 'AU' },
   { state_code: 'WA', state_name: 'Western Australia', country_code: 'AU' }
+]
+
+korean_states = [
+  { state_code: '서울특별시', state_name: 'Seoul', country_code: 'KR' },
+  { state_code: '부산광역시', state_name: 'Busan', country_code: 'KR' },
+  { state_code: '대구광역시', state_name: 'Daegu', country_code: 'KR' },
+  { state_code: '인천광역시', state_name: 'Incheon', country_code: 'KR' },
+  { state_code: '광주광역시', state_name: 'Gwangju', country_code: 'KR' },
+  { state_code: '대전광역시', state_name: 'Daejeon', country_code: 'KR' },
+  { state_code: '울산광역시', state_name: 'Ulsan', country_code: 'KR' },
+  { state_code: '세종특별자치시', state_name: 'Sejong', country_code: 'KR' },
+  { state_code: '경기도', state_name: 'Gyeonggi', country_code: 'KR', aliases: ['Gyeonggi-do'] },
+  { state_code: '강원도', state_name: 'Gangwon', country_code: 'KR' },
+  { state_code: '제주특별자치도', state_name: 'Jeju', country_code: 'KR' },
+  { state_code: '수원시', state_name: 'Suwon', country_code: 'KR', aliases: ['Suwon-si'] },
 ]
 
 all_states = states + canadian_provinces + australian_states
