@@ -5,6 +5,7 @@ import { CompanySize } from "./company_size.types";
 import { CompanySpecialty } from "./company_specialty.types";
 import { FundingType } from "./funding_type.types";
 import { HealthcareDomain } from "./healthcare_domain.types";
+import { CompanyTypes } from "./company_types.types";
 
 export interface Company extends Adjudicated {
   id: number;
@@ -17,7 +18,7 @@ export interface Company extends Adjudicated {
 
   linkedin_url?: string;
   company_url?: string;
-  company_type_id?: number;
+  company_type_id?: CompanyTypes["id"];
   year_founded?: number;
   acquired_by?: string;
 

@@ -256,6 +256,8 @@ export function FiltersProvider({ children }: FiltersProviderProps) {
     useState<AutocompleteOption | null>(null);
   const [searchQuery, setSearchQuery] = useState<string>("");
 
+  const [selectedBenefits, setSelectedBenefits] = useState<Benefit[]>([]);
+
   /* --------------------- Constants --------------------- */
   const companyFilters = useMemo(() => {
     const filters: any = {};
@@ -502,6 +504,16 @@ export function FiltersProvider({ children }: FiltersProviderProps) {
           field => field && field.toLowerCase().includes(lowerQuery),
         );
       });
+    }
+
+    if (selectedBenefits.length > 0) {
+      filtered = filtered.filter(jobPost =>
+        jobPost.job_post_benefits?.some(benefit =>
+          selectedBenefits.some(
+            selectedBenefit => selectedBenefit.id === benefit.benefit_id,
+          ),
+        ),
+      );
     }
 
     setFilteredJobPosts(filtered);

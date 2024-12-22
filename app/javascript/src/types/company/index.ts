@@ -4,6 +4,7 @@ import { FundingType } from "./funding_type.types";
 import { CompanySize } from "./company_size.types";
 import { CompanySpecialty } from "./company_specialty.types";
 import { Company } from "./company.types";
+import { CompanyTypes } from "./company_types.types";
 
 export {
   Company,
@@ -12,4 +13,5 @@ export {
   FundingType,
   CompanySize,
   CompanySpecialty,
+  CompanyTypes,
 };
