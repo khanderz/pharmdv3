@@ -16,8 +16,8 @@ Rails.application.routes.draw do
   resources :company_sizes, only: [:index] # When you only need to list records
 
   resources :job_posts, defaults: { format: :json }
-  resources :job_salary_currencies, only: [:index]
-  resources :job_salary_intervals, only: :index
+  resources :job_salary_currencies, defaults: { format: :json }, only: [:index]
+  resources :job_salary_intervals, defaults: { format: :json }, only: [:index]
   resources :job_settings, defaults: { format: :json }
   resources :job_commitments, defaults: { format: :json }
   resources :benefits, defaults: { format: :json }, only: [:index]

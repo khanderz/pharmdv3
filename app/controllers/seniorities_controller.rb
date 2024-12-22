@@ -1,6 +1,6 @@
 class SenioritiesController < ApplicationController
     def index
-      @seniorities = Seniority.all
+      @seniorities = JobSeniority.all
       render json: @seniorities
     end
 end

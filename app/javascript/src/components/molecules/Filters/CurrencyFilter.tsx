@@ -13,8 +13,8 @@ export const CurrencyFilter = () => {
   } = useFiltersContext();
 
   const options: AutocompleteOption[] = currencies.map(currency => ({
-    key: currency.key,
-    value: currency.label,
+    id: currency.key,
+    currency_code: currency.label,
   }));
 
   const selectedOption = options.find(
@@ -33,8 +33,8 @@ export const CurrencyFilter = () => {
         ) || { key: 14, value: "USD" };
 
         setSelectedSalaryCurrency({
-          key: selected.key,
-          label: selected.value,
+          id: selected.key,
+          currency_code: selected.value,
         } as JobSalaryCurrency);
       }}
       loading={currenciesLoading}
