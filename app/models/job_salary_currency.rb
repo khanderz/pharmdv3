@@ -7,7 +7,7 @@ class JobSalaryCurrency < ApplicationRecord
   has_many :adjudications, as: :adjudicatable, dependent: :destroy
 
   validates :currency_code, presence: true, uniqueness: true
-  validates :currency_sign, presence: true, uniqueness: true
+  validates :currency_sign, presence, allow_nil: true
 
   def self.find_or_adjudicate_currency(identifier, company_id, job_url)
     return nil if identifier.nil?
@@ -16,6 +16,7 @@ class JobSalaryCurrency < ApplicationRecord
     unless currency
       new_currency = JobSalaryCurrency.create!(
         currency_code: identifier,
+        currency_sign: nil,
         error_details: "Currency with code or symbol '#{identifier}' not found and needs adjudication.",
         resolved: false
       )
