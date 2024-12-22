@@ -8,53 +8,91 @@ class JobPostsController < ApplicationController
       domain_ids = params[:domain_ids]
       @job_posts = JobPost.joins(company: :healthcare_domains)
                           .where('healthcare_domains.id IN (?)', domain_ids)
-                          .includes(company: { company_specialties: [],
-                                               company_domains: :healthcare_domain })
-
+                          .includes(
+                            :job_post_benefits,
+                            :job_post_cities,
+                            :job_post_countries,
+                            :job_post_credentials,
+                            :job_post_educations,
+                            :job_post_experiences,
+                            :job_post_seniorities,
+                            :job_post_skills,
+                            :job_post_states,
+                            company: [
+                              :company_specialties,
+                              { company_domains: :healthcare_domain }
+                            ]
+                          )
     else
-      @job_posts = JobPost.includes(company: { company_specialties: [],
-                                               company_domains: :healthcare_domain }).all
+      @job_posts = JobPost.includes(
+        :job_post_benefits,
+        :job_post_cities,
+        :job_post_countries,
+        :job_post_credentials,
+        :job_post_educations,
+        :job_post_experiences,
+        :job_post_seniorities,
+        :job_post_skills,
+        :job_post_states,
+        company: [
+          :company_specialties,
+          { company_domains: :healthcare_domain }
+        ]
+      ).all
     end
-
+  
     if params[:salary_min].present?
-      @job_posts = @job_posts.where('job_salary_min >= ?',
-                                    params[:salary_min])
+      @job_posts = @job_posts.where('job_salary_min >= ?', params[:salary_min])
     end
     if params[:salary_max].present?
-      @job_posts = @job_posts.where('job_salary_max <= ?',
-                                    params[:salary_max])
+      @job_posts = @job_posts.where('job_salary_max <= ?', params[:salary_max])
     end
-
     if params[:job_salary_currency_id].present?
       @job_posts = @job_posts.where(job_salary_currency_id: params[:job_salary_currency_id])
     end
-
-    render json: @job_posts.as_json(include: {
-                                      company: {
-                                        include: {
-                                          company_specialties: {},
-                                          company_domains: { include: :healthcare_domain }
-                                        }
-                                      }
-                                    })
+  
+    render json: @job_posts.as_json(
+      include: {
+        job_post_benefits: { only: [:id, :benefit_id] },
+        job_post_cities: { only: [:id, :city_id] },
+        job_post_countries: { only: [:id, :country_id] },
+        job_post_credentials: { only: [:id, :credential_id] },
+        job_post_educations: { only: [:id, :education_id] },
+        job_post_experiences: { only: [:id, :experience_id] },
+        job_post_seniorities: { only: [:id, :job_seniority_id] },
+        job_post_skills: { only: [:id, :skill_id] },
+        job_post_states: { only: [:id, :state_id] },
+        company: {
+          include: {
+            company_specialties: {},
+            company_domains: { include: :healthcare_domain }
+          }
+        }
+      }
+    )
   end
-
-  # GET /job_posts/1 or /job_posts/1.json
+  
   def show
-    render json: @job_post.as_json(include: {
-                                     company: {
-                                       include: {
-                                         company_specialties: {},
-                                         company_domains: { include: :healthcare_domain }
-                                       }
-                                     }
-                                   })
-  end
-
-  # GET /job_posts/new
-  def new
-    @job_post = JobPost.new
-  end
+    render json: @job_post.as_json(
+      include: {
+        job_post_benefits: { only: [:id, :benefit_id] },
+        job_post_cities: { only: [:id, :city_id] },
+        job_post_countries: { only: [:id, :country_id] },
+        job_post_credentials: { only: [:id, :credential_id] },
+        job_post_educations: { only: [:id, :education_id] },
+        job_post_experiences: { only: [:id, :experience_id] },
+        job_post_seniorities: { only: [:id, :job_seniority_id] },
+        job_post_skills: { only: [:id, :skill_id] },
+        job_post_states: { only: [:id, :state_id] },
+        company: {
+          include: {
+            company_specialties: {},
+            company_domains: { include: :healthcare_domain }
+          }
+        }
+      }
+    )
+  end  
 
   # GET /job_posts/1/edit
   def edit; end

@@ -55,16 +55,16 @@ export const JobCard = ({
             ? healthcare_domains.join(", ")
             : "N/A"}
         </Typography>
-        <Attribute label="Posted Date" value={jobPostDate} />
-        {/* <Typography variant="body2" sx={{ mt: 1 }}>
-          Job Posted Date: {jobPostDate || "N/A"}
-        </Typography> */}
-        <Typography variant="body2" sx={{ mt: 1 }}>
-          Location: {job_location || "N/A"}
-        </Typography>
-        <Typography variant="body2" sx={{ mt: 1 }}>
-          Job Commitment Type: {job_commitment || "N/A"}
-        </Typography>
+        <Attribute
+          label="Posted Date"
+          value={jobPostDate || "Not provided by job post"}
+        />
+        <Attribute label="Location" value={job_location || "N/A"} />
+        <Attribute
+          label="Job Commitment Type"
+          value={job_commitment || "N/A"}
+        />
+
         <Button
           variant="contained"
           color="primary"

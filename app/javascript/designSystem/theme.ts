@@ -15,6 +15,8 @@ declare module "@mui/material/Typography" {
   }
 }
 
+const fontFamily = ["Archivo", "Arial", "sans-serif"].join(",");
+
 export const theme = {
   palette: {
     primary: {
@@ -76,11 +78,11 @@ export const theme = {
     },
   },
   typography: {
-    fontFamily: ["Archivo", "Arial", "sans-serif"].join(","),
+    fontFamily: fontFamily,
     title: {
       fontSize: "2rem",
       fontWeight: 100,
-      fontFamily: ["Archivo", "Arial", "sans-serif"].join(","),
+      fontFamily: fontFamily,
       letterSpacing: "0.1em",
 
       lineHeight: 1.4,
@@ -144,6 +146,13 @@ export const theme = {
       fontWeight: 400,
       letterSpacing: "0.05em",
       lineHeight: 1.4,
+    },
+    key: {
+      fontSize: "0.9rem",
+      fontWeight: 700,
+      letterSpacing: "0.05em",
+      lineHeight: 1.4,
+      fontFamily: fontFamily,
     },
   },
   components: {

@@ -73,15 +73,11 @@ export const SearchPage = () => {
                 <>
                   <Grid container spacing={3} data-testid="job-cards-container">
                     {paginatedJobPosts.map(jobPost => {
+                      console.log(jobPost);
                       const jobCommitmentType = jobCommitments.find(
                         commitment =>
                           commitment.id === jobPost.job_commitment_id,
                       );
-
-                      const companySpecialties =
-                        jobPost.company.company_specialties.map(
-                          specialty => specialty.value,
-                        );
 
                       const jobSetting = jobSettings.find(
                         setting => setting.id === jobPost.job_setting_id,
@@ -101,7 +97,6 @@ export const SearchPage = () => {
                             title={jobPost.job_title}
                             company_name={jobPost.company.company_name}
                             job_applyUrl={jobPost.job_url}
-                            company_specialty={companySpecialties}
                             job_posted={jobPost.job_posted}
                             job_location={locations}
                             job_setting={

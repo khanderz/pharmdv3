@@ -7,11 +7,10 @@ interface AttributeProps {
 }
 
 export const Attribute = ({ label, value }: AttributeProps) => {
-  console.log("AttributeProps", label, value);
   return (
-    <Grid container flexDirection="row">
+    <Grid container flexDirection="row" columnSpacing={1} sx={{ m: 0.5 }}>
       <Grid item>
-        <Typography variant="body2">{label}:</Typography>
+        <Typography variant="key">{label}:</Typography>
       </Grid>
       <Grid item>
         <Typography variant="body2">{value}</Typography>

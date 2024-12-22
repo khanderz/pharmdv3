@@ -53,11 +53,11 @@ class JobPostService
     data_return << { 'benefits' => processed_benefits } if processed_benefits
 
     # puts "data return /benefits : #{data_return}"
-    if processed_benefits[:job_compensation]
+    if processed_benefits && processed_benefits[:job_compensation]
       salary_data = extract_salary(processed_benefits[:job_compensation])
       data_return << { 'salary' => salary_data } if salary_data
     end
-    # puts "data return / salary / final : #{data_return}"
+    puts "data return / salary / final : #{data_return}"
 
     data_return
   end
@@ -331,8 +331,10 @@ class JobPostService
       job_commitment: nil,
       job_post_countries: []
     }
-    if compensation_data['status'] == 'success' && corrected_compensation_data.any?
-      compensation_data['entities'].each do |label, tokens|
+
+    parsed_salaries = compensation_data['entities']
+    if compensation_data['status'] == 'success' && parsed_salaries.any?
+      parsed_salaries.each do |label, tokens|
         next unless tokens.is_a?(Array)
 
         tokens.each do |token|
