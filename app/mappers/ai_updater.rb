@@ -37,7 +37,7 @@ class AiUpdater
   end
 
   def self.update_with_ai(job_post_data, job, company, location_info)
-    use_validation = true
+    use_validation = false
     ai_data = use_validation ? JobPostServiceWithValidation.split_descriptions(job) : JobPostService.split_descriptions(job)
     updated = false
 
