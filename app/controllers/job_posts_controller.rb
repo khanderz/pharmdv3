@@ -40,7 +40,7 @@ class JobPostsController < ApplicationController
         ]
       ).all
     end
-  
+
     if params[:salary_min].present?
       @job_posts = @job_posts.where('job_salary_min >= ?', params[:salary_min])
     end
@@ -50,18 +50,18 @@ class JobPostsController < ApplicationController
     if params[:job_salary_currency_id].present?
       @job_posts = @job_posts.where(job_salary_currency_id: params[:job_salary_currency_id])
     end
-  
+
     render json: @job_posts.as_json(
       include: {
-        job_post_benefits: { only: [:id, :benefit_id] },
-        job_post_cities: { only: [:id, :city_id] },
-        job_post_countries: { only: [:id, :country_id] },
-        job_post_credentials: { only: [:id, :credential_id] },
-        job_post_educations: { only: [:id, :education_id] },
-        job_post_experiences: { only: [:id, :experience_id] },
-        job_post_seniorities: { only: [:id, :job_seniority_id] },
-        job_post_skills: { only: [:id, :skill_id] },
-        job_post_states: { only: [:id, :state_id] },
+        job_post_benefits: { only: %i[id benefit_id] },
+        job_post_cities: { only: %i[id city_id] },
+        job_post_countries: { only: %i[id country_id] },
+        job_post_credentials: { only: %i[id credential_id] },
+        job_post_educations: { only: %i[id education_id] },
+        job_post_experiences: { only: %i[id experience_id] },
+        job_post_seniorities: { only: %i[id job_seniority_id] },
+        job_post_skills: { only: %i[id skill_id] },
+        job_post_states: { only: %i[id state_id] },
         company: {
           include: {
             company_specialties: {},
@@ -71,19 +71,19 @@ class JobPostsController < ApplicationController
       }
     )
   end
-  
+
   def show
     render json: @job_post.as_json(
       include: {
-        job_post_benefits: { only: [:id, :benefit_id] },
-        job_post_cities: { only: [:id, :city_id] },
-        job_post_countries: { only: [:id, :country_id] },
-        job_post_credentials: { only: [:id, :credential_id] },
-        job_post_educations: { only: [:id, :education_id] },
-        job_post_experiences: { only: [:id, :experience_id] },
-        job_post_seniorities: { only: [:id, :job_seniority_id] },
-        job_post_skills: { only: [:id, :skill_id] },
-        job_post_states: { only: [:id, :state_id] },
+        job_post_benefits: { only: %i[id benefit_id] },
+        job_post_cities: { only: %i[id city_id] },
+        job_post_countries: { only: %i[id country_id] },
+        job_post_credentials: { only: %i[id credential_id] },
+        job_post_educations: { only: %i[id education_id] },
+        job_post_experiences: { only: %i[id experience_id] },
+        job_post_seniorities: { only: %i[id job_seniority_id] },
+        job_post_skills: { only: %i[id skill_id] },
+        job_post_states: { only: %i[id state_id] },
         company: {
           include: {
             company_specialties: {},
@@ -92,7 +92,7 @@ class JobPostsController < ApplicationController
         }
       }
     )
-  end  
+  end
 
   # GET /job_posts/1/edit
   def edit; end
