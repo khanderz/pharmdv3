@@ -1,26 +1,24 @@
-// app/javascript/src/hooks/get_currencies.ts
-
-import { JobSalaryCurrency } from "@customtypes/job_post";
 import { useState, useEffect } from "react";
+import { Education } from "@customtypes/job_post";
 
-export const getCurrencies = () => {
-  const [currencies, setCurrencies] = useState<JobSalaryCurrency[]>([]);
+export const useEducations = () => {
+  const [educations, setEducations] = useState<Education[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    const fetchCurrencies = async () => {
+    const fetchEducations = async () => {
       try {
         setLoading(true);
         setError(null);
 
-        const response = await fetch("/job_salary_currencies.json");
+        const response = await fetch("/educations.json");
         if (!response.ok) {
-          throw new Error(`Error fetching currencies: ${response.status}`);
+          throw new Error(`Error fetching educations: ${response.status}`);
         }
 
         const data = await response.json();
-        setCurrencies(data);
+        setEducations(data);
       } catch (err) {
         setError(
           err instanceof Error ? err.message : "An unknown error occurred",
@@ -30,8 +28,8 @@ export const getCurrencies = () => {
       }
     };
 
-    fetchCurrencies();
+    fetchEducations();
   }, []);
 
-  return { currencies, loading, error };
+  return { educations, loading, error };
 };

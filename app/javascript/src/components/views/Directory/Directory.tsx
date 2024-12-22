@@ -4,7 +4,7 @@ import { LicenseInfo } from "@mui/x-license-pro";
 import { Container, Grid, Pagination } from "@mui/material";
 import { DirectoryTable } from "./DirectoryTable";
 import { FilterPanel } from "@components/organisms/FilterPanel/FilterPanel";
-import { useApiKey } from "@hooks/get_api_var";
+import { useApiKey } from "@hooks";
 import { useFiltersContext } from "@javascript/providers/FiltersProvider";
 
 const COMPANIES_PER_PAGE = 10;

@@ -26,7 +26,7 @@ import {
   useJobCommitments,
   useJobSettings,
   useCompanySizes,
-  getCurrencies,
+  useJobSalaryCurrencies,
   useCompanies,
 } from "@hooks";
 import dayjs from "dayjs";
@@ -221,7 +221,7 @@ export function FiltersProvider({ children }: FiltersProviderProps) {
     currencies: allCurrencies,
     loading: currenciesLoading,
     error: currenciesError,
-  } = getCurrencies();
+  } = useJobSalaryCurrencies();
 
   /* --------------------- States --------------------- */
 

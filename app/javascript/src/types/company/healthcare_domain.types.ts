@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useHealthcareDomains } from "@javascript/hooks";
+import { useHealthcareDomains } from "@hooks";
 
 const [healthcareDomains, setHealthcareDomains] = useState<
   { id: number; key: string; value: string }[]

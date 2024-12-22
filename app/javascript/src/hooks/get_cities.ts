@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Cities } from "@customtypes/location.types";
+import { Cities } from "@customtypes/cities.types";
 
 export const useCities = () => {
   const [cities, setCities] = useState<Cities[]>([]);

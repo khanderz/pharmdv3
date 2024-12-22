@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useCompanySizes } from "@javascript/hooks";
+import { useCompanySizes } from "@hooks";
 
 const [companySizes, setCompanySizes] = useState<
   {

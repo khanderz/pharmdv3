@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { HealthcareDomain } from "./healthcare_domain.types";
-import { useCompanySpecialties } from "@javascript/hooks";
+import { useCompanySpecialties } from "hooks";
 
 const [companySpecialties, setCompanySpecialties] = useState<
   { id: number; key: string; value: string }[]

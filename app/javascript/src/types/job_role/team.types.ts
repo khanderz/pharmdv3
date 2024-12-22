@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Adjudicated } from "../adjudication.types";
-import { useTeams } from "@javascript/hooks";
+import { useTeams } from "@hooks";
 
 const [teams, setTeams] = useState<
   {

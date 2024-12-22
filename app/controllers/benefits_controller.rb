@@ -1,2 +1,7 @@
 class BenefitsController < ApplicationController
-end
+    def index
+      @benefits = Benefit.all
+      render json: @benefits
+    end
+  end
+  

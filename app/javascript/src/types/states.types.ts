@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { Adjudicated } from "./adjudication.types";
-import { useStates } from "@javascript/hooks";
-import { Country } from "./location.types";
+import { useStates } from "@hooks";
+import { Country } from "@customtypes/countries.types";
 
 const [states, setStates] = useState<
   {

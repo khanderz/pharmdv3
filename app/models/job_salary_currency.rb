@@ -7,7 +7,7 @@ class JobSalaryCurrency < ApplicationRecord
   has_many :adjudications, as: :adjudicatable, dependent: :destroy
 
   validates :currency_code, presence: true, uniqueness: true
-  validates :currency_sign, presence, allow_nil: true
+  validates :currency_sign, uniqueness: true, allow_nil: true
 
   def self.find_or_adjudicate_currency(identifier, company_id, job_url)
     return nil if identifier.nil?

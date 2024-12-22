@@ -1,15 +1,24 @@
-export enum JobCommitmentEnum {
-  CONTRACTOR = "Contractor",
-  FREELANCE = "Freelance",
-  FULL_TIME = "Full-time",
-  INTERNSHIP = "Internship",
-  PART_TIME = "Part-time",
-  PER_DIEM = "Per Diem",
-  TEMPORARY = "Temporary",
-  VOLUNTEER = "Volunteer",
-}
+import { useState, useEffect } from "react";
+import { useJobCommitments } from "@hooks";
 
-export interface JobCommitment {
-  id: number;
-  commitment_name: keyof typeof JobCommitmentEnum;
+const [commitments, setCommitments] = useState<
+  {
+    id: number;
+    commitment_name: string;
+  }[]
+>([]);
+
+const { commitments: allCommitments } = useJobCommitments();
+
+useEffect(() => {
+  if (allCommitments) {
+    setCommitments(allCommitments);
+  }
+}, [allCommitments]);
+
+export type Commitments = (typeof commitments)[number];
+
+export interface Commitment {
+  id: Commitments["id"];
+  commitment_name: Commitments["commitment_name"];
 }

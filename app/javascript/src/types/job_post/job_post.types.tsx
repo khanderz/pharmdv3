@@ -1,7 +1,7 @@
 import { JobCommitment, JobSalaryInterval, JobSalaryCurrency } from ".";
 import { Adjudicated } from "../adjudication.types";
 import { Department, JobRole, Team } from "../job_role";
-import { Company } from "../company/company.types";
+import { Company } from "@customtypes/company";
 
 export interface JobPost extends Adjudicated {
   id: number;

@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Adjudicated } from "../adjudication.types";
-import { useJobRoles } from "@javascript/hooks";
+import { useJobRoles } from "@hooks";
 
 const [jobRoles, setJobRoles] = useState<
   {

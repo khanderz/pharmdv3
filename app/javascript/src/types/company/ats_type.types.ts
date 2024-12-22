@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useAtsTypes } from "@javascript/hooks";
+import { useAtsTypes } from "@hooks";
 
 const [atsTypes, setAtsTypes] = useState<
   {

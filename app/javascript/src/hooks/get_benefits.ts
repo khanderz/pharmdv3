@@ -1,24 +1,24 @@
 import { useState, useEffect } from "react";
-import { States } from "@customtypes/states.types";
+import { Benefit } from "@customtypes/job_post";
 
-export const useStates = () => {
-  const [states, setStates] = useState<States[]>([]);
+export const useBenefits = () => {
+  const [benefits, setBenefits] = useState<Benefit[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    const fetchStates = async () => {
+    const fetchBenefits = async () => {
       try {
         setLoading(true);
         setError(null);
 
-        const response = await fetch("/states.json");
+        const response = await fetch("/benefits.json");
         if (!response.ok) {
-          throw new Error(`Error fetching states: ${response.status}`);
+          throw new Error(`Error fetching benefits: ${response.status}`);
         }
 
         const data = await response.json();
-        setStates(data);
+        setBenefits(data);
       } catch (err) {
         setError(
           err instanceof Error ? err.message : "An unknown error occurred",
@@ -28,8 +28,8 @@ export const useStates = () => {
       }
     };
 
-    fetchStates();
+    fetchBenefits();
   }, []);
 
-  return { states, loading, error };
+  return { benefits, loading, error };
 };

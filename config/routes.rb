@@ -20,6 +20,12 @@ Rails.application.routes.draw do
   resources :job_salary_intervals, only: :index
   resources :job_settings, defaults: { format: :json }
   resources :job_commitments, defaults: { format: :json }
+  resources :benefits, defaults: { format: :json }, only: [:index]
+  resources :credentials, defaults: { format: :json }, only: [:index]
+  resources :educations, defaults: { format: :json }, only: [:index]
+  resources :experiences, defaults: { format: :json }, only: [:index]
+  resources :seniorities, defaults: { format: :json }, only: [:index]
+  resources :skills, defaults: { format: :json }, only: [:index]
 
   resources :departments, defaults: { format: :json }
   resources :teams, defaults: { format: :json }

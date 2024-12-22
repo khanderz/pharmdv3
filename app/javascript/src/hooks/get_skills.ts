@@ -1,24 +1,24 @@
 import { useState, useEffect } from "react";
-import { States } from "@customtypes/states.types";
+import { Skill } from "@customtypes/job_post";
 
-export const useStates = () => {
-  const [states, setStates] = useState<States[]>([]);
+export const useSkills = () => {
+  const [skills, setSkills] = useState<Skill[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    const fetchStates = async () => {
+    const fetchSkills = async () => {
       try {
         setLoading(true);
         setError(null);
 
-        const response = await fetch("/states.json");
+        const response = await fetch("/skills.json");
         if (!response.ok) {
-          throw new Error(`Error fetching states: ${response.status}`);
+          throw new Error(`Error fetching skills: ${response.status}`);
         }
 
         const data = await response.json();
-        setStates(data);
+        setSkills(data);
       } catch (err) {
         setError(
           err instanceof Error ? err.message : "An unknown error occurred",
@@ -28,8 +28,8 @@ export const useStates = () => {
       }
     };
 
-    fetchStates();
+    fetchSkills();
   }, []);
 
-  return { states, loading, error };
+  return { skills, loading, error };
 };

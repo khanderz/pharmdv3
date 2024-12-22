@@ -1,7 +1,7 @@
 // app/javascript/src/types/company/funding_type.types.ts
 
 import { useState, useEffect } from "react";
-import { useFundingTypes } from "@javascript/hooks";
+import { useFundingTypes } from "@hooks";
 
 const [fundingTypes, setFundingTypes] = useState<
   {

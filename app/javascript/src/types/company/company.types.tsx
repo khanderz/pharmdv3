@@ -1,11 +1,13 @@
 import { Adjudicated } from "../adjudication.types";
-import { City, State, Country } from "../location.types";
 import { AtsType } from "./ats_type.types";
 import { CompanySize } from "./company_size.types";
 import { CompanySpecialty } from "./company_specialty.types";
 import { FundingType } from "./funding_type.types";
 import { HealthcareDomain } from "./healthcare_domain.types";
-import { CompanyTypes } from "./company_types.types";
+import { CompanyType } from "./company_type.types";
+import { City } from "../cities.types";
+import { Country } from "../countries.types";
+import { State } from "../states.types";
 
 export interface Company extends Adjudicated {
   id: number;
@@ -18,7 +20,7 @@ export interface Company extends Adjudicated {
 
   linkedin_url?: string;
   company_url?: string;
-  company_type_id?: CompanyTypes["id"];
+  company_type_id?: CompanyType["id"];
   year_founded?: number;
   acquired_by?: string;
 
