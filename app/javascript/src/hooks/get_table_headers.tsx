@@ -1,6 +1,7 @@
-import { GridCellParams, GridColDef } from "@mui/x-data-grid";
+import * as xDataGridPro from "@mui/x-data-grid-pro";
 import React from "react";
 import { KeyboardArrowUp, KeyboardArrowDown } from "@mui/icons-material";
+import { ListItem, Chip } from "@mui/material";
 
 interface TableHeaderProps {
   open: boolean;
@@ -14,12 +15,12 @@ export interface HeaderProps {
   type: string;
   headerAlign: string;
   align: string;
-  renderCell?: (params: GridCellParams) => React.ReactNode;
+  renderCell?: (params: xDataGridPro.GridCellParams) => React.ReactNode;
 }
 
 export const dataHeaders: HeaderProps[] = ({
   open,
-}: TableHeaderProps): GridColDef[] => {
+}: TableHeaderProps): xDataGridPro.GridColDef[] => {
   type GridAlignment = "left" | "right" | "center";
 
   return [
@@ -30,7 +31,7 @@ export const dataHeaders: HeaderProps[] = ({
       type: "singleSelect",
       headerAlign: "center" as GridAlignment,
       align: "center",
-      renderCell: (params: GridCellParams) =>
+      renderCell: (params: xDataGridPro.GridCellParams) =>
         open ? <KeyboardArrowUp /> : <KeyboardArrowDown />,
     },
     {
@@ -46,16 +47,17 @@ export const dataHeaders: HeaderProps[] = ({
       headerName: "Healthcare Domains",
       field: "healthcare_domains",
       nestedKey: "value",
-      flex: 1,
+      flex: 2,
       type: "array",
       headerAlign: "center" as GridAlignment,
       align: "center",
+      renderCell: renderChip,
     },
     {
       headerName: "Company Size",
       field: "company_size",
       nestedKey: "size_range",
-      flex: 1,
+      flex: 0.5,
       type: "number",
       headerAlign: "center" as GridAlignment,
       align: "center",
@@ -64,10 +66,27 @@ export const dataHeaders: HeaderProps[] = ({
       headerName: "Company Active",
       field: "operating_status",
       nestedKey: null,
-      flex: 1,
+      flex: 0.5,
       type: "boolean",
       headerAlign: "center" as GridAlignment,
       align: "center",
     },
   ];
+};
+
+export interface ChipProps {
+  value: string | string[];
+  variant?: "outlined" | "filled";
+}
+
+export const renderChip = ({ value, variant = "outlined" }: ChipProps) => {
+  const values = Array.isArray(value) ? value : [value];
+
+  return (
+    <ListItem>
+      {values.map((val, index) => (
+        <Chip key={index} label={val} variant={variant} sx={{ mx: 0.5 }} />
+      ))}
+    </ListItem>
+  );
 };
