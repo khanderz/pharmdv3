@@ -190,6 +190,16 @@ export const theme = {
           "&:hover": {
             backgroundColor: "#f0eff9",
           },
+          "& .MuiFormControl-root.Mui-disabled, & .MuiTextField-root.Mui-disabled, & .MuiInputBase-root.Mui-disabled":
+            {
+              pointerEvents: "none",
+              backgroundColor: "#eae8f3",
+            },
+          "& .MuiFormControl-root:hover, & .MuiTextField-root:hover, & .MuiInputBase-root:hover":
+            {
+              backgroundColor: "#b9b8cf",
+              borderColor: "#b9b8cf",
+            },
         },
         endAdornment: {
           ".MuiAutocomplete-popupIndicator": {

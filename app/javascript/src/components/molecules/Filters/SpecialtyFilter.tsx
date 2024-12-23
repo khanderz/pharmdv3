@@ -23,6 +23,7 @@ export const SpecialtyFilter = () => {
   });
   return (
     <Autocomplete
+      disable
       id={"specialty-autocomplete"}
       multiple
       inputLabel="Specialties"

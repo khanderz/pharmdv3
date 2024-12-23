@@ -24,6 +24,7 @@ export type AutocompleteProps = {
   sx?: Record<string, any>;
   inputValue?: string;
   onInputChange?: (event: React.ChangeEvent<{}>, value: string) => void;
+  disable?: boolean;
 };
 
 export const Autocomplete = ({
@@ -37,6 +38,7 @@ export const Autocomplete = ({
   sx,
   inputValue,
   onInputChange,
+  disable = false,
 }: AutocompleteProps) => {
   const valueProp = value ?? (multiple ? [] : null);
 
@@ -50,6 +52,7 @@ export const Autocomplete = ({
     >
       <MuiAutocomplete
         fullWidth
+        disabled={disable}
         data-testid={`${inputLabel}-autocomplete`}
         value={valueProp}
         multiple={multiple}
@@ -72,8 +75,12 @@ export const Autocomplete = ({
           <MuiTextField
             {...params}
             label={inputLabel}
+            disabled={disable}
             variant="outlined"
             placeholder={inputLabel}
+            sx={{
+              backgroundColor: disable ? "grayscale.disabled" : "transparent",
+            }}
           />
         )}
       />
