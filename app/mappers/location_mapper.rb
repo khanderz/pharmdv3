@@ -45,26 +45,26 @@ class LocationMapper
 
   def determine_location_type(city_name, state_name, country_name, job_setting)
     puts "determine_location_type : city_name: #{city_name} state_name: #{state_name} country_name: #{country_name} job_setting: #{job_setting}"
+  
     contains_remote = job_setting == 'Remote'
     contains_city = city_name.present?
-    contains_state_or_country = if state_name.present? || country_name.present?
-
-                                  puts "#{BLUE}contains_remote: #{contains_remote} contains_city: #{contains_city} contains_state_or_country: #{contains_state_or_country} #{RESET}"
-
-                                  if contains_remote && contains_city
-                                    'Hybrid'
-                                  elsif contains_remote && contains_state_or_country
-                                    'Flexible'
-                                  elsif contains_remote
-                                    'Remote'
-                                  elsif contains_city && !contains_remote
-                                    'On-site'
-                                  else
-                                    job_setting
-                                  end
-                                end
+    contains_state_or_country = state_name.present? || country_name.present?
+  
+    puts "#{BLUE}contains_remote: #{contains_remote} contains_city: #{contains_city} contains_state_or_country: #{contains_state_or_country} #{RESET}"
+  
+    if contains_remote && contains_city
+      'Hybrid'
+    elsif contains_remote && contains_state_or_country
+      'Flexible'
+    elsif contains_remote
+      'Remote'
+    elsif contains_city && !contains_remote
+      'On-site'
+    else
+      job_setting
+    end
   end
-
+  
   def default_location(location_type)
     {
       city_name: nil,
@@ -136,7 +136,7 @@ class LocationMapper
   end
 
   def find_location(city_name, state_name = nil, country_name = nil)
-    city = City.find_city_only(city_name)
+    city = city_name ? City.find_city_only(city_name) : nil
     state = state_name ? State.find_state_only(state_name) : nil
     country = country_name ? Country.find_country_only(nil, country_name) : nil
     setting = JobSetting.find_setting(city_name)

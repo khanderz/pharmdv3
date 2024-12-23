@@ -1,11 +1,5 @@
 import React, { useState, useEffect } from "react";
-import {
-  DataGridPro,
-  GridRowParams,
-  MuiEvent,
-  useGridApiRef,
-  DataGridProProps,
-} from "@mui/x-data-grid-pro";
+import * as xDataGridPro from "@mui/x-data-grid-pro";
 
 import {
   Box,
@@ -41,23 +35,25 @@ export const DirectoryTable = ({
   rows,
 }: TableProps): React.JSX.Element => {
   const [open, setOpen] = useState(false);
-  const apiRef = useGridApiRef();
+  const apiRef = xDataGridPro.useGridApiRef();
 
-  const renderDataHeaders: HeaderProps = dataHeaders({ open });
-  const dataAccessors = renderDataHeaders.map((header: GridColDef) => {
-    // if (header.nestedKey) {
-    //   return (row: any) => {
-    //     return row[header.field][header.nestedKey];
-    //   };
-    // }
-    return (row: any) => row[header.field];
-  });
+  const renderDataHeaders: xDataGridPro.HeaderProps = dataHeaders({ open });
+  const dataAccessors = renderDataHeaders.map(
+    (header: xDataGridPro.GridColDef) => {
+      // if (header.nestedKey) {
+      //   return (row: any) => {
+      //     return row[header.field][header.nestedKey];
+      //   };
+      // }
+      return (row: any) => row[header.field];
+    },
+  );
 
   const tableData = getTableData({ data, dataAccessors });
 
   const handleUpdateRow = (
-    params: GridRowParams,
-    event: MuiEvent<React.MouseEvent>,
+    params: xDataGridPro.GridRowParams,
+    event: xDataGridPro.MuiEvent<React.MouseEvent>,
   ) => {
     setOpen(!open);
   };
@@ -69,21 +65,21 @@ export const DirectoryTable = ({
   };
 
   const getDetailPanelContent = React.useCallback<
-    NonNullable<DataGridProProps["getDetailPanelContent"]>
+    NonNullable<xDataGridPro.DataGridProProps["getDetailPanelContent"]>
   >(({ id, row, columns }) => <CompanyDetailsPanel companyId={id} />, []);
 
   const getDetailPanelHeight = React.useCallback(() => 400, []);
 
   return (
     <Box>
-      <DataGridPro
+      <xDataGridPro.DataGridPro
         rows={tableData}
         apiRef={apiRef}
         columns={renderDataHeaders}
         getRowId={(row: Company) => row.id}
         onRowClick={(
-          params: GridRowParams<any>,
-          event: MuiEvent<React.MouseEvent<Element, MouseEvent>>,
+          params: xDataGridPro.GridRowParams<any>,
+          event: xDataGridPro.MuiEvent<React.MouseEvent<Element, MouseEvent>>,
         ) => handleUpdateRow(params, event)}
         getDetailPanelContent={getDetailPanelContent}
         getDetailPanelHeight={getDetailPanelHeight}
@@ -112,7 +108,7 @@ export const DirectoryTable = ({
 // company specialties
 //  company type
 
-export const CompanyDetailsPanel = (companyId: GridRowId) => {
+export const CompanyDetailsPanel = (companyId: xDataGridPro.GridRowId) => {
   const [companyData, setCompanyData] = useState<Company>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);

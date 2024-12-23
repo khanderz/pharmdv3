@@ -37,7 +37,7 @@ class AiUpdater
   end
 
   def self.update_with_ai(job_post_data, job, company, location_info)
-    use_validation = false
+    use_validation = true
     ai_data = use_validation ? JobPostServiceWithValidation.split_descriptions(job) : JobPostService.split_descriptions(job)
     updated = false
 
@@ -358,7 +358,7 @@ class AiUpdater
           end
 
           if commitment
-            commitment_id = JobCommitment.find_job_commitment(commitment).id
+            commitment_id = JobCommitment.find_job_commitment(commitment)&.id
             unless job_post_data[:job_commitment_id] == commitment_id
               job_post_data[:job_commitment_id] = commitment_id
               updated = true

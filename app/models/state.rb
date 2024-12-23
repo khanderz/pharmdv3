@@ -2,6 +2,8 @@
 
 class State < ApplicationRecord
   def self.find_or_create_state(state_param, company, job_post = nil)
+    return nil if state_param.blank?
+
     param = state_param.downcase
 
     state = where('LOWER(state_name) = ?', param)
@@ -32,8 +34,14 @@ class State < ApplicationRecord
   def self.find_state_only(state_param)
     param = state_param.downcase
 
-    where('LOWER(state_name) = ?', param)
+    state = where('LOWER(state_name) = ?', param)
       .or(where('LOWER(state_code) = ?', param))
       .first
+
+      if state
+        state
+      else
+        nil
+      end
   end
 end

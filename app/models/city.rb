@@ -2,6 +2,8 @@
 
 class City < ApplicationRecord
   def self.find_or_create_city(city_param, company, job_post = nil)
+    return nil if city_param.blank?
+
     city = where('LOWER(city_name) = ?', city_param.downcase)
            .or(
              where('EXISTS (SELECT 1 FROM UNNEST(aliases) AS alias WHERE LOWER(alias) = ?)',
@@ -30,10 +32,16 @@ class City < ApplicationRecord
   end
 
   def self.find_city_only(city_param)
-    where('LOWER(city_name) = ?', city_param.downcase)
+   city = where('LOWER(city_name) = ?', city_param.downcase)
       .or(
         where('EXISTS (SELECT 1 FROM UNNEST(aliases) AS alias WHERE LOWER(alias) = ?)',
               city_param.downcase)
       ).first
+
+      if city
+        city
+      else
+        nil
+      end
   end
 end

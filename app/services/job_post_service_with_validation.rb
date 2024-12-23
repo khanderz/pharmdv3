@@ -648,6 +648,7 @@ class JobPostServiceWithValidation
         redo_correction = gets.strip.downcase
         break unless %w[yes y].include?(redo_correction)
       end
+      corrected_entities
     end
 
     puts "#{RED}Validation failed after #{max_attempts} attempts. Exiting...#{RESET}"

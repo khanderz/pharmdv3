@@ -11,6 +11,8 @@ class Country < ApplicationRecord
                            uniqueness: true
 
   def self.find_or_adjudicate_country(country_code, country_name, company, job_url = nil)
+    return nil if country_code.blank? && country_name.blank?
+
     country_code_down = country_code&.downcase
     country_name_down = country_name&.downcase
 
@@ -53,5 +55,11 @@ class Country < ApplicationRecord
                 where('EXISTS (SELECT 1 FROM UNNEST(aliases) AS alias WHERE LOWER(alias) = ?)',
                       country_name_down)
               ).first
+
+    if country
+      country
+    else
+      nil
+    end
   end
 end
