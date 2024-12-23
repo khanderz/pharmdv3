@@ -6,6 +6,11 @@ import { DirectoryTable } from "./DirectoryTable";
 import { FilterPanel } from "@components/organisms/FilterPanel/FilterPanel";
 import { useApiKey } from "@hooks";
 import { useFiltersContext } from "@javascript/providers/FiltersProvider";
+import {
+  LoadingState,
+  ErrorState,
+  NoMatchState,
+} from "@components/views/index";
 
 const COMPANIES_PER_PAGE = 10;
 
@@ -55,30 +60,19 @@ export const Directory = () => {
   };
 
   if (currentlyLoading) {
-    return <Typography>Loading...</Typography>;
+    return <LoadingState />;
   }
 
   if (errors) {
-    return <Typography>Error: {errors}</Typography>;
+    return <ErrorState message={errors} />;
+  }
+
+  if (noMatchingResults) {
+    return <NoMatchState message={getNoResultsMessage()} />;
   }
 
   return (
     <Container dataTestId="directory">
-      {/* <Box
-        sx={{
-          justifySelf: 'flex-start',
-          alignSelf: 'flex-start',
-          width: '100%',
-          mt: 2,
-        }}
-      >
-        {companies?.length === 0 ? (
-          <Typography>No companies found.</Typography>
-        ) : (
-          <DirectoryTable data={companies} rows={companies?.length} />
-        )}
-      </Box> */}
-
       <Grid container spacing={4} data-testid="search-page-container">
         <Grid item xs={12} data-testid="filter-panel-grid">
           <FilterPanel resetFilters={resetAndHandlePageChange} />

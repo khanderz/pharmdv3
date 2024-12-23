@@ -19,13 +19,13 @@ export const TextField = ({
     <>
       {tooltipMessage && tooltipMessage.trim() !== "" && (
         <Tooltip
-          id="custom-autocomplete-tooltip"
-          title={tooltipMessage}
+          id={props.id}
+          tooltipMessage={tooltipMessage}
           placement="top"
           readMoreLink={readMoreLink}
         />
       )}
-      <MuiTextField {...props} />
+      <MuiTextField {...props} data-testid={`${props.id}-textfield`} />
     </>
   );
 };

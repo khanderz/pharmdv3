@@ -1,6 +1,7 @@
 import React from "react";
 import { Autocomplete as MuiAutocomplete, Box } from "@mui/material";
 import { TextField } from "./Textfield";
+import { TooltipProps } from "./Tooltip";
 
 export interface AutocompleteOption {
   key: string | number;
@@ -22,8 +23,8 @@ export type AutocompleteProps = {
   inputValue?: string;
   onInputChange?: (event: React.ChangeEvent<{}>, value: string) => void;
   disable?: boolean;
-  tooltipMessage?: string;
-  readMoreLink?: string;
+  tooltipMessage?: TooltipProps["tooltipMessage"];
+  readMoreLink?: TooltipProps["readMoreLink"];
 };
 
 export const Autocomplete = ({
@@ -75,6 +76,7 @@ export const Autocomplete = ({
         renderInput={params => (
           <TextField
             {...params}
+            id={id}
             label={inputLabel}
             disabled={disable}
             variant="outlined"
