@@ -1,7 +1,7 @@
 import * as xDataGridPro from "@mui/x-data-grid-pro";
 import React from "react";
 import { KeyboardArrowUp, KeyboardArrowDown } from "@mui/icons-material";
-import { ListItem, Chip } from "@mui/material";
+import { Chip } from "../components/atoms/Chip";
 
 interface TableHeaderProps {
   open: boolean;
@@ -51,7 +51,7 @@ export const dataHeaders: HeaderProps[] = ({
       type: "array",
       headerAlign: "center" as GridAlignment,
       align: "center",
-      renderCell: renderChip,
+      renderCell: Chip,
     },
     {
       headerName: "Company Size",
@@ -72,21 +72,4 @@ export const dataHeaders: HeaderProps[] = ({
       align: "center",
     },
   ];
-};
-
-export interface ChipProps {
-  value: string | string[];
-  variant?: "outlined" | "filled";
-}
-
-export const renderChip = ({ value, variant = "outlined" }: ChipProps) => {
-  const values = Array.isArray(value) ? value : [value];
-
-  return (
-    <ListItem>
-      {values.map((val, index) => (
-        <Chip key={index} label={val} variant={variant} sx={{ mx: 0.5 }} />
-      ))}
-    </ListItem>
-  );
 };

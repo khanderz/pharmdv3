@@ -28,7 +28,7 @@ export const JobCard = ({
   const jobPostDate = job_posted
     ? new Date(job_posted).toLocaleDateString()
     : "";
-
+  console.log({ healthcare_domains });
   const domainsLabel =
     healthcare_domains && healthcare_domains.length > 1
       ? "Healthcare Domains"
@@ -49,12 +49,13 @@ export const JobCard = ({
         <Typography variant="body2" color="text.secondary">
           {company_name || "Unknown Company"}
         </Typography>
-        <Typography variant="body2" sx={{ mt: 1 }}>
+        {/* <Typography variant="body2" sx={{ mt: 1 }}>
           {domainsLabel}:{" "}
           {healthcare_domains.length > 0
             ? healthcare_domains.join(", ")
             : "N/A"}
-        </Typography>
+        </Typography> */}
+        <Attribute label={domainsLabel} value={healthcare_domains} renderChip />
         <Attribute
           label="Posted Date"
           value={jobPostDate || "Not provided by job post"}
