@@ -24,6 +24,7 @@ export const DomainFilter = () => {
   return (
     <Autocomplete
       multiple
+      id={"domain-filter"}
       inputLabel="Healthcare Domains"
       options={options}
       value={selectedOptions}

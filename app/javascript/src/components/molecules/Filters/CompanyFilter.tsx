@@ -10,7 +10,7 @@ export const CompanyFilter = () => {
   return (
     <Autocomplete
       multiple
-      id={"company-autocomplete"}
+      id={"company-filter"}
       inputLabel="Companies"
       options={uniqueCompanies.map(company => ({
         key: company.id,

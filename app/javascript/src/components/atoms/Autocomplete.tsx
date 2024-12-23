@@ -1,10 +1,6 @@
 import React from "react";
-import {
-  Autocomplete as MuiAutocomplete,
-  TextField as MuiTextField,
-  Box,
-} from "@mui/material";
-import { Tooltip } from "./Tooltip";
+import { Autocomplete as MuiAutocomplete, Box } from "@mui/material";
+import { TextField } from "./Textfield";
 
 export interface AutocompleteOption {
   key: string | number;
@@ -27,6 +23,7 @@ export type AutocompleteProps = {
   onInputChange?: (event: React.ChangeEvent<{}>, value: string) => void;
   disable?: boolean;
   tooltipMessage?: string;
+  readMoreLink?: string;
 };
 
 export const Autocomplete = ({
@@ -42,12 +39,13 @@ export const Autocomplete = ({
   onInputChange,
   disable = false,
   tooltipMessage,
+  readMoreLink,
 }: AutocompleteProps) => {
   const valueProp = value ?? (multiple ? [] : null);
 
   return (
     <Box
-      data-testid={`${inputLabel}-autocomplete-box`}
+      data-testid={`${id}-autocomplete-box`}
       sx={{
         mt: 2,
         ...sx,
@@ -56,7 +54,7 @@ export const Autocomplete = ({
       <MuiAutocomplete
         fullWidth
         disabled={disable}
-        data-testid={`${inputLabel}-autocomplete`}
+        data-testid={`${id}-autocomplete`}
         value={valueProp}
         multiple={multiple}
         id={id}
@@ -75,23 +73,18 @@ export const Autocomplete = ({
         inputValue={inputValue}
         onInputChange={onInputChange}
         renderInput={params => (
-          <Tooltip
-            id="custom-autocomplete-tooltip"
-            title={tooltipMessage || ""}
-            placement="top"
-            disableHoverListener={!tooltipMessage}
-          >
-            <MuiTextField
-              {...params}
-              label={inputLabel}
-              disabled={disable}
-              variant="outlined"
-              placeholder={inputLabel}
-              sx={{
-                backgroundColor: disable ? "grayscale.disabled" : "transparent",
-              }}
-            />
-          </Tooltip>
+          <TextField
+            {...params}
+            label={inputLabel}
+            disabled={disable}
+            variant="outlined"
+            placeholder={inputLabel}
+            sx={{
+              backgroundColor: disable ? "grayscale.disabled" : "transparent",
+            }}
+            tooltipMessage={tooltipMessage}
+            readMoreLink={readMoreLink}
+          />
         )}
       />
     </Box>

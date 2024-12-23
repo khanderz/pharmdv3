@@ -29,7 +29,7 @@ export const DepartmentFilter = () => {
 
   return (
     <Autocomplete
-      id={"department-autocomplete"}
+      id={"department-filter"}
       multiple
       inputLabel="Departments"
       options={options}

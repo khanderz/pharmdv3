@@ -24,7 +24,7 @@ export const SpecialtyFilter = () => {
   return (
     <Autocomplete
       disable
-      id={"specialty-autocomplete"}
+      id={"specialty-filter"}
       multiple
       inputLabel="Specialties"
       options={options}
@@ -40,6 +40,7 @@ export const SpecialtyFilter = () => {
       }}
       loading={false}
       tooltipMessage="Under construction"
+      readMoreLink={`/directory`}
     />
   );
 };
