@@ -1,7 +1,7 @@
 import { JobCommitment } from "./job_commitment.types";
 import { JobSalaryInterval } from "./job_salary_interval.types";
 import { JobSalaryCurrency } from "./job_salary_currency.types";
-import { JobPost } from "./job_post.types";
+import { JobPost, JobPostCity } from "./job_post.types";
 import { Benefit } from "./benefits.types";
 import { Credential } from "./credentials.types";
 import { Education } from "./educations.types";
@@ -20,4 +20,5 @@ export {
   Experience,
   Seniority,
   Skill,
+  JobPostCity,
 };

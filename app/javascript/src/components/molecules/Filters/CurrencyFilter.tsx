@@ -30,7 +30,7 @@ export const CurrencyFilter = () => {
       onChange={(event, newValue) => {
         const selected = options.find(
           option => option.key === (newValue as AutocompleteOption)?.key,
-        ) || { key: 14, value: "USD ($)" };
+        );
 
         setSelectedSalaryCurrency({
           id: selected.key,

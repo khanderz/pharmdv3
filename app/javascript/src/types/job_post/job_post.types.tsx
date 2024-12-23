@@ -2,6 +2,8 @@ import { JobCommitment, JobSalaryInterval, JobSalaryCurrency } from ".";
 import { Adjudicated } from "../adjudication.types";
 import { Department, JobRole, Team } from "../job_role";
 import { Company } from "@customtypes/company";
+import { Benefits } from "./benefits.types";
+import { City } from "../cities.types";
 
 export interface JobPost extends Adjudicated {
   id: number;
@@ -36,23 +38,26 @@ export interface JobPost extends Adjudicated {
   updated_at: Date;
 }
 
-export interface JobPostBenefits {
+export interface JobPostBenefit {
   id: number;
-  benefit_id: number;
+  benefit_id: Benefits["id"];
 }
 
-export interface JobPostCities {}
+export interface JobPostCity {
+  id: number;
+  city_id: City["id"];
+}
 
-export interface JobPostStates {}
+export interface JobPostState {}
 
-export interface JobPostCountries {}
+export interface JobPostCountry {}
 
-export interface JobPostCredentials {}
+export interface JobPostCredential {}
 
-export interface JobPostEducations {}
+export interface JobPostEducation {}
 
-export interface JobPostExperiences {}
+export interface JobPostExperience {}
 
-export interface JobPostSeniorities {}
+export interface JobPostSeniority {}
 
-export interface JobPostSkills {}
+export interface JobPostSkill {}

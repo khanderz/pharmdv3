@@ -2,7 +2,7 @@
 
 class CitiesController < ApplicationController
   def index
-    cities = City.pluck(:city_name)
+    cities = City.all
     render json: cities
   end
 end

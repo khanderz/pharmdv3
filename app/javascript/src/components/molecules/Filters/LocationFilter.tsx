@@ -4,8 +4,13 @@ import { useFiltersContext } from "@javascript/providers/FiltersProvider";
 import { AutocompleteOption } from "@components/atoms/Autocomplete";
 
 export const LocationFilter = () => {
-  const { filteredJobPosts, selectedLocation, setSelectedLocation } =
-    useFiltersContext();
+  const {
+    filteredJobPosts,
+    selectedLocation,
+    setSelectedLocation,
+    uniqueCities,
+  } = useFiltersContext();
+  console.log({ uniqueCities });
   const [inputValue, setInputValue] = useState("");
 
   const uniqueLocations: AutocompleteOption[] = useMemo(() => {

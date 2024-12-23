@@ -22,6 +22,7 @@ import {
   Experience,
   Skill,
   Seniority,
+  JobPostCity,
 } from "@customtypes/job_post";
 import { Department, JobRole } from "@customtypes/job_role";
 import {
@@ -40,9 +41,11 @@ import {
   useExperiences,
   useSeniorities,
   useSkills,
+  useCities,
 } from "@hooks";
 import dayjs from "dayjs";
 import { AutocompleteOption } from "@components/atoms/Autocomplete";
+import { City } from "@javascript/types/cities.types";
 
 interface FiltersContextProps {
   selectedCompanies: Company[];
@@ -139,6 +142,10 @@ interface FiltersContextProps {
   skills: Skill[];
   skillsLoading: boolean;
   skillsError: string | null;
+  cities: City[];
+  citiesLoading: boolean;
+  citiesError: string | null;
+  uniqueCities: City[];
 
   filteredJobPosts: JobPost[];
   resetFilters: () => void;
@@ -224,6 +231,10 @@ export const FiltersContext = createContext<FiltersContextProps>({
   skills: [],
   skillsLoading: false,
   skillsError: null,
+  cities: [],
+  citiesLoading: false,
+  citiesError: null,
+  uniqueCities: [],
 
   filteredJobPosts: [],
   resetFilters: () => {},
@@ -311,27 +322,34 @@ export function FiltersProvider({ children }: FiltersProviderProps) {
     loading: benefitsLoading,
     error: benefitsError,
   } = useBenefits();
+
   const {
     credentials,
     loading: credentialsLoading,
     error: credentialsError,
   } = useCredentials();
+
   const {
     educations,
     loading: educationsLoading,
     error: educationsError,
   } = useEducations();
+
   const {
     experiences,
     loading: experiencesLoading,
     error: experiencesError,
   } = useExperiences();
+
   const {
     seniorities,
     loading: senioritiesLoading,
     error: senioritiesError,
   } = useSeniorities();
+
   const { skills, loading: skillsLoading, error: skillsError } = useSkills();
+
+  const { cities, loading: citiesLoading, error: citiesError } = useCities();
 
   /* --------------------- States --------------------- */
 
@@ -355,15 +373,15 @@ export function FiltersProvider({ children }: FiltersProviderProps) {
   const [selectedCompanySize, setSelectedCompanySize] = useState<CompanySize[]>(
     [],
   );
-  const [selectedSalaryCurrency, setSelectedSalaryCurrency] = useState<Omit<
-    JobSalaryCurrency,
-    "error_details" | "reference_id" | "resolved"
-  > | null>(null);
+  const [selectedSalaryCurrency, setSelectedSalaryCurrency] =
+    useState<
+      Omit<JobSalaryCurrency, "error_details" | "reference_id" | "resolved">
+    >("");
   const [selectedSalaryRange, setSelectedSalaryRange] = useState<
-    [number, number] | null
-  >(null);
+    [number, number]
+  >([MIN_SALARY, MAX_SALARY]);
   const [selectedLocation, setSelectedLocation] =
-    useState<AutocompleteOption | null>(null);
+    useState<AutocompleteOption>();
   const [searchQuery, setSearchQuery] = useState<string>("");
 
   const [selectedBenefits, setSelectedBenefits] = useState<Benefit[]>([]);
@@ -472,6 +490,19 @@ export function FiltersProvider({ children }: FiltersProviderProps) {
         return map;
       }, new Map<number, JobRole>())
       .values(),
+  );
+
+  const uniqueCities: City[] = Array.from(
+    new Map(
+      jobPosts
+        .flatMap((jobPost: JobPost) => jobPost.job_post_cities ?? [])
+        .map((jobPostCity: JobPostCity) => jobPostCity.city_id)
+        .map(cityId => [
+          cityId,
+          cities.find((city: City) => city.id === cityId),
+        ])
+        .filter(([_, city]) => city),
+    ).values(),
   );
 
   /* --------------------- Handles --------------------- */
@@ -715,9 +746,9 @@ export function FiltersProvider({ children }: FiltersProviderProps) {
     setSelectedJobCommitments([]);
     setSelectedCompanySize([]);
     setSelectedDatePosted(null);
-    setSelectedSalaryCurrency(null);
-    setSelectedSalaryRange(null);
-    setSelectedLocation(null);
+    setSelectedSalaryCurrency("");
+    setSelectedSalaryRange([MIN_SALARY, MAX_SALARY]);
+    setSelectedLocation("");
     setSearchQuery("");
     setSelectedBenefits([]);
     setSelectedCredentials([]);
@@ -794,7 +825,9 @@ export function FiltersProvider({ children }: FiltersProviderProps) {
     }
 
     if (selectedSalaryCurrency) {
-      filters.push(`with salary currency ${selectedSalaryCurrency.label}`);
+      filters.push(
+        `with salary currency ${selectedSalaryCurrency.currency_code}`,
+      );
     }
 
     if (selectedLocation) {
@@ -889,80 +922,96 @@ export function FiltersProvider({ children }: FiltersProviderProps) {
       setSelectedDomains,
       selectedSpecialties,
       setSelectedSpecialties,
+      selectedCompanySize,
+      setSelectedCompanySize,
+
       selectedDepartments,
       setSelectedDepartments,
       selectedJobRoles,
       setSelectedJobRoles,
+
       selectedJobSettings,
       setSelectedJobSettings,
       selectedJobCommitments,
       setSelectedJobCommitments,
       selectedDatePosted,
       setSelectedDatePosted,
-      selectedCompanySize,
-      setSelectedCompanySize,
       selectedSalaryCurrency,
       setSelectedSalaryCurrency,
       selectedSalaryRange,
       setSelectedSalaryRange,
       selectedLocation,
       setSelectedLocation,
+
       errors,
       currentlyLoading,
       uniqueCompanies,
       uniqueSpecialties,
       allDomains,
       domainsLoading,
+      companySizes: companySizeObjects,
+      companySizesLoading,
+      companySizesError,
+
       departments,
       departmentsLoading,
       uniqueJobRoles,
       jobRolesLoading,
+
       jobSettings,
       jobSettingsLoading,
       jobCommitments,
       jobCommitmentsLoading,
-      companySizes: companySizeObjects,
-      companySizesLoading,
-      companySizesError,
       currencies: allCurrencies,
       currenciesLoading,
       currenciesError,
       filteredJobPosts,
+      setFilteredJobPosts,
+
       resetFilters,
       noMatchingResults,
       getNoResultsMessage,
-      setFilteredJobPosts,
+
       searchQuery,
       setSearchQuery,
+
       filteredCompanies,
       setFilteredCompanies,
       filterCompanies,
       companiesLoading,
       companiesError,
+
+      benefits,
       selectedBenefits,
       setSelectedBenefits,
+      credentials,
       selectedCredentials,
       setSelectedCredentials,
+      educations,
       selectedEducations,
       setSelectedEducations,
+      experiences,
       selectedExperiences,
       setSelectedExperiences,
+      seniorities,
       selectedSeniorities,
       setSelectedSeniorities,
+      skills,
       selectedSkills,
       setSelectedSkills,
+      uniqueCities,
     };
   }, [
     selectedCompanies,
     selectedDomains,
     selectedSpecialties,
+    selectedCompanySize,
 
     selectedDepartments,
     selectedJobRoles,
     selectedJobSettings,
     selectedJobCommitments,
     selectedDatePosted,
-    selectedCompanySize,
     selectedSalaryCurrency,
     selectedSalaryRange,
     selectedBenefits,
@@ -971,6 +1020,7 @@ export function FiltersProvider({ children }: FiltersProviderProps) {
     selectedExperiences,
     selectedSeniorities,
     selectedSkills,
+    uniqueCities,
 
     errors,
     currentlyLoading,
