@@ -14,6 +14,7 @@ interface JobCardProps {
   job_applyUrl: JobPost["job_applyUrl"];
   healthcare_domains: HealthcareDomain["value"][];
   job_posted: JobPost["job_posted"];
+  updatedDate: JobPost["updated_at"];
 }
 
 export const JobCard = ({
@@ -24,6 +25,7 @@ export const JobCard = ({
   job_location,
   job_commitment,
   healthcare_domains,
+  updatedDate,
 }: JobCardProps) => {
   const jobPostDate = job_posted
     ? new Date(job_posted).toLocaleDateString()
@@ -59,6 +61,10 @@ export const JobCard = ({
         <Attribute
           label="Posted Date"
           value={jobPostDate || "Not provided by job post"}
+        />
+        <Attribute
+          label="Last Updated Date"
+          value={updatedDate || "Not provided by job post"}
         />
         <Attribute label="Location" value={job_location || "N/A"} />
         <Attribute

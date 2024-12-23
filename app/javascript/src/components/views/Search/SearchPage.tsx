@@ -15,6 +15,7 @@ import {
 } from "@components/views/index";
 import { Container } from "@components/atoms/Paper";
 import { useSearchPageLogic } from "./SearchPage.logic";
+import moment from "moment";
 
 export const SearchPage = () => {
   const {
@@ -106,6 +107,9 @@ export const SearchPage = () => {
                               jobCommitmentType?.commitment_name as JobCommitment["commitment_name"]
                             }
                             healthcare_domains={domains}
+                            updatedDate={moment(jobPost.updated_at).format(
+                              "MMMM Do, YYYY [at] h:mm A",
+                            )}
                           />
                         </Grid>
                       );
