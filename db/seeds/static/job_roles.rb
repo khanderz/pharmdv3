@@ -64,7 +64,13 @@ job_roles = [
     aliases: ['Mental Health Counselor', 'Licensed Therapist', 'Remote Therapist', 'Licensed Mental Health Therapist', 'Licensed Psychiatrist', 'Behavioral Health Therapist', 'Therapist', 'Mental Health Therapist'], department_names: ['Clinical Team'], team_names: ['Care Operations'] },
   { role_name: 'Psychologist',
     aliases: ['Licensed Psychologist', 'Remote Psychologist', 'Telepsychologist', 'Clinical Psychologist', 'Behavioral Health Psychologist'], department_names: ['Clinical Team'], team_names: ['Care Operations'] },
-  { role_name: 'Recruiter',
+    {
+      role_name: 'Quality Assurance Manager',
+      aliases: ['Manager of Quality Assurance', 'QA Manager', 'Quality Manager', 'Quality Assurance Lead', 'QA Lead'],
+      department_names: ['Quality Assurance', 'Operations'],
+      team_names: ['Quality Assurance', 'Product Operations']
+    },
+    { role_name: 'Recruiter',
     aliases: ['Talent Acquisition Specialist', 'HR Recruiter', 'Technical Recruiter', 'Recruitment Specialist'], department_names: ['Human Resources'], team_names: ['Human Resources'] },
   { role_name: 'Registered Dietitian', aliases: ['RD', 'Telehealth Dietitian', 'Remote Dietitian', 'Virtual Dietitian'],
     department_names: ['Clinical Team'], team_names: ['Care Operations'] },

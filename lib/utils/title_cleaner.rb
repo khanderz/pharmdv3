@@ -40,6 +40,9 @@ module Utils
 
       modified_title = original_title.gsub(/,/, ' of')
 
+      puts "Original Title: #{original_title}"
+      puts "Cleaned Title: #{cleaned_title}"
+      puts "Modified Title: #{modified_title}"
       {
         cleaned_title: cleaned_title.strip,
         modified_title: modified_title.strip
