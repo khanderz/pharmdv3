@@ -76,6 +76,7 @@ export const Autocomplete = ({
         onInputChange={onInputChange}
         renderInput={params => (
           <Tooltip
+            id="custom-autocomplete-tooltip"
             title={tooltipMessage || ""}
             placement="top"
             disableHoverListener={!tooltipMessage}

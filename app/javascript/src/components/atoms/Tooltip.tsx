@@ -5,8 +5,14 @@ import {
   TooltipProps as MuiTooltipProps,
 } from "@mui/material";
 
-export interface TooltipProps extends MuiTooltipProps {}
+export interface TooltipProps extends MuiTooltipProps {
+  id: string;
+}
 
-export const Tooltip = ({ children, ...props }: TooltipProps) => {
-  return <MuiTooltip {...props}>{children}</MuiTooltip>;
+export const Tooltip = ({ id, children, ...props }: TooltipProps) => {
+  return (
+    <MuiTooltip {...props} data-testid={`${id}-tooltip`} arrow open={true}>
+      {children}
+    </MuiTooltip>
+  );
 };

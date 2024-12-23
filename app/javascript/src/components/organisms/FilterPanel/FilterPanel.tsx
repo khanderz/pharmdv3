@@ -47,7 +47,11 @@ export const FilterPanel = ({
   };
 
   return (
-    <Accordion expanded={isExpanded} componentName="filter-panel">
+    <Accordion
+      // expanded={isExpanded}
+      expanded={true}
+      componentName="filter-panel"
+    >
       <AccordionSummary
         aria-controls="more-filters-content"
         id="more-filters-header"
