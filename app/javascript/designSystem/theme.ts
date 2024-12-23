@@ -179,6 +179,14 @@ export const theme = {
             "&.Mui-focused fieldset": {
               borderColor: "#226f54",
             },
+            "&.Mui-disabled": {
+              backgroundColor: "#eae8f3",
+              cursor: "default",
+              pointerEvents: "auto",
+            },
+            "&.Mui-disabled:hover": {
+              backgroundColor: "#eae8f3",
+            },
           },
         },
       },
@@ -190,16 +198,6 @@ export const theme = {
           "&:hover": {
             backgroundColor: "#f0eff9",
           },
-          "& .MuiFormControl-root.Mui-disabled, & .MuiTextField-root.Mui-disabled, & .MuiInputBase-root.Mui-disabled":
-            {
-              pointerEvents: "none",
-              backgroundColor: "#eae8f3",
-            },
-          "& .MuiFormControl-root:hover, & .MuiTextField-root:hover, & .MuiInputBase-root:hover":
-            {
-              backgroundColor: "#b9b8cf",
-              borderColor: "#b9b8cf",
-            },
         },
         endAdornment: {
           ".MuiAutocomplete-popupIndicator": {

@@ -4,6 +4,7 @@ import {
   TextField as MuiTextField,
   Box,
 } from "@mui/material";
+import { Tooltip } from "./Tooltip";
 
 export interface AutocompleteOption {
   key: string | number;
@@ -25,6 +26,7 @@ export type AutocompleteProps = {
   inputValue?: string;
   onInputChange?: (event: React.ChangeEvent<{}>, value: string) => void;
   disable?: boolean;
+  tooltipMessage?: string;
 };
 
 export const Autocomplete = ({
@@ -39,6 +41,7 @@ export const Autocomplete = ({
   inputValue,
   onInputChange,
   disable = false,
+  tooltipMessage,
 }: AutocompleteProps) => {
   const valueProp = value ?? (multiple ? [] : null);
 
@@ -72,16 +75,22 @@ export const Autocomplete = ({
         inputValue={inputValue}
         onInputChange={onInputChange}
         renderInput={params => (
-          <MuiTextField
-            {...params}
-            label={inputLabel}
-            disabled={disable}
-            variant="outlined"
-            placeholder={inputLabel}
-            sx={{
-              backgroundColor: disable ? "grayscale.disabled" : "transparent",
-            }}
-          />
+          <Tooltip
+            title={tooltipMessage || ""}
+            placement="top"
+            disableHoverListener={!tooltipMessage}
+          >
+            <MuiTextField
+              {...params}
+              label={inputLabel}
+              disabled={disable}
+              variant="outlined"
+              placeholder={inputLabel}
+              sx={{
+                backgroundColor: disable ? "grayscale.disabled" : "transparent",
+              }}
+            />
+          </Tooltip>
         )}
       />
     </Box>

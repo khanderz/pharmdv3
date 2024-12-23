@@ -39,6 +39,7 @@ export const SpecialtyFilter = () => {
         setSelectedSpecialties(selected);
       }}
       loading={false}
+      tooltipMessage="Under construction"
     />
   );
 };
