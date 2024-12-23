@@ -35,13 +35,9 @@ class State < ApplicationRecord
     param = state_param.downcase
 
     state = where('LOWER(state_name) = ?', param)
-      .or(where('LOWER(state_code) = ?', param))
-      .first
+            .or(where('LOWER(state_code) = ?', param))
+            .first
 
-      if state
-        state
-      else
-        nil
-      end
+    state || nil
   end
 end

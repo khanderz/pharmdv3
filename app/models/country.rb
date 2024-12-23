@@ -56,10 +56,6 @@ class Country < ApplicationRecord
                       country_name_down)
               ).first
 
-    if country
-      country
-    else
-      nil
-    end
+    country || nil
   end
 end
