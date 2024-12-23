@@ -1,8 +1,9 @@
 import { Company } from "@customtypes/company/company.types";
+import * as xDataGridPro from "@mui/x-data-grid-pro";
 
 interface TableDataProps {
   data: Array<Company>;
-  dataAccessors: Array<(row: HeaderProps) => any>;
+  dataAccessors: Array<(row: xDataGridPro.HeaderProps) => any>;
 }
 
 export const getTableData = ({

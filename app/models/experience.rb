@@ -24,7 +24,6 @@ class Experience < ApplicationRecord
                              max_years: max_years)
         end
       else
-        # Create a new experience if no match found
         error_details = "Experience '#{experience_param}' for '#{job_post}' not found in existing records"
         experience = create!(
           experience_name: experience_param,

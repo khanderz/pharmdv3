@@ -5,11 +5,11 @@ job_salary_currencies = [
   { currency_code: 'BRL', currency_sign: 'R$' }, # Brazilian Real
   { currency_code: 'CAD', currency_sign: 'C$' }, # Canadian Dollar
   { currency_code: 'CHF', currency_sign: 'CHF' }, # Swiss Franc
-  { currency_code: 'CNY', currency_sign: '¥' }, # Chinese Yuan
+  { currency_code: 'CNY', currency_sign: 'CN¥' }, # Chinese Yuan
   { currency_code: 'EUR', currency_sign: '€' }, # Euro
   { currency_code: 'GBP', currency_sign: '£' }, # British Pound Sterling
   { currency_code: 'INR', currency_sign: '₹' }, # Indian Rupee
-  { currency_code: 'JPY', currency_sign: '¥' }, # Japanese Yen
+  { currency_code: 'JPY', currency_sign: 'JP¥' }, # Japanese Yen
   { currency_code: 'KRW', currency_sign: '₩' }, # South Korean Won
   { currency_code: 'NZD', currency_sign: 'NZ$' }, # New Zealand Dollar
   { currency_code: 'SEK', currency_sign: 'kr' }, # Swedish Krona

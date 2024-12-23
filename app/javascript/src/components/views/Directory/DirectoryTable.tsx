@@ -50,7 +50,7 @@ export const DirectoryTable = ({
   );
 
   const tableData = getTableData({ data, dataAccessors });
-
+  console.log({ tableData });
   const handleUpdateRow = (
     params: xDataGridPro.GridRowParams,
     event: xDataGridPro.MuiEvent<React.MouseEvent>,

@@ -25,6 +25,13 @@ experiences.each do |experience|
       puts "Updated experience_name for experience #{experience[:experience_code]}."
     end
 
+    if experience_record.min_years != experience[:min_years] || experience_record.max_years != experience[:max_years]
+      experience_record.min_years = experience[:min_years]
+      experience_record.max_years = experience[:max_years]
+      updates_made = true
+      puts "Updated min_years and max_years for experience #{experience[:experience_code]}."
+    end
+
     if updates_made
       experience_record.save!
       updated_count += 1
@@ -34,6 +41,8 @@ experiences.each do |experience|
     end
   else
     experience_record.experience_name = experience[:experience_name]
+    experience_record.min_years = experience[:min_years]
+    experience_record.max_years = experience[:max_years]
     experience_record.save!
     seeded_count += 1
     puts "Seeded new experience: #{experience[:experience_code]}"

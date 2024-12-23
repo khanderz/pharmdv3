@@ -9,7 +9,7 @@ class JobPostServiceWithValidation
     puts "#{BLUE}Preprocessing job description...#{RESET}"
     # puts "job post: #{job_post}"
     structured_data = preprocess_job_description(job_post['content'])
-    # puts "structured_data: #{structured_data}"
+    puts "structured_data: #{structured_data}"
     unless structured_data
       puts "#{RED}Failed to preprocess job description.#{RESET}"
       return
@@ -639,6 +639,7 @@ class JobPostServiceWithValidation
           end
         else
           puts "#{RED}Validation failed: #{validation_result&.dig('message') || 'Unknown error'}#{RESET}"
+          return corrected_entities
         end
 
         validation_attempts += 1
