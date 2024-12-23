@@ -13,28 +13,29 @@ export const CurrencyFilter = () => {
   } = useFiltersContext();
 
   const options: AutocompleteOption[] = currencies.map(currency => ({
-    id: currency.key,
-    currency_code: currency.label,
+    key: currency.id,
+    value: `${currency.currency_code} (${currency.currency_sign})`,
   }));
 
   const selectedOption = options.find(
-    option => option.key === selectedSalaryCurrency?.key,
+    option => option.key === selectedSalaryCurrency?.id,
   );
 
   return (
     <Autocomplete
-      id="currency-autocomplete"
+      id="currency"
       inputLabel="Currency"
       options={options}
       value={selectedOption || null}
       onChange={(event, newValue) => {
         const selected = options.find(
-          currency => currency.key === (newValue as AutocompleteOption).key,
-        ) || { key: 14, value: "USD" };
+          option => option.key === (newValue as AutocompleteOption)?.key,
+        ) || { key: 14, value: "USD ($)" };
 
         setSelectedSalaryCurrency({
           id: selected.key,
-          currency_code: selected.value,
+          currency_code: selected.value.split(" ")[0],
+          currency_sign: selected.value.match(/\((.*?)\)/)?.[1] || "$",
         } as JobSalaryCurrency);
       }}
       loading={currenciesLoading}

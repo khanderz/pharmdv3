@@ -22,7 +22,6 @@ export const Tooltip = ({
   children,
   ...props
 }: TooltipProps) => {
-  console.log({ readMoreLink, tooltipMessage });
   return (
     <MuiTooltip
       {...props}

@@ -4,6 +4,7 @@ import {
   TextFieldProps as MuiTextFieldProps,
 } from "@mui/material";
 import { Tooltip, TooltipProps } from "./Tooltip";
+import { Box } from "./Box";
 
 export interface TextFieldProps extends MuiTextFieldProps {
   tooltipMessage?: TooltipProps["tooltipMessage"];
@@ -16,16 +17,20 @@ export const TextField = ({
   ...props
 }: TextFieldProps) => {
   return (
-    <>
+    <Box id={props.id}>
       {tooltipMessage && tooltipMessage.trim() !== "" && (
         <Tooltip
           id={props.id}
           tooltipMessage={tooltipMessage}
-          placement="top"
           readMoreLink={readMoreLink}
+          slotProps={{
+            popper: {
+              placement: "top-end",
+            },
+          }}
         />
       )}
       <MuiTextField {...props} data-testid={`${props.id}-textfield`} />
-    </>
+    </Box>
   );
 };
