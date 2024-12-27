@@ -27,9 +27,9 @@ def normalize_location_data(data)
   end
 end
 
-def resolve_location_hierarchy(location_names, location_type, company_name)
+def resolve_location_hierarchy(location_names, location_type, company_name, parent = nil)
   location_names.map do |name|
-    location = Location.find_or_create_by_name_and_type(name, company_name, location_type)
+    location = Location.find_or_create_by_name_and_type(name, company_name, location_type, parent)
   end
 end
 
@@ -40,10 +40,12 @@ def resolve_locations(row_data, company_name)
 
   resolved_countries = resolve_location_hierarchy(countries, 'Country', company_name)
   resolved_states = states.flat_map do |state|
-    resolve_location_hierarchy([state], 'State', company_name)
+    parent_country = resolved_countries.first
+    resolve_location_hierarchy([state], 'State', company_name, parent_country)
   end
   resolved_cities = cities.flat_map do |city|
-    resolve_location_hierarchy([city], 'City', company_name)
+    parent_state = resolved_states.first
+    resolve_location_hierarchy([city], 'City', company_name, parent_state)
   end
 
   (resolved_countries + resolved_states + resolved_cities).compact
@@ -123,6 +125,7 @@ def find_or_create_company_type(company_type_name, company_name)
 end
 
 def update_join_tables(company, locations, domains, specialties)
+  puts " updating join tables"
   changes_made = false
 
   puts "company: #{company.company_name}"
@@ -167,6 +170,7 @@ end
 
 def update_existing_company(company, row_data, ats_type, locations, domains,
                             specialties)
+                            puts "updating"
   ActiveRecord::Base.transaction do
     changes_made = false
     changed_attributes = {}
@@ -229,6 +233,7 @@ def update_existing_company(company, row_data, ats_type, locations, domains,
 end
 
 def create_new_company(row_data, ats_type, locations, domains, specialties)
+  puts "creating"
   company_size = find_company_size(row_data['company_size'])
   funding_type = find_funding_type(row_data['last_funding_type'], row_data['company_name'])
   company_type = find_or_create_company_type(row_data['company_type'], row_data['company_name'])
@@ -250,12 +255,16 @@ def create_new_company(row_data, ats_type, locations, domains, specialties)
     company_type_id: company_type&.id
   )
 
+  puts "New company attributes: #{new_company.attributes.inspect}"
+
   if new_company.save
+    puts "new company saved"
     update_join_tables(new_company, locations, domains, specialties)
     puts "#{GREEN}Added new company: #{new_company.company_name}.#{RESET}"
   else
     puts "#{RED}Failed to save new company: #{new_company.company_name}. Errors: #{new_company.errors.full_messages.join(', ')}#{RESET}"
   end
+  
 end
 
 def process_company_data(row_data, _headers)
@@ -267,6 +276,7 @@ def process_company_data(row_data, _headers)
     ats_type = AtsType.find_by(ats_type_code: row_data['company_ats_type'])
 
     locations = resolve_locations(row_data, company_name)
+    puts "processing/ locations: #{locations}"
 
     domains = (row_data['healthcare_domain'] || '').split(',').map(&:strip).map do |key|
       HealthcareDomain.find_or_create_by!(key: key)

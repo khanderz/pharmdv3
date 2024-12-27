@@ -91,10 +91,14 @@ class Location < ApplicationRecord
       nil
     end
 
-    def find_by_name_and_type(name, location_type)
+    def find_by_name_and_type(name, location_type, parent = nil)
       normalized_name = name.strip.downcase
-      where('(LOWER(name) = ? OR ? = ANY(aliases) OR LOWER(code) = ?)',
-            normalized_name, normalized_name, normalized_name).find_by(location_type: location_type)
+      parent_id = parent&.id
+
+      where(
+        '(LOWER(name) = ? OR ? = ANY(aliases) OR LOWER(code) = ?) AND location_type = ?',
+        normalized_name, normalized_name, normalized_name, location_type
+      ).where(parent_id: parent_id).first
     end
   end
 end
