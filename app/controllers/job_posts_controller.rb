@@ -10,14 +10,12 @@ class JobPostsController < ApplicationController
                           .where('healthcare_domains.id IN (?)', domain_ids)
                           .includes(
                             :job_post_benefits,
-                            :job_post_cities,
-                            :job_post_countries,
                             :job_post_credentials,
                             :job_post_educations,
                             :job_post_experiences,
                             :job_post_seniorities,
                             :job_post_skills,
-                            :job_post_states,
+                            :job_post_locations,
                             company: [
                               :company_specialties,
                               { company_domains: :healthcare_domain }
@@ -26,14 +24,12 @@ class JobPostsController < ApplicationController
     else
       @job_posts = JobPost.includes(
         :job_post_benefits,
-        :job_post_cities,
-        :job_post_countries,
         :job_post_credentials,
         :job_post_educations,
         :job_post_experiences,
         :job_post_seniorities,
         :job_post_skills,
-        :job_post_states,
+        :job_post_locations,
         company: [
           :company_specialties,
           { company_domains: :healthcare_domain }
@@ -54,14 +50,12 @@ class JobPostsController < ApplicationController
     render json: @job_posts.as_json(
       include: {
         job_post_benefits: { only: %i[id benefit_id] },
-        job_post_cities: { only: %i[id city_id] },
-        job_post_countries: { only: %i[id country_id] },
         job_post_credentials: { only: %i[id credential_id] },
         job_post_educations: { only: %i[id education_id] },
         job_post_experiences: { only: %i[id experience_id] },
         job_post_seniorities: { only: %i[id job_seniority_id] },
         job_post_skills: { only: %i[id skill_id] },
-        job_post_states: { only: %i[id state_id] },
+        job_post_locations: { only: %i[id location_id] },
         company: {
           include: {
             company_specialties: {},
@@ -76,14 +70,12 @@ class JobPostsController < ApplicationController
     render json: @job_post.as_json(
       include: {
         job_post_benefits: { only: %i[id benefit_id] },
-        job_post_cities: { only: %i[id city_id] },
-        job_post_countries: { only: %i[id country_id] },
         job_post_credentials: { only: %i[id credential_id] },
         job_post_educations: { only: %i[id education_id] },
         job_post_experiences: { only: %i[id experience_id] },
         job_post_seniorities: { only: %i[id job_seniority_id] },
         job_post_skills: { only: %i[id skill_id] },
-        job_post_states: { only: %i[id state_id] },
+        job_post_locations: { only: %i[id location_id] },
         company: {
           include: {
             company_specialties: {},

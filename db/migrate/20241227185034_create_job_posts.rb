@@ -3,10 +3,10 @@
 class CreateJobPosts < ActiveRecord::Migration[7.1]
   def change
     create_table :job_posts do |t|
-      t.references :job_commitment, null: false, foreign_key: true
+      t.references :job_commitment, null: true, foreign_key: true
       t.json :job_setting
       t.references :department, null: false, foreign_key: true
-      t.references :team, null: false, foreign_key: true
+      t.references :team, null: true, foreign_key: true
       t.references :company, null: false, foreign_key: true
       t.references :job_role, null: false, foreign_key: true
       t.references :job_salary_currency, null: true, foreign_key: true

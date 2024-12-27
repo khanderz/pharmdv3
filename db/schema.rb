@@ -283,10 +283,10 @@ ActiveRecord::Schema[7.1].define(version: 2024_12_27_202127) do
   end
 
   create_table "job_posts", force: :cascade do |t|
-    t.bigint "job_commitment_id", null: false
+    t.bigint "job_commitment_id"
     t.json "job_setting"
     t.bigint "department_id", null: false
-    t.bigint "team_id", null: false
+    t.bigint "team_id"
     t.bigint "company_id", null: false
     t.bigint "job_role_id", null: false
     t.bigint "job_salary_currency_id"

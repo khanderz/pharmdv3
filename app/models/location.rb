@@ -56,7 +56,15 @@ class Location < ApplicationRecord
       return nil if location_param.blank?
 
       normalized_name = location_param.strip.downcase
-      parent_id = parent&.id
+      parent_location = if parent.is_a?(Array)
+          parent.first.is_a?(Location) ? parent.first : nil
+          elsif parent.is_a?(Location)
+            parent
+          else
+            nil
+          end
+
+      parent_id = parent_location&.id
 
       existing_location = where(
         '(LOWER(name) = ? OR ? = ANY(aliases) OR LOWER(code) = ?) AND location_type = ?',
@@ -65,7 +73,7 @@ class Location < ApplicationRecord
 
       return existing_location if existing_location
 
-      error_message = "#{location_type} '#{location_param}' not found for job #{job_post} or company: #{company} , parent: #{parent&.name}"
+      error_message = "#{location_type} '#{location_param}' not found for job #{job_post} or company: #{company}, parent: #{parent_location&.name}"
       adj_type = job_post ? 'Location' : 'Company'
 
       puts "#{RED}#{error_message}.#{RESET}"
