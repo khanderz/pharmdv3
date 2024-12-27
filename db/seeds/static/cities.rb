@@ -1,68 +1,68 @@
 # frozen_string_literal: true
 
 cities = [
-  { city_name: 'Atlanta' },
-  { city_name: 'Austin',
+  { city_name: 'Atlanta', state_code: 'GA' },
+  { city_name: 'Austin', state_code: 'TX',
     aliases: ['Downtown', 'East Austin', 'South Congress', 'Zilker', 'Hyde Park'] },
-  { city_name: 'Baltimore' },
-  { city_name: 'Boston',
+  { city_name: 'Baltimore', state_code: 'MD' },
+  { city_name: 'Boston', state_code: 'MA',
     aliases: ['Back Bay', 'South End', 'Fenway', 'Beacon Hill', 'Seaport', 'Cambridge', 'Somerville',
               'Watertown'] },
-  { city_name: 'Charlotte' },
-  { city_name: 'Chicago',
+  { city_name: 'Charlotte', state_code: 'NC' },
+  { city_name: 'Chicago', state_code: 'IL',
     aliases: ['Loop', 'River North', 'Lincoln Park', 'Wicker Park', 'South Loop', 'Brookfield',
               'Schaumburg'] },
-  { city_name: 'Cincinnati' },
-  { city_name: 'Dallas', aliases: ['Richardson'] },
-  { city_name: 'Denver',
+  { city_name: 'Cincinnati', state_code: 'OH' },
+  { city_name: 'Dallas', state_code: 'TX', aliases: ['Richardson'] },
+  { city_name: 'Denver', state_code: 'CO',
     aliases: ['LoDo', 'Capitol Hill', 'Cherry Creek', 'Highlands', 'RiNo', 'Aurora'] },
-  { city_name: 'Detroit' },
-  { city_name: 'Durham', aliases: ['Chapel Hill'] },
-  { city_name: 'Emeryville' },
-  { city_name: 'Fort Worth', aliases: ['Arlington', 'ft worth'] },
-  { city_name: 'Houston' },
-  { city_name: 'Indianapolis', aliases: %w[Carmel Fortville] },
-  { city_name: 'Las Vegas', aliases: ['Henderson'] },
-  { city_name: 'Lincoln', aliases: ['Omaha'] },
-  { city_name: 'Los Angeles',
+  { city_name: 'Detroit', state_code: 'MI' },
+  { city_name: 'Durham', state_code: 'NC', aliases: ['Chapel Hill'] },
+  { city_name: 'Emeryville', state_code: 'CA' },
+  { city_name: 'Fort Worth', state_code: 'TX', aliases: ['Arlington', 'ft worth'] },
+  { city_name: 'Houston', state_code: 'TX' },
+  { city_name: 'Indianapolis', state_code: 'IN', aliases: %w[Carmel Fortville] },
+  { city_name: 'Las Vegas', state_code: 'NV', aliases: ['Henderson'] },
+  { city_name: 'Lincoln', state_code: 'NE', aliases: ['Omaha'] },
+  { city_name: 'Los Angeles', state_code: 'CA',
     aliases: ['Hollywood', 'Santa Monica', 'Beverly Hills', 'Venice', 'Downtown LA', 'Westwood',
               'Silver Lake', 'West Hollywood', 'Van Nuys', 'Burbank', 'El Segundo', 'dtla',
               'Covina', 'Newport Beach', 'Corona del Mar', 'Riverside', 'Pasadena'] },
-  { city_name: 'Madison' },
-  { city_name: 'Miami',
+  { city_name: 'Madison', state_code: 'WI' },
+  { city_name: 'Miami', state_code: 'FL',
     aliases: ['Brickell', 'Wynwood', 'Little Havana', 'Coconut Grove', 'South Beach',
               'Coral Gables'] },
-  { city_name: 'Memphis' },
-  { city_name: 'Minneapolis' },
-  { city_name: 'Nashville' },
-  { city_name: 'New Orleans', aliases: ['Metairie'] },
-  { city_name: 'New York',
+  { city_name: 'Memphis', state_code: 'TN' },
+  { city_name: 'Minneapolis', state_code: 'MN' },
+  { city_name: 'Nashville', state_code: 'TN' },
+  { city_name: 'New Orleans', state_code: 'LA', aliases: ['Metairie'] },
+  { city_name: 'New York', state_code: 'NY',
     aliases: ['New York City', 'Manhattan', 'Brooklyn', 'Queens', 'Bronx', 'Staten Island', 'Harlem', 'SoHo', 'Tribeca',
               'Chelsea', 'Long Island City', 'Nutely', 'Union', 'Newark', 'Hoboken'] },
-  { city_name: 'Oakland', aliases: %w[Piedmont Alameda] },
-  { city_name: 'Orlando' },
-  { city_name: 'Palo Alto', aliases: ['Stanford'] },
-  { city_name: 'Philadelphia',
+  { city_name: 'Oakland', state_code: 'CA', aliases: %w[Piedmont Alameda] },
+  { city_name: 'Orlando', state_code: 'FL' },
+  { city_name: 'Palo Alto', state_code: 'CA', aliases: ['Stanford'] },
+  { city_name: 'Philadelphia', state_code: 'PA',
     aliases: ['Radnor', 'King of Prussia', 'Lower Gwynedd', 'Doylestown'] },
-  { city_name: 'Pittsburgh' },
-  { city_name: 'Portland' },
-  { city_name: 'Raleigh', aliases: ['Wake Forest'] },
-  { city_name: 'Sacramento' },
-  { city_name: 'Salt Lake City' },
-  { city_name: 'San Diego', aliases: ['Sunnyvale'] },
-  { city_name: 'San Francisco',
+  { city_name: 'Pittsburgh', state_code: 'PA' },
+  { city_name: 'Portland', state_code: 'OR' },
+  { city_name: 'Raleigh', state_code: 'NC', aliases: ['Wake Forest'] },
+  { city_name: 'Sacramento', state_code: 'CA' },
+  { city_name: 'Salt Lake City', state_code: 'UT' },
+  { city_name: 'San Diego', state_code: 'CA', aliases: ['Sunnyvale'] },
+  { city_name: 'San Francisco', state_code: 'CA',
     aliases: ['SOMA', 'Mission District', 'Financial District', 'Nob Hill', 'Castro',
               'Pacific Heights', 'South San Francisco', 'Hayward', 'Emeryville', 'Fremont', 'San Mateo', 'Burlingame', 'San Carlos',
               'Berkeley', 'Novato'] },
-  { city_name: 'San Jose' },
-  { city_name: 'Santa Clara', aliases: ['Santa Cruz', 'Santa Ana'] },
-  { city_name: 'Savannah' },
-  { city_name: 'Scottsdale', aliases: ['Tempe'] },
-  { city_name: 'Seattle',
+  { city_name: 'San Jose', state_code: 'CA' },
+  { city_name: 'Santa Clara', state_code: 'CA', aliases: ['Santa Cruz', 'Santa Ana'] },
+  { city_name: 'Savannah', state_code: 'GA' },
+  { city_name: 'Scottsdale', state_code: 'AZ', aliases: ['Tempe'] },
+  { city_name: 'Seattle', state_code: 'WA',
     aliases: ['Capitol Hill', 'Belltown', 'Ballard', 'Fremont', 'Queen Anne', 'South Lake Union', 'Bothell',
               'Kirkland', 'Bellevue'] },
-  { city_name: 'Tampa' },
-  { city_name: 'Washington',
+  { city_name: 'Tampa', state_code: 'FL' },
+  { city_name: 'Washington', state_code: 'DC',
     aliases: ['Georgetown', 'Dupont Circle', 'Capitol Hill', 'Foggy Bottom', 'Adams Morgan',
               'Columbia Heights', 'Washington DC', 'Washington D.C.', 'Bethesda', 'Tysons', 'Rockville', 'Fairfax'] },
 
@@ -114,19 +114,30 @@ cities.each do |city|
   if city_record.persisted?
     existing_count += 1
 
+    updated = false
     if city[:aliases] && city_record.aliases != city[:aliases]
       city_record.aliases = city[:aliases]
+      updated = true
+    end
+
+    if city[:state_code] && city_record.state_code != city[:state_code]
+      city_record.state_code = city[:state_code]
+      updated = true
+    end
+
+    if updated
       city_record.save!
       updated_count += 1
-      puts "Updated aliases for city #{city[:city_name]}."
+      puts "Updated city #{city[:city_name]} with new data."
     else
       puts "City #{city[:city_name]} is already up-to-date."
     end
   else
     city_record.aliases = city[:aliases] if city[:aliases]
+    city_record.state_code = city[:state_code] if city[:state_code]
     city_record.save!
     seeded_count += 1
-    puts "Seeded new city: #{city[:city_name]} with aliases: #{city[:aliases]}"
+    puts "Seeded new city: #{city[:city_name]} with state_code: #{city[:state_code]} and aliases: #{city[:aliases]}"
   end
 end
 

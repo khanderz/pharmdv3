@@ -5,13 +5,13 @@ one:
   last_name: MyString
   email: MyString
   credential: MyString
-  resume:
+  resume: 
   photo: MyString
-  last_login: 2024-12-05 14:17:29
+  last_login: 2024-12-27 12:51:26
   password_digest: MyString
   salt: MyString
   reset_password_token: MyString
-  reset_password_sent_at: 2024-12-05 14:17:29
+  reset_password_sent_at: 2024-12-27 12:51:26
   provider: MyString
   uid: MyString
   access_token: MyString
@@ -22,13 +22,13 @@ two:
   last_name: MyString
   email: MyString
   credential: MyString
-  resume:
+  resume: 
   photo: MyString
-  last_login: 2024-12-05 14:17:29
+  last_login: 2024-12-27 12:51:26
   password_digest: MyString
   salt: MyString
   reset_password_token: MyString
-  reset_password_sent_at: 2024-12-05 14:17:29
+  reset_password_sent_at: 2024-12-27 12:51:26
   provider: MyString
   uid: MyString
   access_token: MyString
