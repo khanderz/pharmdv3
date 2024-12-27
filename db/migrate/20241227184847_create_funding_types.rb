@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class CreateFundingTypes < ActiveRecord::Migration[7.1]
   def change
     create_table :funding_types do |t|

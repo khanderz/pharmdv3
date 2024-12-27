@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class CreateJobSalaryIntervals < ActiveRecord::Migration[7.1]
   def change
     create_table :job_salary_intervals do |t|

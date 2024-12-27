@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class CreateJobPostCredentials < ActiveRecord::Migration[7.1]
   def change
     create_table :job_post_credentials do |t|

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class CreateSkillResources < ActiveRecord::Migration[7.1]
   def change
     create_table :skill_resources do |t|
