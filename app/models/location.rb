@@ -1,27 +1,29 @@
 # frozen_string_literal: true
 
 class Location < ApplicationRecord
+  self.inheritance_column = nil
+
   belongs_to :parent, class_name: 'Location', optional: true
   has_many :children, class_name: 'Location', foreign_key: 'parent_id', dependent: :destroy
 
   validates :name, presence: true
-  validates :type, presence: true, inclusion: { in: %w[Country State City] }
-  validates :code, uniqueness: { scope: :type, allow_nil: true }
+  validates :location_type, presence: true, inclusion: { in: %w[Country State City] }
+  validates :code, uniqueness: { scope: :location_type, allow_nil: true }
 
-  scope :countries, -> { where(type: 'Country') }
-  scope :states, -> { where(type: 'State') }
-  scope :cities, -> { where(type: 'City') }
+  scope :countries, -> { where(location_type: 'Country') }
+  scope :states, -> { where(location_type: 'State') }
+  scope :cities, -> { where(location_type: 'City') }
 
   def country?
-    type == 'Country'
+    location_type == 'Country'
   end
 
   def state?
-    type == 'State'
+    location_type == 'State'
   end
 
   def city?
-    type == 'City'
+    location_type == 'City'
   end
 
   def full_hierarchy
@@ -37,7 +39,7 @@ class Location < ApplicationRecord
 
   #   create_table 'locations', force: :cascade do |t|
   #     t.string 'name'
-  #     t.string 'type'
+  #     t.string 'location_type'
   #     t.string 'code'
   #     t.bigint 'parent_id'
   #     t.string 'aliases', default: [], array: true
@@ -84,10 +86,10 @@ class Location < ApplicationRecord
       nil
     end
 
-    def find_by_name_and_type(name, type)
+    def find_by_name_and_type(name, location_type)
       normalized_name = name.strip.downcase
       where('(LOWER(name) = ? OR ? = ANY(aliases) OR LOWER(code) = ?)',
-            normalized_name, normalized_name, normalized_name).find_by(type: type)
+            normalized_name, normalized_name, normalized_name).find_by(location_type: location_type)
     end
   end
 end

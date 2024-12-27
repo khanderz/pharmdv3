@@ -9,14 +9,8 @@ class Company < ApplicationRecord
   belongs_to :funding_type, optional: true
   belongs_to :company_type, optional: true
 
-  has_many :company_cities, dependent: :destroy
-  has_many :cities, through: :company_cities
-
-  has_many :company_states, dependent: :destroy
-  has_many :states, through: :company_states
-
-  has_many :company_countries, dependent: :destroy
-  has_many :countries, through: :company_countries
+  has_many :company_locations, dependent: :destroy
+  has_many :locations, through: :company_locations
 
   has_many :company_domains, dependent: :destroy
   has_many :healthcare_domains, through: :company_domains
@@ -36,13 +30,10 @@ class Company < ApplicationRecord
   # Scopes
   scope :with_size, ->(size) { where(company_size_id: size.id) }
   scope :operating, -> { where(operating_status: true) }
-  scope :by_country, lambda { |country_id|
-    joins(:company_countries).where(company_countries: { country_id: country_id })
+  scope :by_location, lambda { |location_id|
+    joins(:company_locations).where(company_locations: { location_id: location_id })
   }
-  scope :by_state, lambda { |state_id|
-    joins(:company_states).where(company_states: { state_id: state_id })
-  }
-  scope :by_city, ->(city_id) { joins(:company_cities).where(company_cities: { city_id: city_id }) }
+
   scope :by_healthcare_domain, lambda { |domain_id|
     joins(:company_domains).where(company_domains: { healthcare_domain_id: domain_id })
   }
@@ -51,14 +42,6 @@ class Company < ApplicationRecord
   }
 
   # Instance Methods
-  def full_location
-    locations = []
-    locations << cities.pluck(:city_name).join(', ') if cities.any?
-    locations << states.pluck(:state_name).join(', ') if states.any?
-    locations << countries.pluck(:country_name).join(', ') if countries.any?
-    locations.join(' - ')
-  end
-
   def active_jobs
     job_posts.where(job_active: true)
   end
@@ -67,6 +50,7 @@ class Company < ApplicationRecord
     job_posts.where(job_active: false)
   end
 
+  # Class Methods
   def self.seed_existing_companies(company, row, ats_type, countries, states, cities)
     changes_made = false
     %w[operating_status linkedin_url year_founded acquired_by company_description ats_id logo_url

@@ -27,10 +27,22 @@ def normalize_location_data(data)
   end
 end
 
-def resolve_location(locations)
-  return nil if locations.empty?
+def resolve_locations(row_data, company_name)
+  cities = normalize_location_data(row_data['company_cities'])
+  states = normalize_location_data(row_data['company_states'])
+  countries = normalize_location_data(row_data['company_countries'])
 
-  locations.size == 1 ? locations.first : locations
+  resolved_countries = resolve_location_hierarchy(countries, 'Country')
+  resolved_states = states.flat_map do |state|
+    parent_country = resolved_countries.first  
+    resolve_location_hierarchy([state], 'State', parent_country)
+  end
+  resolved_cities = cities.flat_map do |city|
+    parent_state = resolved_states.first  
+    resolve_location_hierarchy([city], 'City', parent_state)
+  end
+
+  [resolved_countries, resolved_states, resolved_cities]
 end
 
 def find_company_size(size_range, current_company_size = nil)
@@ -106,50 +118,23 @@ def find_or_create_company_type(company_type_name, company_name)
   company_type
 end
 
-def update_join_tables(company, countries, states, cities, domains, specialties)
+def update_join_tables(company, locations, domains, specialties)
   changes_made = false
 
-  # puts "company: #{company.company_name}"
-  # puts "countries: #{countries}"
-  # puts "states: #{states}"
-  # puts "cities: #{cities}"
+  puts "company: #{company.company_name}"
+  puts "locations: #{locations}"
   # puts "domains: #{domains}"
   # puts "specialties: #{specialties}"
 
-  countries = countries.compact.uniq(&:id)
-  states = states.compact.uniq(&:id)
-  cities = cities.compact.uniq(&:id)
   domains = domains.compact.uniq(&:id)
   specialties = specialties.compact.uniq(&:id)
 
-  existing_countries = CompanyCountry.where(company_id: company.id).pluck(:country_id).sort
-  new_countries = countries.map(&:id).sort
-  if existing_countries != new_countries
-    CompanyCountry.where(company_id: company.id).destroy_all
-    countries.each do |country|
-      CompanyCountry.find_or_create_by!(company_id: company.id, country_id: country.id)
+  locations.each do |location|
+    existing = CompanyLocation.find_by(company_id: company.id, location_id: location.id)
+    unless existing
+      CompanyLocation.create!(company_id: company.id, location_id: location.id)
+      changes_made = true
     end
-    changes_made = true
-  end
-
-  existing_states = CompanyState.where(company_id: company.id).pluck(:state_id).sort
-  new_states = states.map(&:id).sort
-  if existing_states != new_states
-    CompanyState.where(company_id: company.id).destroy_all
-    states.each do |state|
-      CompanyState.find_or_create_by!(company_id: company.id, state_id: state.id)
-    end
-    changes_made = true
-  end
-
-  existing_cities = CompanyCity.where(company_id: company.id).pluck(:city_id).sort
-  new_cities = cities.map(&:id).sort
-  if existing_cities != new_cities
-    CompanyCity.where(company_id: company.id).destroy_all
-    cities.each do |city|
-      CompanyCity.find_or_create_by!(company_id: company.id, city_id: city.id)
-    end
-    changes_made = true
   end
 
   existing_domains = CompanyDomain.where(company_id: company.id).pluck(:healthcare_domain_id).sort
@@ -176,7 +161,7 @@ def update_join_tables(company, countries, states, cities, domains, specialties)
   changes_made
 end
 
-def update_existing_company(company, row_data, ats_type, countries, states, cities, domains,
+def update_existing_company(company, row_data, ats_type, locations, domains,
                             specialties)
   ActiveRecord::Base.transaction do
     changes_made = false
@@ -222,8 +207,7 @@ def update_existing_company(company, row_data, ats_type, countries, states, citi
       company.save!
     end
 
-    join_table_changes = update_join_tables(company, countries, states, cities, domains,
-                                            specialties)
+    join_table_changes = update_join_tables(company, locations, domains, specialties)
     changes_made ||= join_table_changes
 
     if changes_made
@@ -240,7 +224,7 @@ def update_existing_company(company, row_data, ats_type, countries, states, citi
   end
 end
 
-def create_new_company(row_data, ats_type, countries, states, cities, domains, specialties)
+def create_new_company(row_data, ats_type, locations, domains, specialties)
   company_size = find_company_size(row_data['company_size'])
   funding_type = find_funding_type(row_data['last_funding_type'], row_data['company_name'])
   company_type = find_or_create_company_type(row_data['company_type'], row_data['company_name'])
@@ -263,7 +247,7 @@ def create_new_company(row_data, ats_type, countries, states, cities, domains, s
   )
 
   if new_company.save
-    update_join_tables(new_company, countries, states, cities, domains, specialties)
+    update_join_tables(new_company, locations, domains, specialties)
     puts "#{GREEN}Added new company: #{new_company.company_name}.#{RESET}"
   else
     puts "#{RED}Failed to save new company: #{new_company.company_name}. Errors: #{new_company.errors.full_messages.join(', ')}#{RESET}"
@@ -278,20 +262,7 @@ def process_company_data(row_data, _headers)
     company = Company.find_by(company_name: company_name)
     ats_type = AtsType.find_by(ats_type_code: row_data['company_ats_type'])
 
-    countries = normalize_location_data(row_data['company_countries']).map do |name|
-      puts "#{ORANGE}Country: #{name}#{RESET}"
-      Country.find_or_adjudicate_country(name, name, company_name)
-    end
-
-    states = normalize_location_data(row_data['company_states']).map do |name|
-      puts "#{ORANGE}State: #{name}#{RESET}"
-      State.find_or_create_state(name, company_name)
-    end
-
-    cities = normalize_location_data(row_data['company_cities']).map do |name|
-      puts "#{ORANGE}City: #{name}#{RESET}"
-      City.find_or_create_city(name, company_name)
-    end
+    locations = resolve_locations(row_data, company_name)
 
     domains = (row_data['healthcare_domain'] || '').split(',').map(&:strip).map do |key|
       HealthcareDomain.find_or_create_by!(key: key)
@@ -303,11 +274,11 @@ def process_company_data(row_data, _headers)
 
     if company
       puts "#{GREEN}Company #{company_name} found in existing records.#{RESET}"
-      update_existing_company(company, row_data, ats_type, countries, states, cities, domains,
+      update_existing_company(company, row_data, ats_type, locations, domains,
                               specialties)
     else
       puts "#{RED}Company '#{company_name}' not found in existing records.#{RESET}"
-      create_new_company(row_data, ats_type, countries, states, cities, domains, specialties)
+      create_new_company(row_data, ats_type, locations, domains, specialties)
     end
   rescue ActiveRecord::RecordInvalid => e
     puts "#{RED}Transaction failed while processing company data for #{row_data['company_name']}: #{e.message}#{RESET}"

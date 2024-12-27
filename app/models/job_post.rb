@@ -21,14 +21,12 @@ class JobPost < ApplicationRecord
   has_many :job_post_states, dependent: :destroy
 
   has_many :benefits, through: :job_post_benefits
-  has_many :cities, through: :job_post_cities
-  has_many :countries, through: :job_post_countries
+  has_many :locations, through: :job_post_locations
   has_many :credentials, through: :job_post_credentials
   has_many :educations, through: :job_post_educations
   has_many :experiences, through: :job_post_experiences
   has_many :seniorities, through: :job_post_seniorities
   has_many :skills, through: :job_post_skills
-  has_many :states, through: :job_post_states
 
   belongs_to :job_commitment, optional: true
   belongs_to :department
@@ -45,6 +43,14 @@ class JobPost < ApplicationRecord
 
   scope :active, -> { where(job_active: true) }
   scope :inactive, -> { where(job_active: false) }
+  scope :by_location, lambda { |location_id|
+    joins(:job_post_locations).where(job_post_locations: { location_id: location_id })
+  }
+
+  #  Instance Methods
+  def jobs_by_location
+    locations.pluck(:location_name).join(', ')
+  end
 
   def self.parse_datetime(datetime)
     DateTime.parse(datetime).strftime('%Y-%m-%d') if datetime
