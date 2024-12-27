@@ -71,18 +71,22 @@ class AiUpdater
       location_info.each do |location|
         country_ids = process_location(location[:country_name], 'Country', company, nil, job[:job_url])
         state_ids = if location[:state_name]
-                      process_location(location[:state_name], 'State', company, country_ids.first, job[:job_url])
-                    end
+          process_location(location[:state_name], 'State', company, Location.find(country_ids.first), job[:job_url])
+        else
+          []
+        end
         city_ids = if location[:city_name]
-                     process_location(location[:city_name], 'City', company, state_ids&.first, job[:job_url])
-                   end
+          process_location(location[:city_name], 'City', company, Location.find(state_ids.first), job[:job_url])
+        else
+          []
+        end
                    puts "country_ids: #{country_ids}"
                     puts "state_ids: #{state_ids}"
                     puts "city_ids: #{city_ids}"
-                   location_ids = (country_ids + state_ids.to_a + city_ids.to_a).uniq
-                   location_ids.each do |location_id|
-                     job_post_locations << location_id unless job_post_locations.include?(location_id)
-                   end
+                    location_ids = (country_ids + state_ids + city_ids).uniq
+                    location_ids.each do |location_id|
+                      job_post_locations << location_id unless job_post_locations.include?(location_id)
+                    end
       end
     end
 
