@@ -11,17 +11,10 @@ module Utils
       cleaned_title = title.gsub(/\(.*?\)/i, '')
                            .split(/[-,]/i).first.strip
 
-      states = State.all.pluck(:state_code, :state_name).flatten.compact.map do |s|
-        Regexp.escape(s)
-      end
-      state_pattern = /\b(#{states.join('|')})\b/i
+      locations = Location.all.pluck(:name).compact.map { |loc| Regexp.escape(loc) }
+      location_pattern = /\b(#{locations.join('|')})\b/i
 
-      cleaned_title.gsub!(state_pattern, '')
-
-      countries = Country.all.pluck(:country_name).compact.map { |c| Regexp.escape(c) }
-      country_pattern = /\b(#{countries.join('|')})\b/i
-
-      cleaned_title.gsub!(country_pattern, '')
+      cleaned_title.gsub!(location_pattern, '')
 
       # List of common employment terms to remove
       employment_terms = ['Contract', 'Full Time', 'Part Time', 'Temporary', 'Intern', 'Per Diem', 'Locum',

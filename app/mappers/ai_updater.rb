@@ -8,7 +8,8 @@ class AiUpdater
   # @param job_post_data [Hash] The current job post data.
   # @param job [Hash] The raw job data.
   # @param company [Object] The company object associated with the job.
-  # @return [Boolean] True if the job post data was updated, otherwise false.
+  # @param location_info [Array<Hash>] Location data extracted from AI.
+  # @return [Hash] The updated job post data and related entities.
   def self.print_job_post_data(job_post_data)
     puts "\n--- Job Post Data in ai updater class ---"
     puts "Company ID: #{job_post_data[:company_id]}"
@@ -36,6 +37,17 @@ class AiUpdater
     puts '--- End of Job Post Data ---'
   end
 
+  def self.process_location(name_or_locations, location_type, company, parent = nil, job_post_url = nil)
+    return [] if name_or_locations.blank?
+
+    Array(name_or_locations).each_with_object([]) do |name, ids|
+      next if name.blank?
+
+      location = Location.find_or_create_by_name_and_type(name, company, location_type, parent, job_post_url)
+      ids << location.id if location
+    end
+  end
+
   def self.update_with_ai(job_post_data, job, company, location_info)
     use_validation = false
     ai_data = use_validation ? JobPostServiceWithValidation.split_descriptions(job) : JobPostService.split_descriptions(job)
@@ -45,40 +57,31 @@ class AiUpdater
     puts "data from AI: #{ai_data}"
 
     job_post_benefits = []
-    job_post_cities = []
-    job_post_countries = []
     job_post_credentials = []
     job_post_educations = []
     job_post_experiences = []
     job_post_seniorities = []
     job_post_skills = []
-    job_post_states = []
+    job_post_locations = []
     job_post_data[:job_setting] = Array(job_post_data[:job_setting])
 
     puts "location info is #{location_info}"
 
     if location_info.is_a?(Array)
       location_info.each do |location|
-        if location[:city_name]
-          city_id = City.find_or_create_city(location[:city_name], company, job)&.id
-          job_post_cities << city_id if city_id && !job_post_cities.include?(city_id)
+        country = process_location(location[:country_name], 'Country', company, nil, job[:job_url])
+
+        state = if location[:state_name]
+                  process_location(location[:state_name], 'State', company, country, job[:job_url])
+                end
+
+        city = if location[:city_name]
+                 process_location(location[:city_name], 'City', company, state, job[:job_url])
+               end
+
+        [country, state, city].compact.each do |loc|
+          job_post_locations << loc.id unless job_post_locations.include?(loc.id)
         end
-
-        if location[:state_name]
-          state_id = State.find_or_create_state(location[:state_name] || location[:state_code],
-                                                company, job)&.id
-          job_post_states << state_id if state_id && !job_post_states.include?(state_id)
-        end
-
-        next unless location[:country_name]
-
-        country_id = Country.find_or_adjudicate_country(
-          location[:country_code],
-          location[:country_name],
-          company,
-          job[:job_url]
-        )&.id
-        job_post_countries << country_id if country_id && !job_post_countries.include?(country_id)
       end
     end
 
@@ -97,9 +100,6 @@ class AiUpdater
             job_team = value[:job_team]
             commitment = value[:job_commitment]
             settings = value[:job_settings]
-            countries = value[:job_countries]
-            cities = value[:job_cities]
-            states = value[:job_states]
 
             job_post_data[:job_description] = description if description
 
@@ -148,27 +148,13 @@ class AiUpdater
               end
             end
 
-            countries.each do |country|
-              country_id = Country.find_or_adjudicate_country(
-                nil, country, company, job[:job_url]
-              )&.id
-              if country_id && !job_post_countries.include?(country_id)
-                job_post_countries << country_id
-              end
-              updated = true
-            end
+            countries = process_location(value[:job_countries], 'Country', company, nil, job_post_data[:job_url])
+            states = process_location(value[:job_states], 'State', company, countries.first, job_post_data[:job_url])
+            cities = process_location(value[:job_cities], 'City', company, states.first, job_post_data[:job_url])
 
-            cities.each do |city|
-              city_id = City.find_or_create_city(city, job_post_data).id
-              job_post_cities << city_id if city_id && !job_post_cities.include?(city_id)
-              updated = true
-            end
 
-            states.each do |state|
-              state_id = State.find_or_create_state(state, job_post_data).id
-              job_post_states << state_id if state_id && !job_post_states.include?(state_id)
-              updated = true
-            end
+            job_post_data[:job_locations] ||= []
+            job_post_data[:job_locations].concat(countries + states + cities).uniq!
           end
           # puts "description / job post data is #{job_post_data}"
 
@@ -245,9 +231,6 @@ class AiUpdater
           # puts "value is #{value}"
 
           settings = value[:job_settings]
-          countries = value[:job_countries]
-          cities = value[:job_cities]
-          states = value[:job_states]
           commitment = value[:commitment]
 
           benefits = [
@@ -273,27 +256,13 @@ class AiUpdater
             end
           end
 
-          countries.each do |country|
-            country_id = Country.find_or_adjudicate_country(
-              nil, country, company, job[:job_url]
-            )&.id
-            if country_id && !job_post_countries.include?(country_id)
-              job_post_countries << country_id
-            end
-            updated = true
-          end
+          countries = process_location(value[:job_countries], 'Country', company, nil, job_post_data[:job_url])
+          states = process_location(value[:job_states], 'State', company, countries.first, job_post_data[:job_url])
+          cities = process_location(value[:job_cities], 'City', company, states.first, job_post_data[:job_url])
 
-          cities.each do |city|
-            city_id = City.find_or_create_city(city, job_post_data)&.id
-            job_post_cities << city_id if city_id && !job_post_cities.include?(city_id)
-            updated = true
-          end
 
-          states.each do |state|
-            state_id = State.find_or_create_state(state, job_post_data)&.id
-            job_post_states << state_id if state_id && !job_post_states.include?(state_id)
-            updated = true
-          end
+          job_post_data[:job_locations] ||= []
+          job_post_data[:job_locations].concat(countries + states + cities).uniq!
 
           if commitment
             commitment_id = JobCommitment.find_job_commitment(commitment).id
@@ -321,7 +290,6 @@ class AiUpdater
           currency = value[:job_salary_currency]
           interval = value[:job_salary_interval]
           commitment = value[:job_commitment]
-          countries = value[:job_post_countries]
 
           if salary_min
             job_post_data[:job_salary_min] = salary_min
@@ -364,17 +332,9 @@ class AiUpdater
             end
           end
 
-          if countries
-            countries.each do |country|
-              country_id = Country.find_or_adjudicate_country(
-                nil, country, company, job[:job_url]
-              ).id
-              if country_id && !job_post_countries.include?(country_id)
-                job_post_countries << country_id
-              end
-              updated = true
-            end
-          end
+          countries = process_location(value[:job_post_countries], 'Country', company, nil, job_post_data[:job_url])
+          job_post_data[:job_locations] ||= []
+          job_post_data[:job_locations].concat(countries).uniq!
 
           # puts "salary / job post data is #{job_post_data}"
 

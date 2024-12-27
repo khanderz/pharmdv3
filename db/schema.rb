@@ -150,7 +150,7 @@ ActiveRecord::Schema[7.1].define(version: 2024_12_27_202127) do
 
   create_table "departments", force: :cascade do |t|
     t.string "dept_name"
-    t.string "aliases"
+    t.string "aliases", default: [], array: true
     t.text "error_details"
     t.bigint "reference_id"
     t.boolean "resolved"
@@ -326,7 +326,7 @@ ActiveRecord::Schema[7.1].define(version: 2024_12_27_202127) do
 
   create_table "job_roles", force: :cascade do |t|
     t.string "role_name"
-    t.string "aliases"
+    t.string "aliases", default: [], array: true
     t.text "error_details"
     t.bigint "reference_id"
     t.boolean "resolved"
@@ -385,7 +385,7 @@ ActiveRecord::Schema[7.1].define(version: 2024_12_27_202127) do
 
   create_table "job_settings", force: :cascade do |t|
     t.string "setting_name"
-    t.string "aliases"
+    t.string "aliases", default: [], array: true
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["setting_name"], name: "index_job_settings_on_setting_name", unique: true
@@ -477,7 +477,7 @@ ActiveRecord::Schema[7.1].define(version: 2024_12_27_202127) do
 
   create_table "teams", force: :cascade do |t|
     t.string "team_name"
-    t.string "aliases"
+    t.string "aliases", default: [], array: true
     t.text "error_details"
     t.bigint "reference_id"
     t.boolean "resolved"
