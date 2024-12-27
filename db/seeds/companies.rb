@@ -128,8 +128,8 @@ def update_join_tables(company, locations, domains, specialties)
   puts " updating join tables"
   changes_made = false
 
-  puts "company: #{company.company_name}"
-  puts "locations: #{locations}"
+  # puts "company: #{company.company_name}"
+  # puts "locations: #{locations}"
   # puts "domains: #{domains}"
   # puts "specialties: #{specialties}"
 
@@ -170,7 +170,6 @@ end
 
 def update_existing_company(company, row_data, ats_type, locations, domains,
                             specialties)
-                            puts "updating"
   ActiveRecord::Base.transaction do
     changes_made = false
     changed_attributes = {}
@@ -233,7 +232,6 @@ def update_existing_company(company, row_data, ats_type, locations, domains,
 end
 
 def create_new_company(row_data, ats_type, locations, domains, specialties)
-  puts "creating"
   company_size = find_company_size(row_data['company_size'])
   funding_type = find_funding_type(row_data['last_funding_type'], row_data['company_name'])
   company_type = find_or_create_company_type(row_data['company_type'], row_data['company_name'])
@@ -255,10 +253,7 @@ def create_new_company(row_data, ats_type, locations, domains, specialties)
     company_type_id: company_type&.id
   )
 
-  puts "New company attributes: #{new_company.attributes.inspect}"
-
   if new_company.save
-    puts "new company saved"
     update_join_tables(new_company, locations, domains, specialties)
     puts "#{GREEN}Added new company: #{new_company.company_name}.#{RESET}"
   else
@@ -276,7 +271,6 @@ def process_company_data(row_data, _headers)
     ats_type = AtsType.find_by(ats_type_code: row_data['company_ats_type'])
 
     locations = resolve_locations(row_data, company_name)
-    puts "processing/ locations: #{locations}"
 
     domains = (row_data['healthcare_domain'] || '').split(',').map(&:strip).map do |key|
       HealthcareDomain.find_or_create_by!(key: key)
