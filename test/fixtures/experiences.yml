@@ -6,7 +6,7 @@ one:
   min_years: 1
   max_years: 1
   error_details: MyText
-  reference_id: 
+  reference_id:
   resolved: false
 
 two:
@@ -15,5 +15,5 @@ two:
   min_years: 1
   max_years: 1
   error_details: MyText
-  reference_id: 
+  reference_id:
   resolved: false
