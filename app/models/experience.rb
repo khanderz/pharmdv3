@@ -44,7 +44,7 @@ class Experience < ApplicationRecord
   end
 
   def self.extract_years(input)
-    years_match = input.match(/(\d+)(?:\s*-\s*(\d+))?\s*\+?\s*years?/i)
+    years_match = input.match(/(\d+)(?:\s*-\s*(\d+))?\s*years?/i)
 
     if years_match
       min_years = years_match[1].to_i
@@ -54,7 +54,15 @@ class Experience < ApplicationRecord
 
       [min_years, max_years]
     else
-      [nil, nil]
+      possible_years = input.scan(/\b\d+\b/)
+      if possible_years.any?
+        min_years = possible_years.first.to_i
+        max_years = possible_years.last.to_i if possible_years.length > 1
+        max_years ||= nil
+        [min_years, max_years]
+      else
+        [nil, nil]
+      end
     end
   end
 end
