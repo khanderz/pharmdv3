@@ -11,14 +11,12 @@ class JobPost < ApplicationRecord
 
   has_many :adjudications, as: :adjudicatable, dependent: :destroy
   has_many :job_post_benefits, dependent: :destroy
-  has_many :job_post_cities, dependent: :destroy
-  has_many :job_post_countries, dependent: :destroy
+  has_many :job_post_locations, dependent: :destroy
   has_many :job_post_credentials, dependent: :destroy
   has_many :job_post_educations, dependent: :destroy
   has_many :job_post_experiences, dependent: :destroy
   has_many :job_post_seniorities, dependent: :destroy
   has_many :job_post_skills, dependent: :destroy
-  has_many :job_post_states, dependent: :destroy
 
   has_many :benefits, through: :job_post_benefits
   has_many :locations, through: :job_post_locations
@@ -106,22 +104,19 @@ class JobPost < ApplicationRecord
     def update_existing_job(existing_job, job_post_data, company)
       job_post_data_object = job_post_data[:job_post_data]
       benefits = job_post_data[:job_post_benefits]
-      cities = job_post_data[:job_post_cities]
-      countries = job_post_data[:job_post_countries]
+      locations = job_post_data[:job_post_locations]
       credentials = job_post_data[:job_post_credentials]
       educations = job_post_data[:job_post_educations]
       experiences = job_post_data[:job_post_experiences]
       seniorities = job_post_data[:job_post_seniorities]
       skills = job_post_data[:job_post_skills]
-      states = job_post_data[:job_post_states]
 
       puts "job post data at job post model: #{job_post_data}"
       existing_job.update!(job_post_data_object)
 
       begin
         update_join_table(existing_job, benefits, :job_post_benefits, :benefit_id, 'Benefits')
-        update_join_table(existing_job, cities, :job_post_cities, :city_id, 'Cities')
-        update_join_table(existing_job, countries, :job_post_countries, :country_id, 'Countries')
+        update_join_table(existing_job, locations, :job_post_locations, :location_id, 'Locations')
         update_join_table(existing_job, credentials, :job_post_credentials, :credential_id,
                           'Credentials')
         update_join_table(existing_job, educations, :job_post_educations, :education_id,
@@ -131,7 +126,6 @@ class JobPost < ApplicationRecord
         update_join_table(existing_job, seniorities, :job_post_seniorities, :job_seniority_id,
                           'Seniorities')
         update_join_table(existing_job, skills, :job_post_skills, :skill_id, 'Skills')
-        update_join_table(existing_job, states, :job_post_states, :state_id, 'States')
 
         puts "#{ORANGE}Updated job post for URL: #{existing_job.job_url}#{RESET}"
       rescue StandardError => e
@@ -168,14 +162,12 @@ class JobPost < ApplicationRecord
 
       job_post_data_object = job_post_data[:job_post_data]
       benefits = job_post_data[:job_post_benefits]
-      cities = job_post_data[:job_post_cities]
-      countries = job_post_data[:job_post_countries]
+      locations = job_post_data[:job_post_locations]
       credentials = job_post_data[:job_post_credentials]
       educations = job_post_data[:job_post_educations]
       experiences = job_post_data[:job_post_experiences]
       seniorities = job_post_data[:job_post_seniorities]
       skills = job_post_data[:job_post_skills]
-      states = job_post_data[:job_post_states]
 
       job_post = JobPost.new(job_post_data_object)
 
@@ -187,12 +179,8 @@ class JobPost < ApplicationRecord
             JobPostBenefit.create!(job_post_id: job_post.id, benefit_id: benefit_id) if benefit_id
           end
 
-          cities&.each do |city_id|
-            JobPostCity.create!(job_post_id: job_post.id, city_id: city_id) if city_id
-          end
-
-          countries&.each do |country_id|
-            JobPostCountry.create!(job_post_id: job_post.id, country_id: country_id) if country_id
+          locations&.each do |location_id|
+            JobPostLocation.create!(job_post_id: job_post.id, location_id: location_id) if location_id
           end
 
           credentials&.each do |credential_id|
@@ -227,10 +215,6 @@ class JobPost < ApplicationRecord
           #   skill = Skill.find_or_create_skill(skill_name, job_post)
           #   JobPostSkill.create!(job_post_id: job_post.id, skill_id: skill.id) if skill
           # end
-
-          states&.each do |state_id|
-            JobPostState.create!(job_post_id: job_post.id, state_id: state_id) if state_id
-          end
 
         else
           log_job_error(job_post, company, job_post.errors.full_messages.join(', '), job_post)
