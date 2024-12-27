@@ -27,22 +27,26 @@ def normalize_location_data(data)
   end
 end
 
+def resolve_location_hierarchy(location_names, location_type, company_name)
+  location_names.map do |name|
+    location = Location.find_or_create_by_name_and_type(name, company_name, location_type)
+  end
+end
+
 def resolve_locations(row_data, company_name)
   cities = normalize_location_data(row_data['company_cities'])
   states = normalize_location_data(row_data['company_states'])
   countries = normalize_location_data(row_data['company_countries'])
 
-  resolved_countries = resolve_location_hierarchy(countries, 'Country')
+  resolved_countries = resolve_location_hierarchy(countries, 'Country', company_name)
   resolved_states = states.flat_map do |state|
-    parent_country = resolved_countries.first  
-    resolve_location_hierarchy([state], 'State', parent_country)
+    resolve_location_hierarchy([state], 'State', company_name)
   end
   resolved_cities = cities.flat_map do |city|
-    parent_state = resolved_states.first  
-    resolve_location_hierarchy([city], 'City', parent_state)
+    resolve_location_hierarchy([city], 'City', company_name)
   end
 
-  [resolved_countries, resolved_states, resolved_cities]
+  (resolved_countries + resolved_states + resolved_cities).compact
 end
 
 def find_company_size(size_range, current_company_size = nil)

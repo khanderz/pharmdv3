@@ -4,13 +4,15 @@ countries = [
   { name: 'Australia', code: 'AU', location_type: 'Country', parent_code: nil, aliases: [] },
   { name: 'Bangladesh', code: 'BD', location_type: 'Country', parent_code: nil, aliases: [] },
   { name: 'Brazil', code: 'BR', location_type: 'Country', parent_code: nil, aliases: [] },
-  { name: 'Canada', code: 'CA', location_type: 'Country', parent_code: nil, aliases: ['Great White North'] },
+  { name: 'Canada', code: 'CA', location_type: 'Country', parent_code: nil,
+    aliases: ['Great White North'] },
   { name: 'China', code: 'CN', location_type: 'Country', parent_code: nil, aliases: [] },
   { name: 'Egypt', code: 'EG', location_type: 'Country', parent_code: nil, aliases: [] },
   { name: 'Estonia', code: 'EE', location_type: 'Country', parent_code: nil, aliases: [] },
   { name: 'France', code: 'FR', location_type: 'Country', parent_code: nil,
     aliases: ['République Française'] },
-  { name: 'Germany', code: 'DE', location_type: 'Country', parent_code: nil, aliases: ['Deutschland'] },
+  { name: 'Germany', code: 'DE', location_type: 'Country', parent_code: nil,
+    aliases: ['Deutschland'] },
   { name: 'Hong Kong', code: 'HK', location_type: 'Country', parent_code: nil, aliases: [] },
   { name: 'India', code: 'IN', location_type: 'Country', parent_code: nil, aliases: ['Bharat'] },
   { name: 'Indonesia', code: 'ID', location_type: 'Country', parent_code: nil, aliases: [] },
@@ -34,7 +36,8 @@ countries = [
   { name: 'Switzerland', code: 'CH', location_type: 'Country', parent_code: nil, aliases: [] },
   { name: 'Thailand', code: 'TH', location_type: 'Country', parent_code: nil, aliases: [] },
   { name: 'Turkey', code: 'TR', location_type: 'Country', parent_code: nil, aliases: [] },
-  { name: 'United Arab Emirates', code: 'AE', location_type: 'Country', parent_code: nil, aliases: [] },
+  { name: 'United Arab Emirates', code: 'AE', location_type: 'Country', parent_code: nil,
+    aliases: [] },
   { name: 'United Kingdom', code: 'GB', location_type: 'Country', parent_code: nil,
     aliases: ['UK', 'Britain', 'Great Britain'] },
   { name: 'United States', code: 'US', location_type: 'Country', parent_code: nil,
@@ -66,7 +69,8 @@ us_states = [
   { name: 'Louisiana', code: 'LA', location_type: 'State', parent_code: 'US', aliases: [] },
   { name: 'Maine', code: 'ME', location_type: 'State', parent_code: 'US', aliases: [] },
   { name: 'Maryland', code: 'MD', location_type: 'State', parent_code: 'US', aliases: [] },
-  { name: 'Massachusetts', code: 'MA', location_type: 'State', parent_code: 'US', aliases: ['Mass.'] },
+  { name: 'Massachusetts', code: 'MA', location_type: 'State', parent_code: 'US',
+    aliases: ['Mass.'] },
   { name: 'Michigan', code: 'MI', location_type: 'State', parent_code: 'US', aliases: [] },
   { name: 'Minnesota', code: 'MN', location_type: 'State', parent_code: 'US', aliases: [] },
   { name: 'Mississippi', code: 'MS', location_type: 'State', parent_code: 'US', aliases: [] },
@@ -77,7 +81,8 @@ us_states = [
   { name: 'New Hampshire', code: 'NH', location_type: 'State', parent_code: 'US', aliases: [] },
   { name: 'New Jersey', code: 'NJ', location_type: 'State', parent_code: 'US', aliases: [] },
   { name: 'New Mexico', code: 'NM', location_type: 'State', parent_code: 'US', aliases: [] },
-  { name: 'New York', code: 'NY', location_type: 'State', parent_code: 'US', aliases: ['NY State'] },
+  { name: 'New York', code: 'NY', location_type: 'State', parent_code: 'US',
+    aliases: ['NY State'] },
   { name: 'North Carolina', code: 'NC', location_type: 'State', parent_code: 'US', aliases: [] },
   { name: 'North Dakota', code: 'ND', location_type: 'State', parent_code: 'US', aliases: [] },
   { name: 'Ohio', code: 'OH', location_type: 'State', parent_code: 'US', aliases: [] },
@@ -103,13 +108,16 @@ canadian_provinces = [
   { name: 'British Columbia', code: 'BC', location_type: 'State', parent_code: 'CA', aliases: [] },
   { name: 'Manitoba', code: 'MB', location_type: 'State', parent_code: 'CA', aliases: [] },
   { name: 'New Brunswick', code: 'NB', location_type: 'State', parent_code: 'CA', aliases: [] },
-  { name: 'Newfoundland and Labrador', code: 'NL', location_type: 'State', parent_code: 'CA', aliases: [] },
+  { name: 'Newfoundland and Labrador', code: 'NL', location_type: 'State', parent_code: 'CA',
+    aliases: [] },
   { name: 'Nova Scotia', code: 'NS', location_type: 'State', parent_code: 'CA', aliases: [] },
   { name: 'Ontario', code: 'ON', location_type: 'State', parent_code: 'CA', aliases: [] },
-  { name: 'Prince Edward Island', code: 'PE', location_type: 'State', parent_code: 'CA', aliases: [] },
+  { name: 'Prince Edward Island', code: 'PE', location_type: 'State', parent_code: 'CA',
+    aliases: [] },
   { name: 'Quebec', code: 'QC', location_type: 'State', parent_code: 'CA', aliases: [] },
   { name: 'Saskatchewan', code: 'SK', location_type: 'State', parent_code: 'CA', aliases: [] },
-  { name: 'Northwest Territories', code: 'NT', location_type: 'State', parent_code: 'CA', aliases: [] },
+  { name: 'Northwest Territories', code: 'NT', location_type: 'State', parent_code: 'CA',
+    aliases: [] },
   { name: 'Nunavut', code: 'NU', location_type: 'State', parent_code: 'CA', aliases: [] },
   { name: 'Yukon', code: 'YT', location_type: 'State', parent_code: 'CA', aliases: [] },
 ]
@@ -118,7 +126,8 @@ australian_states = [
   { name: 'Australian Capital Territory', code: 'ACT', location_type: 'State', parent_code: 'AU',
     aliases: [] },
   { name: 'New South Wales', code: 'NSW', location_type: 'State', parent_code: 'AU', aliases: [] },
-  { name: 'Northern Territory', code: 'NT', location_type: 'State', parent_code: 'AU', aliases: [] },
+  { name: 'Northern Territory', code: 'NT', location_type: 'State', parent_code: 'AU',
+    aliases: [] },
   { name: 'Queensland', code: 'QLD', location_type: 'State', parent_code: 'AU', aliases: [] },
   { name: 'South Australia', code: 'SA', location_type: 'State', parent_code: 'AU', aliases: [] },
   { name: 'Tasmania', code: 'TAS', location_type: 'State', parent_code: 'AU', aliases: [] },
@@ -152,7 +161,8 @@ us_cities = [
   { name: 'Houston', code: nil, location_type: 'City', parent_code: 'TX', aliases: [] },
   { name: 'Indianapolis', code: nil, location_type: 'City', parent_code: 'IN',
     aliases: %w[Carmel Fortville] },
-  { name: 'Las Vegas', code: nil, location_type: 'City', parent_code: 'NV', aliases: ['Henderson'] },
+  { name: 'Las Vegas', code: nil, location_type: 'City', parent_code: 'NV',
+    aliases: ['Henderson'] },
   { name: 'Lincoln', code: nil, location_type: 'City', parent_code: 'NE', aliases: ['Omaha'] },
   { name: 'Los Angeles', code: nil, location_type: 'City', parent_code: 'CA',
     aliases: ['Hollywood', 'Santa Monica', 'Beverly Hills', 'Venice', 'Downtown LA', 'Westwood', 'Silver Lake', 'West Hollywood', 'Van Nuys', 'Burbank', 'El Segundo', 'dtla', 'Covina', 'Newport Beach', 'Corona del Mar', 'Riverside', 'Pasadena'] },
@@ -162,20 +172,24 @@ us_cities = [
   { name: 'Memphis', code: nil, location_type: 'City', parent_code: 'TN', aliases: [] },
   { name: 'Minneapolis', code: nil, location_type: 'City', parent_code: 'MN', aliases: [] },
   { name: 'Nashville', code: nil, location_type: 'City', parent_code: 'TN', aliases: [] },
-  { name: 'New Orleans', code: nil, location_type: 'City', parent_code: 'LA', aliases: ['Metairie'] },
+  { name: 'New Orleans', code: nil, location_type: 'City', parent_code: 'LA',
+    aliases: ['Metairie'] },
   { name: 'New York', code: nil, location_type: 'City', parent_code: 'NY',
     aliases: ['New York City', 'Manhattan', 'Brooklyn', 'Queens', 'Bronx', 'Staten Island', 'Harlem', 'SoHo', 'Tribeca', 'Chelsea', 'Long Island City', 'Nutely', 'Union', 'Newark', 'Hoboken'] },
-  { name: 'Oakland', code: nil, location_type: 'City', parent_code: 'CA', aliases: %w[Piedmont Alameda] },
+  { name: 'Oakland', code: nil, location_type: 'City', parent_code: 'CA',
+    aliases: %w[Piedmont Alameda] },
   { name: 'Orlando', code: nil, location_type: 'City', parent_code: 'FL', aliases: [] },
   { name: 'Palo Alto', code: nil, location_type: 'City', parent_code: 'CA', aliases: ['Stanford'] },
   { name: 'Philadelphia', code: nil, location_type: 'City', parent_code: 'PA',
     aliases: ['Radnor', 'King of Prussia', 'Lower Gwynedd', 'Doylestown'] },
   { name: 'Pittsburgh', code: nil, location_type: 'City', parent_code: 'PA', aliases: [] },
   { name: 'Portland', code: nil, location_type: 'City', parent_code: 'OR', aliases: [] },
-  { name: 'Raleigh', code: nil, location_type: 'City', parent_code: 'NC', aliases: ['Wake Forest'] },
+  { name: 'Raleigh', code: nil, location_type: 'City', parent_code: 'NC',
+    aliases: ['Wake Forest'] },
   { name: 'Sacramento', code: nil, location_type: 'City', parent_code: 'CA', aliases: [] },
   { name: 'Salt Lake City', code: nil, location_type: 'City', parent_code: 'UT', aliases: [] },
-  { name: 'San Diego', code: nil, location_type: 'City', parent_code: 'CA', aliases: ['Sunnyvale'] },
+  { name: 'San Diego', code: nil, location_type: 'City', parent_code: 'CA',
+    aliases: ['Sunnyvale'] },
   { name: 'San Francisco', code: nil, location_type: 'City', parent_code: 'CA',
     aliases: ['SOMA', 'Mission District', 'Financial District', 'Nob Hill', 'Castro', 'Pacific Heights', 'South San Francisco', 'Hayward', 'Emeryville', 'Fremont', 'San Mateo', 'Burlingame', 'San Carlos', 'Berkeley', 'Novato'] },
   { name: 'San Jose', code: nil, location_type: 'City', parent_code: 'CA', aliases: [] },
@@ -195,9 +209,11 @@ international_cities = [
   { name: 'Amsterdam', code: nil, location_type: 'City', parent_code: 'NL', aliases: [] },
   { name: 'Barcelona', code: nil, location_type: 'City', parent_code: 'ES', aliases: [] },
   { name: 'Beijing', code: nil, location_type: 'City', parent_code: 'CN', aliases: [] },
-  { name: 'Bengaluru', code: nil, location_type: 'City', parent_code: 'IN', aliases: ['Bangalore'] },
+  { name: 'Bengaluru', code: nil, location_type: 'City', parent_code: 'IN',
+    aliases: ['Bangalore'] },
   { name: 'Berlin', code: nil, location_type: 'City', parent_code: 'DE', aliases: [] },
-  { name: 'Cambridge', code: nil, location_type: 'City', parent_code: 'UK', aliases: ['Greater Cambridge'] },
+  { name: 'Cambridge', code: nil, location_type: 'City', parent_code: 'UK',
+    aliases: ['Greater Cambridge'] },
   { name: 'Dublin', code: nil, location_type: 'City', parent_code: 'IE', aliases: [] },
   { name: 'Dubai', code: nil, location_type: 'City', parent_code: 'AE', aliases: [] },
   { name: 'Frankfurt', code: nil, location_type: 'City', parent_code: 'DE', aliases: [] },
@@ -205,7 +221,8 @@ international_cities = [
   { name: 'Guangzhou', code: nil, location_type: 'City', parent_code: 'CN', aliases: [] },
   { name: 'Johannesburg', code: nil, location_type: 'City', parent_code: 'ZA', aliases: [] },
   { name: 'Lisbon', code: nil, location_type: 'City', parent_code: 'PT', aliases: [] },
-  { name: 'London', code: nil, location_type: 'City', parent_code: 'UK', aliases: ['greater london'] },
+  { name: 'London', code: nil, location_type: 'City', parent_code: 'UK',
+    aliases: ['greater london'] },
   { name: 'Manila', code: nil, location_type: 'City', parent_code: 'PH', aliases: [] },
   { name: 'Melbourne', code: nil, location_type: 'City', parent_code: 'VIC', aliases: [] },
   { name: 'Mexico City', code: nil, location_type: 'City', parent_code: 'MX', aliases: [] },
@@ -213,11 +230,13 @@ international_cities = [
   { name: 'Munich', code: nil, location_type: 'City', parent_code: 'DE', aliases: [] },
   { name: 'Mumbai', code: nil, location_type: 'City', parent_code: 'IN', aliases: [] },
   { name: 'Ottawa', code: nil, location_type: 'City', parent_code: 'ON', aliases: [] },
-  { name: 'Paris', code: nil, location_type: 'City', parent_code: 'FR', aliases: ['Greater Paris'] },
+  { name: 'Paris', code: nil, location_type: 'City', parent_code: 'FR',
+    aliases: ['Greater Paris'] },
   { name: 'Pune', code: nil, location_type: 'City', parent_code: 'IN', aliases: [] },
   { name: 'Rio de Janeiro', code: nil, location_type: 'City', parent_code: 'BR', aliases: [] },
   { name: 'São Paulo', code: nil, location_type: 'City', parent_code: 'BR', aliases: [] },
-  { name: 'Seoul', code: nil, location_type: 'City', parent_code: 'KR', aliases: %w[Gangnam gangnam-gu] },
+  { name: 'Seoul', code: nil, location_type: 'City', parent_code: 'KR',
+    aliases: %w[Gangnam gangnam-gu] },
   { name: 'Shanghai', code: nil, location_type: 'City', parent_code: 'CN', aliases: [] },
   { name: 'Singapore', code: nil, location_type: 'City', parent_code: 'SG', aliases: [] },
   { name: 'South Morang', code: nil, location_type: 'City', parent_code: 'VIC', aliases: [] },
@@ -235,7 +254,7 @@ updated_count = 0
 
 def find_parent_id(parent_code, location_type)
   location = Location.where(location_type: location_type)
-                     .where("LOWER(code) = ? OR ? = ANY(aliases)", parent_code.downcase, parent_code)
+                     .where('LOWER(code) = ? OR ? = ANY(aliases)', parent_code.downcase, parent_code)
                      .first
   location&.id
 end
@@ -268,12 +287,11 @@ end
   city_array.each do |city_data|
     parent_id = find_parent_id(city_data[:parent_code], 'State')
 
-    if parent_id.nil?
-      parent_id = find_parent_id(city_data[:parent_code], 'Country')
-    end
+    parent_id = find_parent_id(city_data[:parent_code], 'Country') if parent_id.nil?
 
     if parent_id
-      location = Location.find_or_initialize_by(name: city_data[:name], location_type: city_data[:location_type])
+      location = Location.find_or_initialize_by(name: city_data[:name],
+                                                location_type: city_data[:location_type])
       location.parent_id = parent_id
       location.aliases = city_data[:aliases] || []
 

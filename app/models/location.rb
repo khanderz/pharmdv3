@@ -51,26 +51,31 @@ class Location < ApplicationRecord
   #   end
 
   class << self
-    def find_or_create_by_name_and_type(location_param, company, job_post = nil)
+    def find_or_create_by_name_and_type(location_param, company, location_type, parent = nil,
+                                        job_post = nil)
       return nil if location_param.blank?
 
-      param = location_param.downcase
-      types = %w[City State Country]
+      normalized_name = location_param.strip.downcase
+      parent_id = parent&.id
 
-      types.each do |location_type|
-        existing_location = find_by_name_and_type(param, location_type)
-        return existing_location if existing_location
+      existing_location = where(
+        '(LOWER(name) = ? OR ? = ANY(aliases) OR LOWER(code) = ?) AND location_type = ?',
+        normalized_name, normalized_name, normalized_name, location_type
+      ).where(parent_id: parent_id).first
 
-        error_message = "#{location_type} '#{location_param}' not found for job #{job_post} or company: #{company}"
-        adj_type = job_post ? 'Location' : 'Company'
+      return existing_location if existing_location
 
-        puts "#{RED}#{error_message}.#{RESET}"
+      error_message = "#{location_type} '#{location_param}' not found for job #{job_post} or company: #{company} , parent: #{parent&.name}"
+      adj_type = job_post ? 'Location' : 'Company'
+
+      puts "#{RED}#{error_message}.#{RESET}"
+      if location_type.present? && (location_type == 'Country' || parent_id.present?)
 
         new_location = Location.create!(
           name: location_param,
-          type: location_type,
+          location_type: location_type,
           code: nil,
-          parent_id: nil,
+          parent_id: parent_id,
           aliases: [],
           error_details: error_message,
           resolved: false
@@ -81,8 +86,8 @@ class Location < ApplicationRecord
           adjudicatable_id: new_location.id,
           error_details: error_message
         )
+        return new_location
       end
-
       nil
     end
 

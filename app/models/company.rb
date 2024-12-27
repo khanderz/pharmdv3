@@ -51,7 +51,7 @@ class Company < ApplicationRecord
   end
 
   # Class Methods
-  def self.seed_existing_companies(company, row, ats_type, countries, states, cities)
+  def self.seed_existing_companies(company, row, ats_type, locations)
     changes_made = false
     %w[operating_status linkedin_url year_founded acquired_by company_description ats_id logo_url
        company_url].each do |attribute|
@@ -70,17 +70,15 @@ class Company < ApplicationRecord
         changes_made = true
       end
     end
-    # Update associations
+
     changes_made ||= update_association(company, :ats_type, ats_type)
-    changes_made ||= update_collection(company, :countries, countries)
-    changes_made ||= update_collection(company, :states, states)
-    changes_made ||= update_collection(company, :cities, cities)
-    # Update optional attributes
+    changes_made ||= update_collection(company, :locations, locations)
+
     changes_made ||= update_optional_association(company, :company_size, row['company_size'],
                                                  CompanySize, :size_range)
     changes_made ||= update_optional_association(company, :funding_type, row['last_funding_type'],
                                                  FundingType, :funding_type_name)
-    # Update healthcare domains
+
     if row['healthcare_domains'].present?
       healthcare_domains = row['healthcare_domains'].split(',').map(&:strip)
       domains = healthcare_domains.map do |domain_key|
@@ -90,7 +88,7 @@ class Company < ApplicationRecord
     else
       puts "No healthcare domains found for company: #{row['company_name']}"
     end
-    # Update specialties
+
     if row['company_specialty'].present?
       specialties = row['company_specialty'].split(',').map do |specialty_key|
         CompanySpecialty.find_by(key: specialty_key.strip)
@@ -101,12 +99,14 @@ class Company < ApplicationRecord
     end
     changes_made
   end
+
   private_class_method def self.update_association(company, association, new_value)
     return false if company.send(association) == new_value
 
     company.send("#{association}=", new_value)
     true
   end
+
   private_class_method def self.update_optional_association(company, association, new_value_key, model_class, key_field)
     return false unless new_value_key.present?
 
@@ -116,6 +116,7 @@ class Company < ApplicationRecord
     company.send("#{association}=", new_value)
     true
   end
+
   private_class_method def self.update_collection(company, association, new_values)
     if new_values.blank? || company.send(association).pluck(:id).sort == new_values.pluck(:id).sort
       return false
