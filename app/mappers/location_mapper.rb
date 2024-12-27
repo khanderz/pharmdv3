@@ -44,8 +44,6 @@ class LocationMapper
   end
 
   def determine_location_type(city_name, state_name, country_name, job_setting)
-    puts "determine_location_type : city_name: #{city_name} state_name: #{state_name} country_name: #{country_name} job_setting: #{job_setting}"
-
     contains_remote = job_setting == 'Remote'
     contains_city = city_name.present?
     contains_state_or_country = state_name.present? || country_name.present?
@@ -81,51 +79,34 @@ class LocationMapper
 
     city_name, state_name, country_name, job_setting = parse_input(input)
 
-    city = City.find_or_create_city(city_name, company, job)
-    state = State.find_or_create_state(state_name, company, job)
+    country = country_name.present? ? Location.find_or_create_by_name_and_type(country_name || country_input, company, 'Country', nil, job) : nil
+    state = state_name.present? ? Location.find_or_create_by_name_and_type(state_name, company, 'State', country, job) : nil
+    city = city_name.present? ? Location.find_or_create_by_name_and_type(city_name, company, 'City', state || country, job) : nil
 
-    country_params = determine_country_params(state, country_name, country_input)
-    country = Country.find_or_adjudicate_country(
-      country_params[:country_code],
-      country_params[:country_name],
-      company,
-      job['job_url']
-    )
+    job_setting ||= JobSetting.find_setting(input)&.setting_name
 
     location_type = determine_location_type(city_name, state_name, country_name, job_setting)
 
     {
-      city_name: city&.[](:city_name),
-      state_name: state&.[](:state_name),
-      state_code: state&.[](:state_code),
-      country_name: country&.[](:country_name),
-      country_code: country&.[](:country_code),
+      city_name: city&.name,
+      state_name: state&.name,
+      state_code: state&.code,
+      country_name: country&.name,
+      country_code: country&.code,
       location_type: location_type
     }
   end
 
-  def determine_country_params(state, country_name, country_input)
-    if state
-      if state[:country_code] == 'US' || state[:state_code].match?(/^[A-Z]{2}$/)
-        { country_code: 'US', country_name: 'United States' }
-      elsif state[:country_code] == 'CA' || canadian_provinces.include?(state[:state_code])
-        { country_code: 'CA', country_name: 'Canada' }
-      else
-        { country_code: nil, country_name: country_input }
-      end
-    elsif country_name
-      { country_code: nil, country_name: country_name }
-    else
-      { country_code: nil, country_name: country_input }
-    end
-  end
-
   def parse_input(input)
-    return find_location(*input) if input.is_a?(Array)
+    # return find_location(*input) if input.is_a?(Array)
 
     return [nil, nil, nil, nil] if input.blank?
 
     parts = input.split(',').map(&:strip)
+
+    # puts "parts after split: #{parts}"
+    # parts after split: ["Boston", "Massachusetts", "United States"]
+
 
     case parts.length
     when 3 then find_location(parts[0], parts[1], parts[2])
@@ -136,28 +117,28 @@ class LocationMapper
   end
 
   def find_location(city_name, state_name = nil, country_name = nil)
-    city = city_name ? City.find_city_only(city_name) : nil
-    state = state_name ? State.find_state_only(state_name) : nil
-    country = country_name ? Country.find_country_only(nil, country_name) : nil
+    country = country_name ? Location.find_by_name_and_type(country_name, 'Country') : nil
+    state = state_name ? Location.find_by_name_and_type(state_name, 'State', country) : nil
+    city = city_name ? Location.find_by_name_and_type(city_name, 'City', state) : nil
     setting = JobSetting.find_setting(city_name)
 
-    [city&.city_name, state&.state_name, country&.country_name, setting&.setting_name]
+    [city&.name, state&.name, country&.name, setting&.setting_name]
   end
 
   def find_single_location(input)
     return [nil, nil, nil, nil] if input.blank?
 
-    city = City.find_city_only(input)
-    state = State.find_state_only(input)
-    country = Country.find_country_only(input, input)
+    country = Location.find_by_name_and_type(input, 'Country')
+    state = Location.find_by_name_and_type(input, 'State', country) 
+    city = Location.find_by_name_and_type(input, 'City', state)
     setting = JobSetting.find_setting(input)
 
     if city
-      [city.city_name, nil, nil, nil]
+      [city.name, nil, nil, nil]
     elsif state
-      [nil, state.state_name, nil, nil]
+      [nil, state.name, nil, nil]
     elsif country
-      [nil, nil, country.country_name, nil]
+      [nil, nil, country.name, nil]
     elsif setting
       [nil, nil, nil, setting.setting_name]
     else
