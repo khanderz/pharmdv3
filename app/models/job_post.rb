@@ -79,7 +79,9 @@ class JobPost < ApplicationRecord
     def process_job(company, job_url, job_post_data)
       job_title = job_post_data[:job_post_data][:job_title]&.strip&.downcase
 
-      if %w[future opportunity general application].include?(job_title)
+      skip_titles = ['future opportunity', 'general application']
+
+      if skip_titles.include?(job_title)
         puts "#{ORANGE}Skipping job post with title: '#{job_post_data[:job_post_data][:job_title]}' for #{company.company_name}#{RESET}"
         return
       end

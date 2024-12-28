@@ -134,7 +134,7 @@ job_roles = [
   { role_name: 'Chief Technology Officer', aliases: ['CTO'], department_names: ['Engineering'],
     team_names: ['Engineering'] },
 
-  { role_name: 'Director of Business Development', aliases: ['Business Development Director', 'Business Development & Strategic Alliances', 'Professional Services - Growth & Enterprise'],
+  { role_name: 'Director of Business Development', aliases: ['Business Development Director', 'Business Development & Strategic Alliances', 'Professional Services - Growth & Enterprise', 'Director of Business Development & Strategic Alliances'],
     department_names: ['Sales', 'Business Development'], team_names: ['Sales', 'Business Development'] },
   { role_name: 'Director of Data Science', aliases: ['Data Science Director', 'data officer'],
     department_names: ['Data Science'], team_names: ['Data Science'] },

@@ -29,7 +29,7 @@ departments = [
     aliases: ['Digital Marketing', 'Content Marketing', 'Branding', 'Brand'] },
   { dept_name: 'Operations',
     aliases: ['Strategy & Operations', 'Business Operations', 'Logistics', 'Supply Chain',
-              'Growth & Business Excellence', 'worker operations', 'People Operations'] },
+              'Growth & Business Excellence', 'worker operations', 'People Operations', 'MFG & Supply Chain'] },
   { dept_name: 'Product Management', aliases: ['Product Development', 'Product'] },
   { dept_name: 'Quality', aliases: ['Quality Assurance', 'Quality Control', 'QA'] },
   { dept_name: 'Sales', aliases: ['Business Development', 'Account Management'] },

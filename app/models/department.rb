@@ -8,9 +8,15 @@ class Department < ApplicationRecord
 
   validates :dept_name, presence: true, uniqueness: true
 
-  def self.find_department(department_name, job_url = nil)
-    normalized_name = department_name.strip.downcase
+  def self.clean_department_name(department_name)
+    cleaned_name = department_name.gsub(/^\d+\s*-\s*/, '').strip
+    cleaned_name
+  end
 
+  def self.find_department(department_name, job_url = nil)
+    cleaned_name = clean_department_name(department_name)
+    normalized_name = cleaned_name.downcase
+    
     department = where('LOWER(dept_name) = ?', normalized_name)
                  .or(where('aliases::text ILIKE ?', "%#{normalized_name}%"))
                  .first
