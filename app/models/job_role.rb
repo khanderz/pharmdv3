@@ -15,9 +15,8 @@ class JobRole < ApplicationRecord
     cleaned_title = titles[:cleaned_title].presence || titles[:modified_title]
     modified_title = titles[:modified_title]
 
-    job_role = JobRole.find_by('LOWER(role_name) = ?', cleaned_title.downcase)
-
-    job_role = JobRole.find_by('LOWER(role_name) = ?', modified_title.downcase) if job_role.nil?
+    job_role = JobRole.find_by('LOWER(role_name) = ?', modified_title.downcase)
+    job_role ||= JobRole.find_by('LOWER(role_name) = ?', cleaned_title.downcase)
 
     if job_role.nil?
       job_role = JobRole.where('LOWER(?) = ANY (SELECT LOWER(unnest(aliases)))',

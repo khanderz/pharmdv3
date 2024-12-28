@@ -8,12 +8,10 @@ module Utils
 
       original_title = title.strip
 
-      cleaned_title = title.gsub(/\(.*?\)/i, '')
-                           .split(/[-,]/i).first.strip
+      cleaned_title = title.gsub(/\(.*?\)/i, '').split(/[-,]/i).first.strip
 
       locations = Location.all.pluck(:name).compact.map { |loc| Regexp.escape(loc) }
       location_pattern = /\b(#{locations.join('|')})\b/i
-
       cleaned_title.gsub!(location_pattern, '')
 
       # List of common employment terms to remove
@@ -27,6 +25,8 @@ module Utils
 
       cleaned_title.gsub!(employment_pattern, '')
       cleaned_title.gsub!(seniority_pattern, '')
+
+      cleaned_title.gsub!(/\b(Chief|VP|Director|Officer|Manager|Engineer|Analyst)\b/i, '\1')
 
       roman_numerals_pattern = /\b(I{1,3})\b/
       cleaned_title.gsub!(roman_numerals_pattern, '')

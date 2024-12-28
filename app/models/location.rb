@@ -76,7 +76,7 @@ class Location < ApplicationRecord
         return nil
       end
 
-      error_message = "#{location_type} '#{location_param}' not found for job #{job_post} or company: #{company}, parent: #{parent_location&.name}"
+      error_message = "#{location_type} '#{location_param}' not found for job #{job_post} or company: #{company}"
       adj_type = job_post ? 'Location' : 'Company'
 
       puts "#{RED}#{error_message}.#{RESET}"
