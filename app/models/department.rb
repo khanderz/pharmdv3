@@ -16,7 +16,13 @@ class Department < ApplicationRecord
   def self.find_department(department_name, job_url = nil)
     cleaned_name = clean_department_name(department_name)
     normalized_name = cleaned_name.downcase
-    
+
+    if normalized_name.include?('headquarters')
+      department = find_by(dept_name: 'Executive')
+      puts "#{GREEN}Mapped '#{department_name}' to 'Executive' department.#{RESET}"
+      return department
+    end
+
     department = where('LOWER(dept_name) = ?', normalized_name)
                  .or(where('aliases::text ILIKE ?', "%#{normalized_name}%"))
                  .first
