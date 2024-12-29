@@ -33,7 +33,9 @@ class Department < ApplicationRecord
                  .or(where('aliases::text ILIKE ?', "%#{normalized_name}%"))
                  .first
 
-    unless department
+    if department
+      puts "#{GREEN}Department #{department_name} found in existing records.#{RESET}"
+    else
       department = Department.create!(
         dept_name: cleaned_name,
         error_details: "Department #{department_name} for #{job_url} not found in existing records",
@@ -44,8 +46,6 @@ class Department < ApplicationRecord
         adjudicatable_id: department.id,
         error_details: "Department #{department_name} for #{job_url} not found in existing records"
       )
-    else
-      puts "#{GREEN}Department #{department_name} found in existing records.#{RESET}"
     end
 
     department
