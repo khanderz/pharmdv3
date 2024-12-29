@@ -347,11 +347,13 @@ c_level = [
     department_names: ['Science'], team_names: ['Science'] }
 ]
 
+all_job_roles = job_roles + science_roles + technical_roles + clinical_roles + c_level
+
 seeded_count = 0
 updated_count = 0
 existing_count = 0
 
-job_roles.each do |role|
+all_job_roles.each do |role|
   role_record = JobRole.find_or_initialize_by(role_name: role[:role_name])
 
   changes_made = false

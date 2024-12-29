@@ -61,6 +61,18 @@ class JobPost < ApplicationRecord
       return unless jobs
 
       active_job_ids = jobs.map do |job|
+        title = job['title'] || job['text']
+
+        job_title = title&.strip&.downcase
+  
+        skip_phrases = ['future opportunity', 'general application', 'general interest',
+                        'General Interest: Join Our Talent Community']
+  
+        if skip_phrases.any? { |phrase| job_title.include?(phrase.downcase) }
+          puts "#{ORANGE}Skipping job post with title: '#{job_title}' for #{company}#{RESET}"
+          return
+        end
+
         process_job(
           company,
           JobDataMapper.url(company, job),
@@ -77,21 +89,6 @@ class JobPost < ApplicationRecord
     end
 
     def process_job(company, job_url, job_post_data)
-      job_title = job_post_data[:job_post_data][:job_title]&.strip&.downcase
-
-      unless job_title
-        puts "#{RED}Job title not found for #{company.company_name}. Skipping.#{RESET}"
-        return
-      end
-
-      skip_phrases = ['future opportunity', 'general application', 'general interest',
-                      'General Interest: Join Our Talent Community']
-
-      if skip_phrases.any? { |phrase| job_title.include?(phrase.downcase) }
-        puts "#{ORANGE}Skipping job post with title: '#{job_post_data[:job_post_data][:job_title]}' for #{company.company_name}#{RESET}"
-        return
-      end
-
       puts "#{GREEN}Processing job post for #{company.company_name}#{RESET}"
       existing_job = find_by(job_url: job_url)
 
