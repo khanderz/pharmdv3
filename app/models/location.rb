@@ -37,7 +37,8 @@ class Location < ApplicationRecord
   end
 
   class << self
-    def find_or_create_by_name_and_type(location_param, company, location_type, parent = nil, job_post = nil)
+    def find_or_create_by_name_and_type(location_param, company, location_type, parent = nil,
+                                        job_post = nil)
       return nil if location_param.blank?
 
       normalized_name = normalize_name(location_param)
@@ -65,7 +66,8 @@ class Location < ApplicationRecord
 
     def extract_parent_id(parent)
       return parent.id if parent.is_a?(Location)
-      return parent.first.id if parent.is_a?(Array) && parent.first.is_a?(Location)
+
+      parent.first.id if parent.is_a?(Array) && parent.first.is_a?(Location)
     end
 
     def find_location_by_name_or_alias(normalized_name, location_type, parent_id)

@@ -1,7 +1,8 @@
 # frozen_string_literal: true
 
 departments = [
-  {dept_name: 'Administrative', aliases: ['General & Administrative', 'Admin', 'Office Management', 'General']},
+  { dept_name: 'Administrative',
+    aliases: ['General & Administrative', 'Admin', 'Office Management', 'General'] },
 
   { dept_name: 'Business Development',
     aliases: ['Sales', 'Business Development and Sales', 'Business Development & Sales',
@@ -20,10 +21,12 @@ departments = [
   { dept_name: 'Design', aliases: ['UI/UX Design', 'Graphic Design', 'Product & Design'] },
 
   { dept_name: 'Engineering',
-    aliases: ['process engineering','core dev','Development', 'Software Engineering', 'Tech', 'Information Technology', 'DevOps'] },
+    aliases: ['process engineering', 'core dev', 'Development', 'Software Engineering', 'Tech',
+              'Information Technology', 'DevOps'] },
 
   { dept_name: 'Executive',
-    aliases: ['Leadership', 'Management', 'C-Suite', 'Board of Directors', 'headquarters', 'executive officer'] },
+    aliases: ['Leadership', 'Management', 'C-Suite', 'Board of Directors', 'headquarters',
+              'executive officer'] },
 
   { dept_name: 'Finance', aliases: ['Accounting', 'Financial Planning', 'FP&A'] },
 
@@ -44,10 +47,12 @@ departments = [
               'Commercial Operations', 'Market Access'] },
 
   { dept_name: 'Operations',
-    aliases: ['Strategy & Operations', 'Business Operations', 'Growth & Business Excellence', 'worker operations', 'People Operations', 'Institute of Computation', 
-    'Process Development', 'process analytics'] },
+    aliases: ['Strategy & Operations', 'Business Operations', 'Growth & Business Excellence', 'worker operations', 'People Operations', 'Institute of Computation',
+              'Process Development', 'process analytics'] },
 
-  { dept_name: 'Product Management', aliases: ['Product Development', 'Product', 'PM, CA & MA', 'Product Management, Clinical Affairs, Market Access'] },
+  { dept_name: 'Product Management',
+    aliases: ['Product Development', 'Product', 'PM, CA & MA',
+              'Product Management, Clinical Affairs, Market Access'] },
 
   { dept_name: 'Project Management',
     aliases: ['Program Management', 'Project Delivery'] },
@@ -58,9 +63,13 @@ departments = [
     aliases: ['Business Development', 'Account Management', 'Field sales', 'Sales Operations',
               'Sales Training & Development', 'commercial strategy', 'sales ops', 'field sales managers'] },
 
-  {dept_name: 'Supply Chain', aliases: ['Logistics', 'Procurement', 'Supply Chain Management', 'MFG & Supply Chain', 'Fulfillment']},
+  { dept_name: 'Supply Chain',
+    aliases: ['Logistics', 'Procurement', 'Supply Chain Management', 'MFG & Supply Chain',
+              'Fulfillment'] },
 
-  { dept_name: 'Science', aliases: ['CLIA ops','Bioinformatics and PE','bioinformatics','proteomics','Research', 'R&D', 'Scientific Research', 'bioanalysis', 'clinical r&d', 'analytical research & development'] },
+  { dept_name: 'Science',
+    aliases: ['CLIA ops', 'Bioinformatics and PE', 'bioinformatics', 'proteomics', 'Research', 'R&D',
+              'Scientific Research', 'bioanalysis', 'clinical r&d', 'analytical research & development'] },
 ]
 
 seeded_count = 0

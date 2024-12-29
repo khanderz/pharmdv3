@@ -85,7 +85,7 @@ science_roles = [
 ]
 technical_roles = [
   { role_name: 'Computational Scientist',
-    aliases: ['Computational Scientist Machine Learning','Computational Biologist', 'Computational Chemist', 'Computational Physicist', 'Computational Engineer', 'Computational Analyst', 'Computational Researcher'], department_names: ['Science'], team_names: ['Science'] },
+    aliases: ['Computational Scientist Machine Learning', 'Computational Biologist', 'Computational Chemist', 'Computational Physicist', 'Computational Engineer', 'Computational Analyst', 'Computational Researcher'], department_names: ['Science'], team_names: ['Science'] },
 
   { role_name: 'Data Engineer',
     aliases: ['Analytics Engineer', 'Data Engineer', 'Data Platform Engineer', 'Data Infrastructure Engineer', 'Data Integration Engineer', 'Data Engineer', 'Data Engineering Specialist'], department_names: ['Engineering', 'Data Science'], team_names: ['Software Engineering', 'Data Science'] },
@@ -134,7 +134,7 @@ technical_roles = [
     aliases: ['Tech Support', 'Support Engineer', 'Helpdesk'], department_names: ['IT', 'Engineering', 'Customer Support'], team_names: ['Client Services', 'Tech Support'] },
 
   { role_name: 'UI/UX Designer',
-    aliases: ['User Experience Designer', 'Interface Designer', 'Product Designer', 'UX Manager','Graphic Designer', 'Product Designer', 'UI/UX Designer', 'Visual Designer', 'Web Designer', 'User Experience Designer', 'User Interface Designer', 'Product Designer'], department_names: ['Design', 'Product Management'], team_names: ['Product'] },
+    aliases: ['User Experience Designer', 'Interface Designer', 'Product Designer', 'UX Manager', 'Graphic Designer', 'Product Designer', 'UI/UX Designer', 'Visual Designer', 'Web Designer', 'User Experience Designer', 'User Interface Designer', 'Product Designer'], department_names: ['Design', 'Product Management'], team_names: ['Product'] },
 
 ]
 
@@ -148,7 +148,7 @@ clinical_roles = [
   { role_name: 'Dental Hygienist',
     aliases: ['Remote Dental Specialist', 'Tele-Dentist', 'Oral Health Expert'], department_names: ['Clinical Team'], team_names: ['Care Operations'] },
 
-{role_name: 'Health Outcomes Liaison', aliases: ['Health Outcomes Liaison', 'Health Outcomes Specialist', 'Health Outcomes Analyst', 'Health Outcomes Consultant'],
+  { role_name: 'Health Outcomes Liaison', aliases: ['Health Outcomes Liaison', 'Health Outcomes Specialist', 'Health Outcomes Analyst', 'Health Outcomes Consultant'],
     department_names: ['Clinical Team'], team_names: ['Care Operations'] },
 
   { role_name: 'Healthcare Administrator',
