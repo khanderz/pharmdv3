@@ -228,6 +228,7 @@ international_cities = [
   { name: 'Milan', code: nil, location_type: 'City', parent_code: 'IT', aliases: [] },
   { name: 'Munich', code: nil, location_type: 'City', parent_code: 'DE', aliases: [] },
   { name: 'Mumbai', code: nil, location_type: 'City', parent_code: 'IN', aliases: [] },
+  { name: 'Nice', code: nil, location_type: 'City', parent_code: 'FR', aliases: [] }, 
   { name: 'Ottawa', code: nil, location_type: 'City', parent_code: 'ON', aliases: [] },
   { name: 'Paris', code: nil, location_type: 'City', parent_code: 'FR',
     aliases: ['Greater Paris'] },

@@ -9,8 +9,14 @@ class Department < ApplicationRecord
   validates :dept_name, presence: true, uniqueness: true
 
   def self.clean_department_name(department_name)
-    cleaned_name = department_name.split('-').first.strip
-    cleaned_name.gsub(/^\d+\s*-\s*/, '').strip
+    cleaned_name = department_name.gsub(/^\d+\s*-\s*/, '').strip
+    parts = cleaned_name.split('-').map(&:strip)
+    main_name = parts.first
+    if parts.size > 1
+      candidate_name = parts.join(' ')
+      return candidate_name if exists?(dept_name: candidate_name)
+    end
+    main_name
   end
 
   def self.find_department(department_name, job_url = nil)
@@ -26,11 +32,10 @@ class Department < ApplicationRecord
     department = where('LOWER(dept_name) = ?', normalized_name)
                  .or(where('aliases::text ILIKE ?', "%#{normalized_name}%"))
                  .first
-    if department
-      puts "#{GREEN}Department #{department_name} found in existing records.#{RESET}"
-    else
+
+    unless department
       department = Department.create!(
-        dept_name: department_name,
+        dept_name: cleaned_name,
         error_details: "Department #{department_name} for #{job_url} not found in existing records",
         resolved: false
       )
@@ -39,7 +44,10 @@ class Department < ApplicationRecord
         adjudicatable_id: department.id,
         error_details: "Department #{department_name} for #{job_url} not found in existing records"
       )
+    else
+      puts "#{GREEN}Department #{department_name} found in existing records.#{RESET}"
     end
+
     department
   end
 end
