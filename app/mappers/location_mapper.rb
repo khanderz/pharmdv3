@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-# app/mappers/location_mapper.rb
-
 class LocationMapper
   def self.extract_location(job, source = 'greenhouse')
     case source.downcase
@@ -15,8 +13,7 @@ class LocationMapper
   end
 
   def match_location(input, job, company, country_input = nil)
-    puts "#{BLUE}location input: #{input} country_input: #{country_input} #{RESET}"
-    return [default_location(nil)] if input.is_a?(Array) && input.empty?
+    return [default_location('Remote')] if input.is_a?(Array) && input.empty?
 
     inputs = Array(input).map(&:strip)
 
@@ -38,19 +35,25 @@ class LocationMapper
   def self.extract_from_greenhouse(job)
     if job['offices'].is_a?(Array)
       job['offices'].map do |office|
-        office['location'] || office['name']
+        extract_remote_or_name(office)
       end.compact.uniq
     else
       Array(job.dig('location', 'name')).compact
     end
   end
 
+  def self.extract_remote_or_name(office)
+    location = office['location']
+    name = office['name']
+    return 'Remote' if location.nil? && name&.downcase&.include?('remote')
+
+    location || name
+  end
+
   def determine_location_type(city_name, state_name, country_name, job_setting)
     contains_remote = job_setting == 'Remote' || city_name.to_s.casecmp('remote').zero?
     contains_city = city_name.present?
     contains_state_or_country = state_name.present? || country_name.present?
-
-    puts "#{BLUE}contains_remote: #{contains_remote} contains_city: #{contains_city} contains_state_or_country: #{contains_state_or_country} #{RESET}"
 
     if contains_remote && contains_city
       'Hybrid'
@@ -110,14 +113,9 @@ class LocationMapper
   end
 
   def parse_input(input)
-    # return find_location(*input) if input.is_a?(Array)
-
     return [nil, nil, nil, nil] if input.blank?
 
     parts = input.split(',').map(&:strip)
-
-    # puts "parts after split: #{parts}"
-    # parts after split: ["Boston", "Massachusetts", "United States"]
 
     case parts.length
     when 3 then find_location(parts[0], parts[1], parts[2])

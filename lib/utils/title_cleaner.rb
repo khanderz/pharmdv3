@@ -10,8 +10,8 @@ module Utils
 
       employment_terms = ['Contract', 'Full Time', 'Part Time', 'Temporary', 'Intern', 'Per Diem',
                           'Locum', 'Locum Tenens']
-      seniority_terms = ['Senior', 'Junior', 'Lead', 'Principal', 'Manager', 'sr', 'jr', 'sr.',
-                         'jr.', 'staff', 'Director', 'SVP']
+      seniority_terms = ['Senior', 'Junior', 'Lead', 'Principal', 'sr', 'jr', 'sr.',
+                         'jr.', 'staff', 'SVP']
 
       employment_pattern = /\b(#{employment_terms.join('|')})\b/i
       seniority_pattern = /\b(#{seniority_terms.join('|')})\b/i

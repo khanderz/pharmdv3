@@ -2,12 +2,13 @@
 
 class Experience < ApplicationRecord
   def self.find_or_create_experience(experience_param, job_post)
+    puts "experience param: #{experience_param}"
     min_years, max_years = extract_years(experience_param)
-
     experience = if min_years
-                   where('min_years <= ? AND (max_years IS NULL OR max_years > ?)', min_years, min_years).first
+                   where('min_years <= ? AND (max_years IS NULL OR max_years > ?)', min_years,
+                         min_years).first
                  end
-
+    puts "experience 1: #{experience}"
     if experience
       puts "#{GREEN}Matched experience '#{experience.experience_name}' for '#{experience_param}'.#{RESET}"
       experience.update!(min_years: min_years, max_years: max_years) if min_years || max_years
@@ -16,7 +17,10 @@ class Experience < ApplicationRecord
                    .or(where('LOWER(experience_code) = ?', experience_param.downcase))
                    .first
 
+      puts "experience 2: #{experience}"
+
       if experience
+        puts "experience 3: #{experience}"
         puts "#{GREEN}Experience '#{experience_param}' found in existing records.#{RESET}"
         experience.update!(min_years: min_years, max_years: max_years) if min_years || max_years
       else
