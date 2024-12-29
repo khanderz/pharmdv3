@@ -125,7 +125,7 @@ def find_or_create_company_type(company_type_name, company_name)
 end
 
 def update_join_tables(company, locations, domains, specialties)
-  puts " updating join tables"
+  puts ' updating join tables'
   changes_made = false
 
   # puts "company: #{company.company_name}"
@@ -259,7 +259,6 @@ def create_new_company(row_data, ats_type, locations, domains, specialties)
   else
     puts "#{RED}Failed to save new company: #{new_company.company_name}. Errors: #{new_company.errors.full_messages.join(', ')}#{RESET}"
   end
-  
 end
 
 def process_company_data(row_data, _headers)

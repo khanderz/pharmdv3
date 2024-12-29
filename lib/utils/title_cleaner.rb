@@ -1,18 +1,24 @@
+# frozen_string_literal: true
+
 module Utils
   class TitleCleaner
     def self.clean_title(title)
       return '' if title.nil?
 
       original_title = title.strip
+      cleaned_title = title.gsub(/\(.*?\)/i, '')
 
-      cleaned_title = title.gsub(/\(.*?\)/i, '').split(/[-,]/i).first.strip
+      parts = cleaned_title.split(/[-,]/i).map(&:strip)
+      cleaned_title = parts.max_by { |part| part.split.size }
 
       locations = Location.all.pluck(:name).compact.map { |loc| Regexp.escape(loc) }
       location_pattern = /\b(#{locations.join('|')})\b/i
       cleaned_title.gsub!(location_pattern, '')
 
-      employment_terms = ['Contract', 'Full Time', 'Part Time', 'Temporary', 'Intern', 'Per Diem', 'Locum', 'Locum Tenens']
-      seniority_terms = ['Senior', 'Junior', 'Lead', 'Principal', 'Manager', 'sr', 'jr', 'sr.', 'jr.', 'staff']
+      employment_terms = ['Contract', 'Full Time', 'Part Time', 'Temporary', 'Intern', 'Per Diem',
+                          'Locum', 'Locum Tenens']
+      seniority_terms = ['Senior', 'Junior', 'Lead', 'Principal', 'Manager', 'sr', 'jr', 'sr.',
+                         'jr.', 'staff']
 
       employment_pattern = /\b(#{employment_terms.join('|')})\b/i
       seniority_pattern = /\b(#{seniority_terms.join('|')})\b/i

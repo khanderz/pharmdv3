@@ -9,8 +9,7 @@ class Department < ApplicationRecord
   validates :dept_name, presence: true, uniqueness: true
 
   def self.clean_department_name(department_name)
-    cleaned_name = department_name.gsub(/^\d+\s*-\s*/, '').strip
-    cleaned_name
+    department_name.gsub(/^\d+\s*-\s*/, '').strip
   end
 
   def self.find_department(department_name, job_url = nil)

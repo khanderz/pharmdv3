@@ -11,7 +11,7 @@ class JobRole < ApplicationRecord
 
   def self.find_or_create_job_role(job_title, job_post_url)
     titles = Utils::TitleCleaner.clean_title(job_title)
-    # puts " titles #{titles}"
+    puts " titles #{titles}"
     cleaned_title = titles[:cleaned_title].presence || titles[:modified_title]
     modified_title = titles[:modified_title]
 

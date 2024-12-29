@@ -79,9 +79,19 @@ class LocationMapper
 
     city_name, state_name, country_name, job_setting = parse_input(input)
 
-    country = country_name.present? ? Location.find_or_create_by_name_and_type(country_name || country_input, company, 'Country', nil, job) : nil
-    state = state_name.present? ? Location.find_or_create_by_name_and_type(state_name, company, 'State', country, job) : nil
-    city = city_name.present? ? Location.find_or_create_by_name_and_type(city_name, company, 'City', state || country, job) : nil
+    country = if country_name.present?
+                Location.find_or_create_by_name_and_type(
+                  country_name || country_input, company, 'Country', nil, job
+                )
+              end
+    state = if state_name.present?
+              Location.find_or_create_by_name_and_type(state_name, company,
+                                                       'State', country, job)
+            end
+    city = if city_name.present?
+             Location.find_or_create_by_name_and_type(city_name, company,
+                                                      'City', state || country, job)
+           end
 
     job_setting ||= JobSetting.find_setting(input)&.setting_name
 
@@ -107,7 +117,6 @@ class LocationMapper
     # puts "parts after split: #{parts}"
     # parts after split: ["Boston", "Massachusetts", "United States"]
 
-
     case parts.length
     when 3 then find_location(parts[0], parts[1], parts[2])
     when 2 then find_location(parts[0], parts[1])
@@ -129,7 +138,7 @@ class LocationMapper
     return [nil, nil, nil, nil] if input.blank?
 
     country = Location.find_by_name_and_type(input, 'Country')
-    state = Location.find_by_name_and_type(input, 'State', country) 
+    state = Location.find_by_name_and_type(input, 'State', country)
     city = Location.find_by_name_and_type(input, 'City', state)
     setting = JobSetting.find_setting(input)
 

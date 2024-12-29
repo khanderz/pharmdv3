@@ -60,8 +60,6 @@ class Location < ApplicationRecord
                     parent.first.is_a?(Location) ? parent.first.id : nil
                   elsif parent.is_a?(Location)
                     parent.id
-                  else
-                    nil
                   end
 
       existing_location = where(

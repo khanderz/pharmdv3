@@ -36,10 +36,9 @@ class JobDataMapper
     location_type = location_info.is_a?(Array) ? location_info.first[:location_type] : 'Unknown'
     department_name = job['departments']&.first&.dig('name') || job['categories']&.dig('department')
     department_id = if department_name
-      Department.find_department(department_name, job['absolute_url'] || job['hostedUrl'])&.id
-    else
-      nil
-    end
+                      Department.find_department(department_name,
+                                                 job['absolute_url'] || job['hostedUrl'])&.id
+                    end
 
     {
       company_id: company.id,
@@ -58,10 +57,7 @@ class JobDataMapper
       job_internal_id: job['internal_job_id'] || job['id'],
       job_url_id: job['id'] || nil,
 
-      department_id: Department.find_department(
-        job['departments']&.first&.dig('name') || job['categories']['department'], job['absolute_url'] || job['hostedUrl']
-      ).id,
-            
+      department_id: department_id,
       team_id: team_var,
 
       job_commitment_id: JobCommitment.find_job_commitment(job['categories']&.dig('commitment')) || nil,

@@ -43,7 +43,8 @@ class AiUpdater
     Array(name_or_locations).each_with_object([]) do |name, ids|
       next if name.blank?
 
-      location = Location.find_or_create_by_name_and_type(name, company, location_type, parent, job_post_url)
+      location = Location.find_or_create_by_name_and_type(name, company, location_type, parent,
+                                                          job_post_url)
       ids << location.id if location
     end
   end
@@ -69,24 +70,27 @@ class AiUpdater
 
     if location_info.is_a?(Array)
       location_info.each do |location|
-        country_ids = process_location(location[:country_name], 'Country', company, nil, job[:job_url])
+        country_ids = process_location(location[:country_name], 'Country', company, nil,
+                                       job[:job_url])
         state_ids = if location[:state_name]
-          process_location(location[:state_name], 'State', company, Location.find(country_ids.first), job[:job_url])
-        else
-          []
-        end
-        city_ids = if location[:city_name]
-          process_location(location[:city_name], 'City', company, Location.find(state_ids.first), job[:job_url])
-        else
-          []
-        end
-                   puts "country_ids: #{country_ids}"
-                    puts "state_ids: #{state_ids}"
-                    puts "city_ids: #{city_ids}"
-                    location_ids = (country_ids + state_ids + city_ids).uniq
-                    location_ids.each do |location_id|
-                      job_post_locations << location_id unless job_post_locations.include?(location_id)
+                      process_location(location[:state_name], 'State', company,
+                                       Location.find(country_ids.first), job[:job_url])
+                    else
+                      []
                     end
+        city_ids = if location[:city_name]
+                     process_location(location[:city_name], 'City', company, Location.find(state_ids.first),
+                                      job[:job_url])
+                   else
+                     []
+                   end
+        puts "country_ids: #{country_ids}"
+        puts "state_ids: #{state_ids}"
+        puts "city_ids: #{city_ids}"
+        location_ids = (country_ids + state_ids + city_ids).uniq
+        location_ids.each do |location_id|
+          job_post_locations << location_id unless job_post_locations.include?(location_id)
+        end
       end
     end
 
@@ -153,9 +157,12 @@ class AiUpdater
               end
             end
 
-            countries = process_location(value[:job_countries], 'Country', company, nil, job_post_data[:job_url])
-            states = process_location(value[:job_states], 'State', company, countries.first, job_post_data[:job_url])
-            cities = process_location(value[:job_cities], 'City', company, states.first, job_post_data[:job_url])
+            countries = process_location(value[:job_countries], 'Country', company, nil,
+                                         job_post_data[:job_url])
+            states = process_location(value[:job_states], 'State', company, countries.first,
+                                      job_post_data[:job_url])
+            cities = process_location(value[:job_cities], 'City', company, states.first,
+                                      job_post_data[:job_url])
 
             puts "countries: #{countries}"
             puts "states: #{states}"
@@ -262,9 +269,12 @@ class AiUpdater
             end
           end
 
-          countries = process_location(value[:job_countries], 'Country', company, nil, job_post_data[:job_url])
-          states = process_location(value[:job_states], 'State', company, countries.first, job_post_data[:job_url])
-          cities = process_location(value[:job_cities], 'City', company, states.first, job_post_data[:job_url])
+          countries = process_location(value[:job_countries], 'Country', company, nil,
+                                       job_post_data[:job_url])
+          states = process_location(value[:job_states], 'State', company, countries.first,
+                                    job_post_data[:job_url])
+          cities = process_location(value[:job_cities], 'City', company, states.first,
+                                    job_post_data[:job_url])
 
           puts "countries: #{countries}"
           puts "states: #{states}"
@@ -339,7 +349,8 @@ class AiUpdater
             end
           end
 
-          countries = process_location(value[:job_post_countries], 'Country', company, nil, job_post_data[:job_url])
+          countries = process_location(value[:job_post_countries], 'Country', company, nil,
+                                       job_post_data[:job_url])
           job_post_locations.concat(countries).uniq!
 
           # puts "salary / job post data is #{job_post_data}"

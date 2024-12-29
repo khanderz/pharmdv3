@@ -79,16 +79,19 @@ class JobPost < ApplicationRecord
     def process_job(company, job_url, job_post_data)
       job_title = job_post_data[:job_post_data][:job_title]&.strip&.downcase
 
-      skip_titles = ['future opportunity', 'general application']
+      unless job_title
+        puts "#{RED}Job title not found for #{company.company_name}. Skipping.#{RESET}"
+        return
+      end
 
-      if skip_titles.include?(job_title)
+      skip_phrases = ['future opportunity', 'general application', 'general interest']
+
+      if skip_phrases.any? { |phrase| job_title.include?(phrase.downcase) }
         puts "#{ORANGE}Skipping job post with title: '#{job_post_data[:job_post_data][:job_title]}' for #{company.company_name}#{RESET}"
         return
       end
 
       puts "#{GREEN}Processing job post for #{company.company_name}#{RESET}"
-      # puts "Job URL: #{job_url}"
-      # puts "Job Post Data: #{job_post_data}"
       existing_job = find_by(job_url: job_url)
 
       if existing_job
@@ -96,7 +99,6 @@ class JobPost < ApplicationRecord
         update_existing_job(existing_job, job_post_data, company)
       else
         puts '-------------new job post'
-
         create_new_job(company, job_post_data)
       end
     end
@@ -182,7 +184,10 @@ class JobPost < ApplicationRecord
           end
 
           locations&.each do |location_id|
-            JobPostLocation.create!(job_post_id: job_post.id, location_id: location_id) if location_id
+            if location_id
+              JobPostLocation.create!(job_post_id: job_post.id,
+                                      location_id: location_id)
+            end
           end
 
           credentials&.each do |credential_id|
