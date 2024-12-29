@@ -84,7 +84,7 @@ class JobPost < ApplicationRecord
         return
       end
 
-      skip_phrases = ['future opportunity', 'general application', 'general interest']
+      skip_phrases = ['future opportunity', 'general application', 'general interest', 'General Interest: Join Our Talent Community']
 
       if skip_phrases.any? { |phrase| job_title.include?(phrase.downcase) }
         puts "#{ORANGE}Skipping job post with title: '#{job_post_data[:job_post_data][:job_title]}' for #{company.company_name}#{RESET}"

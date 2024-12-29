@@ -8,8 +8,25 @@ module Utils
       original_title = title.strip
       cleaned_title = title.gsub(/\(.*?\)/i, '')
 
-      parts = cleaned_title.split(/[-,]/i).map(&:strip)
-      cleaned_title = parts.max_by { |part| part.split.size }
+      parts = cleaned_title.split(/[-,\/]/i).map(&:strip)
+
+      meaningful_phrases = [
+        'Chief of Staff',
+        'Business Development & Strategic Alliances',
+        'Materials Management',
+        'External Engagement Manager',
+        'Compliance Manager',
+        'Environmental Health and Safety',
+        'Regulatory and Quality',
+        'Machine Learning',
+        'Scientist'
+      ]
+
+      cleaned_title = parts.find do |part|
+        meaningful_phrases.any? { |phrase| part.downcase.include?(phrase.downcase) }
+      end
+
+      cleaned_title ||= parts.first
 
       locations = Location.all.pluck(:name).compact.map { |loc| Regexp.escape(loc) }
       location_pattern = /\b(#{locations.join('|')})\b/i
@@ -18,18 +35,31 @@ module Utils
       employment_terms = ['Contract', 'Full Time', 'Part Time', 'Temporary', 'Intern', 'Per Diem',
                           'Locum', 'Locum Tenens']
       seniority_terms = ['Senior', 'Junior', 'Lead', 'Principal', 'Manager', 'sr', 'jr', 'sr.',
-                         'jr.', 'staff']
+                         'jr.', 'staff', 'Director', 'SVP']
 
       employment_pattern = /\b(#{employment_terms.join('|')})\b/i
       seniority_pattern = /\b(#{seniority_terms.join('|')})\b/i
 
       cleaned_title.gsub!(employment_pattern, '')
-      cleaned_title.gsub!(seniority_pattern, '')
 
-      cleaned_title.gsub!(/\b(Chief|VP|Director|Officer|Manager|Engineer|Analyst)\b/i, '\1')
+      cleaned_title.gsub!(seniority_pattern) do |match|
+        case match.strip.downcase
+        when 'sr.'
+          'Senior'
+        when 'svp'
+          'VP'
+        else
+          match.strip
+        end
+      end
+
+      cleaned_title.gsub!(/\b(Chief|VP|Director|Officer|Specialist|Associate)\b/i, '\1')
 
       roman_numerals_pattern = /\b(I{1,3})\b/
       cleaned_title.gsub!(roman_numerals_pattern, '')
+
+      # Ensure "Machine Learning" is retained in titles
+      cleaned_title = "#{cleaned_title.strip} Machine Learning".strip if original_title.downcase.include?('machine learning')
 
       modified_title = original_title.gsub(seniority_pattern, '').gsub(/,/, ' of').strip
 
