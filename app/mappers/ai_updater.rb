@@ -68,17 +68,17 @@ class AiUpdater
 
     if job_post_data[:job_role_id]
       job_role = JobRole.find_by(id: job_post_data[:job_role_id])
-  
+    
       if job_role
         if job_post_data[:team_id].nil?
-          first_team = job_role.team_names&.first
-          job_post_data[:team_id] = Team.find_team(first_team, 'JobPost', job_post_data[:job_url])&.id if first_team
+          first_team = job_role.teams&.first
+          job_post_data[:team_id] = first_team&.id if first_team
           updated = true
         end
-  
+    
         if job_post_data[:department_id].nil?
-          first_department = job_role.department_names&.first
-          job_post_data[:department_id] = Department.find_department(first_department, job_post_data[:job_url])&.id if first_department
+          first_department = job_role.departments&.first
+          job_post_data[:department_id] = first_department&.id if first_department
           updated = true
         end
       end

@@ -4,7 +4,8 @@ class Department < ApplicationRecord
   has_many :job_posts
   has_many :adjudications, as: :adjudicatable, dependent: :destroy
 
-  has_and_belongs_to_many :job_roles, join_table: :job_roles_departments
+  has_many :job_roles_departments
+  has_many :job_roles, through: :job_roles_departments
 
   validates :dept_name, presence: true, uniqueness: true
 

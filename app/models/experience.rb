@@ -16,17 +16,17 @@ class Experience < ApplicationRecord
     puts "#{BLUE}min_years: #{min_years}, max_years: #{max_years}#{RESET}"
 
     experience = if min_years
-                   where('min_years <= ? AND (max_years IS NULL OR max_years > ?)', min_years,
-                         min_years).first
-                 end
+      where('min_years <= ? AND (max_years IS NULL OR max_years >= ?)', min_years, min_years).first
+    end
+
     puts "#{BLUE}experience 1: #{experience}#{RESET}"
 
     if experience
-      puts "#{GREEN}Matched experience '#{experience.experience_name}' for '#{experience_param}'.#{RESET}"
       experience.update!(min_years: min_years, max_years: max_years) if min_years || max_years
     else
-      experience = where('LOWER(experience_name) = ?', experience_param.downcase)
-                   .or(where('LOWER(experience_code) = ?', experience_param.downcase))
+      normalized_param = experience_param.downcase.gsub(/[^a-z0-9\s]/i, '')
+      experience = where('LOWER(experience_name) LIKE ?', "%#{normalized_param}%")
+                   .or(where('LOWER(experience_code) LIKE ?', "%#{normalized_param}%"))
                    .first
 
       puts "#{BLUE}experience 2: #{experience}#{RESET}"
