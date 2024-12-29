@@ -66,6 +66,24 @@ class AiUpdater
     job_post_locations = []
     job_post_data[:job_setting] = Array(job_post_data[:job_setting])
 
+    if job_post_data[:job_role_id]
+      job_role = JobRole.find_by(id: job_post_data[:job_role_id])
+  
+      if job_role
+        if job_post_data[:team_id].nil?
+          first_team = job_role.team_names&.first
+          job_post_data[:team_id] = Team.find_team(first_team, 'JobPost', job_post_data[:job_url])&.id if first_team
+          updated = true
+        end
+  
+        if job_post_data[:department_id].nil?
+          first_department = job_role.department_names&.first
+          job_post_data[:department_id] = Department.find_department(first_department, job_post_data[:job_url])&.id if first_department
+          updated = true
+        end
+      end
+    end
+
     puts "location info is #{location_info}"
 
     if location_info.is_a?(Array)
