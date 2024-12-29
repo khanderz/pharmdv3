@@ -2,14 +2,21 @@
 
 job_roles = [
   { role_name: 'Account Manager',
-    aliases: ['Sales Representative', 'Account Exec', 'Client Manager', 'Account Executive', 'growth account executive', 'Enterprise Account Executive'], department_names: ['Sales'], team_names: ['Sales'] },
+    aliases: ['specialty account manager', 'Sales Representative', 'Account Exec', 'Client Manager', 'Account Executive', 'growth account executive', 'Enterprise Account Executive'], department_names: ['Sales'], team_names: ['Sales'] },
 
   { role_name: 'Accountant',
-    aliases: ['Accounting Specialist', 'Financial Analyst', 'Accounting Manager', 'Finance Manager', 'Accounting Clerk', 'Accounting Associate', 'Accounting Consultant'], department_names: ['Finance'], team_names: ['Finance'] },
+    aliases: ['corporate finance manager', 'Accounting Specialist', 'Financial Analyst', 'Accounting Manager', 'Finance Manager', 'Accounting Clerk', 'Accounting Associate', 'Accounting Consultant'], department_names: ['Finance'], team_names: ['Finance'] },
 
   { role_name: 'Business Analyst',
     aliases: ['IT business analyst', 'Business Intelligence Analyst', 'Financial Analyst', 'Business Intelligence Specialist', 'Business Intelligence Consultant',], department_names: ['Business Development', 'Finance'], team_names: ['Business Intelligence', 'Finance'] },
 
+  {
+    role_name: 'Client Partner',
+    aliases: ['Strategic Client Partner', 'Client Relationship Manager', 'Key Account Partner',
+              'Customer Success Partner', 'Strategic Partner Manager'],
+    department_names: ['Sales', 'Customer Support', 'Business Development'],
+    team_names: ['Client Services', 'Sales']
+  },
   { role_name: 'Compliance Manager', aliases: ['Compliance Specialist', 'Compliance Analyst', 'Compliance Officer', 'Compliance Consultant'],
     department_names: ['Legal'], team_names: ['Legal'] },
 
@@ -20,7 +27,7 @@ job_roles = [
     aliases: ['Legal Counsel', 'Legal Advisor', 'Legal Specialist', 'Legal Analyst', 'Legal Consultant'], department_names: ['Legal'], team_names: ['Legal'] },
 
   { role_name: 'Customer Support Specialist',
-    aliases: ['Contact Center Quality', 'Customer Service', 'Support Agent', 'Helpdesk', 'customer success manager', 'Customer Support Manager', 'Customer Support Training Specialist', 'Training Specialist', 'Trust and Safety Analyst', 'Voice Customer Service Representative', 'customer support representative'], department_names: ['Customer Support'], team_names: ['Client Services'] },
+    aliases: ['customer service representative', 'call center specialist', 'Bilingual Spanish Customer Service', 'Contact Center Quality', 'Customer Service', 'Support Agent', 'Helpdesk', 'customer success manager', 'Customer Support Manager', 'Customer Support Training Specialist', 'Training Specialist', 'Trust and Safety Analyst', 'Voice Customer Service Representative', 'customer support representative'], department_names: ['Customer Support'], team_names: ['Client Services'] },
 
   { role_name: 'Digital Marketing Specialist',
     aliases: ['SEO Specialist', 'Digital Marketer', 'Marketing Analyst'], department_names: ['Marketing'], team_names: ['Marketing'] },
@@ -38,6 +45,9 @@ job_roles = [
 
   { role_name: 'Graduate',
     aliases: ['Intern', 'Internship', 'Fellow', 'Resident', 'Trainee', 'Apprentice', 'New Graduate Product Leadership Program', 'new graduate'], department_names: %w[Internship sales], team_names: %w[Internship sales] },
+
+  { role_name: 'Growth Analyst', aliases: ['Media Revenue Growth Analyst', 'Growth Marketing Analyst', 'Growth Marketing Specialist', 'Growth Marketing Manager', 'Growth Marketing Lead'],
+    department_names: ['Marketing'], team_names: ['Marketing'] },
 
   { role_name: 'Marketing Specialist',
     aliases: ['Marketer', 'Digital Marketer', 'Brand Manager', 'Marketing Manager'], department_names: ['Marketing'], team_names: ['Marketing'] },
@@ -59,20 +69,43 @@ job_roles = [
   { role_name: 'Operations Associate',
     aliases: ['Operations Specialist', 'Operations Analyst', 'Operations Coordinator', 'Operations Writer', 'Knowledge operations writer', 'product operations associate', 'Strategy & Operations', 'revenue operations'], department_names: ['Operations', 'People Operations'], team_names: ['Operations'] },
 
+  {
+    role_name: 'People Business Partner',
+    aliases: ['HR Business Partner', 'Strategic People Partner', 'Workforce Partner',
+              'Human Resources Partner'],
+    department_names: ['Human Resources', 'Operations'],
+    team_names: ['People Operations', 'HR Strategy']
+  },
+
+  { role_name: 'Product Analyst', aliases: ['Product Data Analyst', 'Product Insights Analyst', 'Product Insights Specialist', 'Product Insights Manager', 'Product Insights Lead'],
+    department_names: ['Product Management'], team_names: ['Product'] },
+
   { role_name: 'Product Manager', aliases: ['PM', 'Product Lead', 'Product Owner'],
     department_names: ['Product Management'], team_names: ['Product'] },
 
   { role_name: 'Project Manager',
     aliases: ['PM', 'Project Lead', 'Operations Manager', 'Client Implementation Manager', 'implementation consultant'], department_names: ['Operations', 'Product Management'], team_names: ['Product'] },
 
+  { role_name: 'Public Relations', aliases: ['PR Specialist', 'PR Manager', 'PR Director', 'PR Lead', 'PR and Communications manager', 'communications specialist', 'communications manager'],
+    department_names: ['Communications'], team_names: ['Communications'] },
+
+  { role_name: 'Quality Assurance Specialist', aliases: ['Specialist of Quality Control', 'QA Specialist', 'Quality Specialist', 'Quality Analyst', 'QA Analyst', 'Quality Assurance Analyst'],
+    department_names: ['Quality Assurance'], team_names: ['Quality Assurance'] },
+
   { role_name: 'Recruiter',
     aliases: ['Talent Acquisition Specialist', 'HR Recruiter', 'Technical Recruiter', 'Recruitment Specialist'], department_names: ['Human Resources'], team_names: ['Human Resources'] },
+
+  { role_name: 'Regional Manager',
+    aliases: ['Regional Sales Manager', 'Regional Operations Manager', 'Regional Business Manager', 'Regional Account Manager'], department_names: %w[Sales Operations], team_names: %w[Sales Operations] },
 
   { role_name: 'Regional Marketer', aliases: ['Regional Marketing Specialist', 'Regional Marketing Manager'],
     department_names: ['Marketing'], team_names: ['Marketing'] },
 
   { role_name: 'Sales Representative',
     aliases: ['Sales Rep', 'Account Manager', 'Sales Exec', 'Sales', 'Core Sales', 'sales development representative'], department_names: ['Sales'], team_names: ['Sales'] },
+
+  { role_name: 'Warehouse Associate', aliases: ['Warehouse Operations Supervisor', 'Warehouse Training and Development Supervisor', 'Warehouse Specialist', 'Warehouse Worker', 'Warehouse Manager', 'Warehouse Clerk', 'Warehouse Coordinator', 'Warehouse Supervisor'],
+    department_names: ['Operations'], team_names: ['Operations'] },
 ]
 
 science_roles = [
@@ -84,6 +117,14 @@ science_roles = [
 
 ]
 technical_roles = [
+  {
+    role_name: 'Bioinformatics Engineer',
+    aliases: ['Computational Biologist', 'Bioinformatics Developer', 'Bioinformatics Specialist',
+              'Genomics Engineer', 'Bioinformatics Analyst', 'bioinformatics associate'],
+    department_names: %w[Science Engineering],
+    team_names: ['Science', 'Software ENgineering']
+  },
+
   { role_name: 'Computational Scientist',
     aliases: ['Computational Scientist Machine Learning', 'Computational Biologist', 'Computational Chemist', 'Computational Physicist', 'Computational Engineer', 'Computational Analyst', 'Computational Researcher'], department_names: ['Science'], team_names: ['Science'] },
 
@@ -98,6 +139,14 @@ technical_roles = [
   { role_name: 'DevOps Engineer',
     aliases: ['Site Reliability Engineer', 'Cloud Engineer', 'Infrastructure Engineer'], department_names: %w[Engineering IT], team_names: %w[DevOps Infrastructure] },
 
+  {
+    role_name: 'DevSecOps Engineer',
+    aliases: ['Security DevOps Engineer', 'DevOps Security Engineer', 'Cloud Security Engineer',
+              'Secure DevOps Engineer'],
+    department_names: %w[Engineering IT],
+    team_names: ['DevOps', 'Information Security']
+  },
+
   { role_name: 'Engineering Manager',
     aliases: ['Engineering Lead', 'Engineering Director', 'Software Engineering Manager'], department_names: ['Engineering'], team_names: ['Software Engineering'] },
 
@@ -106,6 +155,14 @@ technical_roles = [
 
   { role_name: 'Platform Engineer', aliases: ['Platform Engineer', 'Platform Developer', 'Platform Specialist', 'Platform Architect'],
     department_names: ['Engineering'], team_names: ['Software Engineering'] },
+
+  {
+    role_name: 'Process Engineer',
+    aliases: ['Process Optimization Engineer', 'Manufacturing Engineer', 'Production Engineer',
+              'Process Development Engineer', 'Continuous Improvement Engineer'],
+    department_names: %w[Operations Engineering],
+    team_names: ['Software Engineering']
+  },
 
   { role_name: 'Quality Assurance Engineer', aliases: ['API Testing Engineer', 'QA Engineer', 'Quality Engineer', 'Software Tester', 'QA Analyst', 'Quality Assurance Analyst', 'QA Tester', 'Quality Assurance Tester'],
     department_names: ['Quality Assurance', 'Engineering'], team_names: ['Quality Assurance', 'Software Engineering'] },
@@ -131,7 +188,7 @@ technical_roles = [
     aliases: ['Pre-Sales Engineer', 'Sales Engineer', 'Technical Sales Engineer', 'Solutions Architect'], department_names: %w[Sales Engineering], team_names: ['Sales', 'Software Engineering'] },
 
   { role_name: 'Technical Support Specialist',
-    aliases: ['Tech Support', 'Support Engineer', 'Helpdesk'], department_names: ['IT', 'Engineering', 'Customer Support'], team_names: ['Client Services', 'Tech Support'] },
+    aliases: ['IT desktop support technician', 'Tech Support', 'Support Engineer', 'Helpdesk'], department_names: ['IT', 'Engineering', 'Customer Support'], team_names: ['Client Services', 'Technical Support'] },
 
   { role_name: 'UI/UX Designer',
     aliases: ['User Experience Designer', 'Interface Designer', 'Product Designer', 'UX Manager', 'Graphic Designer', 'Product Designer', 'UI/UX Designer', 'Visual Designer', 'Web Designer', 'User Experience Designer', 'User Interface Designer', 'Product Designer'], department_names: ['Design', 'Product Management'], team_names: ['Product'] },
@@ -139,6 +196,12 @@ technical_roles = [
 ]
 
 clinical_roles = [
+  { role_name: 'Clinical Laboratory Scientist', aliases: ['Clinical Laboratory Associate', 'lab scientist'],
+    department_names: ['Clinical Team'], team_names: ['Care Operations', 'Science'] },
+
+  { role_name: 'Clinical Specialist', aliases: ['Oncology Specialist', 'Clinical Analyst', 'Clinical Consultant', 'Clinical Research Specialist', 'Clinical Research Analyst', 'Clinical Research Consultant'],
+    department_names: ['Clinical Team'], team_names: ['Care Operations'] },
+
   { role_name: 'Clinical Support Specialist', aliases: ['Clinical Support Specialist', 'Clinical Support Analyst', 'Clinical Support Engineer', 'Clinical Support Consultant'],
     department_names: ['Clinical Team'], team_names: ['Care Operations'] },
 
@@ -198,6 +261,9 @@ clinical_roles = [
 
   { role_name: 'Remote Patient Monitoring Specialist', aliases: ['RPM Specialist', 'Remote Monitoring Specialist', 'Telehealth Specialist', 'Virtual Care Specialist'],
     department_names: ['Clinical Team'], team_names: ['Care Operations'] },
+
+  { role_name: 'Scientist', aliases: ['Research Scientist', 'Scientist', 'Researcher'],
+    department_names: ['Science'], team_names: ['Science'] },
 ]
 
 c_level = [
@@ -209,6 +275,9 @@ c_level = [
 
   { role_name: 'Associate Director of Engineering', aliases: ['Associate Engineering Director'],
     department_names: ['Engineering'], team_names: ['Software Engineering'] },
+
+  { role_name: 'Associate Director of Learning and Development', aliases: ['Associate Learning and Development Director'],
+    department_names: ['Human Resources'], team_names: ['Human Resources'] },
 
   { role_name: 'Associate Director of Medical Writing', aliases: ['Associate Medical Writing Director'],
     department_names: ['Medical Writing'], team_names: ['Medical Writing'] },
@@ -224,6 +293,7 @@ c_level = [
 
   { role_name: 'Chief Clinical Officer', aliases: ['CCO'], department_names: ['Clinical Team'],
     team_names: ['Care Operations'] },
+
   { role_name: 'Chief Compliance Officer', aliases: ['CCO'], department_names: ['Legal'],
     team_names: ['Legal'] },
   {
@@ -272,7 +342,7 @@ c_level = [
   { role_name: 'Director of Information Technology', aliases: ['IT Director', 'Information Technology Director', 'director of it', 'director of information technology'],
     department_names: ['Information Technology', 'IT'], team_names: ['IT'] },
 
-  { role_name: 'Director of Marketing', aliases: ['Marketing Director'],
+  { role_name: 'Director of Marketing', aliases: ['Marketing Director', 'director of market access'],
     department_names: ['Marketing'], team_names: ['Marketing'] },
 
   { role_name: 'Director of Operations', aliases: ['Operations Director'],
@@ -281,7 +351,7 @@ c_level = [
   { role_name: 'Director of Product Management', aliases: ['Product Management Director'],
     department_names: ['Product Management'], team_names: ['Product'] },
 
-  { role_name: 'Director of Quality', aliases: ['Clinical Quality Assurance'],
+  { role_name: 'Director of Quality', aliases: ['Clinical Quality Assurance', 'director of quality assurance'],
     department_names: ['Quality'], team_names: ['Quality Assurance'] },
 
   { role_name: 'Director of Regulatory Affairs', aliases: ['Regulatory Affairs Director'],
@@ -343,7 +413,7 @@ c_level = [
     department_names: ['Sales'], team_names: ['Sales'] },
 
   { role_name: 'Vice President of Science', aliases: ['VP Research', 'VP AI Research', 'VP AI Science', 'vp of ai research',
-                                                      'vice president of ai research', 'vice president of ai science', 'vice president of research'],
+                                                      'vice president of ai research', 'vice president of ai science', 'vice president of research', 'Vice President of Product and Portfolio Strategy of Genetic Diseases'],
     department_names: ['Science'], team_names: ['Science'] }
 ]
 
