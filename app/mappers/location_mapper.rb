@@ -37,14 +37,16 @@ class LocationMapper
 
   def self.extract_from_greenhouse(job)
     if job['offices'].is_a?(Array)
-      job['offices'].map { |office| office['location'] }.compact.uniq
+      job['offices'].map do |office|
+        office['location'] || office['name']
+      end.compact.uniq
     else
       Array(job.dig('location', 'name')).compact
     end
   end
 
   def determine_location_type(city_name, state_name, country_name, job_setting)
-    contains_remote = job_setting == 'Remote'
+    contains_remote = job_setting == 'Remote' || city_name.to_s.casecmp('remote').zero?
     contains_city = city_name.present?
     contains_state_or_country = state_name.present? || country_name.present?
 
