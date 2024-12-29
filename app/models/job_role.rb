@@ -9,8 +9,9 @@ class JobRole < ApplicationRecord
 
   validates :role_name, presence: true, uniqueness: true
 
-  def self.find_or_create_job_role(job_title, job_post_url)
+  def self.find_or_create_job_role(job_title)
     titles = Utils::TitleCleaner.clean_title(job_title)
+    puts "original title #{job_title}"
     puts " titles #{titles}"
     cleaned_title = titles[:cleaned_title].presence || titles[:modified_title]
     modified_title = titles[:modified_title]
@@ -34,7 +35,7 @@ class JobRole < ApplicationRecord
       Adjudication.log_error(
         adjudicatable_type: 'JobRole',
         adjudicatable_id: job_role.id,
-        error_details: "Job Role: #{titles} for #{job_post_url} not found in existing records"
+        error_details: "Job Role: #{titles} for original role #{job_title} not found in existing records"
       )
 
     end

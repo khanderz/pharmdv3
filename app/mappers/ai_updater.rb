@@ -114,7 +114,7 @@ class AiUpdater
 
             if job_post_data[:job_role_id].nil? && job_role
               job_post_data[:job_role_id] =
-                JobRole.find_or_create_job_role(job_role, job_post_data[:job_url])&.id
+                JobRole.find_or_create_job_role(job_role)&.id
 
               updated = true
             end

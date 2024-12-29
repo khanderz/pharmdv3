@@ -5,8 +5,7 @@ class Experience < ApplicationRecord
     min_years, max_years = extract_years(experience_param)
 
     experience = if min_years
-                   where('min_years <= ? AND (max_years IS NULL OR max_years >= ?)', min_years,
-                         min_years).first
+                   where('min_years <= ? AND (max_years IS NULL OR max_years > ?)', min_years, min_years).first
                  end
 
     if experience
@@ -42,27 +41,15 @@ class Experience < ApplicationRecord
 
   def self.extract_years(input)
     input = input.downcase.strip
-    years_match = input.match(/(\d+)\s*\+?\s*(?:years?)/i)
 
-    if years_match
-      min_years = years_match[1].to_i
-      max_years = nil
-      return [min_years, max_years]
-    end
+    plus_match = input.match(/(\d+)\s*\+?\s*years?/i)
+    return [plus_match[1].to_i, nil] if plus_match
 
     range_match = input.match(/(\d+)\s*-\s*(\d+)\s*years?/i)
-    if range_match
-      min_years = range_match[1].to_i
-      max_years = range_match[2].to_i
-      return [min_years, max_years]
-    end
+    return [range_match[1].to_i, range_match[2].to_i] if range_match
 
     possible_years = input.scan(/\b\d+\b/).map(&:to_i)
-    if possible_years.any?
-      min_years = possible_years.first
-      max_years = possible_years.last if possible_years.length > 1
-      return [min_years, max_years]
-    end
+    return [possible_years.first, possible_years.last] if possible_years.any?
 
     [nil, nil]
   end
