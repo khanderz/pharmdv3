@@ -205,7 +205,6 @@ us_cities = [
 ]
 
 international_cities = [
-  # International Cities
   { name: 'Amsterdam', code: nil, location_type: 'City', parent_code: 'NL', aliases: [] },
   { name: 'Barcelona', code: nil, location_type: 'City', parent_code: 'ES', aliases: [] },
   { name: 'Beijing', code: nil, location_type: 'City', parent_code: 'CN', aliases: [] },

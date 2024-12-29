@@ -27,7 +27,6 @@ class Location < ApplicationRecord
   end
 
   def full_hierarchy
-    # ex: "United States > California > Los Angeles"
     hierarchy = []
     current_location = self
     while current_location
@@ -37,77 +36,68 @@ class Location < ApplicationRecord
     hierarchy.join(' > ')
   end
 
-  #   create_table 'locations', force: :cascade do |t|
-  #     t.string 'name'
-  #     t.string 'location_type'
-  #     t.string 'code'
-  #     t.bigint 'parent_id'
-  #     t.string 'aliases', default: [], array: true
-  #     t.text 'error_details'
-  #     t.bigint 'reference_id'
-  #     t.boolean 'resolved'
-  #     t.datetime 'created_at', null: false
-  #     t.datetime 'updated_at', null: false
-  #   end
-
   class << self
-    def find_or_create_by_name_and_type(location_param, company, location_type, parent = nil,
-                                        job_post = nil)
+    def find_or_create_by_name_and_type(location_param, company, location_type, parent = nil, job_post = nil)
       return nil if location_param.blank?
 
-      normalized_name = location_param.strip.downcase
-      parent_id = if parent.is_a?(Array)
-                    parent.first.is_a?(Location) ? parent.first.id : nil
-                  elsif parent.is_a?(Location)
-                    parent.id
-                  end
+      normalized_name = normalize_name(location_param)
+      parent_id = extract_parent_id(parent)
 
-      existing_location = where(
-        '(LOWER(name) = ? OR ? = ANY(aliases) OR LOWER(code) = ?) AND location_type = ?',
-        normalized_name, normalized_name, normalized_name, location_type
-      ).where(parent_id: parent_id).first
+      existing_location = find_location_by_name_or_alias(normalized_name, location_type, parent_id)
 
       return existing_location if existing_location
 
-      unless location_type == 'Country' || parent_id.present?
-        puts "#{RED}Parent location is missing for #{location_param} (#{location_type}).#{RESET}"
-        return nil
-      end
-
-      error_message = "#{location_type} '#{location_param}' not found for job #{job_post} or company: #{company}"
-      adj_type = job_post ? 'Location' : 'Company'
-
-      puts "#{RED}#{error_message}.#{RESET}"
-      if location_type.present? && (location_type == 'Country' || parent_id.present?)
-
-        new_location = Location.create!(
-          name: location_param,
-          location_type: location_type,
-          code: nil,
-          parent_id: parent_id,
-          aliases: [],
-          error_details: error_message,
-          resolved: false
-        )
-
-        Adjudication.log_error(
-          adjudicatable_type: adj_type,
-          adjudicatable_id: new_location.id,
-          error_details: error_message
-        )
-        return new_location
-      end
-      nil
+      create_new_location(location_param, location_type, parent_id, company, job_post)
     end
 
     def find_by_name_and_type(name, location_type, parent = nil)
-      normalized_name = name.strip.downcase
-      parent_id = parent&.id
+      normalized_name = normalize_name(name)
+      parent_id = extract_parent_id(parent)
 
+      find_location_by_name_or_alias(normalized_name, location_type, parent_id)
+    end
+
+    private
+
+    def normalize_name(name)
+      name.strip.downcase
+    end
+
+    def extract_parent_id(parent)
+      return parent.id if parent.is_a?(Location)
+      return parent.first.id if parent.is_a?(Array) && parent.first.is_a?(Location)
+    end
+
+    def find_location_by_name_or_alias(normalized_name, location_type, parent_id)
       where(
         '(LOWER(name) = ? OR ? = ANY(aliases) OR LOWER(code) = ?) AND location_type = ?',
         normalized_name, normalized_name, normalized_name, location_type
       ).where(parent_id: parent_id).first
+    end
+
+    def create_new_location(location_param, location_type, parent_id, company, job_post)
+      error_message = "#{location_type} '#{location_param}' not found for job #{job_post} or company: #{company}"
+      adj_type = job_post ? 'Location' : 'Company'
+
+      puts "#{RED}#{error_message}.#{RESET}"
+
+      new_location = create!(
+        name: location_param,
+        location_type: location_type,
+        code: nil,
+        parent_id: parent_id,
+        aliases: [],
+        error_details: error_message,
+        resolved: false
+      )
+
+      Adjudication.log_error(
+        adjudicatable_type: adj_type,
+        adjudicatable_id: new_location.id,
+        error_details: error_message
+      )
+
+      new_location
     end
   end
 end

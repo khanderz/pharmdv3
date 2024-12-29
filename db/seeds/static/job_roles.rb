@@ -48,7 +48,7 @@ job_roles = [
   {
     role_name: 'Materials Management Specialist',
     aliases: ['Materials Specialist', 'Inventory Specialist', 'Supply Chain Specialist',
-              'Warehouse Specialist'],
+              'Warehouse Specialist', 'Specialist of Materials Management'],
     department_names: ['Operations', 'Supply Chain'],
     team_names: ['Logistics', 'Supply Chain']
   },
@@ -85,16 +85,13 @@ science_roles = [
 ]
 technical_roles = [
   { role_name: 'Computational Scientist',
-    aliases: ['Computational Biologist', 'Computational Chemist', 'Computational Physicist', 'Computational Engineer', 'Computational Analyst', 'Computational Researcher'], department_names: ['Science'], team_names: ['Science'] },
+    aliases: ['Computational Scientist Machine Learning','Computational Biologist', 'Computational Chemist', 'Computational Physicist', 'Computational Engineer', 'Computational Analyst', 'Computational Researcher'], department_names: ['Science'], team_names: ['Science'] },
 
   { role_name: 'Data Engineer',
     aliases: ['Analytics Engineer', 'Data Engineer', 'Data Platform Engineer', 'Data Infrastructure Engineer', 'Data Integration Engineer', 'Data Engineer', 'Data Engineering Specialist'], department_names: ['Engineering', 'Data Science'], team_names: ['Software Engineering', 'Data Science'] },
 
   { role_name: 'Data Scientist',
     aliases: ['Data Analyst', 'Statistician', 'Business Intelligence Analyst', 'BI Specialist', 'Data Specialist', 'Sales Data Analyst', 'Data Researcher'], department_names: ['Data Science', 'Engineering'], team_names: ['Software Engineering', 'Business Intelligence'] },
-
-  { role_name: 'Designer',
-    aliases: ['Graphic Designer', 'Product Designer', 'UI/UX Designer', 'Visual Designer', 'Web Designer', 'User Experience Designer', 'User Interface Designer', 'Product Designer', 'Product Design Engineer'], department_names: ['Design'], team_names: ['Product'] },
 
   { role_name: 'Design Engineer', aliases: ['Product Engineer'], department_names: ['Engineering'],
     team_names: ['Software Engineering'] },
@@ -137,7 +134,7 @@ technical_roles = [
     aliases: ['Tech Support', 'Support Engineer', 'Helpdesk'], department_names: ['IT', 'Engineering', 'Customer Support'], team_names: ['Client Services', 'Tech Support'] },
 
   { role_name: 'UI/UX Designer',
-    aliases: ['User Experience Designer', 'Interface Designer', 'Product Designer'], department_names: ['Design', 'Product Management'], team_names: ['Product'] },
+    aliases: ['User Experience Designer', 'Interface Designer', 'Product Designer', 'UX Manager','Graphic Designer', 'Product Designer', 'UI/UX Designer', 'Visual Designer', 'Web Designer', 'User Experience Designer', 'User Interface Designer', 'Product Designer'], department_names: ['Design', 'Product Management'], team_names: ['Product'] },
 
 ]
 
@@ -150,6 +147,9 @@ clinical_roles = [
 
   { role_name: 'Dental Hygienist',
     aliases: ['Remote Dental Specialist', 'Tele-Dentist', 'Oral Health Expert'], department_names: ['Clinical Team'], team_names: ['Care Operations'] },
+
+{role_name: 'Health Outcomes Liaison', aliases: ['Health Outcomes Liaison', 'Health Outcomes Specialist', 'Health Outcomes Analyst', 'Health Outcomes Consultant'],
+    department_names: ['Clinical Team'], team_names: ['Care Operations'] },
 
   { role_name: 'Healthcare Administrator',
     aliases: ['Medical Administrator', 'Health Services Manager', 'Remote Healthcare Manager'], department_names: ['Operations', 'Clinical Team'], team_names: ['Care Operations'] },
