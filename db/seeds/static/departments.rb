@@ -4,54 +4,58 @@ departments = [
   { dept_name: 'Business Development',
     aliases: ['Sales', 'Business Development and Sales', 'Business Development & Sales',
               'Finance & Business Operations'] },
- 
-              { dept_name: 'Clinical Team',
+
+  { dept_name: 'Clinical Team',
     aliases: ['Medical Team', 'Care Team', 'Healthcare Team', 'Behavioral Health',
               'Clinical Strategy and Services', 'Pharmacy', 'medical affairs', 'Clinical Operations', 'Clinical Research & Operations'] },
- 
-              { dept_name: 'Customer Support',
+
+  { dept_name: 'Customer Support',
     aliases: ['Customer Service', 'Client Support', 'Help Desk', 'Customer Operations',
               'commercial'] },
-  
-              { dept_name: 'Data Science', aliases: ['Data Analytics', 'Machine Learning', 'AI'] },
- 
+
+  { dept_name: 'Data Science', aliases: ['Data Analytics', 'Machine Learning', 'AI'] },
+
   { dept_name: 'Design', aliases: ['UI/UX Design', 'Graphic Design', 'Product & Design'] },
- 
+
   { dept_name: 'Engineering',
     aliases: ['Development', 'Software Engineering', 'Tech', 'Information Technology', 'DevOps'] },
-  
-    { dept_name: 'Executive',
+
+  { dept_name: 'Executive',
     aliases: ['Leadership', 'Management', 'C-Suite', 'Board of Directors', 'headquarters'] },
 
-    { dept_name: 'Finance', aliases: ['Accounting', 'Financial Planning', 'FP&A'] },
- 
-    { dept_name: 'Human Resources',
+  { dept_name: 'Finance', aliases: ['Accounting', 'Financial Planning', 'FP&A'] },
+
+  { dept_name: 'Human Resources',
     aliases: ['HR', 'Talent Acquisition', 'People Operations', 'Talent & Organization'] },
- 
-    { dept_name: 'Internship',
+
+  { dept_name: 'Internship',
     aliases: ['Interns', 'Internship Team', 'Internship Program', 'fellowship', 'graduate'] },
- 
-    { dept_name: 'IT',
+
+  { dept_name: 'IT',
     aliases: ['Information Technology', 'Tech Support', 'Ops/Member Care', 'it operations',
               'technology'] },
 
-              { dept_name: 'Legal', aliases: ['Corporate Law', 'Compliance', 'Legal Affairs'] },
- 
-  { dept_name: 'Marketing',
-    aliases: ['Digital Marketing', 'Content Marketing', 'Branding', 'Brand', 'Commercial Operations', 'Market Access'] },
- 
-    { dept_name: 'Operations',
-  aliases: ['Strategy & Operations', 'Business Operations', 'Logistics', 'Supply Chain',
-              'Growth & Business Excellence', 'worker operations', 'People Operations', 'MFG & Supply Chain', 'Institute of Computation'] },
-  
-              { dept_name: 'Product Management', aliases: ['Product Development', 'Product'] },
+  { dept_name: 'Legal', aliases: ['Corporate Law', 'Compliance', 'Legal Affairs'] },
 
-              { dept_name: 'Project Management', aliases: ['Program Management', 'Project Delivery'] },
- 
+  { dept_name: 'Marketing',
+    aliases: ['Digital Marketing', 'Content Marketing', 'Branding', 'Brand',
+              'Commercial Operations', 'Market Access'] },
+
+  { dept_name: 'Operations',
+    aliases: ['Strategy & Operations', 'Business Operations', 'Logistics', 'Supply Chain',
+              'Growth & Business Excellence', 'worker operations', 'People Operations', 'MFG & Supply Chain', 'Institute of Computation'] },
+
+  { dept_name: 'Product Management', aliases: ['Product Development', 'Product'] },
+
+  { dept_name: 'Project Management',
+    aliases: ['Program Management', 'Project Delivery'] },
+
   { dept_name: 'Quality', aliases: ['Quality Assurance', 'Quality Control', 'QA'] },
-  
-  { dept_name: 'Sales', aliases: ['Business Development', 'Account Management', 'Field sales', 'Sales Operations', 'Sales Training & Development'] },
- 
+
+  { dept_name: 'Sales',
+    aliases: ['Business Development', 'Account Management', 'Field sales', 'Sales Operations',
+              'Sales Training & Development'] },
+
   { dept_name: 'Science', aliases: ['Research', 'R&D', 'Scientific Research'] },
 ]
 

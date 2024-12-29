@@ -8,7 +8,7 @@ module Utils
       original_title = title.strip
       cleaned_title = title.gsub(/\(.*?\)/i, '')
 
-      parts = cleaned_title.split(/[-,\/]/i).map(&:strip)
+      parts = cleaned_title.split(%r{[-,/]}i).map(&:strip)
 
       meaningful_phrases = [
         'Chief of Staff',
@@ -59,7 +59,9 @@ module Utils
       cleaned_title.gsub!(roman_numerals_pattern, '')
 
       # Ensure "Machine Learning" is retained in titles
-      cleaned_title = "#{cleaned_title.strip} Machine Learning".strip if original_title.downcase.include?('machine learning')
+      if original_title.downcase.include?('machine learning')
+        cleaned_title = "#{cleaned_title.strip} Machine Learning".strip
+      end
 
       modified_title = original_title.gsub(seniority_pattern, '').gsub(/,/, ' of').strip
 
