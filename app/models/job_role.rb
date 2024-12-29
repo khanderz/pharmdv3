@@ -11,8 +11,8 @@ class JobRole < ApplicationRecord
 
   def self.find_or_create_job_role(job_title)
     titles = Utils::TitleCleaner.clean_title(job_title)
-    puts "original title #{job_title}"
-    puts " titles #{titles}"
+    puts "#{BLUE}original title #{job_title}#{RESET}"
+    puts "#{BLUE}titles #{titles}#{RESET}"
     cleaned_title = titles[:cleaned_title].presence || titles[:modified_title]
     modified_title = titles[:modified_title]
 
