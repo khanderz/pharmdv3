@@ -80,8 +80,6 @@ interface FiltersContextProps {
   ) => void;
   selectedSalaryRange: [number, number] | null;
   setSelectedSalaryRange: (range: [number, number] | null) => void;
-  selectedLocation: AutocompleteOption | null;
-  setSelectedLocation: (location: AutocompleteOption | null) => void;
   selectedBenefits: Benefit[];
   setSelectedBenefits: (benefits: Benefit[]) => void;
   selectedCredentials: Credential[];
@@ -94,6 +92,8 @@ interface FiltersContextProps {
   setSelectedSeniorities: (seniorities: Seniority[]) => void;
   selectedSkills: Skill[];
   setSelectedSkills: (skills: Skill[]) => void;
+  selectedLocations: Location[];
+  setSelectedLocations: (locations: Location[]) => void;
 
   errors: string | null;
   currentlyLoading: boolean;
@@ -186,8 +186,20 @@ export const FiltersContext = createContext<FiltersContextProps>({
   setSelectedSalaryCurrency: () => {},
   selectedSalaryRange: null,
   setSelectedSalaryRange: () => {},
-  selectedLocation: null,
-  setSelectedLocation: () => {},
+  selectedBenefits: [],
+  setSelectedBenefits: () => {},
+  selectedCredentials: [],
+  setSelectedCredentials: () => {},
+  selectedEducations: [],
+  setSelectedEducations: () => {},
+  selectedExperiences: [],
+  setSelectedExperiences: () => {},
+  selectedSeniorities: [],
+  setSelectedSeniorities: () => {},
+  selectedSkills: [],
+  setSelectedSkills: () => {},
+  selectedLocations: [],
+  setSelectedLocations: () => {},
 
   errors: null,
   currentlyLoading: false,
@@ -648,16 +660,15 @@ export function FiltersProvider({ children }: FiltersProviderProps) {
       });
     }
 
-    if (selectedLocation) {
-      filtered = filtered.filter(jobPost => {
-        const locationValue = (selectedLocation as AutocompleteOption).value;
-
-        if (Array.isArray(jobPost.job_locations)) {
-          return jobPost.job_locations.includes(locationValue as string);
-        }
-
-        return jobPost.job_locations === locationValue;
-      });
+    if (selectedLocations.length > 0) {
+      filtered = filtered.filter(jobPost =>
+        jobPost.job_post_locations?.some(jpl =>
+          selectedLocations.some(
+            selectedLocation =>
+              Number(selectedLocation.key) === jpl.location_id,
+          ),
+        ),
+      );
     }
 
     if (searchQuery) {
@@ -758,7 +769,6 @@ export function FiltersProvider({ children }: FiltersProviderProps) {
     setSelectedDatePosted(null);
     setSelectedSalaryCurrency("");
     setSelectedSalaryRange([MIN_SALARY, MAX_SALARY]);
-    setSelectedLocation("");
     setSearchQuery("");
     setSelectedBenefits([]);
     setSelectedCredentials([]);
@@ -766,6 +776,7 @@ export function FiltersProvider({ children }: FiltersProviderProps) {
     setSelectedExperiences([]);
     setSelectedSeniorities([]);
     setSelectedSkills([]);
+    setSelectedLocations([]);
   };
 
   const getNoResultsMessage = () => {
@@ -840,8 +851,10 @@ export function FiltersProvider({ children }: FiltersProviderProps) {
       );
     }
 
-    if (selectedLocation) {
-      filters.push(`in location ${selectedLocation}`);
+    if (selectedLocations.length > 0) {
+      filters.push(
+        `in locations ${selectedLocations.map(loc => loc.value).join(", ")}`,
+      );
     }
 
     if (searchQuery) {
@@ -885,7 +898,6 @@ export function FiltersProvider({ children }: FiltersProviderProps) {
     }
 
     let message = "No matching job posts";
-
     if (filters.length > 0) {
       message += ` ${filters.join(", ")}.`;
     }
@@ -909,7 +921,6 @@ export function FiltersProvider({ children }: FiltersProviderProps) {
     selectedCompanySize,
     selectedSalaryCurrency,
     selectedSalaryRange,
-    selectedLocation,
     searchQuery,
     jobPosts,
     selectedBenefits,
@@ -918,6 +929,7 @@ export function FiltersProvider({ children }: FiltersProviderProps) {
     selectedExperiences,
     selectedSeniorities,
     selectedSkills,
+    selectedLocations,
   ]);
 
   useEffect(() => {
@@ -950,8 +962,20 @@ export function FiltersProvider({ children }: FiltersProviderProps) {
       setSelectedSalaryCurrency,
       selectedSalaryRange,
       setSelectedSalaryRange,
-      selectedLocation,
-      setSelectedLocation,
+      selectedBenefits,
+      setSelectedBenefits,
+      selectedCredentials,
+      setSelectedCredentials,
+      selectedEducations,
+      setSelectedEducations,
+      selectedExperiences,
+      setSelectedExperiences,
+      selectedSeniorities,
+      setSelectedSeniorities,
+      selectedSkills,
+      setSelectedSkills,
+      selectedLocations,
+      setSelectedLocations,
 
       errors,
       currentlyLoading,
@@ -992,23 +1016,11 @@ export function FiltersProvider({ children }: FiltersProviderProps) {
       companiesError,
 
       benefits,
-      selectedBenefits,
-      setSelectedBenefits,
       credentials,
-      selectedCredentials,
-      setSelectedCredentials,
       educations,
-      selectedEducations,
-      setSelectedEducations,
       experiences,
-      selectedExperiences,
-      setSelectedExperiences,
       seniorities,
-      selectedSeniorities,
-      setSelectedSeniorities,
       skills,
-      selectedSkills,
-      setSelectedSkills,
       uniqueLocations,
     };
   }, [
@@ -1031,6 +1043,7 @@ export function FiltersProvider({ children }: FiltersProviderProps) {
     selectedSeniorities,
     selectedSkills,
     uniqueLocations,
+    selectedLocations,
 
     errors,
     currentlyLoading,

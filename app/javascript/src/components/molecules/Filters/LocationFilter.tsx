@@ -4,13 +4,9 @@ import { useFiltersContext } from "@javascript/providers/FiltersProvider";
 import { AutocompleteOption } from "@components/atoms/Autocomplete";
 
 export const LocationFilter = () => {
-  const {
-    filteredJobPosts,
-    selectedLocation,
-    setSelectedLocation,
-    uniqueLocations,
-  } = useFiltersContext();
-  console.log({ uniqueLocations });
+  const { selectedLocations, setSelectedLocations, uniqueLocations } =
+    useFiltersContext();
+
   const [inputValue, setInputValue] = useState("");
 
   const locationOptions: AutocompleteOption[] = useMemo(
@@ -35,17 +31,15 @@ export const LocationFilter = () => {
 
   const handleLocationChange = (
     event: React.SyntheticEvent<Element, Event>,
-    newValue: AutocompleteOption | null,
+    newValue: AutocompleteOption[] | null,
   ) => {
-    if (newValue && newValue.value !== "No matching job post locations") {
-      const selected = uniqueLocations.find(
-        location => location.name === newValue.value,
+    if (newValue && newValue.length > 0) {
+      const validLocations = newValue.filter(
+        location => location.value !== "No matching job post locations",
       );
-      setSelectedLocation(
-        selected ? { key: selected.id.toString(), value: selected.name } : null,
-      );
+      setSelectedLocations(validLocations);
     } else {
-      setSelectedLocation(null);
+      setSelectedLocations([]);
     }
   };
 
@@ -53,12 +47,12 @@ export const LocationFilter = () => {
     <Autocomplete
       id="location-autocomplete"
       inputLabel="Location"
+      multiple
       options={filteredLocations}
-      value={
-        selectedLocation
-          ? { key: selectedLocation.key, value: selectedLocation.value }
-          : null
-      }
+      value={selectedLocations.map(location => ({
+        key: location.key,
+        value: location.value,
+      }))}
       onChange={handleLocationChange}
       inputValue={inputValue}
       onInputChange={(e: any, newInputValue: string) =>

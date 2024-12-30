@@ -74,7 +74,7 @@ export const SearchPage = () => {
                 <>
                   <Grid container spacing={3} data-testid="job-cards-container">
                     {paginatedJobPosts.map(jobPost => {
-                      console.log(jobPost);
+                      // console.log(jobPost);
                       const jobCommitmentType = jobCommitments.find(
                         commitment =>
                           commitment.id === jobPost.job_commitment_id,
