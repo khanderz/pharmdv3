@@ -14,14 +14,9 @@ L_range_name = ENV['LEVER_SHEET_RANGE']
 def normalize_location_data(data)
   case data
   when String
-    if data.strip.start_with?('[') && data.strip.end_with?(']')
-      data = data.gsub(/[\[\]']/, '')
-      data.split(',').map { |item| item.strip.downcase }
-    else
-      [data.strip.downcase]
-    end
+    data.gsub(/[\[\]']/, '').split(',').map(&:strip).map(&:downcase).uniq
   when Array
-    data.flatten.map(&:to_s).map(&:strip).map(&:downcase).compact
+    data.flatten.flat_map { |entry| entry.to_s.gsub(/[\[\]']/, '').split(',') }.map(&:strip).map(&:downcase).uniq
   else
     []
   end
@@ -29,22 +24,27 @@ end
 
 def resolve_location_hierarchy(location_names, location_type, company_name, parent = nil)
   location_names.map do |name|
-    location = Location.where(
-      'LOWER(name) = ? AND location_type = ? AND parent_id = ?',
-      name.strip.downcase, location_type, parent&.id
-    ).first_or_create do |loc|
-      loc.name = name.strip
-      loc.location_type = location_type
-      loc.parent_id = parent&.id
-    end
+    normalized_name = name.strip.downcase
+    location = Location.find_by('LOWER(name) = ?', normalized_name) ||
+               Location.where("aliases @> ARRAY[?]::varchar[]", [normalized_name]).first
 
-    unless location.persisted?
-      puts "#{ORANGE}Could not resolve #{location_type} #{name} for company #{company_name}.#{RESET}"
+    if location
+      puts "#{GREEN}Found match for #{location_type}: #{name}#{RESET}"
+    else
+      puts "#{RED}No match found for #{location_type}: #{name}#{RESET}"
+      if name.present? && company_name.present? && location_type.present?
+        location = Location.find_or_create_by_name_and_type(
+          name,
+          company_name,
+          location_type,
+          parent
+        )
+      end      
     end
-
     location
-  end
+  end.compact
 end
+
 
 def resolve_locations(row_data, company_name)
   cities = normalize_location_data(row_data['company_cities'])
@@ -55,29 +55,62 @@ def resolve_locations(row_data, company_name)
   puts "states: #{states}"
   puts "countries: #{countries}"
 
-  resolved_countries = resolve_location_hierarchy(countries, 'Country', company_name)
+  resolved_countries = resolve_location_hierarchy(countries, 'Country', company_name).uniq(&:id)
+  if resolved_countries.any?
+    puts "#{GREEN}Resolved countries: #{resolved_countries.map(&:name).join(', ')}#{RESET}"
+  else
+    puts "#{RED}No countries found#{RESET}"
+  end
+
   resolved_states = states.flat_map do |state|
     parent_country = resolved_countries.find do |country|
-      country.name.downcase == state.downcase || country.aliases.map(&:downcase).include?(state.downcase)
-
-      puts "resolved countries #{resolved_countries}"
-      puts "parent country #{parent_country}"
-      puts "resolved states #{resolved_states}"
+      Location.where(location_type: 'State')
+              .where('LOWER(code) = ? OR LOWER(name) = ? OR ? = ANY(aliases)', state.downcase, state.downcase, state.downcase)
+              .where(parent_id: country.id).exists?
     end
-    resolve_location_hierarchy([state], 'State', company_name, parent_country)
+
+    if parent_country
+      puts "#{GREEN}Parent country found for state: #{state}#{RESET}"
+      resolve_location_hierarchy([state], 'State', company_name, parent_country)
+    else
+      puts "#{RED}Parent country not found for state: #{state}#{RESET}"
+      []
+    end
+  end.compact
+  if resolved_states.any?
+    puts "#{GREEN}Resolved states: #{resolved_states.map(&:name).join(', ')}#{RESET}"
+  else
+    puts "#{RED}No states found#{RESET}"
   end
 
   resolved_cities = cities.flat_map do |city|
     parent_state = resolved_states.find do |state|
-      state.name.downcase == city.downcase || state.aliases.map(&:downcase).include?(city.downcase)
-
-      puts "resolved cities #{resolved_cities}"
-      puts "parent state #{parent_state}"
+      Location.where(location_type: 'City')
+              .where(
+                '(LOWER(name) = ? OR ? = ANY(ARRAY(SELECT LOWER(unnest(aliases))))) AND parent_id = ?',
+                city.downcase, city.downcase, state.id
+              ).exists?
     end
-    resolve_location_hierarchy([city], 'City', company_name, parent_state)
+  
+    if parent_state
+      puts "#{GREEN}Parent state found for city: #{city}#{RESET}"
+      resolve_location_hierarchy([city], 'City', company_name, parent_state)
+    else
+      puts "#{RED}Parent state not found for city: #{city}#{RESET}"
+      []
+    end
+  end.compact
+  
+  if resolved_cities.any?
+    puts "#{GREEN}Resolved cities: #{resolved_cities.map(&:name).join(', ')}#{RESET}"
+  else
+    puts "#{RED}No cities found#{RESET}"
   end
 
   (resolved_countries + resolved_states + resolved_cities).compact
+rescue => e
+  puts "#{RED}Error resolving locations: #{e.message}#{RESET}"
+  []
 end
 
 def find_company_size(size_range, current_company_size = nil)
@@ -300,6 +333,8 @@ def process_company_data(row_data, _headers)
     ats_type = AtsType.find_by(ats_type_code: row_data['company_ats_type'])
 
     locations = resolve_locations(row_data, company_name)
+
+    puts "locations: #{locations}"
 
     domains = (row_data['healthcare_domain'] || '').split(',').map(&:strip).map do |key|
       HealthcareDomain.find_or_create_by!(key: key)

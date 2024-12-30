@@ -41,7 +41,7 @@ countries = [
   { name: 'United Kingdom', code: 'GB', location_type: 'Country', parent_code: nil,
     aliases: ['UK', 'Britain', 'Great Britain'] },
   { name: 'United States', code: 'US', location_type: 'Country', parent_code: nil,
-    aliases: ['USA', 'America', 'United States of America'] },
+    aliases: ['USA', 'America', 'United States of America', 'us'] },
   { name: 'Vietnam', code: 'VN', location_type: 'Country', parent_code: nil, aliases: [] }
 ]
 
