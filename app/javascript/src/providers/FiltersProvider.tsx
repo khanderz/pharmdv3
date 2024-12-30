@@ -22,7 +22,6 @@ import {
   Experience,
   Skill,
   Seniority,
-  JobPostCity,
 } from "@customtypes/job_post";
 import { Department, JobRole } from "@customtypes/job_role";
 import {
@@ -41,9 +40,11 @@ import {
   useExperiences,
   useSeniorities,
   useSkills,
+  useLocations,
 } from "@hooks";
 import dayjs from "dayjs";
 import { AutocompleteOption } from "@components/atoms/Autocomplete";
+import { Location } from "@javascript/types/locations.types";
 
 interface FiltersContextProps {
   selectedCompanies: Company[];
@@ -140,10 +141,9 @@ interface FiltersContextProps {
   skills: Skill[];
   skillsLoading: boolean;
   skillsError: string | null;
-  cities: City[];
-  citiesLoading: boolean;
-  citiesError: string | null;
-  uniqueCities: City[];
+  uniqueLocations: Location[];
+  locationsLoading: boolean;
+  locationsError: string | null;
 
   filteredJobPosts: JobPost[];
   resetFilters: () => void;
@@ -229,10 +229,9 @@ export const FiltersContext = createContext<FiltersContextProps>({
   skills: [],
   skillsLoading: false,
   skillsError: null,
-  cities: [],
-  citiesLoading: false,
-  citiesError: null,
-  uniqueCities: [],
+  uniqueLocations: [],
+  locationsLoading: false,
+  locationsError: null,
 
   filteredJobPosts: [],
   resetFilters: () => {},
@@ -347,6 +346,12 @@ export function FiltersProvider({ children }: FiltersProviderProps) {
 
   const { skills, loading: skillsLoading, error: skillsError } = useSkills();
 
+  const {
+    locations,
+    loading: locationsLoading,
+    error: locationsError,
+  } = useLocations();
+
   /* --------------------- States --------------------- */
 
   const [selectedCompanies, setSelectedCompanies] = useState<Company[]>([]);
@@ -392,6 +397,7 @@ export function FiltersProvider({ children }: FiltersProviderProps) {
     [],
   );
   const [selectedSkills, setSelectedSkills] = useState<Skill[]>([]);
+  const [selectedLocations, setSelectedLocations] = useState<Location[]>([]);
 
   /* --------------------- Constants --------------------- */
   const companyFilters = useMemo(() => {
@@ -405,9 +411,6 @@ export function FiltersProvider({ children }: FiltersProviderProps) {
     }
     if (selectedSpecialties.length > 0) {
       filters.specialization_id = selectedSpecialties.map(spec => spec.id);
-    }
-    if (selectedLocation) {
-      filters.city_id = selectedLocation.value;
     }
 
     return filters;
@@ -443,7 +446,8 @@ export function FiltersProvider({ children }: FiltersProviderProps) {
     educationsLoading ||
     experiencesLoading ||
     senioritiesLoading ||
-    skillsLoading;
+    skillsLoading ||
+    locationsLoading;
 
   const errors =
     error ||
@@ -460,7 +464,8 @@ export function FiltersProvider({ children }: FiltersProviderProps) {
     educationsError ||
     experiencesError ||
     senioritiesError ||
-    skillsError;
+    skillsError ||
+    locationsError;
 
   const uniqueCompanies: Company[] = Array.from(
     new Map(
@@ -488,18 +493,27 @@ export function FiltersProvider({ children }: FiltersProviderProps) {
       .values(),
   );
 
-  const uniqueCities: City[] = Array.from(
-    new Map(
-      jobPosts
-        .flatMap((jobPost: JobPost) => jobPost.job_post_cities ?? [])
-        .map((jobPostCity: JobPostCity) => jobPostCity.city_id)
-        .map(cityId => [
-          cityId,
-          cities.find((city: City) => city.id === cityId),
-        ])
-        .filter(([_, city]) => city),
-    ).values(),
-  );
+  const uniqueLocations: Location[] = useMemo(() => {
+    const locationMap = new Map<number, Location>();
+
+    jobPosts.forEach(jobPost => {
+      if (
+        jobPost.job_post_locations &&
+        Array.isArray(jobPost.job_post_locations)
+      ) {
+        jobPost.job_post_locations.forEach(jobPostLocation => {
+          const location = locations.find(
+            loc => loc.id === jobPostLocation.location_id,
+          );
+          if (location) {
+            locationMap.set(location.id, location);
+          }
+        });
+      }
+    });
+
+    return Array.from(locationMap.values());
+  }, [jobPosts, locations]);
 
   /* --------------------- Handles --------------------- */
   const filterCompanies = () => {
@@ -995,7 +1009,7 @@ export function FiltersProvider({ children }: FiltersProviderProps) {
       skills,
       selectedSkills,
       setSelectedSkills,
-      uniqueCities,
+      uniqueLocations,
     };
   }, [
     selectedCompanies,
@@ -1016,7 +1030,7 @@ export function FiltersProvider({ children }: FiltersProviderProps) {
     selectedExperiences,
     selectedSeniorities,
     selectedSkills,
-    uniqueCities,
+    uniqueLocations,
 
     errors,
     currentlyLoading,

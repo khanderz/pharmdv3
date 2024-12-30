@@ -8,45 +8,42 @@ export const LocationFilter = () => {
     filteredJobPosts,
     selectedLocation,
     setSelectedLocation,
-    uniqueCities,
+    uniqueLocations,
   } = useFiltersContext();
-  console.log({ uniqueCities });
+  console.log({ uniqueLocations });
   const [inputValue, setInputValue] = useState("");
 
-  const uniqueLocations: AutocompleteOption[] = useMemo(() => {
-    const locations = filteredJobPosts.flatMap(jobPost =>
-      Array.isArray(jobPost.job_locations)
-        ? jobPost.job_locations
-        : [jobPost.job_locations],
-    );
-    const deduplicatedLocations = Array.from(new Set(locations));
-
-    return deduplicatedLocations
-      .sort((a, b) => a.localeCompare(b))
-      .map((location, index) => ({
-        key: index,
-        value: location,
-      }));
-  }, [filteredJobPosts]);
+  const locationOptions: AutocompleteOption[] = useMemo(
+    () =>
+      uniqueLocations.map(location => ({
+        key: location.id.toString(),
+        value: location.name,
+      })),
+    [uniqueLocations],
+  );
 
   const filteredLocations: AutocompleteOption[] = useMemo(() => {
-    if (!inputValue) return uniqueLocations;
+    if (!inputValue) return locationOptions;
     const lowerInput = inputValue.toLowerCase();
-    const matches = uniqueLocations.filter(location =>
-      (location.value as string).toLowerCase().includes(lowerInput),
+    const matches = locationOptions.filter(location =>
+      location.value.toLowerCase().includes(lowerInput),
     );
-
     return matches.length > 0
       ? matches
       : [{ key: "no-matches", value: "No matching job post locations" }];
-  }, [inputValue, uniqueLocations]);
+  }, [inputValue, locationOptions]);
 
   const handleLocationChange = (
     event: React.SyntheticEvent<Element, Event>,
     newValue: AutocompleteOption | null,
   ) => {
     if (newValue && newValue.value !== "No matching job post locations") {
-      setSelectedLocation(newValue as AutocompleteOption);
+      const selected = uniqueLocations.find(
+        location => location.name === newValue.value,
+      );
+      setSelectedLocation(
+        selected ? { key: selected.id.toString(), value: selected.name } : null,
+      );
     } else {
       setSelectedLocation(null);
     }
@@ -57,7 +54,11 @@ export const LocationFilter = () => {
       id="location-autocomplete"
       inputLabel="Location"
       options={filteredLocations}
-      value={selectedLocation}
+      value={
+        selectedLocation
+          ? { key: selectedLocation.key, value: selectedLocation.value }
+          : null
+      }
       onChange={handleLocationChange}
       inputValue={inputValue}
       onInputChange={(e: any, newInputValue: string) =>
