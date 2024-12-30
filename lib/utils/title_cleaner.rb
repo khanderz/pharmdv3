@@ -14,7 +14,7 @@ module Utils
                          'jr.', 'SVP']
 
       employment_pattern = /\b(#{employment_terms.join('|')})\b/i
-      seniority_pattern = /\b(#{seniority_terms.join('|')})\b/i
+      seniority_pattern = /\b(#{seniority_terms.join('|')})\.?\b/i
 
       cleaned_title.gsub!(employment_pattern, '')
       cleaned_title.gsub!(seniority_pattern, '')

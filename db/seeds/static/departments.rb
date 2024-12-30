@@ -69,7 +69,7 @@ departments = [
 
   { dept_name: 'Science',
     aliases: ['CLIA ops', 'Bioinformatics and PE', 'bioinformatics', 'proteomics', 'Research', 'R&D',
-              'Scientific Research', 'bioanalysis', 'clinical r&d', 'analytical research & development'] },
+              'Scientific Research', 'bioanalysis', 'clinical r&d', 'analytical research & development', 'lnp platforms'] },
 ]
 
 seeded_count = 0

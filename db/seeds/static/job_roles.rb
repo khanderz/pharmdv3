@@ -109,12 +109,14 @@ job_roles = [
 ]
 
 science_roles = [
-  { role_name: 'Research Scientist', aliases: ['Researcher', 'Research associate', 'Research Analyst', 'Research Associate', 'AI Research Scientist', 'Scientist Machine Learning'],
+  { role_name: 'Research Scientist', aliases: ['Research Associate of LNP Analytical Research and Development','Researcher', 'Research associate', 'Research Analyst', 'Research Associate', 'AI Research Scientist', 'Scientist Machine Learning'],
     department_names: ['Science'], team_names: ['Science'] },
 
   { role_name: 'Science Manager', aliases: ['Manager Molecular Pathology', 'Science Lead', 'Science Director', 'Science Program Manager', 'Science Program Director'],
     department_names: ['Science'], team_names: ['Science'] },
 
+    { role_name: 'Scientist', aliases: ['Senior Scientist'],
+    department_names: ['Science'], team_names: ['Science'] },
 ]
 technical_roles = [
   {
@@ -217,7 +219,7 @@ clinical_roles = [
   { role_name: 'Healthcare Administrator',
     aliases: ['Medical Administrator', 'Health Services Manager', 'Remote Healthcare Manager'], department_names: ['Operations', 'Clinical Team'], team_names: ['Care Operations'] },
 
-  { role_name: 'Medical Information Manager', aliases: ['Medical Information Specialist', 'Medical Information Analyst', 'Medical Information Consultant'],
+  { role_name: 'Medical Information Manager', aliases: ['Medical Information Specialist', 'Medical Information Analyst', 'Medical Information Consultant', 'manager of medical information'],
     department_names: ['Clinical Team'], team_names: ['Care Operations'] },
 
   { role_name: 'Medical Science Liaison', aliases: ['MSL', 'Medical Liaison', 'Medical Affairs Liaison', 'Medical Affairs Specialist', 'Medical Affairs Analyst', 'Medical Affairs Consultant'],
@@ -261,9 +263,6 @@ clinical_roles = [
 
   { role_name: 'Remote Patient Monitoring Specialist', aliases: ['RPM Specialist', 'Remote Monitoring Specialist', 'Telehealth Specialist', 'Virtual Care Specialist'],
     department_names: ['Clinical Team'], team_names: ['Care Operations'] },
-
-  { role_name: 'Scientist', aliases: ['Research Scientist', 'Scientist', 'Researcher'],
-    department_names: ['Science'], team_names: ['Science'] },
 ]
 
 c_level = [
@@ -333,7 +332,7 @@ c_level = [
   { role_name: 'Director of Engineering', aliases: ['Engineering Director', 'director of software engineering'],
     department_names: ['Engineering'], team_names: ['Software Engineering'] },
 
-  { role_name: 'Director of Environmental Health and Safety', aliases: ['Environmental Health and Safety Director'],
+  { role_name: 'Director of Environmental Health and Safety', aliases: ['Environmental Health and Safety Director', 'Director of Environmental of Health and Safety (EHS)'],
     department_names: ['Environmental Health and Safety'], team_names: ['Environmental Health and Safety'] },
 
   { role_name: 'Director of Finance and Accounting', aliases: ['Finance Director', 'Accounting Director'],

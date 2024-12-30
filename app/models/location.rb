@@ -44,7 +44,12 @@ class Location < ApplicationRecord
       normalized_name = normalize_name(location_param)
       parent_id = extract_parent_id(parent)
 
+      puts "#{BLUE} location_type #{location_type} normalized_name #{normalized_name}#{RESET}"
+      puts "#{BLUE}parent_id #{parent_id}#{RESET}"
+
       existing_location = find_location_by_name_or_alias(normalized_name, location_type, parent_id)
+
+      puts "existing location #{existing_location}"
 
       return existing_location if existing_location
 
@@ -54,8 +59,10 @@ class Location < ApplicationRecord
     def find_by_name_and_type(name, location_type, parent = nil)
       normalized_name = normalize_name(name)
       parent_id = extract_parent_id(parent)
+      puts "#{BLUE}# location_type{location_type}  normalized_name#{normalized_name} parent_id: #{parent_id}#{RESET}"
 
-      find_location_by_name_or_alias(normalized_name, location_type, parent_id)
+      result = find_location_by_name_or_alias(normalized_name, location_type, parent_id)
+      result
     end
 
     private
@@ -65,18 +72,22 @@ class Location < ApplicationRecord
     end
 
     def extract_parent_id(parent)
-      return parent.id if parent.is_a?(Location)
-
-      parent.first.id if parent.is_a?(Array) && parent.first.is_a?(Location)
+      if parent.is_a?(Location)
+        parent.id
+      elsif parent.is_a?(Array) && parent.first.is_a?(Location)
+        parent.first.id
+      else
+        nil
+      end
     end
 
-    def find_location_by_name_or_alias(normalized_name, location_type, parent_id)
-      where(
-        '(LOWER(name) = ? OR ? = ANY(aliases) OR LOWER(code) = ?) AND location_type = ?',
-        normalized_name, normalized_name, normalized_name, location_type
-      ).where(parent_id: parent_id).first
-    end
-
+def find_location_by_name_or_alias(normalized_name, location_type, parent_id)
+  where(
+    '(LOWER(name) = ? OR LOWER(?) = ANY(aliases) OR LOWER(code) = ?) AND LOWER(location_type) = ?',
+    normalized_name, normalized_name, normalized_name, location_type.downcase
+  ).where(parent_id: parent_id).first
+end
+ 
     def create_new_location(location_param, location_type, parent_id, company, job_post)
       error_message = "#{location_type} '#{location_param}' not found for job #{job_post} or company: #{company}"
       adj_type = job_post ? 'Location' : 'Company'

@@ -30,6 +30,10 @@ end
 def resolve_location_hierarchy(location_names, location_type, company_name, parent = nil)
   location_names.map do |name|
     location = Location.find_or_create_by_name_and_type(name, company_name, location_type, parent)
+    unless location
+      puts "#{ORANGE}Could not resolve #{location_type} #{name} for company #{company_name}.#{RESET}"
+    end
+    location
   end
 end
 
@@ -42,10 +46,16 @@ def resolve_locations(row_data, company_name)
   resolved_states = states.flat_map do |state|
     parent_country = resolved_countries.first
     resolve_location_hierarchy([state], 'State', company_name, parent_country)
+
+    puts "resolved coutnries #{resolved_countries}"
+    puts "parent country #{parent_country}"
+    puts "resolved states #{resolved_states}"
   end
   resolved_cities = cities.flat_map do |city|
     parent_state = resolved_states.first
     resolve_location_hierarchy([city], 'City', company_name, parent_state)
+    puts "resolved cities #{resolved_cities}"
+    puts "parent state #{parent_state}"
   end
 
   (resolved_countries + resolved_states + resolved_cities).compact
