@@ -7,7 +7,7 @@ class Experience < ApplicationRecord
     'eleven' => 11, 'twelve' => 12, 'thirteen' => 13, 'fourteen' => 14,
     'fifteen' => 15, 'sixteen' => 16, 'seventeen' => 17, 'eighteen' => 18,
     'nineteen' => 19, 'twenty' => 20
-  }
+  }.freeze
 
   def self.find_or_create_experience(experience_param, job_post)
     puts "#{BLUE}experience param: #{experience_param}#{RESET}"
@@ -16,40 +16,36 @@ class Experience < ApplicationRecord
     puts "#{BLUE}min_years: #{min_years}, max_years: #{max_years}#{RESET}"
 
     experience = if min_years
-      where('min_years <= ? AND (max_years IS NULL OR max_years >= ?)', min_years, min_years).first
-    end
+                   where('min_years <= ? AND (max_years IS NULL OR max_years >= ?)', min_years,
+                         min_years).first
+                 end
 
     puts "#{BLUE}experience 1: #{experience}#{RESET}"
 
-    if experience
-      experience.update!(min_years: min_years, max_years: max_years) if min_years || max_years
-    else
+    unless experience
       normalized_param = experience_param.downcase.gsub(/[^a-z0-9\s]/i, '')
+      puts "#{BLUE}normalized_param: #{normalized_param}#{RESET}"
       experience = where('LOWER(experience_name) LIKE ?', "%#{normalized_param}%")
                    .or(where('LOWER(experience_code) LIKE ?', "%#{normalized_param}%"))
                    .first
+    end
 
+    unless experience
       puts "#{BLUE}experience 2: #{experience}#{RESET}"
 
-      if experience
-        puts "#{BLUE}experience 3: #{experience}#{RESET}"
-        puts "#{GREEN}Experience '#{experience_param}' found in existing records.#{RESET}"
-        experience.update!(min_years: min_years, max_years: max_years) if min_years || max_years
-      else
-        error_details = "Experience '#{experience_param}' for '#{job_post}' not found in existing records"
-        experience = create!(
-          experience_name: experience_param,
-          min_years: min_years,
-          max_years: max_years,
-          error_details: error_details,
-          resolved: false
-        )
-        Adjudication.log_error(
-          adjudicatable_type: 'Experience',
-          adjudicatable_id: experience.id,
-          error_details: error_details
-        )
-      end
+      error_details = "Experience '#{experience_param}' for '#{job_post}' not found in existing records"
+      experience = create!(
+        experience_name: experience_param,
+        min_years: min_years,
+        max_years: max_years,
+        error_details: error_details,
+        resolved: false
+      )
+      Adjudication.log_error(
+        adjudicatable_type: 'Experience',
+        adjudicatable_id: experience.id,
+        error_details: error_details
+      )
     end
 
     experience
@@ -60,10 +56,13 @@ class Experience < ApplicationRecord
     words_to_numbers!(input)
     plus_match = input.match(/(\d+)\s*(?:\+|and up|or more|years\+|more than)/i)
     return [plus_match[1].to_i, nil] if plus_match
+
     range_match = input.match(/(?:between|from)?\s*(\d+)\s*(?:-|to|and|–|—)\s*(\d+)\s*years?/i)
     return [range_match[1].to_i, range_match[2].to_i] if range_match
+
     possible_years = input.scan(/\b\d+\b/).map(&:to_i)
     return [possible_years.first, possible_years.last] if possible_years.any?
+
     [nil, nil]
   end
 

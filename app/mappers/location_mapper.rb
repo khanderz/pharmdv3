@@ -20,7 +20,13 @@ class LocationMapper
     inputs.map do |single_input|
       process_single_location(single_input, job, company, country_input)
     end.compact
+    \
+    if processed_locations.any? { |location| location.values.any? }
+    processed_locations.reject { |location| location.values.all?(&:nil?) }
+  else
+    processed_locations
   end
+end
 
   private
 
