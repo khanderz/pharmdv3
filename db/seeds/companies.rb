@@ -16,12 +16,12 @@ def normalize_location_data(data)
   when String
     if data.strip.start_with?('[') && data.strip.end_with?(']')
       data = data.gsub(/[\[\]']/, '')
-      data.split(',').map(&:strip)
+      data.split(',').map { |item| item.strip.downcase }
     else
-      [data.strip]
+      [data.strip.downcase]
     end
   when Array
-    data.flatten.map(&:to_s).map(&:strip).compact
+    data.flatten.map(&:to_s).map(&:strip).map(&:downcase).compact
   else
     []
   end
@@ -29,10 +29,19 @@ end
 
 def resolve_location_hierarchy(location_names, location_type, company_name, parent = nil)
   location_names.map do |name|
-    location = Location.find_or_create_by_name_and_type(name, company_name, location_type, parent)
-    unless location
+    location = Location.where(
+      'LOWER(name) = ? AND location_type = ? AND parent_id = ?',
+      name.strip.downcase, location_type, parent&.id
+    ).first_or_create do |loc|
+      loc.name = name.strip
+      loc.location_type = location_type
+      loc.parent_id = parent&.id
+    end
+
+    unless location.persisted?
       puts "#{ORANGE}Could not resolve #{location_type} #{name} for company #{company_name}.#{RESET}"
     end
+
     location
   end
 end
@@ -42,20 +51,30 @@ def resolve_locations(row_data, company_name)
   states = normalize_location_data(row_data['company_states'])
   countries = normalize_location_data(row_data['company_countries'])
 
+  puts "cities: #{cities}"
+  puts "states: #{states}"
+  puts "countries: #{countries}"
+
   resolved_countries = resolve_location_hierarchy(countries, 'Country', company_name)
   resolved_states = states.flat_map do |state|
-    parent_country = resolved_countries.first
-    resolve_location_hierarchy([state], 'State', company_name, parent_country)
+    parent_country = resolved_countries.find do |country|
+      country.name.downcase == state.downcase || country.aliases.map(&:downcase).include?(state.downcase)
 
-    puts "resolved coutnries #{resolved_countries}"
-    puts "parent country #{parent_country}"
-    puts "resolved states #{resolved_states}"
+      puts "resolved countries #{resolved_countries}"
+      puts "parent country #{parent_country}"
+      puts "resolved states #{resolved_states}"
+    end
+    resolve_location_hierarchy([state], 'State', company_name, parent_country)
   end
+
   resolved_cities = cities.flat_map do |city|
-    parent_state = resolved_states.first
+    parent_state = resolved_states.find do |state|
+      state.name.downcase == city.downcase || state.aliases.map(&:downcase).include?(city.downcase)
+
+      puts "resolved cities #{resolved_cities}"
+      puts "parent state #{parent_state}"
+    end
     resolve_location_hierarchy([city], 'City', company_name, parent_state)
-    puts "resolved cities #{resolved_cities}"
-    puts "parent state #{parent_state}"
   end
 
   (resolved_countries + resolved_states + resolved_cities).compact
@@ -272,6 +291,7 @@ def create_new_company(row_data, ats_type, locations, domains, specialties)
 end
 
 def process_company_data(row_data, _headers)
+  puts "Processing company data for #{row_data['company_name']}-------------------"
   ActiveRecord::Base.transaction do
     company_name = row_data['company_name']
     return unless company_name.present?
