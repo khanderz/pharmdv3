@@ -41,11 +41,9 @@ import {
   useExperiences,
   useSeniorities,
   useSkills,
-  useCities,
 } from "@hooks";
 import dayjs from "dayjs";
 import { AutocompleteOption } from "@components/atoms/Autocomplete";
-import { City } from "@javascript/types/cities.types";
 
 interface FiltersContextProps {
   selectedCompanies: Company[];
@@ -348,8 +346,6 @@ export function FiltersProvider({ children }: FiltersProviderProps) {
   } = useSeniorities();
 
   const { skills, loading: skillsLoading, error: skillsError } = useSkills();
-
-  const { cities, loading: citiesLoading, error: citiesError } = useCities();
 
   /* --------------------- States --------------------- */
 

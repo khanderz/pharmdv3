@@ -10,9 +10,7 @@ Rails.application.routes.draw do
   resources :companies
   resources :healthcare_domains, defaults: { format: :json } # When you need full CRUD operations with JSON responses
   resources :company_specialties, defaults: { format: :json }
-  resources :cities, defaults: { format: :json }
-  resources :countries, defaults: { format: :json }
-  resources :states, defaults: { format: :json }
+  resources :locations, defaults: { format: :json }
   resources :company_sizes, only: [:index] # When you only need to list records
 
   resources :job_posts, defaults: { format: :json }

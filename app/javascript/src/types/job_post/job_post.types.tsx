@@ -2,8 +2,13 @@ import { JobCommitment, JobSalaryInterval, JobSalaryCurrency } from ".";
 import { Adjudicated } from "../adjudication.types";
 import { Department, JobRole, Team } from "../job_role";
 import { Company } from "@customtypes/company";
-import { Benefits } from "./benefits.types";
-import { City } from "../cities.types";
+import { Benefit } from "./benefits.types";
+import { Location } from "../locations.types";
+import { Credential } from "./credentials.types";
+import { Education } from "./educations.types";
+import { Experience } from "./experiences.types";
+import { Seniority } from "./seniorities.types";
+import { Skill } from "./skills.types";
 
 export interface JobPost extends Adjudicated {
   id: number;
@@ -40,24 +45,42 @@ export interface JobPost extends Adjudicated {
 
 export interface JobPostBenefit {
   id: number;
-  benefit_id: Benefits["id"];
+  job_post_id: JobPost["id"];
+  benefit_id: Benefit["id"];
 }
 
-export interface JobPostCity {
+export interface JobPostLocation {
   id: number;
-  city_id: City["id"];
+  job_post_id: JobPost["id"];
+  location_id: Location["id"];
 }
 
-export interface JobPostState {}
+export interface JobPostCredential {
+  id: number;
+  job_post_id: JobPost["id"];
+  credential_id: Credential["id"];
+}
 
-export interface JobPostCountry {}
+export interface JobPostEducation {
+  id: number;
+  job_post_id: JobPost["id"];
+  education_id: Education["id"];
+}
 
-export interface JobPostCredential {}
+export interface JobPostExperience {
+  id: number;
+  job_post_id: JobPost["id"];
+  experience_id: Experience["id"];
+}
 
-export interface JobPostEducation {}
+export interface JobPostSeniority {
+  id: number;
+  job_post_id: JobPost["id"];
+  seniority_id: Seniority["id"];
+}
 
-export interface JobPostExperience {}
-
-export interface JobPostSeniority {}
-
-export interface JobPostSkill {}
+export interface JobPostSkill {
+  id: number;
+  job_post_id: JobPost["id"];
+  skill_id: Skill["id"];
+}

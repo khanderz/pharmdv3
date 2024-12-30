@@ -11,9 +11,7 @@ class CompaniesController < ApplicationController
       :ats_type,
       :funding_type,
       :company_type,
-      :company_cities,
-      :company_states,
-      :company_countries,
+      :company_locations,
       :company_specializations,
       :company_domains,
       :healthcare_domains
@@ -28,9 +26,7 @@ class CompaniesController < ApplicationController
         ats_type: { only: [:ats_type_name] },
         funding_type: { only: [:name] },
         company_type: { only: [:name] },
-        company_cities: { include: { city: { only: [:city_name] } } },
-        company_states: { include: { state: { only: [:state_name] } } },
-        company_countries: { include: { country: { only: [:country_name] } } },
+        company_locations: { include: { location: { only: [:name] } } },
         company_specializations: { include: { company_specialty: { only: %i[key value] } } },
         company_domains: { include: { healthcare_domain: { only: %i[key value] } } },
         healthcare_domains: { only: %i[key value] }
@@ -47,9 +43,7 @@ class CompaniesController < ApplicationController
       :ats_type,
       :funding_type,
       :company_type,
-      :company_cities,
-      :company_states,
-      :company_countries,
+      :company_locations,
       :company_specializations,
       :company_domains,
       :healthcare_domains
@@ -63,9 +57,7 @@ class CompaniesController < ApplicationController
         ats_type: { only: [:ats_type_name] },
         funding_type: { only: [:name] },
         company_type: { only: [:name] },
-        company_cities: { include: { city: { only: [:city_name] } } },
-        company_states: { include: { state: { only: [:state_name] } } },
-        company_countries: { include: { country: { only: [:country_name] } } },
+        company_locations: { include: { location: { only: [:name] } } },
         company_specializations: { include: { company_specialty: { only: %i[key value] } } },
         company_domains: { include: { healthcare_domain: { only: %i[key value] } } },
         healthcare_domains: { only: %i[key value] }
@@ -90,47 +82,16 @@ def set_company
 end
 
 def apply_filters(companies)
-  if params[:domain_id].present?
-    companies = companies.joins(:healthcare_domains).where(healthcare_domains: { id: params[:domain_id] })
-  end
-  if params[:company_size_id].present?
-    companies = companies.where(company_size_id: params[:company_size_id])
-  end
-  if params[:operating_status].present?
-    companies = companies.where(operating_status: params[:operating_status])
-  end
-  if params[:funding_type_id].present?
-    companies = companies.where(funding_type_id: params[:funding_type_id])
-  end
+  companies = companies.joins(:healthcare_domains).where(healthcare_domains: { id: params[:domain_id] }) if params[:domain_id].present?
+  companies = companies.where(company_size_id: params[:company_size_id]) if params[:company_size_id].present?
+  companies = companies.where(operating_status: params[:operating_status]) if params[:operating_status].present?
+  companies = companies.where(funding_type_id: params[:funding_type_id]) if params[:funding_type_id].present?
   companies = companies.where(year_founded: params[:year_founded]) if params[:year_founded].present?
-  if params[:company_description].present?
-    companies = companies.where('company_description ILIKE ?',
-                                "%#{params[:company_description]}%")
-  end
-  if params[:company_tagline].present?
-    companies = companies.where('company_tagline ILIKE ?',
-                                "%#{params[:company_tagline]}%")
-  end
-  if params[:is_completely_remote].present?
-    companies = companies.where(is_completely_remote: params[:is_completely_remote])
-  end
-
-  # Filter by associated models
-  if params[:city_id].present?
-    companies = companies.joins(:company_cities).where(company_cities: { city_id: params[:city_id] })
-  end
-
-  if params[:country_id].present?
-    companies = companies.joins(:company_countries).where(company_countries: { country_id: params[:country_id] })
-  end
-
-  if params[:state_id].present?
-    companies = companies.joins(:company_states).where(company_states: { state_id: params[:state_id] })
-  end
-
-  if params[:specialization_id].present?
-    companies = companies.joins(:company_specializations).where(company_specializations: { company_specialty_id: params[:specialization_id] })
-  end
+  companies = companies.where('company_description ILIKE ?', "%#{params[:company_description]}%") if params[:company_description].present?
+  companies = companies.where('company_tagline ILIKE ?', "%#{params[:company_tagline]}%") if params[:company_tagline].present?
+  companies = companies.where(is_completely_remote: params[:is_completely_remote]) if params[:is_completely_remote].present?
+  companies = companies.joins(:company_locations).where(company_locations: { location_id: params[:location_id] }) if params[:location_id].present?
+  companies = companies.joins(:company_specializations).where(company_specializations: { company_specialty_id: params[:specialization_id] }) if params[:specialization_id].present?
 
   companies
 end
@@ -146,11 +107,7 @@ def company_params
     :linkedin_url,
     :company_url,
     :company_type_id,
-    :is_public,
     :year_founded,
-    :city_id,
-    :state_id,
-    :country_id,
     :acquired_by,
     :company_description,
     :ats_id,
@@ -162,8 +119,6 @@ def company_params
     :resolved,
     company_specialization_ids: [],
     healthcare_domain_ids: [],
-    company_city_ids: [],
-    company_state_ids: [],
-    company_country_ids: []
+    location_ids: []
   )
 end

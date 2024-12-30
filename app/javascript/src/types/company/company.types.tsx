@@ -5,9 +5,7 @@ import { CompanySpecialty } from "./company_specialty.types";
 import { FundingType } from "./funding_type.types";
 import { HealthcareDomain } from "./healthcare_domain.types";
 import { CompanyType } from "./company_type.types";
-import { City } from "../cities.types";
-import { Country } from "../countries.types";
-import { State } from "../states.types";
+import { Location } from "../locations.types";
 
 export interface Company extends Adjudicated {
   id: number;
@@ -48,26 +46,10 @@ export interface CompanyDomain {
   healthcare_domain_id: HealthcareDomain["id"];
 }
 
-export interface CompanyCity {
+export interface CompanyLocation {
   id: number;
   company_id: Company["id"];
-  city_id: City["id"];
-  created_at: Date;
-  updated_at: Date;
-}
-
-export interface CompanyCountry {
-  id: number;
-  company_id: Company["id"];
-  country_id: Country["id"];
-  created_at: Date;
-  updated_at: Date;
-}
-
-export interface CompanyState {
-  id: number;
-  company_id: Company["id"];
-  state_id: State["id"];
+  location_id: Location["id"];
   created_at: Date;
   updated_at: Date;
 }

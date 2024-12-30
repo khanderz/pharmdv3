@@ -1,9 +1,8 @@
 import { useApiKey } from "./get_api_var";
 import { useAtsTypes } from "./get_ats_types";
-import { useCities } from "./get_cities";
 import { useCompanies } from "./get_companies";
 import { useCompanySizes } from "./get_company_sizes";
-import { useCountries } from "./get_countries";
+import { useLocations } from "./get_locations";
 import { useDepartments } from "./get_departments";
 import { useFundingTypes } from "./get_funding_types";
 import { useHealthcareDomains } from "./get_healthcare_domains";
@@ -12,7 +11,6 @@ import { useJobPosts } from "./get_job_posts";
 import { useJobRoles } from "./get_job_roles";
 import { useJobSettings } from "./get_job_settings";
 import { useCompanySpecialties } from "./get_specialties";
-import { useStates } from "./get_states";
 import { useTeams } from "./get_teams";
 import { useBenefits } from "./get_benefits";
 import { useCredentials } from "./get_credentials";
@@ -29,9 +27,7 @@ export {
   useDepartments,
   useTeams,
   useCompanySpecialties,
-  useCities,
-  useStates,
-  useCountries,
+  useLocations,
   useJobRoles,
   useJobCommitments,
   useJobSettings,
