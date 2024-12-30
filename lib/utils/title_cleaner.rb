@@ -56,7 +56,8 @@ module Utils
 
       cleaned_title = cleaned_title.strip.squeeze(' ') if cleaned_title
 
-      modified_title = original_title.gsub(seniority_pattern, '').gsub(/,/, ' of').strip.squeeze(' ')
+      modified_title = original_title.gsub(seniority_pattern, '').gsub(/,/,
+                                                                       ' of').strip.squeeze(' ')
 
       {
         cleaned_title: cleaned_title,

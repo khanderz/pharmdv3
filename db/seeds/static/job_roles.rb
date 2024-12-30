@@ -109,13 +109,13 @@ job_roles = [
 ]
 
 science_roles = [
-  { role_name: 'Research Scientist', aliases: ['Research Associate of LNP Analytical Research and Development','Researcher', 'Research associate', 'Research Analyst', 'Research Associate', 'AI Research Scientist', 'Scientist Machine Learning'],
+  { role_name: 'Research Scientist', aliases: ['Research Associate of LNP Analytical Research and Development', 'Researcher', 'Research associate', 'Research Analyst', 'Research Associate', 'AI Research Scientist', 'Scientist Machine Learning'],
     department_names: ['Science'], team_names: ['Science'] },
 
   { role_name: 'Science Manager', aliases: ['Manager Molecular Pathology', 'Science Lead', 'Science Director', 'Science Program Manager', 'Science Program Director'],
     department_names: ['Science'], team_names: ['Science'] },
 
-    { role_name: 'Scientist', aliases: ['Senior Scientist'],
+  { role_name: 'Scientist', aliases: ['Senior Scientist'],
     department_names: ['Science'], team_names: ['Science'] },
 ]
 technical_roles = [
