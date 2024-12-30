@@ -87,17 +87,17 @@ class Location < ApplicationRecord
         '(LOWER(name) = :name OR LOWER(code) = :name OR LOWER(:name) = ANY(ARRAY(SELECT LOWER(unnest(aliases))))) AND LOWER(location_type) = :type',
         name: normalized_name, type: location_type.downcase
       ).where(parent_condition)
-    
+
       puts "Generated query: #{query.to_sql}"
       query.first
-    end    
+    end
 
     def create_new_location(location_param, location_type, parent_id, company, job_post)
       error_message = "#{location_type} '#{location_param}' not found for job #{job_post} or company: #{company}"
       adj_type = job_post ? 'Location' : 'Company'
-    
+
       puts "#{RED}#{error_message}.#{RESET}"
-    
+
       begin
         new_location = Location.create!(
           name: location_param,
@@ -108,7 +108,7 @@ class Location < ApplicationRecord
           error_details: error_message,
           resolved: false
         )
-    
+
         if adj_type == 'Company' && new_location.persisted?
           Adjudication.log_error(
             adjudicatable_type: adj_type,
@@ -116,7 +116,7 @@ class Location < ApplicationRecord
             error_details: error_message
           )
         end
-    
+
         new_location
       rescue ActiveRecord::RecordNotUnique
         puts "#{ORANGE}Duplicate detected. Fetching existing record...#{RESET}"
@@ -126,6 +126,5 @@ class Location < ApplicationRecord
         nil
       end
     end
-    
   end
 end

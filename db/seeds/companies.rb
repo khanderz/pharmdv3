@@ -16,7 +16,9 @@ def normalize_location_data(data)
   when String
     data.gsub(/[\[\]']/, '').split(',').map(&:strip).map(&:downcase).uniq
   when Array
-    data.flatten.flat_map { |entry| entry.to_s.gsub(/[\[\]']/, '').split(',') }.map(&:strip).map(&:downcase).uniq
+    data.flatten.flat_map do |entry|
+      entry.to_s.gsub(/[\[\]']/, '').split(',')
+    end.map(&:strip).map(&:downcase).uniq
   else
     []
   end
@@ -26,7 +28,7 @@ def resolve_location_hierarchy(location_names, location_type, company_name, pare
   location_names.map do |name|
     normalized_name = name.strip.downcase
     location = Location.find_by('LOWER(name) = ?', normalized_name) ||
-               Location.where("aliases @> ARRAY[?]::varchar[]", [normalized_name]).first
+               Location.where('aliases @> ARRAY[?]::varchar[]', [normalized_name]).first
 
     if location
       puts "#{GREEN}Found match for #{location_type}: #{name}#{RESET}"
@@ -39,12 +41,11 @@ def resolve_location_hierarchy(location_names, location_type, company_name, pare
           location_type,
           parent
         )
-      end      
+      end
     end
     location
   end.compact
 end
-
 
 def resolve_locations(row_data, company_name)
   cities = normalize_location_data(row_data['company_cities'])
@@ -91,7 +92,7 @@ def resolve_locations(row_data, company_name)
                 city.downcase, city.downcase, state.id
               ).exists?
     end
-  
+
     if parent_state
       puts "#{GREEN}Parent state found for city: #{city}#{RESET}"
       resolve_location_hierarchy([city], 'City', company_name, parent_state)
@@ -100,7 +101,7 @@ def resolve_locations(row_data, company_name)
       []
     end
   end.compact
-  
+
   if resolved_cities.any?
     puts "#{GREEN}Resolved cities: #{resolved_cities.map(&:name).join(', ')}#{RESET}"
   else
@@ -108,7 +109,7 @@ def resolve_locations(row_data, company_name)
   end
 
   (resolved_countries + resolved_states + resolved_cities).compact
-rescue => e
+rescue StandardError => e
   puts "#{RED}Error resolving locations: #{e.message}#{RESET}"
   []
 end
