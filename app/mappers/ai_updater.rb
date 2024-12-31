@@ -149,7 +149,7 @@ class AiUpdater
 
             if job_post_data[:team_id].nil? && job_team
               job_post_data[:team_id] =
-                Team.find_team(job_team, 'JobPost', job_post_data[:job_url])&.id
+                Team.find_team(job_team, job_post_data[:job_url])&.id
               updated = true
             end
 

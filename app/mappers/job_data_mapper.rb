@@ -29,7 +29,7 @@ class JobDataMapper
   # @return [Hash] A hash containing the mapped job post data.
   def self.map_basic_data(job, company, location_info, source = 'greenhouse')
     team_var = if source == 'lever'
-                 Team.find_team(job['categories']&.dig('team'), 'JobPost',
+                 Team.find_team(job['categories']&.dig('team'),
                                 job['hosted_url'])&.id
                end
 
