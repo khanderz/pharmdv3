@@ -43,9 +43,15 @@ class AiUpdater
     Array(name_or_locations).each_with_object([]) do |name, ids|
       next if name.blank?
 
-      location = Location.find_or_create_by_name_and_type(name, company, location_type, parent,
+      parent_id = parent.is_a?(Location) ? parent.id : nil
+      location = Location.find_or_create_by_name_and_type(name, company, location_type, parent_id,
                                                           job_post_url)
-      ids << location.id if location
+
+      if location
+        ids << location.id
+      else
+        puts "#{RED}Failed to process location: #{name}, type: #{location_type}, parent: #{parent}.#{RESET}"
+      end
     end
   end
 
@@ -90,15 +96,19 @@ class AiUpdater
       location_info.each do |location|
         country_ids = process_location(location[:country_name], 'Country', company, nil,
                                        job[:job_url])
+        next if country_ids.blank?
+
         state_ids = if location[:state_name]
                       process_location(location[:state_name], 'State', company,
-                                       Location.find(country_ids.first), job[:job_url])
+                                       Location.find_by(id: country_ids.first), job[:job_url])
                     else
                       []
                     end
+        next if state_ids.blank?
+
         city_ids = if location[:city_name]
-                     process_location(location[:city_name], 'City', company, Location.find(state_ids.first),
-                                      job[:job_url])
+                     process_location(location[:city_name], 'City', company,
+                                      Location.find_by(id: state_ids.first), job[:job_url])
                    else
                      []
                    end

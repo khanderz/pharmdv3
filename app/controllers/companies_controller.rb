@@ -82,16 +82,36 @@ def set_company
 end
 
 def apply_filters(companies)
-  companies = companies.joins(:healthcare_domains).where(healthcare_domains: { id: params[:domain_id] }) if params[:domain_id].present?
-  companies = companies.where(company_size_id: params[:company_size_id]) if params[:company_size_id].present?
-  companies = companies.where(operating_status: params[:operating_status]) if params[:operating_status].present?
-  companies = companies.where(funding_type_id: params[:funding_type_id]) if params[:funding_type_id].present?
+  if params[:domain_id].present?
+    companies = companies.joins(:healthcare_domains).where(healthcare_domains: { id: params[:domain_id] })
+  end
+  if params[:company_size_id].present?
+    companies = companies.where(company_size_id: params[:company_size_id])
+  end
+  if params[:operating_status].present?
+    companies = companies.where(operating_status: params[:operating_status])
+  end
+  if params[:funding_type_id].present?
+    companies = companies.where(funding_type_id: params[:funding_type_id])
+  end
   companies = companies.where(year_founded: params[:year_founded]) if params[:year_founded].present?
-  companies = companies.where('company_description ILIKE ?', "%#{params[:company_description]}%") if params[:company_description].present?
-  companies = companies.where('company_tagline ILIKE ?', "%#{params[:company_tagline]}%") if params[:company_tagline].present?
-  companies = companies.where(is_completely_remote: params[:is_completely_remote]) if params[:is_completely_remote].present?
-  companies = companies.joins(:company_locations).where(company_locations: { location_id: params[:location_id] }) if params[:location_id].present?
-  companies = companies.joins(:company_specializations).where(company_specializations: { company_specialty_id: params[:specialization_id] }) if params[:specialization_id].present?
+  if params[:company_description].present?
+    companies = companies.where('company_description ILIKE ?',
+                                "%#{params[:company_description]}%")
+  end
+  if params[:company_tagline].present?
+    companies = companies.where('company_tagline ILIKE ?',
+                                "%#{params[:company_tagline]}%")
+  end
+  if params[:is_completely_remote].present?
+    companies = companies.where(is_completely_remote: params[:is_completely_remote])
+  end
+  if params[:location_id].present?
+    companies = companies.joins(:company_locations).where(company_locations: { location_id: params[:location_id] })
+  end
+  if params[:specialization_id].present?
+    companies = companies.joins(:company_specializations).where(company_specializations: { company_specialty_id: params[:specialization_id] })
+  end
 
   companies
 end
