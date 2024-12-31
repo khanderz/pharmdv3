@@ -31,7 +31,8 @@ teams = [
   { team_name: 'Internship',
     aliases: ['Interns', 'Internship Team', 'Internship Program', 'fellowship', 'graduate'] },
 
-  { team_name: 'Legal', aliases: ['Corporate Law', 'Compliance', 'Legal Affairs'] },
+  { team_name: 'Legal',
+    aliases: ['Corporate Law', 'Compliance', 'Legal Affairs', 'regulatory affairs'] },
 
   { team_name: 'Marketing', aliases: ['Digital Marketing', 'Branding Team'] },
 
@@ -44,10 +45,12 @@ teams = [
 
   { team_name: 'Quality Assurance', aliases: ['QA Team', 'Quality Control', 'QA'] },
 
+  { team_name: 'Safety', aliases: ['Environmental Health and Safety'] },
+
   { team_name: 'Sales',
     aliases: ['Business Development', 'Sales Team', 'reimbursement operations'] },
 
-  { team_name: 'Science', aliases: ['Research', 'R&D', 'Scientific Research'] },
+  { team_name: 'Science', aliases: ['Research', 'R&D', 'Scientific Research', 'medical writing'] },
 
   { team_name: 'Software Engineering',
     aliases: ['Development Team', 'Engineering Team', 'Engineering'] },

@@ -67,6 +67,9 @@ departments = [
   { dept_name: 'Quality',
     aliases: ['Quality Assurance', 'Quality Control', 'QA', 'quality affairs'] },
 
+  { dept_name: 'Safety',
+    aliases: ['Environmental Health and Safety'] },
+
   { dept_name: 'Sales',
     aliases: ['Sales AMER', 'Reimbursement', 'diagnostics sales', 'Commercial Field', 'Commercial Effectiveness & Training', 'Business Development', 'Account Management', 'Field sales', 'Sales Operations',
               'Sales Training & Development', 'commercial strategy', 'sales ops', 'field sales managers', 'Commercial Insights, Analytics, & Operations', 'customer success', 'account acquisitions',
@@ -80,7 +83,7 @@ departments = [
     aliases: ['Scientific Solutions Consulting', 'MSAT', 'Biometrics', 'Templates and Testing', 'Drug Discovery', 'research/discovery', 'laboratory operations', 'Research & Science', 'pharmaceutical development', 'CLIA ops', 'Bioinformatics and PE', 'bioinformatics', 'proteomics', 'Research', 'R&D',
               'Scientific Research', 'bioanalysis', 'clinical r&d', 'analytical research & development', 'lnp platforms', 'Cell Process Sciences',
               'Biostatistics & Data Management', 'Protein Sciences', 'cell biology', 'translational r&d', 'medicinal chemistry', 'protein testing team',
-              'res & dev', 'gondolabio'] },
+              'res & dev', 'gondolabio', 'medical writing'] },
 ]
 
 seeded_count = 0

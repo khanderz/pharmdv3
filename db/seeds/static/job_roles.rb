@@ -73,14 +73,14 @@ job_roles = [
     aliases: ['New Verticals Lead', 'New Verticals Manager', 'New Verticals Director', 'New Verticals Specialist'], department_names: ['Operations', 'Product Management', 'Strategy & Operations'], team_names: ['Product', 'Product/S&O'] },
 
   { role_name: 'Operations Specialist',
-    aliases: ['Knowledge Management Associate', 'Clinical Business Operations Manager', 'Operations Associate', 'Operations Analyst', 'Operations Coordinator', 'Operations Writer', 'Knowledge operations writer', 'product operations associate', 'Strategy & Operations', 'revenue operations'], department_names: ['Operations', 'People Operations'], team_names: ['Operations'] },
+    aliases: ['Knowledge Management Associate', 'Clinical Business Operations Manager', 'Operations Associate', 'Operations Analyst', 'Operations Coordinator', 'Operations Writer', 'Knowledge operations writer', 'product operations associate', 'Strategy & Operations', 'revenue operations'], department_names: ['Operations', 'Human Resources'], team_names: ['Operations'] },
 
   {
     role_name: 'People Business Partner',
     aliases: ['HR Business Partner', 'Strategic People Partner', 'Workforce Partner',
               'Human Resources Partner'],
     department_names: ['Human Resources', 'Operations'],
-    team_names: ['People Operations', 'HR Strategy']
+    team_names: ['Human Resources', 'HR Strategy']
   },
 
   { role_name: 'Product Analyst', aliases: ['product operations', 'Product Data Analyst', 'Product Insights Analyst', 'Product Insights Specialist', 'Product Insights Manager', 'Product Insights Lead'],
