@@ -44,7 +44,8 @@ teams = [
 
   { team_name: 'Quality Assurance', aliases: ['QA Team', 'Quality Control', 'QA'] },
 
-  { team_name: 'Sales', aliases: ['Business Development', 'Sales Team'] },
+  { team_name: 'Sales',
+    aliases: ['Business Development', 'Sales Team', 'reimbursement operations'] },
 
   { team_name: 'Science', aliases: ['Research', 'R&D', 'Scientific Research'] },
 

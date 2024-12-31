@@ -10,11 +10,17 @@ class Department < ApplicationRecord
   validates :dept_name, presence: true, uniqueness: true
 
   def self.clean_department_name(department_name)
-    cleaned_name = department_name.gsub(/^\d+\s*-\s*/, '').strip
+    puts "Cleaning department name: #{department_name}"
+    # cleaned_name = department_name.gsub(/^\d+\s*-\s*/, '').strip
+    cleaned_name = department_name.sub(/^.*?-/, '').strip
+
+    puts "Cleaned department name: #{cleaned_name}"
     parts = cleaned_name.split('-').map(&:strip)
     main_name = parts.first
+    puts "Main name: #{main_name}"
     if parts.size > 1
       candidate_name = parts.join(' ')
+      puts "Candidate name if parts > 1: #{candidate_name}"
       return candidate_name if exists?(dept_name: candidate_name)
     end
     main_name

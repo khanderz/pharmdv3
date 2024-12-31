@@ -7,73 +7,80 @@ departments = [
 
   { dept_name: 'Business Development',
     aliases: ['Sales', 'Business Development and Sales', 'Business Development & Sales',
-              'Finance & Business Operations', 'strategic product planning'] },
+              'Finance & Business Operations', 'strategic product planning', 'Business Development & Strategy'] },
 
   { dept_name: 'Clinical Team',
-    aliases: ['clinical development', 'drug safety', 'health systems', 'Medical Team', 'Care Team', 'Healthcare Team', 'Behavioral Health', 'service provider', 'patient services',
-              'Clinical Strategy and Services', 'Pharmacy', 'medical affairs', 'Clinical Operations', 'Clinical Research & Operations'] },
+    aliases: ['Professional Education', 'clinical development', 'drug safety', 'health systems', 'Medical Team', 'Care Team', 'Healthcare Team', 'Behavioral Health', 'service provider', 'patient services',
+              'Clinical Strategy and Services', 'Pharmacy', 'medical affairs', 'Clinical Operations', 'Clinical Research & Operations', 'Pharmacovigilance',
+              'blink health pharmacy', 'medical care', 'behavioral care', 'patient care', 'veterinarian full time', 'veterinarian relief', 'veterinarian technician full time'] },
 
   { dept_name: 'Customer Support',
     aliases: ['Customer Service', 'Client Support', 'Help Desk', 'Customer Operations',
               'commercial', 'client services'] },
 
-  { dept_name: 'Data Science', aliases: ['Data Analytics', 'Machine Learning', 'AI'] },
+  { dept_name: 'Data Science',
+    aliases: ['Data Analytics', 'Machine Learning', 'AI', 'Biostatistics & Data Management'] },
 
   { dept_name: 'Design', aliases: ['UI/UX Design', 'Graphic Design', 'Product & Design'] },
 
   { dept_name: 'Engineering',
     aliases: ['process engineering', 'core dev', 'Development', 'Software Engineering', 'Tech',
-              'Information Technology', 'DevOps'] },
+              'Information Technology', 'DevOps', 'hardware', 'hardware & operations', 'fab tools', 'downstream processing'] },
 
   { dept_name: 'Executive',
     aliases: ['Leadership', 'Management', 'C-Suite', 'Board of Directors', 'headquarters',
-              'executive officer'] },
+              'executive officer', 'enterprise'] },
 
   { dept_name: 'Finance',
-    aliases: ['Accounting', 'Financial Planning', 'FP&A', 'accounting/finance'] },
+    aliases: ['Accounting', 'Financial Planning', 'FP&A', 'accounting/finance',
+              'finance & accounting', 'finance and CEO'] },
 
   { dept_name: 'Human Resources',
     aliases: ['People Team', 'HR', 'Talent Acquisition', 'People Operations',
-              'Talent & Organization'] },
+              'Talent & Organization', 'People and Culture', 'human res'] },
 
   { dept_name: 'Internship',
     aliases: ['Interns', 'Internship Team', 'Internship Program', 'fellowship', 'graduate'] },
 
   { dept_name: 'IT',
     aliases: ['Tech Ops', 'Information Technology', 'Tech Support', 'Ops/Member Care', 'it operations',
-              'technology', 'information systems'] },
+              'technology', 'information systems', 'Info Tech', 'integration engr'] },
 
   { dept_name: 'Legal',
     aliases: ['Corporate Law', 'Compliance', 'Legal Affairs', 'Regulatory', 'regulatory affairs'] },
 
   { dept_name: 'Marketing',
-    aliases: ['Diagnostics Marketing', 'Digital Marketing', 'Content Marketing', 'Branding', 'Brand',
+    aliases: ['Sales Development', 'Market Access & Strategic Accounts', 'Diagnostics Marketing', 'Digital Marketing', 'Content Marketing', 'Branding', 'Brand',
               'Commercial Operations', 'Market Access'] },
 
   { dept_name: 'Operations',
     aliases: ['Strategy & Operations', 'Business Operations', 'Growth & Business Excellence', 'worker operations', 'People Operations', 'Institute of Computation',
-              'Process Development', 'process analytics'] },
+              'Process Development', 'process analytics', 'portfolio management'] },
 
   { dept_name: 'Product Management',
     aliases: ['Product Development', 'Product', 'PM, CA & MA',
               'Product Management, Clinical Affairs, Market Access'] },
 
   { dept_name: 'Project Management',
-    aliases: ['Program Management', 'Project Delivery'] },
+    aliases: ['Program Management', 'Project Delivery', 'enterprise project management office'] },
 
-  { dept_name: 'Quality', aliases: ['Quality Assurance', 'Quality Control', 'QA'] },
+  { dept_name: 'Quality',
+    aliases: ['Quality Assurance', 'Quality Control', 'QA', 'quality affairs'] },
 
   { dept_name: 'Sales',
-    aliases: ['diagnostics sales', 'Commercial Field', 'Commercial Effectiveness & Training', 'Business Development', 'Account Management', 'Field sales', 'Sales Operations',
-              'Sales Training & Development', 'commercial strategy', 'sales ops', 'field sales managers', 'Commercial Insights, Analytics, & Operations'] },
+    aliases: ['Sales AMER', 'Reimbursement', 'diagnostics sales', 'Commercial Field', 'Commercial Effectiveness & Training', 'Business Development', 'Account Management', 'Field sales', 'Sales Operations',
+              'Sales Training & Development', 'commercial strategy', 'sales ops', 'field sales managers', 'Commercial Insights, Analytics, & Operations', 'customer success', 'account acquisitions',
+              'partnerships', 'international sales', 'commercial'] },
 
   { dept_name: 'Supply Chain',
     aliases: ['Logistics', 'Procurement', 'Supply Chain Management', 'MFG & Supply Chain',
-              'Fulfillment'] },
+              'Fulfillment', 'Manufacturing', 'Fab Tech', 'facility'] },
 
   { dept_name: 'Science',
-    aliases: ['Biometrics', 'Templates and Testing', 'Drug Discovery', 'research/discovery', 'laboratory operations', 'Research & Science', 'pharmaceutical development', 'CLIA ops', 'Bioinformatics and PE', 'bioinformatics', 'proteomics', 'Research', 'R&D',
-              'Scientific Research', 'bioanalysis', 'clinical r&d', 'analytical research & development', 'lnp platforms'] },
+    aliases: ['Scientific Solutions Consulting', 'MSAT', 'Biometrics', 'Templates and Testing', 'Drug Discovery', 'research/discovery', 'laboratory operations', 'Research & Science', 'pharmaceutical development', 'CLIA ops', 'Bioinformatics and PE', 'bioinformatics', 'proteomics', 'Research', 'R&D',
+              'Scientific Research', 'bioanalysis', 'clinical r&d', 'analytical research & development', 'lnp platforms', 'Cell Process Sciences',
+              'Biostatistics & Data Management', 'Protein Sciences', 'cell biology', 'translational r&d', 'medicinal chemistry', 'protein testing team',
+              'res & dev', 'gondolabio'] },
 ]
 
 seeded_count = 0
