@@ -33,7 +33,7 @@ class JobDataMapper
                                 job['hosted_url'])&.id
                end
 
-    location_type = location_info.is_a?(Array) ? location_info.first[:location_type] : 'Unknown'
+    location_type = location_info.find { |loc| loc[:location_type].present? }&.dig(:location_type)
     department_name = job['departments']&.first&.dig('name') || job['categories']&.dig('department')
     department_id = if department_name
                       Department.find_department(department_name,

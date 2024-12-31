@@ -1,49 +1,58 @@
 # frozen_string_literal: true
 
+continents = [
+  { name: 'Africa', code: 'AF', location_type: 'Continent', parent_id: nil, aliases: [] },
+  { name: 'Asia', code: 'AS', location_type: 'Continent', parent_id: nil, aliases: [] },
+  { name: 'Europe', code: 'EU', location_type: 'Continent', parent_id: nil, aliases: [] },
+  { name: 'North America', code: 'NA', location_type: 'Continent', parent_id: nil, aliases: [] },
+  { name: 'Oceania', code: 'OC', location_type: 'Continent', parent_id: nil, aliases: [] },
+  { name: 'South America', code: 'SA', location_type: 'Continent', parent_id: nil, aliases: [] }
+]
+
 countries = [
-  { name: 'Australia', code: 'AU', location_type: 'Country', parent_id: nil, aliases: [] },
-  { name: 'Bangladesh', code: 'BD', location_type: 'Country', parent_id: nil, aliases: [] },
-  { name: 'Brazil', code: 'BR', location_type: 'Country', parent_id: nil, aliases: [] },
-  { name: 'Canada', code: 'CA', location_type: 'Country', parent_id: nil,
+  { name: 'Australia', code: 'AU', location_type: 'Country', parent_id: 'OC', aliases: [] },
+  { name: 'Bangladesh', code: 'BD', location_type: 'Country', parent_id: 'AS', aliases: [] },
+  { name: 'Brazil', code: 'BR', location_type: 'Country', parent_id: 'SA', aliases: [] },
+  { name: 'Canada', code: 'CA', location_type: 'Country', parent_id: 'NA',
     aliases: ['Great White North'] },
-  { name: 'China', code: 'CN', location_type: 'Country', parent_id: nil, aliases: [] },
-  { name: 'Egypt', code: 'EG', location_type: 'Country', parent_id: nil, aliases: [] },
-  { name: 'Estonia', code: 'EE', location_type: 'Country', parent_id: nil, aliases: [] },
-  { name: 'France', code: 'FR', location_type: 'Country', parent_id: nil,
+  { name: 'China', code: 'CN', location_type: 'Country', parent_id: 'AS', aliases: [] },
+  { name: 'Egypt', code: 'EG', location_type: 'Country', parent_id: 'AF', aliases: [] },
+  { name: 'Estonia', code: 'EE', location_type: 'Country', parent_id: 'EU', aliases: [] },
+  { name: 'France', code: 'FR', location_type: 'Country', parent_id: 'EU',
     aliases: ['République Française'] },
-  { name: 'Germany', code: 'DE', location_type: 'Country', parent_id: nil,
+  { name: 'Germany', code: 'DE', location_type: 'Country', parent_id: 'EU',
     aliases: ['Deutschland'] },
-  { name: 'Hong Kong', code: 'HK', location_type: 'Country', parent_id: nil, aliases: [] },
-  { name: 'India', code: 'IN', location_type: 'Country', parent_id: nil, aliases: ['Bharat'] },
-  { name: 'Indonesia', code: 'ID', location_type: 'Country', parent_id: nil, aliases: [] },
-  { name: 'Ireland', code: 'IE', location_type: 'Country', parent_id: nil, aliases: [] },
-  { name: 'Israel', code: 'IL', location_type: 'Country', parent_id: nil, aliases: [] },
-  { name: 'Italy', code: 'IT', location_type: 'Country', parent_id: nil, aliases: [] },
-  { name: 'Japan', code: 'JP', location_type: 'Country', parent_id: nil, aliases: [] },
-  { name: 'Malaysia', code: 'MY', location_type: 'Country', parent_id: nil, aliases: [] },
-  { name: 'Mexico', code: 'MX', location_type: 'Country', parent_id: nil, aliases: [] },
-  { name: 'Netherlands', code: 'NL', location_type: 'Country', parent_id: nil,
+  { name: 'Hong Kong', code: 'HK', location_type: 'Country', parent_id: 'AS', aliases: [] },
+  { name: 'India', code: 'IN', location_type: 'Country', parent_id: 'AS', aliases: ['Bharat'] },
+  { name: 'Indonesia', code: 'ID', location_type: 'Country', parent_id: 'AS', aliases: [] },
+  { name: 'Ireland', code: 'IE', location_type: 'Country', parent_id: 'EU', aliases: [] },
+  { name: 'Israel', code: 'IL', location_type: 'Country', parent_id: 'AS', aliases: [] },
+  { name: 'Italy', code: 'IT', location_type: 'Country', parent_id: 'EU', aliases: [] },
+  { name: 'Japan', code: 'JP', location_type: 'Country', parent_id: 'AS', aliases: [] },
+  { name: 'Malaysia', code: 'MY', location_type: 'Country', parent_id: 'AS', aliases: [] },
+  { name: 'Mexico', code: 'MX', location_type: 'Country', parent_id: 'NA', aliases: [] },
+  { name: 'Netherlands', code: 'NL', location_type: 'Country', parent_id: 'EU',
     aliases: ['the netherlands'] },
-  { name: 'Nigeria', code: 'NG', location_type: 'Country', parent_id: nil, aliases: [] },
-  { name: 'Philippines', code: 'PH', location_type: 'Country', parent_id: nil, aliases: [] },
-  { name: 'Portugal', code: 'PT', location_type: 'Country', parent_id: nil, aliases: [] },
-  { name: 'Russia', code: 'RU', location_type: 'Country', parent_id: nil, aliases: [] },
-  { name: 'Saudi Arabia', code: 'SA', location_type: 'Country', parent_id: nil, aliases: [] },
-  { name: 'Singapore', code: 'SG', location_type: 'Country', parent_id: nil, aliases: [] },
-  { name: 'South Africa', code: 'ZA', location_type: 'Country', parent_id: nil, aliases: [] },
-  { name: 'South Korea', code: 'KR', location_type: 'Country', parent_id: nil, aliases: [] },
-  { name: 'Spain', code: 'ES', location_type: 'Country', parent_id: nil, aliases: ['España'] },
-  { name: 'Sweden', code: 'SE', location_type: 'Country', parent_id: nil, aliases: [] },
-  { name: 'Switzerland', code: 'CH', location_type: 'Country', parent_id: nil, aliases: [] },
-  { name: 'Thailand', code: 'TH', location_type: 'Country', parent_id: nil, aliases: [] },
-  { name: 'Turkey', code: 'TR', location_type: 'Country', parent_id: nil, aliases: [] },
-  { name: 'United Arab Emirates', code: 'AE', location_type: 'Country', parent_id: nil,
+  { name: 'Nigeria', code: 'NG', location_type: 'Country', parent_id: 'AF', aliases: [] },
+  { name: 'Philippines', code: 'PH', location_type: 'Country', parent_id: 'AS', aliases: [] },
+  { name: 'Portugal', code: 'PT', location_type: 'Country', parent_id: 'EU', aliases: [] },
+  { name: 'Russia', code: 'RU', location_type: 'Country', parent_id: 'EU', aliases: [] },
+  { name: 'Saudi Arabia', code: 'SA', location_type: 'Country', parent_id: 'AS', aliases: [] },
+  { name: 'Singapore', code: 'SG', location_type: 'Country', parent_id: 'AS', aliases: [] },
+  { name: 'South Africa', code: 'ZA', location_type: 'Country', parent_id: 'AF', aliases: [] },
+  { name: 'South Korea', code: 'KR', location_type: 'Country', parent_id: 'AS', aliases: [] },
+  { name: 'Spain', code: 'ES', location_type: 'Country', parent_id: 'EU', aliases: ['España'] },
+  { name: 'Sweden', code: 'SE', location_type: 'Country', parent_id: 'EU', aliases: [] },
+  { name: 'Switzerland', code: 'CH', location_type: 'Country', parent_id: 'EU', aliases: [] },
+  { name: 'Thailand', code: 'TH', location_type: 'Country', parent_id: 'AS', aliases: [] },
+  { name: 'Turkey', code: 'TR', location_type: 'Country', parent_id: 'AS', aliases: [] },
+  { name: 'United Arab Emirates', code: 'AE', location_type: 'Country', parent_id: 'AS',
     aliases: [] },
-  { name: 'United Kingdom', code: 'GB', location_type: 'Country', parent_id: nil,
+  { name: 'United Kingdom', code: 'GB', location_type: 'Country', parent_id: 'EU',
     aliases: ['UK', 'Britain', 'Great Britain'] },
-  { name: 'United States', code: 'US', location_type: 'Country', parent_id: nil,
+  { name: 'United States', code: 'US', location_type: 'Country', parent_id: 'NA',
     aliases: ['USA', 'America', 'United States of America', 'us'] },
-  { name: 'Vietnam', code: 'VN', location_type: 'Country', parent_id: nil, aliases: [] }
+  { name: 'Vietnam', code: 'VN', location_type: 'Country', parent_id: 'AS', aliases: [] }
 ]
 
 us_states = [
@@ -102,6 +111,12 @@ us_states = [
   { name: 'West Virginia', code: 'WV', location_type: 'State', parent_id: 'US', aliases: [] },
   { name: 'Wisconsin', code: 'WI', location_type: 'State', parent_id: 'US', aliases: [] },
   { name: 'Wyoming', code: 'WY', location_type: 'State', parent_id: 'US', aliases: [] },
+]
+
+european_territories = [
+  { name: 'Bermuda', code: 'BM', location_type: 'State', parent_id: 'GB', aliases: [] },
+  { name: 'Antigua and Barbuda', code: 'AG', location_type: 'State', parent_id: 'GB',
+    aliases: [] },
 ]
 
 canadian_provinces = [
@@ -249,6 +264,7 @@ international_cities = [
   { name: 'Toronto', code: nil, location_type: 'City', parent_id: 'ON', aliases: [] },
   { name: 'Vancouver', code: nil, location_type: 'City', parent_id: 'BC', aliases: [] }
 ]
+
 seeded_count = 0
 existing_count = 0
 updated_count = 0
@@ -260,12 +276,11 @@ def find_parent_id(parent_id, location_type)
   location&.id
 end
 
-[countries, us_states, canadian_provinces, australian_states,
- korean_provinces].each do |location_array|
+[continents, countries, us_states, european_territories, canadian_provinces, australian_states, korean_provinces].each do |location_array|
   location_array.each do |location_data|
     parent_id = if location_data[:parent_id]
                   find_parent_id(location_data[:parent_id],
-                                 location_data[:location_type] == 'State' ? 'Country' : 'State')
+                                 location_data[:location_type] == 'State' ? 'Country' : 'Continent')
                 end
     location = Location.find_or_initialize_by(code: location_data[:code],
                                               location_type: location_data[:location_type])
@@ -286,9 +301,8 @@ end
 
 [us_cities, international_cities].each do |city_array|
   city_array.each do |city_data|
-    parent_id = find_parent_id(city_data[:parent_id], 'State')
-
-    parent_id = find_parent_id(city_data[:parent_id], 'Country') if parent_id.nil?
+    parent_id = find_parent_id(city_data[:parent_id], 'State') ||
+                find_parent_id(city_data[:parent_id], 'Country')
 
     if parent_id
       location = Location.find_or_initialize_by(name: city_data[:name],

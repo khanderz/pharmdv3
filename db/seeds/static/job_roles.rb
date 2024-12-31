@@ -352,7 +352,7 @@ c_level = [
   { role_name: 'Director of Information Technology', aliases: ['IT Director', 'Information Technology Director', 'director of it', 'director of information technology'],
     department_names: ['Information Technology', 'IT'], team_names: ['IT'] },
 
-  { role_name: 'Director of Marketing', aliases: ['Marketing Director', 'director of market access', 'director of hcp marketing'],
+  { role_name: 'Director of Marketing', aliases: ['Marketing Director', 'director of market access', 'director hcp marketing'],
     department_names: ['Marketing'], team_names: ['Marketing'] },
 
   { role_name: 'Director of Operations', aliases: ['Operations Director'],

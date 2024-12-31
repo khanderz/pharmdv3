@@ -32,7 +32,7 @@ class GreenhouseDataMapper
     puts "Job URL ID: #{job_post_data[:job_url_id]}"
     puts "Department ID: #{job_post_data[:department_id]}"
     puts "Team ID: #{job_post_data[:team_id] || 'N/A'}"
-    puts "Job Setting: #{job_post_data[:job_setting]}"
+    puts "Job Setting: #{job_post_data[:job_setting]} || 'N/A'"
     puts "Job Salary Min: #{job_post_data[:job_salary_min] || 'N/A'}"
     puts "Job Salary Max: #{job_post_data[:job_salary_max] || 'N/A'}"
     puts "Job Salary Currency ID: #{job_post_data[:job_salary_currency_id] || 'N/A'}"
