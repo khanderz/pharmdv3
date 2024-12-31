@@ -9,7 +9,7 @@ departments = [
               'Finance & Business Operations', 'strategic product planning'] },
 
   { dept_name: 'Clinical Team',
-    aliases: ['drug safety','health systems','Medical Team', 'Care Team', 'Healthcare Team', 'Behavioral Health', 'service provider', 'patient services',
+    aliases: ['drug safety', 'health systems', 'Medical Team', 'Care Team', 'Healthcare Team', 'Behavioral Health', 'service provider', 'patient services',
               'Clinical Strategy and Services', 'Pharmacy', 'medical affairs', 'Clinical Operations', 'Clinical Research & Operations'] },
 
   { dept_name: 'Customer Support',
@@ -28,7 +28,8 @@ departments = [
     aliases: ['Leadership', 'Management', 'C-Suite', 'Board of Directors', 'headquarters',
               'executive officer'] },
 
-  { dept_name: 'Finance', aliases: ['Accounting', 'Financial Planning', 'FP&A', 'accounting/finance'] },
+  { dept_name: 'Finance',
+    aliases: ['Accounting', 'Financial Planning', 'FP&A', 'accounting/finance'] },
 
   { dept_name: 'Human Resources',
     aliases: ['HR', 'Talent Acquisition', 'People Operations', 'Talent & Organization'] },
@@ -40,7 +41,8 @@ departments = [
     aliases: ['Information Technology', 'Tech Support', 'Ops/Member Care', 'it operations',
               'technology', 'information systems'] },
 
-  { dept_name: 'Legal', aliases: ['Corporate Law', 'Compliance', 'Legal Affairs', 'Regulatory', 'regulatory affairs'] },
+  { dept_name: 'Legal',
+    aliases: ['Corporate Law', 'Compliance', 'Legal Affairs', 'Regulatory', 'regulatory affairs'] },
 
   { dept_name: 'Marketing',
     aliases: ['Digital Marketing', 'Content Marketing', 'Branding', 'Brand',
@@ -60,7 +62,7 @@ departments = [
   { dept_name: 'Quality', aliases: ['Quality Assurance', 'Quality Control', 'QA'] },
 
   { dept_name: 'Sales',
-    aliases: ['Commercial Field','Commercial Effectiveness & Training','Business Development', 'Account Management', 'Field sales', 'Sales Operations',
+    aliases: ['diagnostic sales', 'Commercial Field', 'Commercial Effectiveness & Training', 'Business Development', 'Account Management', 'Field sales', 'Sales Operations',
               'Sales Training & Development', 'commercial strategy', 'sales ops', 'field sales managers', 'Commercial Insights, Analytics, & Operations'] },
 
   { dept_name: 'Supply Chain',
@@ -68,7 +70,7 @@ departments = [
               'Fulfillment'] },
 
   { dept_name: 'Science',
-    aliases: ['Research & Science','pharmaceutical development','CLIA ops', 'Bioinformatics and PE', 'bioinformatics', 'proteomics', 'Research', 'R&D',
+    aliases: ['research/discovery', 'laboratory operations', 'Research & Science', 'pharmaceutical development', 'CLIA ops', 'Bioinformatics and PE', 'bioinformatics', 'proteomics', 'Research', 'R&D',
               'Scientific Research', 'bioanalysis', 'clinical r&d', 'analytical research & development', 'lnp platforms'] },
 ]
 

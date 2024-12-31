@@ -6,7 +6,7 @@ module Utils
       return '' if title.nil?
 
       original_title = title.strip
-      cleaned_title = title.gsub(/\(.*?\)/i, '')
+      cleaned_title = title.strip.gsub(/\(.*?\)/i, '')
 
       employment_terms = ['Contract', 'Full Time', 'Part Time', 'Temporary', 'Intern', 'Per Diem',
                           'Locum', 'Locum Tenens']
@@ -57,12 +57,13 @@ module Utils
       cleaned_title = cleaned_title.strip.squeeze(' ') if cleaned_title
       cleaned_title.gsub!(/^\.+|\.+$/, '') if cleaned_title
 
-      modified_title = original_title.gsub(seniority_pattern, '').gsub(/,/, ' of').strip.squeeze(' ')
+      modified_title = original_title.gsub(seniority_pattern, '').gsub(/,/,
+                                                                       ' of').strip.squeeze(' ')
       modified_title.gsub!(/^\.+|\.+$/, '')
 
       {
-        cleaned_title: cleaned_title,
-        modified_title: modified_title
+        cleaned_title: cleaned_title.strip,
+        modified_title: modified_title.strip
       }
     end
   end

@@ -5,7 +5,7 @@ job_roles = [
     aliases: ['specialty account manager', 'Sales Representative', 'Account Exec', 'Client Manager', 'Account Executive', 'growth account executive', 'Enterprise Account Executive'], department_names: ['Sales'], team_names: ['Sales'] },
 
   { role_name: 'Accountant',
-    aliases: ['cost accountant','corporate finance manager', 'Accounting Specialist', 'Financial Analyst', 'Accounting Manager', 'Finance Manager', 'Accounting Clerk', 'Accounting Associate', 'Accounting Consultant'], department_names: ['Finance'], team_names: ['Finance'] },
+    aliases: ['cost accountant', 'corporate finance manager', 'Accounting Specialist', 'Financial Analyst', 'Accounting Manager', 'Finance Manager', 'Accounting Clerk', 'Accounting Associate', 'Accounting Consultant'], department_names: ['Finance'], team_names: ['Finance'] },
 
   { role_name: 'Business Analyst',
     aliases: ['IT business analyst', 'Business Intelligence Analyst', 'Financial Analyst', 'Business Intelligence Specialist', 'Business Intelligence Consultant',], department_names: ['Business Development', 'Finance'], team_names: ['Business Intelligence', 'Finance'] },
@@ -20,13 +20,13 @@ job_roles = [
   { role_name: 'Compliance Manager', aliases: ['Compliance Specialist', 'Compliance Analyst', 'Compliance Officer', 'Compliance Consultant'],
     department_names: ['Legal'], team_names: ['Legal'] },
 
-{role_name: 'Content Creator', aliases: ['Content Specialist', 'Content Manager', 'Content Strategist', 'Content Writer', 'Content Marketing Manager', 'Content Marketing Specialist', 'Social Expert & Content Creator'],
+  { role_name: 'Content Creator', aliases: ['Content Specialist', 'Content Manager', 'Content Strategist', 'Content Writer', 'Content Marketing Manager', 'Content Marketing Specialist', 'Social Expert & Content Creator'],
     department_names: ['Marketing'], team_names: ['Marketing'] },
 
   { role_name: 'Controller',
     aliases: ['Finance Controller', 'Accounting Controller', 'Financial Controller'], department_names: ['Finance'], team_names: ['Finance'] },
 
-    {role_name: 'Copywriter', aliases: ['Content Writer', 'Content Creator', 'Content Specialist', 'Content Manager', 'Content Strategist', 'Content Marketing Manager', 'Content Marketing Specialist', 'Social Expert & Content Creator'],
+  { role_name: 'Copywriter', aliases: ['Content Writer', 'Content Creator', 'Content Specialist', 'Content Manager', 'Content Strategist', 'Content Marketing Manager', 'Content Marketing Specialist', 'Social Expert & Content Creator'],
     department_names: ['Marketing'], team_names: ['Marketing'] },
 
   { role_name: 'Counsel',
@@ -50,7 +50,7 @@ job_roles = [
     aliases: ['GM', 'Operations Manager', 'Business Manager', 'Branch Manager', 'Store Manager', 'Market Owner'], department_names: ['Operations'], team_names: ['Operations'] },
 
   { role_name: 'Graduate',
-    aliases: ['postdoc','Intern', 'Internship', 'Fellow', 'Resident', 'Trainee', 'Apprentice', 'New Graduate Product Leadership Program', 'new graduate'], department_names: %w[Internship], team_names: %w[Internship] },
+    aliases: ['postdoc', 'Intern', 'Internship', 'Fellow', 'Resident', 'Trainee', 'Apprentice', 'New Graduate Product Leadership Program', 'new graduate'], department_names: %w[Internship], team_names: %w[Internship] },
 
   { role_name: 'Growth Analyst', aliases: ['Media Revenue Growth Analyst', 'Growth Marketing Analyst', 'Growth Marketing Specialist', 'Growth Marketing Manager', 'Growth Marketing Lead'],
     department_names: ['Marketing'], team_names: ['Marketing'] },
@@ -140,7 +140,7 @@ technical_roles = [
     aliases: ['Analytics Engineer', 'Data Engineer', 'Data Platform Engineer', 'Data Infrastructure Engineer', 'Data Integration Engineer', 'Data Engineer', 'Data Engineering Specialist'], department_names: ['Engineering', 'Data Science'], team_names: ['Software Engineering', 'Data Science'] },
 
   { role_name: 'Data Scientist',
-    aliases: ['data product manager','Data Analyst', 'Statistician', 'Business Intelligence Analyst', 'BI Specialist', 'Data Specialist', 'Sales Data Analyst', 'Data Researcher'], department_names: ['Data Science', 'Engineering'], team_names: ['Software Engineering', 'Business Intelligence'] },
+    aliases: ['data product manager', 'Data Analyst', 'Statistician', 'Business Intelligence Analyst', 'BI Specialist', 'Data Specialist', 'Sales Data Analyst', 'Data Researcher'], department_names: ['Data Science', 'Engineering'], team_names: ['Software Engineering', 'Business Intelligence'] },
 
   { role_name: 'Design Engineer', aliases: ['Product Engineer'], department_names: ['Engineering'],
     team_names: ['Software Engineering'] },
@@ -212,8 +212,8 @@ clinical_roles = [
   { role_name: 'Clinical Support Specialist', aliases: ['Clinical Support Specialist', 'Clinical Support Analyst', 'Clinical Support Engineer', 'Clinical Support Consultant'],
     department_names: ['Clinical Team'], team_names: ['Care Operations'] },
 
-  {role_name: 'Clinical Trial Specialist', aliases: ['Clinical study manager','Clinical Trial manager', 'Clinical Trial Analyst', 'Clinical Trial Consultant'],
-      department_names: ['Clinical Team', 'Science'], team_names: ['Care Operations'] },
+  { role_name: 'Clinical Trial Specialist', aliases: ['Clinical study manager', 'Clinical Trial manager', 'Clinical Trial Analyst', 'Clinical Trial Consultant'],
+    department_names: ['Clinical Team', 'Science'], team_names: ['Care Operations'] },
 
   { role_name: 'Community Health Worker',
     aliases: ['CHW', 'Community Health Specialist', 'Community Health Advocate', 'Community Health Coordinator'], department_names: ['Clinical Team'], team_names: ['Care Operations'] },
@@ -227,7 +227,7 @@ clinical_roles = [
   { role_name: 'Healthcare Administrator',
     aliases: ['Medical Administrator', 'Health Services Manager', 'Remote Healthcare Manager'], department_names: ['Operations', 'Clinical Team'], team_names: ['Care Operations'] },
 
-{role_name: 'Medical Device Specialist', aliases: ['Medical Device Operator', 'Medical Device Analyst', 'Medical Device Consultant'],
+  { role_name: 'Medical Device Specialist', aliases: ['Medical Device Operator', 'Medical Device Analyst', 'Medical Device Consultant'],
     department_names: ['Clinical Team'], team_names: ['Care Operations'] },
 
   { role_name: 'Medical Information Manager', aliases: ['Medical Information Specialist', 'Medical Information Analyst', 'Medical Information Consultant', 'manager of medical information'],
@@ -261,7 +261,7 @@ clinical_roles = [
     aliases: ['Remote PT', 'Telehealth PT', 'Virtual Physical Therapist'], department_names: ['Clinical Team'], team_names: ['Care Operations'] },
 
   { role_name: 'Physician',
-    aliases: ['Independent Contractor Physician','Telemedicine Physician', 'Remote Doctor', 'Remote Physician', 'Virtual Care Physician', 'Palliative Care Physician'], department_names: ['Clinical Team'], team_names: ['Care Operations'] },
+    aliases: ['Independent Contractor Physician', 'Telemedicine Physician', 'Remote Doctor', 'Remote Physician', 'Virtual Care Physician', 'Palliative Care Physician'], department_names: ['Clinical Team'], team_names: ['Care Operations'] },
 
   { role_name: 'Psychiatrist',
     aliases: ['Mental Health Counselor', 'Licensed Therapist', 'Remote Therapist', 'Licensed Mental Health Therapist', 'Licensed Psychiatrist', 'Behavioral Health Therapist', 'Therapist', 'Mental Health Therapist'], department_names: ['Clinical Team'], team_names: ['Care Operations'] },
@@ -358,8 +358,8 @@ c_level = [
   { role_name: 'Director of Operations', aliases: ['Operations Director'],
     department_names: ['Operations'], team_names: ['Operations'] },
 
-    {role_name: 'Director of Pharmacy', aliases: ['Pharmacy Director','Executive Director Drug Safety and Pharmacovigilance', 'Director of Pharmacy Operations', 'Director of Pharmacy Services'],
-    department_names: ['Pharmacy', 'Executive'], team_names: ['Pharmacy'] },
+  { role_name: 'Director of Pharmacy', aliases: ['Pharmacy Director', 'Executive Director Drug Safety and Pharmacovigilance', 'Director of Pharmacy Operations', 'Director of Pharmacy Services'],
+    department_names: %w[Pharmacy Executive], team_names: ['Pharmacy'] },
 
   { role_name: 'Director of Product Management', aliases: ['Product Management Director'],
     department_names: ['Product Management'], team_names: ['Product'] },
