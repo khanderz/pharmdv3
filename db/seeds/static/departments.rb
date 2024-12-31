@@ -24,7 +24,7 @@ departments = [
   { dept_name: 'Design', aliases: ['UI/UX Design', 'Graphic Design', 'Product & Design'] },
 
   { dept_name: 'Engineering',
-    aliases: ['process engineering', 'core dev', 'Development', 'Software Engineering', 'Tech',
+    aliases: ['mobile', 'process engineering', 'core dev', 'Development', 'Software Engineering', 'Tech',
               'Information Technology', 'DevOps', 'hardware', 'hardware & operations', 'fab tools', 'downstream processing'] },
 
   { dept_name: 'Executive',
