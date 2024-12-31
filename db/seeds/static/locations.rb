@@ -276,7 +276,8 @@ def find_parent_id(parent_id, location_type)
   location&.id
 end
 
-[continents, countries, us_states, european_territories, canadian_provinces, australian_states, korean_provinces].each do |location_array|
+[continents, countries, us_states, european_territories, canadian_provinces, australian_states,
+ korean_provinces].each do |location_array|
   location_array.each do |location_data|
     parent_id = if location_data[:parent_id]
                   find_parent_id(location_data[:parent_id],

@@ -2,7 +2,7 @@
 
 job_roles = [
   { role_name: 'Account Manager',
-    aliases: ['specialty account manager', 'Sales Representative', 'Account Exec', 'Client Manager', 'Account Executive', 'growth account executive', 'Enterprise Account Executive'], department_names: ['Sales'], team_names: ['Sales'] },
+    aliases: ['account operations', 'strategic account executive', 'specialty account manager', 'Sales Representative', 'Account Exec', 'Client Manager', 'Account Executive', 'growth account executive', 'Enterprise Account Executive'], department_names: ['Sales'], team_names: ['Sales'] },
 
   { role_name: 'Accountant',
     aliases: ['cost accountant', 'corporate finance manager', 'Accounting Specialist', 'Financial Analyst', 'Accounting Manager', 'Finance Manager', 'Accounting Clerk', 'Accounting Associate', 'Accounting Consultant'], department_names: ['Finance'], team_names: ['Finance'] },
@@ -95,7 +95,7 @@ job_roles = [
   { role_name: 'Public Relations', aliases: ['PR Specialist', 'PR Manager', 'PR Director', 'PR Lead', 'PR and Communications manager', 'communications specialist', 'communications manager'],
     department_names: ['Communications'], team_names: ['Communications'] },
 
-  { role_name: 'Quality Assurance Specialist', aliases: ['Specialist of Quality Control', 'QA Specialist', 'Quality Specialist', 'Quality Analyst', 'QA Analyst', 'Quality Assurance Analyst'],
+  { role_name: 'Quality Assurance Specialist', aliases: ['manager of quality', 'Specialist of Quality Control', 'QA Specialist', 'Quality Specialist', 'Quality Analyst', 'QA Analyst', 'Quality Assurance Analyst'],
     department_names: ['Quality Assurance'], team_names: ['Quality Assurance'] },
 
   { role_name: 'Recruiter',
@@ -106,6 +106,9 @@ job_roles = [
 
   { role_name: 'Regional Marketer', aliases: ['Regional Marketing Specialist', 'Regional Marketing Manager'],
     department_names: ['Marketing'], team_names: ['Marketing'] },
+
+  { role_name: 'Revenue Operations Analyst', aliases: ['Revenue Operations Analyst', 'Revenue Operations Specialist', 'Revenue Operations Manager', 'Revenue Operations Lead'],
+    department_names: ['Operations'], team_names: ['Operations'] },
 
   { role_name: 'Sales Representative',
     aliases: ['Sales Rep', 'Account Manager', 'Sales Exec', 'Sales', 'Core Sales', 'sales development representative'], department_names: ['Sales'], team_names: ['Sales'] },
@@ -124,6 +127,7 @@ science_roles = [
   { role_name: 'Scientist', aliases: ['Senior Scientist'],
     department_names: ['Science'], team_names: ['Science'] },
 ]
+
 technical_roles = [
   {
     role_name: 'Bioinformatics Engineer',
@@ -150,7 +154,7 @@ technical_roles = [
   {
     role_name: 'DevSecOps Engineer',
     aliases: ['Security DevOps Engineer', 'DevOps Security Engineer', 'Cloud Security Engineer',
-              'Secure DevOps Engineer'],
+              'Secure DevOps Engineer', 'IT systems engineer'],
     department_names: %w[Engineering IT],
     team_names: ['DevOps', 'Information Security']
   },
@@ -203,7 +207,7 @@ technical_roles = [
 ]
 
 clinical_roles = [
-  { role_name: 'Clinical Laboratory Scientist', aliases: ['Clinical Laboratory Associate', 'lab scientist'],
+  { role_name: 'Clinical Laboratory Scientist', aliases: ['Clinical Lab Technologist', 'Clinical Laboratory Associate', 'lab scientist'],
     department_names: ['Clinical Team'], team_names: ['Care Operations', 'Science'] },
 
   { role_name: 'Clinical Specialist', aliases: ['Oncology Specialist', 'Clinical Analyst', 'Clinical Consultant', 'Clinical Research Specialist', 'Clinical Research Analyst', 'Clinical Research Consultant'],
@@ -277,6 +281,8 @@ clinical_roles = [
 ]
 
 c_level = [
+  # -----------------  ASSOCIATE DIRECTOR -----------------
+
   { role_name: 'Associate Director of Business Development',
     aliases: ['Associate Business Development Director'], department_names: ['Sales', 'Business Development'], team_names: ['Sales', 'Business Development'] },
 
@@ -300,6 +306,11 @@ c_level = [
 
   { role_name: 'Associate Director of Quality',
     aliases: ['Associate Clinical Quality Assurance', 'Associate Director of Quality Assurance', 'Associate Director of Clinical Quality Assurance'], department_names: ['Quality'], team_names: ['Quality Assurance'] },
+
+  { role_name: 'Associate Director of Training', aliases: ['Associate Director of Commercial Field Trainer'],
+    department_names: ['Operations'], team_names: ['Operations'] },
+
+  # -----------------  CHIEF -----------------
 
   { role_name: 'Chief Clinical Officer', aliases: ['CCO'], department_names: ['Clinical Team'],
     team_names: ['Care Operations'] },
@@ -330,6 +341,8 @@ c_level = [
     team_names: ['Executive'] },
   { role_name: 'Chief Technology Officer', aliases: ['CTO'], department_names: ['Engineering'],
     team_names: ['Engineering'] },
+
+  # -----------------  DIRECTOR -----------------
 
   { role_name: 'Director of Business', aliases: ['Regional Business Director', 'Director of Business Development', 'Business Development Director', 'Business Development & Strategic Alliances', 'Professional Services - Growth & Enterprise', 'Director of Business Development & Strategic Alliances'],
     department_names: ['Sales', 'Business Development'], team_names: ['Sales', 'Business Development'] },
@@ -379,6 +392,13 @@ c_level = [
   { role_name: 'Director of Science', aliases: ['Science Director', 'director of protein therapeutics'],
     department_names: ['Science'], team_names: ['Science'] },
 
+  { role_name: 'Director of Training', aliases: ['Director Commercial Field Leadership Training', 'Training Director', 'Director of Training and Development', 'Director of Training and Education'],
+    department_names: ['Operations'], team_names: ['Operations'] },
+
+  # -----------------  HEAD -----------------
+
+  { role_name: 'Head of Clinical', aliases: ['Clinical Head', 'Clinical Operations Lead', 'Clinical Operations Head', 'Head of Clinical Operations'],
+    department_names: ['Clinical Team'], team_names: ['Care Operations'] },
   { role_name: 'Head of Customer Success', aliases: ['Customer Success Lead'],
     department_names: ['Customer Support'], team_names: ['Client Services'] },
   { role_name: 'Head of DevOps', aliases: ['DevOps Lead'], department_names: %w[IT Engineering],
@@ -389,6 +409,8 @@ c_level = [
     department_names: ['Human Resources'], team_names: ['Human Resources'] },
   { role_name: 'Head of Science', aliases: ['Head of Research', 'head of ai research', 'head of ai science', 'head of biology'],
     department_names: ['Science'], team_names: ['Science'] },
+
+  # -----------------  PRESIDENT -----------------
 
   { role_name: 'President of Engineering', aliases: ['President of Engineering'],
     department_names: ['Engineering'], team_names: ['Software Engineering'] },
@@ -402,6 +424,8 @@ c_level = [
     department_names: ['Sales'], team_names: ['Sales'] },
   { role_name: 'President of Science', aliases: ['President of Research', 'president of ai research', 'president of ai science'],
     department_names: ['Science'], team_names: ['Science'] },
+
+  # -----------------  VICE PRESIDENT -----------------
 
   { role_name: 'Vice President of Clinical Development', aliases: ['VP Clinical Development', 'Vice President of Clinical Research', 'VP Clinical Research', 'Vice President of Clinical Affairs', 'Vice President of Clinical Development Operations', 'VP Clinical Affairs'],
     department_names: ['Clinical Team'], team_names: ['Care Operations'] },

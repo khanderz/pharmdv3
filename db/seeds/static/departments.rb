@@ -62,7 +62,7 @@ departments = [
   { dept_name: 'Quality', aliases: ['Quality Assurance', 'Quality Control', 'QA'] },
 
   { dept_name: 'Sales',
-    aliases: ['diagnostic sales', 'Commercial Field', 'Commercial Effectiveness & Training', 'Business Development', 'Account Management', 'Field sales', 'Sales Operations',
+    aliases: ['diagnostics sales', 'Commercial Field', 'Commercial Effectiveness & Training', 'Business Development', 'Account Management', 'Field sales', 'Sales Operations',
               'Sales Training & Development', 'commercial strategy', 'sales ops', 'field sales managers', 'Commercial Insights, Analytics, & Operations'] },
 
   { dept_name: 'Supply Chain',
