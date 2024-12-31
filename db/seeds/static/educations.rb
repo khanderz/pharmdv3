@@ -25,6 +25,8 @@ educations = [
   { education_code: 'MFA', education_name: 'Master of Fine Arts' },
   { education_code: 'MD', education_name: 'Doctor of Medicine' },
   { education_code: 'MS', education_name: 'Master of Science' },
+  { education_code: 'MSN', education_name: 'Master of Science in Nursing' },
+  { education_code: 'PA', education_name: 'Physician Assistant Program' },
   { education_code: 'PhD', education_name: 'Doctor of Philosophy' },
   { education_code: 'PharmD', education_name: 'Doctor of Pharmacy' },
   { education_code: 'POSTDOC', education_name: 'Postdoctoral Fellowship' },

@@ -2,14 +2,14 @@
 
 departments = [
   { dept_name: 'Administrative',
-    aliases: ['General & Administrative', 'Admin', 'Office Management', 'General'] },
+    aliases: ['Program Management (G&A)','General & Administrative', 'Admin', 'Office Management', 'General'] },
 
   { dept_name: 'Business Development',
     aliases: ['Sales', 'Business Development and Sales', 'Business Development & Sales',
               'Finance & Business Operations', 'strategic product planning'] },
 
   { dept_name: 'Clinical Team',
-    aliases: ['drug safety', 'health systems', 'Medical Team', 'Care Team', 'Healthcare Team', 'Behavioral Health', 'service provider', 'patient services',
+    aliases: ['clinical development','drug safety', 'health systems', 'Medical Team', 'Care Team', 'Healthcare Team', 'Behavioral Health', 'service provider', 'patient services',
               'Clinical Strategy and Services', 'Pharmacy', 'medical affairs', 'Clinical Operations', 'Clinical Research & Operations'] },
 
   { dept_name: 'Customer Support',
@@ -32,20 +32,20 @@ departments = [
     aliases: ['Accounting', 'Financial Planning', 'FP&A', 'accounting/finance'] },
 
   { dept_name: 'Human Resources',
-    aliases: ['HR', 'Talent Acquisition', 'People Operations', 'Talent & Organization'] },
+    aliases: ['People Team','HR', 'Talent Acquisition', 'People Operations', 'Talent & Organization'] },
 
   { dept_name: 'Internship',
     aliases: ['Interns', 'Internship Team', 'Internship Program', 'fellowship', 'graduate'] },
 
   { dept_name: 'IT',
-    aliases: ['Information Technology', 'Tech Support', 'Ops/Member Care', 'it operations',
+    aliases: ['Tech Ops','Information Technology', 'Tech Support', 'Ops/Member Care', 'it operations',
               'technology', 'information systems'] },
 
   { dept_name: 'Legal',
     aliases: ['Corporate Law', 'Compliance', 'Legal Affairs', 'Regulatory', 'regulatory affairs'] },
 
   { dept_name: 'Marketing',
-    aliases: ['Digital Marketing', 'Content Marketing', 'Branding', 'Brand',
+    aliases: ['Diagnostics Marketing','Digital Marketing', 'Content Marketing', 'Branding', 'Brand',
               'Commercial Operations', 'Market Access'] },
 
   { dept_name: 'Operations',
@@ -70,7 +70,7 @@ departments = [
               'Fulfillment'] },
 
   { dept_name: 'Science',
-    aliases: ['research/discovery', 'laboratory operations', 'Research & Science', 'pharmaceutical development', 'CLIA ops', 'Bioinformatics and PE', 'bioinformatics', 'proteomics', 'Research', 'R&D',
+    aliases: ['Biometrics','Templates and Testing','Drug Discovery','research/discovery', 'laboratory operations', 'Research & Science', 'pharmaceutical development', 'CLIA ops', 'Bioinformatics and PE', 'bioinformatics', 'proteomics', 'Research', 'R&D',
               'Scientific Research', 'bioanalysis', 'clinical r&d', 'analytical research & development', 'lnp platforms'] },
 ]
 
