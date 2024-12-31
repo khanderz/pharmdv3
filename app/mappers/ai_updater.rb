@@ -240,9 +240,10 @@ class AiUpdater
 
             if credentials
               credentials.each do |credential|
-                credential_id = Credential.find_or_create_credential(credential,
-                                                                     job_post_data)&.id
-                job_post_credentials << credential_id if credential_id
+                credential_ids = Credential.find_or_create_credential(credential,
+                                                                      job_post_data).map(&:id)
+
+                job_post_credentials.concat(credential_ids) if credential_ids.present?
                 updated = true
               end
             end

@@ -21,6 +21,8 @@ credentials = [
   { credential_code: 'PHARMD', credential_name: 'Doctor of Pharmacy' },
   { credential_code: 'EMT', credential_name: 'Emergency Medical Technician' },
   { credential_code: 'LPN', credential_name: 'Licensed Practical Nurse' },
+  { credential_code: 'LVN', credential_name: 'Licensed Vocational Nurse' },
+  { credential_code: 'MA', credential_name: 'Medical Assistant' },
   { credential_code: 'MBA', credential_name: 'Master of Business Administration' },
   { credential_code: 'MSW', credential_name: 'Master of Social Work' },
   { credential_code: 'MT', credential_name: 'Medical Technologist' },
