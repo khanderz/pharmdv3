@@ -6,6 +6,7 @@ import { TooltipProps } from "./Tooltip";
 export interface AutocompleteOption {
   key: string | number;
   value: string | number;
+  display?: string;
 }
 
 export type AutocompleteProps = {
@@ -69,7 +70,7 @@ export const Autocomplete = ({
           mt: "2em",
         }}
         getOptionLabel={option => {
-          return option?.value?.toString();
+          return option?.display || option?.value?.toString();
         }}
         inputValue={inputValue}
         onInputChange={onInputChange}

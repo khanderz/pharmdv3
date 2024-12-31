@@ -9,20 +9,34 @@ export const LocationFilter = () => {
 
   const [inputValue, setInputValue] = useState("");
 
+  const locationMap = useMemo(() => {
+    const map: Record<number, string | null> = {};
+    uniqueLocations.forEach(location => {
+      map[location.id] = location.name || null;
+    });
+    return map;
+  }, [uniqueLocations]);
+
   const locationOptions: AutocompleteOption[] = useMemo(
     () =>
       uniqueLocations.map(location => ({
         key: location.id.toString(),
         value: location.name,
+        display: location.parent_id
+          ? `${location.name} (${locationMap[location.parent_id]})`
+          : location.name,
       })),
-    [uniqueLocations],
+    [uniqueLocations, locationMap],
   );
 
   const filteredLocations: AutocompleteOption[] = useMemo(() => {
     if (!inputValue) return locationOptions;
     const lowerInput = inputValue.toLowerCase();
-    const matches = locationOptions.filter(location =>
-      location.value.toLowerCase().includes(lowerInput),
+    const matches = locationOptions.filter(
+      location =>
+        location.value.toLowerCase().includes(lowerInput) ||
+        (location.display &&
+          location.display.toLowerCase().includes(lowerInput)),
     );
     return matches.length > 0
       ? matches
@@ -48,11 +62,16 @@ export const LocationFilter = () => {
       id="location-autocomplete"
       inputLabel="Location"
       multiple
-      options={filteredLocations}
+      options={filteredLocations.map(location => ({
+        key: location.key,
+        value: location.value,
+        display: location.display,
+      }))}
       value={selectedLocations.map(location => ({
         key: location.key,
         value: location.value,
       }))}
+      getOptionLabel={option => option.display}
       onChange={handleLocationChange}
       inputValue={inputValue}
       onInputChange={(e: any, newInputValue: string) =>
