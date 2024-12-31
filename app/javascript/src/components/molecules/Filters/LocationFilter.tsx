@@ -19,13 +19,18 @@ export const LocationFilter = () => {
 
   const locationOptions: AutocompleteOption[] = useMemo(
     () =>
-      uniqueLocations.map(location => ({
-        key: location.id.toString(),
-        value: location.name,
-        display: location.parent_id
-          ? `${location.name} (${locationMap[location.parent_id]})`
-          : location.name,
-      })),
+      uniqueLocations.map(location => {
+        const parentName = location.parent_id
+          ? locationMap[location.parent_id]
+          : null;
+        return {
+          key: location.id.toString(),
+          value: location.name,
+          display: parentName
+            ? `${location.name} (${parentName})`
+            : location.name,
+        };
+      }),
     [uniqueLocations, locationMap],
   );
 
