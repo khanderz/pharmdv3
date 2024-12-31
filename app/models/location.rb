@@ -7,9 +7,10 @@ class Location < ApplicationRecord
   has_many :children, class_name: 'Location', foreign_key: 'parent_id', dependent: :destroy
 
   validates :name, presence: true
-  validates :location_type, presence: true, inclusion: { in: %w[Country State City] }
+  validates :location_type, inclusion: { in: %w[Country State City Continent] }
   validates :code, uniqueness: { scope: :location_type, allow_nil: true }
 
+  scope :continents, -> { where(location_type: 'Continent') }
   scope :countries, -> { where(location_type: 'Country') }
   scope :states, -> { where(location_type: 'State') }
   scope :cities, -> { where(location_type: 'City') }

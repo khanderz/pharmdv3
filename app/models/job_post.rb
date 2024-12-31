@@ -27,7 +27,7 @@ class JobPost < ApplicationRecord
   has_many :skills, through: :job_post_skills
 
   belongs_to :job_commitment, optional: true
-  belongs_to :department
+  belongs_to :department, optional: true
   belongs_to :team, optional: true
   belongs_to :company
   belongs_to :job_role
