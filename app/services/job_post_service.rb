@@ -57,7 +57,7 @@ class JobPostService
       salary_data = extract_salary(processed_benefits[:job_compensation])
       data_return << { 'salary' => salary_data } if salary_data
     end
-    puts "data return / salary / final : #{data_return}"
+    # puts "data return / salary / final : #{data_return}"
 
     data_return
   end

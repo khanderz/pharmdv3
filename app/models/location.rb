@@ -62,7 +62,7 @@ class Location < ApplicationRecord
     def find_by_name_and_type(name, location_type, parent = nil)
       normalized_name = normalize_name(name)
       parent_id = extract_parent_id(parent)
-      puts "#{BLUE}# location_type{location_type}  normalized_name#{normalized_name} parent_id: #{parent_id}#{RESET}"
+      # puts "#{BLUE}# location_type #{location_type}  normalized_name #{normalized_name} parent_id: #{parent_id}#{RESET}"
 
       find_location_by_name_or_alias(normalized_name, location_type, parent_id)
     end
@@ -83,13 +83,13 @@ class Location < ApplicationRecord
 
     def find_location_by_name_or_alias(normalized_name, location_type, parent_id)
       parent_condition = parent_id ? { parent_id: parent_id } : {}
-      puts "parent_condition: #{parent_condition}"
+      # puts "parent_condition: #{parent_condition}"
       query = where(
         '(LOWER(name) = :name OR LOWER(code) = :name OR LOWER(:name) = ANY(ARRAY(SELECT LOWER(unnest(aliases))))) AND LOWER(location_type) = :type',
         name: normalized_name, type: location_type.downcase
       ).where(parent_condition)
 
-      puts "Generated query: #{query.to_sql}"
+      # puts "Generated query: #{query.to_sql}"
       query.first
     end
 
