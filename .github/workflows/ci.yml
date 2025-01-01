@@ -24,6 +24,14 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
+      - name: Decode Google credentials
+        run: |
+          base64 --decode encoded_google_credentials.txt > config/credentials/pharmds-3a9649ca6677.json
+
+      - name: Set environment variables
+        run: |
+          echo "GOOGLE_CREDENTIALS_PATH=config/credentials/pharmds-3a9649ca6677.json" >> $GITHUB_ENV
+
       - name: Set up Ruby
         uses: ruby/setup-ruby@v1
         with:
