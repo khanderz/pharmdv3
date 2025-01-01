@@ -6,9 +6,10 @@ default: &default
   # username: <%= Rails.application.credentials.dig(:aws, :RDS_USERNAME) %>
   # password: <%= Rails.application.credentials.dig(:aws, :RDS_PASSWORD) %>
   # host: <%= Rails.application.credentials.dig(:aws, :RDS_HOST) %>
-  username: <%= ENV['DATABASE_USERNAME'] %>
-  password: <%= ENV['DATABASE_PASSWORD'] %>
-  host: localhost
+  username: <%= ENV.fetch("DATABASE_USERNAME", "your_local_username") %>
+  password: <%= ENV.fetch("DATABASE_PASSWORD", "your_local_password") %>
+  host: <%= ENV.fetch("DATABASE_HOST", "localhost") %>
+  port: <%= ENV.fetch("DATABASE_PORT", 5432) %>
 
 development:
   <<: *default
@@ -17,16 +18,18 @@ development:
 test:
   <<: *default
   database: pharmdv3_test
-  username: <%= ENV.fetch("POSTGRES_USER", "postgres") %>
-  password: <%= ENV.fetch("POSTGRES_PASSWORD", "password") %>
-  host: <%= ENV.fetch("POSTGRES_HOST", "localhost") %>
-  port: <%= ENV.fetch("POSTGRES_PORT", 5432) %>
+  # username: <%= ENV.fetch("POSTGRES_USER", "postgres") %>
+  # password: <%= ENV.fetch("POSTGRES_PASSWORD", "password") %>
+  # host: <%= ENV.fetch("POSTGRES_HOST", "localhost") %>
+  # port: <%= ENV.fetch("POSTGRES_PORT", 5432) %>
 
 production:
   <<: *default
   database: pharmdv3_production
-  username: pharmdv3
+  username: <%= ENV.fetch("DATABASE_USERNAME", "pharmdv3") %>
   password: <%= ENV["PHARMDV3_DATABASE_PASSWORD"] %>
+  host: <%= ENV.fetch("DATABASE_HOST", "your_production_host") %>
+  port: <%= ENV.fetch("DATABASE_PORT", 5432) %>
 # remote:
 #   adapter: postgresql
 #   database: <%= ENV['RDS_DATABASE'] %>
