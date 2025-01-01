@@ -28,11 +28,11 @@ jobs:
         env:
           GOOGLE_CREDENTIALS_BASE64: ${{ secrets.ENCODED_GOOGLE_CREDENTIALS }}
         run: |
-          echo "$GOOGLE_CREDENTIALS_BASE64" | base64 --decode > config/credentials/pharmds-3a9649ca6677.json
+          echo "$GOOGLE_CREDENTIALS_BASE64" | base64 --decode > /tmp/pharmds-3a9649ca6677.json
 
       - name: Set environment variables
         run: |
-          echo "GOOGLE_CREDENTIALS_PATH=config/credentials/pharmds-3a9649ca6677.json" >> $GITHUB_ENV
+          echo "GOOGLE_CREDENTIALS_PATH=/tmp/pharmds-3a9649ca6677.json" >> $GITHUB_ENV
 
       - name: Set up Ruby
         uses: ruby/setup-ruby@v1
