@@ -46,7 +46,7 @@ jobs:
       - name: Set up database
         env:
           RAILS_ENV: test
-          DATABASE_URL: postgres://${{ secrets.DATABASE_USERNAME }}:${{ secrets.DATABASE_PASSWORD }}@localhost:5432/${{ secrets.POSTGRES_DB }}
+          DATABASE_URL: postgres://postgres:password@localhost:5432/pharmdv3_test
         run: |
           bin/rails db:create db:schema:load
 
