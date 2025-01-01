@@ -16,8 +16,8 @@ jobs:
         ports:
           - 5432:5432
         env:
-          POSTGRES_USER: ${{ secrets.POSTGRES_USER }}
-          POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
+          POSTGRES_USER: ${{ secrets.DATABASE_USERNAME }}
+          POSTGRES_PASSWORD: ${{ secrets.DATABASE_PASSWORD }}
           POSTGRES_DB: ${{ secrets.POSTGRES_DB }}
 
     steps:
@@ -25,8 +25,10 @@ jobs:
         uses: actions/checkout@v3
 
       - name: Decode Google credentials
+        env:
+          GOOGLE_CREDENTIALS_BASE64: ${{ secrets.ENCODED_GOOGLE_CREDENTIALS }}
         run: |
-          base64 --decode encoded_google_credentials.txt > config/credentials/pharmds-3a9649ca6677.json
+          echo "$GOOGLE_CREDENTIALS_BASE64" | base64 --decode > config/credentials/pharmds-3a9649ca6677.json
 
       - name: Set environment variables
         run: |
@@ -44,7 +46,7 @@ jobs:
       - name: Set up database
         env:
           RAILS_ENV: test
-          DATABASE_URL: postgres://${{ secrets.POSTGRES_USER }}:${{ secrets.POSTGRES_PASSWORD }}@localhost:5432/${{ secrets.POSTGRES_DB }}
+          DATABASE_URL: postgres://${{ secrets.DATABASE_USERNAME }}:${{ secrets.DATABASE_PASSWORD }}@localhost:5432/${{ secrets.POSTGRES_DB }}
         run: |
           bin/rails db:create db:schema:load
 
