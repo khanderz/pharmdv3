@@ -15,10 +15,10 @@ jobs:
         image: postgres:13
         ports:
           - 5432:5432
-        env:
-          POSTGRES_USER: ${{ secrets.DATABASE_USERNAME }}
-          POSTGRES_PASSWORD: ${{ secrets.DATABASE_PASSWORD }}
-          POSTGRES_DB: ${{ secrets.POSTGRES_DB }}
+      env:
+        POSTGRES_USER: postgres
+        POSTGRES_PASSWORD: password
+        POSTGRES_DB: pharmdv3_test
 
     steps:
       - name: Checkout code
