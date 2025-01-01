@@ -80,3 +80,5 @@ gem 'bcrypt', '~> 3.1.7'
 
 gem 'google-apis-sheets_v4'
 gem 'googleauth'
+
+gem 'active_model_serializers', '~> 0.10.0'
