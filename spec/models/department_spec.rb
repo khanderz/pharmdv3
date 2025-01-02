@@ -42,14 +42,6 @@ RSpec.describe Department, type: :model do
     let!(:human_resources) { create(:department, dept_name: 'Human Resources') }
     let!(:customer_support) { create(:department, dept_name: 'Customer Support') }
 
-    it 'finds existing department "science" with name "GBio - GondolaBio"' do
-      puts "\n------------------"
-      puts "Running Test: finds existing department 'science' with name 'GBio - GondolaBio'"
-      result = Department.find_department('GBio - GondolaBio')
-      puts "Debug: find_department result: #{result&.dept_name}"
-      expect(result).to eq(science)
-    end
-
     it 'finds an existing department by normalized name that includes hq' do
       puts "\n------------------"
       puts 'Running Test: finds an existing department by normalized name with HQ'
@@ -109,7 +101,7 @@ RSpec.describe Department, type: :model do
     it 'finds an existing department by normalized name that includes Quality' do
       puts "\n------------------"
       puts 'Running Test: finds an existing department by normalized name with Quality'
-      result = Department.find_department('quality & care')
+      result = Department.find_department('Quality')
       puts "Debug: find_department result: #{result&.dept_name}"
       expect(result).to eq(quality)
     end

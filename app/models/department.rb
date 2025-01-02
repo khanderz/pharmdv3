@@ -60,11 +60,12 @@ class Department < ApplicationRecord
     puts "Normalized name: #{normalized_name}"
 
     KEYWORD_MAPPINGS.each do |mapped_name, keywords|
-      next unless keywords.any? { |keyword| normalized_name.include?(keyword) }
-
-      department = find_by(dept_name: mapped_name)
-      puts "#{ORANGE}Normalized name match to one of #{keywords}, matching department to #{mapped_name}#{RESET}"
-      return department if department
+      keyword_regex = Regexp.union(keywords.map { |keyword| /\b#{Regexp.escape(keyword)}\b/i })
+      if normalized_name.match?(keyword_regex)
+        department = find_by(dept_name: mapped_name)
+        puts "#{ORANGE}Normalized name match to one of #{keywords}, matching department to #{mapped_name}#{RESET}"
+        return department if department
+      end
     end
 
     department = where('LOWER(dept_name) = ?', normalized_name)

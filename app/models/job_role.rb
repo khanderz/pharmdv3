@@ -109,13 +109,12 @@ class JobRole < ApplicationRecord
     modified_title = titles[:modified_title]
 
     KEYWORD_MAPPINGS.each do |mapped_role, keywords|
-      next unless keywords.any? do |keyword|
-        cleaned_title.include?(keyword) || modified_title.include?(keyword)
+      keyword_regex = Regexp.union(keywords.map { |keyword| /\b#{Regexp.escape(keyword)}\b/i })
+      if cleaned_title.match?(keyword_regex) || modified_title.match?(keyword_regex)
+        job_role = find_by(role_name: mapped_role)
+        puts "#{ORANGE}Normalized name match to one of #{keywords}, matching job role to #{mapped_role}#{RESET}"
+        return job_role if job_role
       end
-
-      job_role = find_by(role_name: mapped_role)
-      puts "#{ORANGE}Normalized name match to one of #{keywords}, matching job role to #{mapped_role}#{RESET}"
-      return job_role if job_role
     end
 
     job_role = JobRole.find_by('LOWER(role_name) = ?', modified_title.downcase)
