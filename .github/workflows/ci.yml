@@ -32,6 +32,9 @@ jobs:
 
       - name: Set environment variables
         run: |
+          echo "POSTGRES_USER=postgres" >> $GITHUB_ENV
+          echo "POSTGRES_PASSWORD=password" >> $GITHUB_ENV
+          echo "POSTGRES_HOST=localhost" >> $GITHUB_ENV
           echo "GOOGLE_CREDENTIALS_PATH=/tmp/pharmds-3a9649ca6677.json" >> $GITHUB_ENV
 
       - name: Set up Ruby

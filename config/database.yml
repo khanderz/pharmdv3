@@ -6,10 +6,10 @@ default: &default
   # username: <%= Rails.application.credentials.dig(:aws, :RDS_USERNAME) %>
   # password: <%= Rails.application.credentials.dig(:aws, :RDS_PASSWORD) %>
   # host: <%= Rails.application.credentials.dig(:aws, :RDS_HOST) %>
-  username: <%= ENV.fetch("DATABASE_USERNAME", "your_local_username") %>
-  password: <%= ENV.fetch("DATABASE_PASSWORD", "your_local_password") %>
-  host: <%= ENV.fetch("DATABASE_HOST", "localhost") %>
-  port: <%= ENV.fetch("DATABASE_PORT", 5432) %>
+  username: <%= ENV["POSTGRES_USER"] || "your_local_username" %>
+  password: <%= ENV["POSTGRES_PASSWORD"] || "your_local_password" %>
+  host: <%= ENV["POSTGRES_HOST"] || "localhost" %>
+  port: <%= ENV["POSTGRES_PORT"] || 5432 %>
 
 development:
   <<: *default
@@ -18,10 +18,6 @@ development:
 test:
   <<: *default
   database: pharmdv3_test
-  # username: <%= ENV.fetch("POSTGRES_USER", "postgres") %>
-  # password: <%= ENV.fetch("POSTGRES_PASSWORD", "password") %>
-  # host: <%= ENV.fetch("POSTGRES_HOST", "localhost") %>
-  # port: <%= ENV.fetch("POSTGRES_PORT", 5432) %>
 
 production:
   <<: *default
