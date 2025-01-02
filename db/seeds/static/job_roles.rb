@@ -21,13 +21,13 @@ job_roles = [
     department_names: ['Legal'], team_names: ['Legal'] },
 
   { role_name: 'Content Creator', aliases: ['Content Strategist & Writer', 'Content Specialist', 'Content Manager', 'Content Strategist', 'Content Writer', 'Content Marketing Manager', 'Content Marketing Specialist', 'Social Expert & Content Creator'],
-    department_names: ['Marketing'], team_names: ['Marketing'] },
+    department_names: ['Editorial'], team_names: ['Marketing'] },
 
   { role_name: 'Controller',
     aliases: ['Finance Controller', 'Accounting Controller', 'Financial Controller'], department_names: ['Finance'], team_names: ['Finance'] },
 
   { role_name: 'Copywriter', aliases: ['Content Writer', 'Content Creator', 'Content Specialist', 'Content Manager', 'Content Strategist', 'Content Marketing Manager', 'Content Marketing Specialist', 'Social Expert & Content Creator'],
-    department_names: ['Marketing'], team_names: ['Marketing'] },
+    department_names: ['Editorial'], team_names: ['Marketing'] },
 
   { role_name: 'Counsel',
     aliases: ['general counsel', 'compliance attorney', 'paralegal', 'Legal Counsel', 'Legal Advisor', 'Legal Specialist', 'Legal Analyst', 'Legal Consultant'], department_names: ['Legal'], team_names: ['Legal'] },

@@ -23,6 +23,10 @@ departments = [
 
   { dept_name: 'Design', aliases: ['UI/UX Design', 'Graphic Design', 'Product & Design'] },
 
+  { dept_name: 'Editorial',
+    aliases: ['Content Creation', 'Editing', 'Publishing', 'Editorial Team', 'Content Team',
+              'medical writing'] },
+
   { dept_name: 'Engineering',
     aliases: ['mobile', 'process engineering', 'core dev', 'Development', 'Software Engineering', 'Tech',
               'Information Technology', 'DevOps', 'hardware', 'hardware & operations', 'fab tools', 'downstream processing'] },
@@ -64,6 +68,9 @@ departments = [
   { dept_name: 'Project Management',
     aliases: ['Program Management', 'Project Delivery', 'enterprise project management office'] },
 
+  { dept_name: 'Public Relations',
+    aliases: ['Community Engagement', 'Public Outreach', 'Outreach Team', 'Community Relations'] },
+
   { dept_name: 'Quality',
     aliases: ['Quality Assurance', 'Quality Control', 'QA', 'quality affairs'] },
 
@@ -83,7 +90,7 @@ departments = [
     aliases: ['Scientific Solutions Consulting', 'MSAT', 'Biometrics', 'Templates and Testing', 'Drug Discovery', 'research/discovery', 'laboratory operations', 'Research & Science', 'pharmaceutical development', 'CLIA ops', 'Bioinformatics and PE', 'bioinformatics', 'proteomics', 'Research', 'R&D',
               'Scientific Research', 'bioanalysis', 'clinical r&d', 'analytical research & development', 'lnp platforms', 'Cell Process Sciences',
               'Biostatistics & Data Management', 'Protein Sciences', 'cell biology', 'translational r&d', 'medicinal chemistry', 'protein testing team',
-              'res & dev', 'gondolabio', 'medical writing'] },
+              'res & dev', 'gondolabio'] },
 ]
 
 seeded_count = 0

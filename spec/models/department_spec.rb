@@ -1,10 +1,12 @@
+# frozen_string_literal: true
+
 require 'rails_helper'
 
 RSpec.describe Department, type: :model do
   describe '.clean_department_name' do
     it 'removes numbers and parentheses from the department name' do
       puts "\n------------------"
-      puts "Running Test: removes numbers and parentheses from the department name"
+      puts 'Running Test: removes numbers and parentheses from the department name'
       result = Department.clean_department_name('Customer Service (403)')
       puts "Debug: clean_department_name result: #{result}"
       expect(result).to eq('Customer Service')
@@ -12,7 +14,7 @@ RSpec.describe Department, type: :model do
 
     it 'removes hyphen prefixes and trims spaces' do
       puts "\n------------------"
-      puts "Running Test: removes hyphen prefixes and trims spaces"
+      puts 'Running Test: removes hyphen prefixes and trims spaces'
       result = Department.clean_department_name('123 - Customer Service')
       puts "Debug: clean_department_name result: #{result}"
       expect(result).to eq('Customer Service')
@@ -20,7 +22,7 @@ RSpec.describe Department, type: :model do
 
     it 'handles names with multiple parts' do
       puts "\n------------------"
-      puts "Running Test: handles names with multiple parts"
+      puts 'Running Test: handles names with multiple parts'
       result = Department.clean_department_name('Clinical - Preclinical')
       puts "Debug: clean_department_name result: #{result}"
       expect(result).to eq('Clinical Preclinical')
@@ -39,10 +41,18 @@ RSpec.describe Department, type: :model do
     let!(:science) { create(:department, dept_name: 'Science') }
     let!(:human_resources) { create(:department, dept_name: 'Human Resources') }
     let!(:customer_support) { create(:department, dept_name: 'Customer Support') }
-    
+
+    it 'finds existing department "science" with name "GBio - GondolaBio"' do
+      puts "\n------------------"
+      puts "Running Test: finds existing department 'science' with name 'GBio - GondolaBio'"
+      result = Department.find_department('GBio - GondolaBio')
+      puts "Debug: find_department result: #{result&.dept_name}"
+      expect(result).to eq(science)
+    end
+
     it 'finds an existing department by normalized name that includes hq' do
       puts "\n------------------"
-      puts "Running Test: finds an existing department by normalized name with HQ"
+      puts 'Running Test: finds an existing department by normalized name with HQ'
       result = Department.find_department('headquarters at blink health')
       puts "Debug: find_department result: #{result&.dept_name}"
       expect(result).to eq(executive)
@@ -50,7 +60,7 @@ RSpec.describe Department, type: :model do
 
     it 'finds an existing department by normalized name that includes Sales' do
       puts "\n------------------"
-      puts "Running Test: finds an existing department by normalized name with Sales"
+      puts 'Running Test: finds an existing department by normalized name with Sales'
       result = Department.find_department('Field Sales')
       puts "Debug: find_department result: #{result&.dept_name}"
       expect(result).to eq(sales)
@@ -58,7 +68,7 @@ RSpec.describe Department, type: :model do
 
     it 'finds an existing department by normalized name that includes Clinical' do
       puts "\n------------------"
-      puts "Running Test: finds an existing department by normalized name with Clinical"
+      puts 'Running Test: finds an existing department by normalized name with Clinical'
       result = Department.find_department('clinical - nurses')
       puts "Debug: find_department result: #{result&.dept_name}"
       expect(result).to eq(clinical_team)
@@ -66,7 +76,7 @@ RSpec.describe Department, type: :model do
 
     it 'finds an existing department by normalized name that includes Marketing' do
       puts "\n------------------"
-      puts "Running Test: finds an existing department by normalized name with Marketing"
+      puts 'Running Test: finds an existing department by normalized name with Marketing'
       result = Department.find_department('marketing - 123')
       puts "Debug: find_department result: #{result&.dept_name}"
       expect(result).to eq(marketing)
@@ -74,7 +84,7 @@ RSpec.describe Department, type: :model do
 
     it 'finds an existing department by normalized name that includes Operations' do
       puts "\n------------------"
-      puts "Running Test: finds an existing department by normalized name with Operations"
+      puts 'Running Test: finds an existing department by normalized name with Operations'
       result = Department.find_department('operations')
       puts "Debug: find_department result: #{result&.dept_name}"
       expect(result).to eq(operations)
@@ -82,7 +92,7 @@ RSpec.describe Department, type: :model do
 
     it 'finds an existing department by normalized name that includes Data' do
       puts "\n------------------"
-      puts "Running Test: finds an existing department by normalized name with Data"
+      puts 'Running Test: finds an existing department by normalized name with Data'
       result = Department.find_department('BBIO - data')
       puts "Debug: find_department result: #{result&.dept_name}"
       expect(result).to eq(data_science)
@@ -90,7 +100,7 @@ RSpec.describe Department, type: :model do
 
     it 'finds an existing department by normalized name that includes Technology' do
       puts "\n------------------"
-      puts "Running Test: finds an existing department by normalized name with Technology"
+      puts 'Running Test: finds an existing department by normalized name with Technology'
       result = Department.find_department('technology, business, surgery')
       puts "Debug: find_department result: #{result&.dept_name}"
       expect(result).to eq(it)
@@ -98,7 +108,7 @@ RSpec.describe Department, type: :model do
 
     it 'finds an existing department by normalized name that includes Quality' do
       puts "\n------------------"
-      puts "Running Test: finds an existing department by normalized name with Quality"
+      puts 'Running Test: finds an existing department by normalized name with Quality'
       result = Department.find_department('quality & care')
       puts "Debug: find_department result: #{result&.dept_name}"
       expect(result).to eq(quality)
@@ -106,7 +116,7 @@ RSpec.describe Department, type: :model do
 
     it 'finds an existing department by normalized name that includes Science' do
       puts "\n------------------"
-      puts "Running Test: finds an existing department by normalized name with Science"
+      puts 'Running Test: finds an existing department by normalized name with Science'
       result = Department.find_department('science')
       puts "Debug: find_department result: #{result&.dept_name}"
       expect(result).to eq(science)
@@ -114,7 +124,7 @@ RSpec.describe Department, type: :model do
 
     it 'finds an existing department by normalized name that includes Talent' do
       puts "\n------------------"
-      puts "Running Test: finds an existing department by normalized name with Talent"
+      puts 'Running Test: finds an existing department by normalized name with Talent'
       result = Department.find_department('talent & people')
       puts "Debug: find_department result: #{result&.dept_name}"
       expect(result).to eq(human_resources)
@@ -122,7 +132,7 @@ RSpec.describe Department, type: :model do
 
     it 'finds an existing department by normalized name that includes Customer Support' do
       puts "\n------------------"
-      puts "Running Test: finds an existing department by normalized name with Customer Support"
+      puts 'Running Test: finds an existing department by normalized name with Customer Support'
       result = Department.find_department('customer relations')
       puts "Debug: find_department result: #{result&.dept_name}"
       expect(result).to eq(customer_support)
@@ -130,15 +140,15 @@ RSpec.describe Department, type: :model do
 
     it 'creates a new department if none exists' do
       puts "\n------------------"
-      puts "Running Test: creates a new department if none exists"
-      expect {
+      puts 'Running Test: creates a new department if none exists'
+      expect do
         result = Department.find_department('New Department')
-      }.to change(Department, :count).by(1)
+      end.to change(Department, :count).by(1)
     end
 
     it 'logs an error when creating a new department' do
       puts "\n------------------"
-      puts "Running Test: logs an error when creating a new department"
+      puts 'Running Test: logs an error when creating a new department'
       expect(Adjudication).to receive(:log_error).with(hash_including(error_details: /not found/))
       result = Department.find_department('Unmatched Department')
     end

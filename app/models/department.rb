@@ -9,82 +9,60 @@ class Department < ApplicationRecord
 
   validates :dept_name, presence: true, uniqueness: true
 
+  KEYWORD_MAPPINGS = {
+    'Business Development' => ['germany', 'japan', 'united kingdom'],
+    'Clinical Team' => %w[clinical preclinical provider healthcare veterinary
+                          pharmacy therapeutics clinicians dmpk "occupational therapy" eeg
+                          "developmental therapies" aba ipa],
+    'Customer Support' => ['customer'],
+    'Data Science' => %w[data bioinformatics "causal inference"],
+    'Design' => ['creative'],
+    'Editorial' => ['social'],
+    'Engineering' => %w[engineering automation bioengineering],
+    'Executive' => ['headquarters'],
+    'Finance' => ['billing'],
+    'Human Resources' => %w[talent cphr],
+    'IT' => ['technology', 'artificial intelligence', 'security'],
+    'Marketing' => %w[marketing commercial],
+    'Operations' => ['operations'],
+    'Product Management' => ['products'],
+    'Public Relations' => ['community'],
+    'Quality' => ['quality'],
+    'Sales' => %w[sales retail "indirect channels"],
+    'Science' => %w[science genomics clia cmc fusion],
+    'Supply Chain' => ['packaging']
+  }.freeze
+
   def self.clean_department_name(department_name)
     puts "Cleaning department name: #{department_name}"
-    # cleaned_name = department_name.gsub(/^\d+\s*-\s*/, '').strip
-    cleaned_name = department_name.sub(/^.*?-/, '').strip
-
+    cleaned_name = department_name.gsub(/\d+|\(.*?\)/, '').strip
     puts "Cleaned department name: #{cleaned_name}"
+
     parts = cleaned_name.split('-').map(&:strip)
-    main_name = parts.first
-    puts "Main name: #{main_name}"
+    cleaned_name = parts.join(' ').strip unless parts.empty?
+    puts "Cleaned name after joining parts: #{cleaned_name}"
+
     if parts.size > 1
       candidate_name = parts.join(' ')
       puts "Candidate name if parts > 1: #{candidate_name}"
       return candidate_name if exists?(dept_name: candidate_name)
     end
-    main_name
+    cleaned_name
   end
 
   def self.find_department(department_name, job_url = nil)
     cleaned_name = clean_department_name(department_name)
     normalized_name = cleaned_name.downcase
+    parts = cleaned_name.split(' ')
 
     puts "Finding department: #{cleaned_name}"
     puts "Normalized name: #{normalized_name}"
 
-    if normalized_name.include?('headquarters')
-      department = find_by(dept_name: 'Executive')
-      puts "#{ORANGE}normalized name match to headquarters, matching department to Executive#{RESET}"
+    KEYWORD_MAPPINGS.each do |mapped_name, keywords|
+      next unless keywords.any? { |keyword| normalized_name.include?(keyword) }
 
-      return department if department
-    end
-
-    if normalized_name.include?('clinical')
-      department = find_by(dept_name: 'Clinical Team')
-      puts "#{ORANGE}normalized name match to clinical, matching department to Clinical Team#{RESET}"
-      return department if department
-    end
-
-    if normalized_name.include?('sales')
-      department = find_by(dept_name: 'Sales')
-      puts "#{ORANGE}normalized name match to sales, matching department to Sales#{RESET}"
-      return department if department
-    end
-
-    if normalized_name.include?('marketing')
-      department = find_by(dept_name: 'Marketing')
-      puts "#{ORANGE}normalized name match to marketing, matching department to Marketing#{RESET}"
-      return department if department
-    end
-
-    if normalized_name.include?('operations')
-      department = find_by(dept_name: 'Operations')
-      puts "#{ORANGE}normalized name match to operations, matching department to Operations#{RESET}"
-      return department if department
-    end
-
-    if normalized_name.include?('data')
-      department = find_by(dept_name: 'Data Science')
-      puts "#{ORANGE}normalized name match to data, matching department to Data Science#{RESET}"
-      return department if department
-    end
-
-    if normalized_name.include?('technology')
-      department = find_by(dept_name: 'IT')
-      puts "#{ORANGE}normalized name match to technology, matching department to IT#{RESET}"
-      return department if department
-    end
-
-    if normalized_name.include?('quality')
-      department = find_by(dept_name: 'Quality')
-      puts "#{ORANGE}normalized name match to quality, matching department to Quality#{RESET}"
-      return department if department
-    end
-
-    if normalized_name.include?('science')
-      department = find_by(dept_name: 'Science')
-      puts "#{ORANGE}normalized name match to science, matching department to Science#{RESET}"
+      department = find_by(dept_name: mapped_name)
+      puts "#{ORANGE}Normalized name match to one of #{keywords}, matching department to #{mapped_name}#{RESET}"
       return department if department
     end
 
@@ -92,19 +70,37 @@ class Department < ApplicationRecord
                  .or(where('aliases::text ILIKE ?', "%#{normalized_name}%"))
                  .first
 
-    puts "Department found: #{department&.dept_name}"
-    department ||= Department.create!(
-      dept_name: cleaned_name.titleize,
-      error_details: "Department #{department_name} for #{job_url} not found in existing records",
-      resolved: false
-    )
-    unless department.resolved
+    unless department && parts.size > 1
+      parts.each do |part|
+        partial_name = part.downcase
+
+        puts "Checking for partial name: #{partial_name}"
+        department = where('LOWER(dept_name) = ?', partial_name)
+                     .or(where('aliases::text ILIKE ?', "%#{partial_name}%"))
+                     .first
+        if department
+          puts "#{GREEN}Match found for partial name: #{part}#{RESET}"
+          return department
+        end
+      end
+    end
+
+    unless department
+
+      new_department = Department.create!(
+        dept_name: cleaned_name.titleize,
+        error_details: "Department #{department_name} for #{job_url} not found in existing records",
+        resolved: false
+      )
+      puts "#{RED}Logging error for department #{department_name} with cleaned name #{cleaned_name} for #{job_url} not found in existing records#{RESET}"
       Adjudication.log_error(
         adjudicatable_type: 'Department',
-        adjudicatable_id: department.id,
+        adjudicatable_id: new_department.id,
         error_details: "Department #{department_name} for #{job_url} not found in existing records"
       )
+
     end
+    puts "#{GREEN}Department found: #{department&.dept_name}#{RESET}"
 
     department
   end

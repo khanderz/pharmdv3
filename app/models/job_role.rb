@@ -12,6 +12,15 @@ class JobRole < ApplicationRecord
 
   validates :role_name, presence: true, uniqueness: true
 
+  KEYWORD_MAPPINGS = {
+    'Account Manager' => ['account'],
+    'Counsel' => ['legal'],
+    'Laboratory Technician' => ['laboratory'],
+    'Marketing Specialist' => ['marketing'],
+    'Sales Representative' => ['sales'],
+    'Scientist' => ['scientist']
+  }.freeze
+
   def self.find_or_create_job_role(job_title)
     titles = Utils::TitleCleaner.clean_title(job_title)
     puts "#{BLUE}original title #{job_title}#{RESET}"
@@ -19,41 +28,15 @@ class JobRole < ApplicationRecord
     cleaned_title = titles[:cleaned_title].presence || titles[:modified_title]
     modified_title = titles[:modified_title]
 
-    if cleaned_title.include?('account') || modified_title.include?('account')
-      job_role = JobRole.find_by(role_name: 'Account Manager')
-      puts "#{ORANGE}normalized name match to account, matching job role to Account Manager#{RESET}"
+    KEYWORD_MAPPINGS.each do |mapped_role, keywords|
+      next unless keywords.any? do |keyword|
+        cleaned_title.include?(keyword) || modified_title.include?(keyword)
+      end
+
+      job_role = find_by(role_name: mapped_role)
+      puts "#{ORANGE}Normalized name match to one of #{keywords}, matching job role to #{mapped_role}#{RESET}"
       return job_role if job_role
     end
-
-    if cleaned_title.include?('legal') || modified_title.include?('legal')
-      job_role = JobRole.find_by(role_name: 'Counsel')
-      puts "#{ORANGE}normalized name match to legal, matching job role to Counsel#{RESET}"
-      return job_role if job_role
-    end
-
-    if cleaned_title.include?('marketing') || modified_title.include?('marketing')
-      job_role = JobRole.find_by(role_name: 'Marketing Specialist')
-      puts "#{ORANGE}normalized name match to marketing, matching job role to Marketing Specialist#{RESET}"
-      return job_role if job_role
-    end
-
-    if cleaned_title.include?('sales') || modified_title.include?('sales')
-      job_role = JobRole.find_by(role_name: 'Sales Representative')
-      puts "#{ORANGE}normalized name match to sales, matching job role to Sales Representative#{RESET}"
-      return job_role if job_role
-    end
-
-    if cleaned_title.include?('laboratory') || modified_title.include?('laboratory')
-      job_role = JobRole.find_by(role_name: 'Laboratory Technician')
-      puts "#{ORANGE}normalized name match to laboratory, matching job role to Laboratory Technician#{RESET}"
-      return job_role if job_role
-    end
-
-    # if cleaned_title.include?('scientist') || modified_title.include?('scientist')
-    #   job_role = JobRole.find_by(role_name: 'Scientist')
-    #   puts "#{ORANGE}normalized name match to scientist, matching job role to Scientist#{RESET}"
-    #   return job_role if job_role
-    # end
 
     job_role = JobRole.find_by('LOWER(role_name) = ?', modified_title.downcase)
     job_role ||= JobRole.find_by('LOWER(role_name) = ?', cleaned_title.downcase)

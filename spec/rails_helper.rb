@@ -1,9 +1,11 @@
+# frozen_string_literal: true
+
 # This file is copied to spec/ when you run 'rails generate rspec:install'
 require 'spec_helper'
 ENV['RAILS_ENV'] ||= 'test'
 require_relative '../config/environment'
 # Prevent database truncation if the environment is production
-abort("The Rails environment is running in production mode!") if Rails.env.production?
+abort('The Rails environment is running in production mode!') if Rails.env.production?
 # Uncomment the line below in case you have `--require rails_helper` in the `.rspec` file
 # that will avoid rails generators crashing because migrations haven't been run yet
 # return unless Rails.env.test?
@@ -33,11 +35,10 @@ rescue ActiveRecord::PendingMigrationError => e
   abort e.to_s.strip
 end
 
-ORANGE = "\e[33m".freeze
-RED = "\e[31m".freeze
-GREEN = "\e[32m".freeze
-RESET = "\e[0m".freeze
-
+ORANGE = "\e[33m"
+RED = "\e[31m"
+GREEN = "\e[32m"
+RESET = "\e[0m"
 
 RSpec.configure do |config|
   config.include FactoryBot::Syntax::Methods

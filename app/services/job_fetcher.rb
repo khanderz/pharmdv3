@@ -7,7 +7,7 @@
 
 class JobFetcher
   def self.fetch(company)
-    ats_type_code = company.ats_type.ats_type_code
+    ats_type_code = company.ats_type.ats_type_code.strip
     case ats_type_code
     when 'LEVER'
       LeverApiService.fetch_jobs(company)
