@@ -11,7 +11,7 @@ teams = [
 
   { team_name: 'Client Services',
     aliases: ['Customer Success', 'Customer Support', 'Strategic Alliances',
-              'Customer Operations'] },
+              'Customer Operations', 'client engagement'] },
 
   { team_name: 'Clinical Team',
     aliases: ['Healthcare Team', 'Medical Team', 'Therapy', 'Psychiatry',
@@ -36,7 +36,8 @@ teams = [
 
   { team_name: 'Marketing', aliases: ['Digital Marketing', 'Branding Team'] },
 
-  { team_name: 'Operations', aliases: ['Ops', 'Operations Team', 'Operations and Strategy'] },
+  { team_name: 'Operations',
+    aliases: ['Ops', 'Operations Team', 'Operations and Strategy', 'service operations'] },
 
   { team_name: 'Product',
     aliases: ['Product Development', 'Product Team', 'Design', 'Product/S&O'] },
@@ -54,6 +55,8 @@ teams = [
 
   { team_name: 'Software Engineering',
     aliases: ['Development Team', 'Engineering Team', 'Engineering'] },
+
+  { team_name: 'Supply Chain', aliases: ['Logistics', 'Procurement', 'Supply Chain Team'] },
 
   { team_name: 'Technical Support', aliases: ['Tech Support', 'Help Desk', 'IT Support'] }
 ]
