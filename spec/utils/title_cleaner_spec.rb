@@ -8,13 +8,13 @@ RSpec.describe Utils::TitleCleaner do
     it 'removes special characters and whitespace from the title' do
       title = 'Job@Title!!'
       result = described_class.clean_title(title)
-      puts result
+      # puts result
       expect(result[:cleaned_title]).to eq('JobTitle')
     end
 
     it 'returns an empty string for nil input' do
       result = described_class.clean_title(nil)
-      puts result
+      # puts result
       expect(result[:cleaned_title]).to eq('')
       expect(result[:modified_title]).to eq('')
     end
@@ -34,7 +34,7 @@ RSpec.describe Utils::TitleCleaner do
     it 'handles titles with hyphens, commas, and slashes' do
       title = 'Lead - Developer / Designer, Architect'
       result = described_class.clean_title(title)
-      puts result
+      # puts result
       expect(result[:cleaned_title]).to eq('Developer Designer Architect')
     end
 
@@ -68,7 +68,7 @@ RSpec.describe Utils::TitleCleaner do
     it 'appends "Machine Learning" if the original title includes it' do
       title = 'Engineer - Machine Learning'
       result = described_class.clean_title(title)
-      puts result
+      # puts result
       expect(result[:cleaned_title]).to eq('Engineer Machine Learning')
     end
 
@@ -81,7 +81,7 @@ RSpec.describe Utils::TitleCleaner do
     it 'cleans up unnecessary dots and extra spaces' do
       title = 'Lead Software Developer..... '
       result = described_class.clean_title(title)
-      puts result
+      # puts result
       expect(result[:cleaned_title]).to eq('Software Developer')
     end
 

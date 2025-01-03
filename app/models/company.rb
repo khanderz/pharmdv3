@@ -58,7 +58,7 @@ class Company < ApplicationRecord
       next unless row[attribute].present?
 
       casted_value = case attribute
-                     when 'operating_status'
+                     when 'operating_status', 'is_completely_remote'
                        ActiveModel::Type::Boolean.new.cast(row[attribute])
                      when 'year_founded'
                        row[attribute].to_i
@@ -79,12 +79,22 @@ class Company < ApplicationRecord
     changes_made ||= update_optional_association(company, :funding_type, row['last_funding_type'],
                                                  FundingType, :funding_type_name)
 
-    if row['healthcare_domains'].present?
-      healthcare_domains = row['healthcare_domains'].split(',').map(&:strip)
+    if row['healthcare_domain'].present?
+      healthcare_domains = row['healthcare_domain'].split(',').map(&:strip)
+      puts "Healthcare Domains: #{healthcare_domains}"
+
       domains = healthcare_domains.map do |domain_key|
         HealthcareDomain.find_by(key: domain_key)
       end.compact
-      changes_made ||= update_collection(company, :healthcare_domains, domains)
+      puts "Found Healthcare Domains: #{domains.map(&:id)}"
+
+      domains.each do |domain|
+        CompanyDomain.find_or_create_by!(company: company, healthcare_domain: domain)
+        puts "Created CompanyDomain for Company #{company.id} and HealthcareDomain #{domain.id}"
+      end
+
+      changes_made ||= domains.any?
+
     else
       puts "No healthcare domains found for company: #{row['company_name']}"
     end
@@ -97,6 +107,8 @@ class Company < ApplicationRecord
     else
       puts "No specialties found for company: #{row['company_name']}"
     end
+
+    company.save! if changes_made
     changes_made
   end
 
@@ -118,11 +130,28 @@ class Company < ApplicationRecord
   end
 
   private_class_method def self.update_collection(company, association, new_values)
-    if new_values.blank? || company.send(association).pluck(:id).sort == new_values.pluck(:id).sort
+   puts "-----------UPDATING"
+    current_ids = company.send(association).pluck(:id).sort
+    new_ids = new_values.pluck(:id).sort
+    puts "Updating #{association}: current IDs: #{current_ids}, new IDs: #{new_ids}"
+
+    if new_values.blank? || current_ids == new_ids
+      puts "No changes needed for #{association}"
       return false
     end
 
-    company.send("#{association}=", new_values)
-    true
+    begin
+      company.send("#{association}=", new_values)
+      if company.save
+        puts "#{association} after save: #{company.send(association).pluck(:id)}"
+      else
+        puts "Failed to save #{association}: #{company.errors.full_messages}"
+      end
+      company.reload
+      true
+    rescue ActiveRecord::RecordInvalid => e
+      puts "Failed to update #{association}: #{e.message}"
+      false
+    end
   end
 end

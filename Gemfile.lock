@@ -105,6 +105,10 @@ GEM
     connection_pool (2.4.1)
     crass (1.0.6)
     csv (3.3.0)
+    database_cleaner-active_record (2.2.0)
+      activerecord (>= 5.a)
+      database_cleaner-core (~> 2.0.0)
+    database_cleaner-core (2.0.1)
     date (3.3.4)
     debug (1.9.2)
       irb (~> 1.10)
@@ -319,6 +323,8 @@ GEM
       rack-proxy (>= 0.6.1)
       railties (>= 5.2)
       semantic_range (>= 2.3.0)
+    shoulda-matchers (5.3.0)
+      activesupport (>= 5.2.0)
     signet (0.19.0)
       addressable (~> 2.8)
       faraday (>= 0.17.5, < 3.a)
@@ -364,6 +370,7 @@ DEPENDENCIES
   bootsnap
   capybara
   csv
+  database_cleaner-active_record
   debug
   dotenv-rails (~> 3.1)
   factory_bot_rails
@@ -381,6 +388,7 @@ DEPENDENCIES
   rubocop (~> 1.67)
   selenium-webdriver
   shakapacker (= 8.0.2)
+  shoulda-matchers (~> 5.0)
   sprockets-rails
   tzinfo-data
   web-console

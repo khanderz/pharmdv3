@@ -36,17 +36,17 @@ class Department < ApplicationRecord
   }.freeze
 
   def self.clean_department_name(department_name)
-    puts "Cleaning department name: #{department_name}"
+    # puts "Cleaning department name: #{department_name}"
     cleaned_name = department_name.gsub(/\d+|\(.*?\)/, '').strip
-    puts "Cleaned department name: #{cleaned_name}"
+    # puts "Cleaned department name: #{cleaned_name}"
 
     parts = cleaned_name.split('-').map(&:strip)
     cleaned_name = parts.join(' ').strip unless parts.empty?
-    puts "Cleaned name after joining parts: #{cleaned_name}"
+    # puts "Cleaned name after joining parts: #{cleaned_name}"
 
     if parts.size > 1
       candidate_name = parts.join(' ')
-      puts "Candidate name if parts > 1: #{candidate_name}"
+      # puts "Candidate name if parts > 1: #{candidate_name}"
       return candidate_name if exists?(dept_name: candidate_name)
     end
     cleaned_name
@@ -57,15 +57,15 @@ class Department < ApplicationRecord
     normalized_name = cleaned_name.downcase
     parts = cleaned_name.split(' ')
 
-    puts "Finding department: #{cleaned_name}"
-    puts "Normalized name: #{normalized_name}"
+    # puts "Finding department: #{cleaned_name}"
+    # puts "Normalized name: #{normalized_name}"
 
     KEYWORD_MAPPINGS.each do |mapped_name, keywords|
       keyword_regex = Regexp.union(keywords.map { |keyword| /\b#{Regexp.escape(keyword)}\b/i })
       next unless normalized_name.match?(keyword_regex)
 
       department = find_by(dept_name: mapped_name)
-      puts "#{ORANGE}Normalized name match to one of #{keywords}, matching department to #{mapped_name}#{RESET}"
+      # puts "#{ORANGE}Normalized name match to one of #{keywords}, matching department to #{mapped_name}#{RESET}"
       return department if department
     end
 
@@ -77,12 +77,12 @@ class Department < ApplicationRecord
       parts.each do |part|
         partial_name = part.downcase
 
-        puts "Checking for partial name: #{partial_name}"
+        # puts "Checking for partial name: #{partial_name}"
         department = where('LOWER(dept_name) = ?', partial_name)
                      .or(where('aliases::text ILIKE ?', "%#{partial_name}%"))
                      .first
         if department
-          puts "#{GREEN}Match found for partial name: #{part}#{RESET}"
+          # puts "#{GREEN}Match found for partial name: #{part}#{RESET}"
           return department
         end
       end
@@ -95,7 +95,7 @@ class Department < ApplicationRecord
         error_details: "Department #{department_name} for #{job_url} not found in existing records",
         resolved: false
       )
-      puts "#{RED}Logging error for department #{department_name} with cleaned name #{cleaned_name} for #{job_url} not found in existing records#{RESET}"
+      # puts "#{RED}Logging error for department #{department_name} with cleaned name #{cleaned_name} for #{job_url} not found in existing records#{RESET}"
       Adjudication.log_error(
         adjudicatable_type: 'Department',
         adjudicatable_id: new_department.id,
@@ -103,7 +103,7 @@ class Department < ApplicationRecord
       )
 
     end
-    puts "#{GREEN}Department found: #{department&.dept_name}#{RESET}"
+    # puts "#{GREEN}Department found: #{department&.dept_name}#{RESET}"
 
     department
   end

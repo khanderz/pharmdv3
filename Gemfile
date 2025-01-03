@@ -59,6 +59,7 @@ group :test do
   # Use system testing [https://guides.rubyonrails.org/testing.html#system-testing]
   gem 'capybara'
   gem 'selenium-webdriver'
+  gem 'shoulda-matchers', '~> 5.0'
 end
 
 gem 'shakapacker', '= 8.0.2'
@@ -81,4 +82,6 @@ gem 'bcrypt', '~> 3.1.7'
 gem 'google-apis-sheets_v4'
 gem 'googleauth'
 
+# unit test gems
 gem 'active_model_serializers', '~> 0.10.0'
+gem 'database_cleaner-active_record'
