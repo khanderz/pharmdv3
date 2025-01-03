@@ -1,20 +1,101 @@
 # frozen_string_literal: true
 
-# spec/lib/utils/title_cleaner_spec.rb
-
 require 'rails_helper'
 require 'utils/title_cleaner'
 
 RSpec.describe Utils::TitleCleaner do
-  describe '.clean' do
-    it 'removes special characters from the title' do
+  describe '.clean_title' do
+    it 'removes special characters and whitespace from the title' do
       title = 'Job@Title!!'
-      cleaned_title = described_class.clean(title)
-      expect(cleaned_title).to eq('JobTitle')
+      result = described_class.clean_title(title)
+      puts result
+      expect(result[:cleaned_title]).to eq('JobTitle')
     end
 
     it 'returns an empty string for nil input' do
-      expect(described_class.clean(nil)).to eq('')
+      result = described_class.clean_title(nil)
+      puts result
+      expect(result[:cleaned_title]).to eq('')
+      expect(result[:modified_title]).to eq('')
+    end
+
+    it 'removes employment terms from the title' do
+      title = 'Senior Software Engineer (Full Time)'
+      result = described_class.clean_title(title)
+      expect(result[:cleaned_title]).to eq('Software Engineer')
+    end
+
+    it 'removes seniority terms from the title' do
+      title = 'Junior Data Scientist'
+      result = described_class.clean_title(title)
+      expect(result[:cleaned_title]).to eq('Data Scientist')
+    end
+
+    it 'handles titles with hyphens, commas, and slashes' do
+      title = 'Lead - Developer / Designer, Architect'
+      result = described_class.clean_title(title)
+      puts result
+      expect(result[:cleaned_title]).to eq('Developer')
+    end
+
+    it 'prioritizes meaningful phrases from the title' do
+      title = 'Manager - Business Development & Strategic Alliances'
+      result = described_class.clean_title(title)
+      expect(result[:cleaned_title]).to eq('Business Development & Strategic Alliances')
+    end
+
+    it 'removes "staff" unless the title contains "chief of staff"' do
+      title = 'Administrative Staff Manager'
+      result = described_class.clean_title(title)
+      expect(result[:cleaned_title]).to eq('Administrative Manager')
+
+      title = 'Chief of Staff'
+      result = described_class.clean_title(title)
+      expect(result[:cleaned_title]).to eq('Chief of Staff')
+    end
+
+    it 'removes known location names from the title' do
+      allow(Location).to receive(:all).and_return([
+                                                    OpenStruct.new(name: 'New York'),
+                                                    OpenStruct.new(name: 'San Francisco')
+                                                  ])
+
+      title = 'Sales Manager - New York'
+      result = described_class.clean_title(title)
+      expect(result[:cleaned_title]).to eq('Sales Manager')
+    end
+
+    it 'removes roman numerals from the title' do
+      title = 'Executive Officer III'
+      result = described_class.clean_title(title)
+      expect(result[:cleaned_title]).to eq('Executive Officer')
+    end
+
+    it 'appends "Machine Learning" if the original title includes it' do
+      title = 'Engineer - Machine Learning'
+      result = described_class.clean_title(title)
+      puts result
+      expect(result[:cleaned_title]).to eq('Engineer Machine Learning')
+    end
+
+    it 'handles titles with multiple parts' do
+      title = 'Environmental Health and Safety Manager'
+      result = described_class.clean_title(title)
+      expect(result[:cleaned_title]).to eq('Environmental Health and Safety Manager')
+    end
+
+    it 'cleans up unnecessary dots and extra spaces' do
+      title = 'Lead Software Developer..... '
+      result = described_class.clean_title(title)
+      puts result
+      expect(result[:cleaned_title]).to eq('Lead Software Developer')
+    end
+
+    it 'provides both cleaned and modified titles' do
+      title = 'Junior Data Scientist, Analytics'
+      result = described_class.clean_title(title)
+      expect(result[:cleaned_title]).to eq('Data Scientist')
+      expect(result[:modified_title]).to eq('Data Scientist of Analytics')
     end
   end
 end

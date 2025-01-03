@@ -44,7 +44,8 @@ teams = [
 
   { team_name: 'Project Management', aliases: ['PM Team', 'Project Team'] },
 
-  { team_name: 'Quality Assurance', aliases: ['QA Team', 'Quality Control', 'QA'] },
+  { team_name: 'Quality Assurance',
+    aliases: ['QA Team', 'Quality Control', 'QA', 'quality operations'] },
 
   { team_name: 'Safety', aliases: ['Environmental Health and Safety'] },
 

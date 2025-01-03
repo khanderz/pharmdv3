@@ -39,6 +39,7 @@ ORANGE = "\e[33m"
 RED = "\e[31m"
 GREEN = "\e[32m"
 RESET = "\e[0m"
+BLUE = "\e[34m"
 
 RSpec.configure do |config|
   config.include FactoryBot::Syntax::Methods

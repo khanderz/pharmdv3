@@ -13,25 +13,26 @@ class Department < ApplicationRecord
     'Business Development' => ['germany', 'japan', 'united kingdom'],
     'Clinical Team' => %w[clinical preclinical provider healthcare veterinary
                           pharmacy therapeutics clinicians dmpk "occupational therapy" eeg
-                          "developmental therapies" aba ipa therapy],
+                          "developmental therapies" aba ipa therapy nursing],
     'Customer Support' => ['customer'],
-    'Data Science' => %w[data bioinformatics "causal inference"],
+    'Data Science' => %w[data bioinformatics "causal inference" 'predictive modeling'],
     'Design' => ['creative'],
     'Editorial' => ['social'],
     'Engineering' => %w[engineering automation bioengineering infrastructure],
     'Executive' => %w[headquarters cmo cso],
     'Finance' => ['billing'],
     'Human Resources' => %w[talent cphr],
-    'IT' => ['technology', 'artificial intelligence', 'security', 'it'],
+    'Internship' => %w[intern internships],
+    'IT' => ['technology', 'artificial intelligence', 'security', 'it', 'cto'],
     'Legal' => %w[compliance policy],
     'Marketing' => %w[marketing commercial],
-    'Operations' => ['operations'],
+    'Operations' => %w[operations risk],
     'Product Management' => ['products'],
     'Public Relations' => ['community'],
-    'Quality' => ['quality'],
+    'Quality' => %w[quality qc],
     'Sales' => %w[sales retail "indirect channels"],
-    'Science' => %w[science genomics clia cmc fusion],
-    'Supply Chain' => ['packaging']
+    'Science' => %w[science genomics clia cmc fusion microbiology chemistry epigenetic],
+    'Supply Chain' => %w[packaging warehousing facilities manufacturing production]
   }.freeze
 
   def self.clean_department_name(department_name)
@@ -61,11 +62,11 @@ class Department < ApplicationRecord
 
     KEYWORD_MAPPINGS.each do |mapped_name, keywords|
       keyword_regex = Regexp.union(keywords.map { |keyword| /\b#{Regexp.escape(keyword)}\b/i })
-      if normalized_name.match?(keyword_regex)
-        department = find_by(dept_name: mapped_name)
-        puts "#{ORANGE}Normalized name match to one of #{keywords}, matching department to #{mapped_name}#{RESET}"
-        return department if department
-      end
+      next unless normalized_name.match?(keyword_regex)
+
+      department = find_by(dept_name: mapped_name)
+      puts "#{ORANGE}Normalized name match to one of #{keywords}, matching department to #{mapped_name}#{RESET}"
+      return department if department
     end
 
     department = where('LOWER(dept_name) = ?', normalized_name)
