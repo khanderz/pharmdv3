@@ -19,14 +19,19 @@ teams = [
 
   { team_name: 'Data Science', aliases: ['Data Team', 'Data Analytics', 'Data Engineering'] },
 
-  { team_name: 'DevOps', aliases: ['Infrastructure', 'Site Reliability', 'Cloud Engineering'] },
+  { team_name: 'Engineering',
+    aliases: ['Development Team', 'Engineering Team', 'Software Engineering', 'DevOps',
+              'Infrastructure', 'Site Reliability', 'Cloud Engineering'] },
+
+  { team_name: 'Executive',
+    aliases: ['Leadership', 'Management', 'C-Suite', 'Board of Directors'] },
 
   { team_name: 'Finance', aliases: ['Accounting', 'Financial Planning', 'FP&A', 'Finance Team'] },
 
   { team_name: 'Human Resources', aliases: ['HR', 'People Operations', 'Talent Acquisition'] },
 
-  { team_name: 'Information Security',
-    aliases: ['Cybersecurity', 'Security Team', 'Information Technology'] },
+  { team_name: 'IT',
+    aliases: ['Cybersecurity', 'Security Team', 'Information Security', 'Information Technology'] },
 
   { team_name: 'Internship',
     aliases: ['Interns', 'Internship Team', 'Internship Program', 'fellowship', 'graduate'] },
@@ -44,6 +49,8 @@ teams = [
 
   { team_name: 'Project Management', aliases: ['PM Team', 'Project Team'] },
 
+  { team_name: 'Public Relations', aliases: ['PR Team', 'Public Affairs', 'Communications'] },
+
   { team_name: 'Quality Assurance',
     aliases: ['QA Team', 'Quality Control', 'QA', 'quality operations'] },
 
@@ -53,9 +60,6 @@ teams = [
     aliases: ['Business Development', 'Sales Team', 'reimbursement operations'] },
 
   { team_name: 'Science', aliases: ['Research', 'R&D', 'Scientific Research', 'medical writing'] },
-
-  { team_name: 'Software Engineering',
-    aliases: ['Development Team', 'Engineering Team', 'Engineering'] },
 
   { team_name: 'Supply Chain', aliases: ['Logistics', 'Procurement', 'Supply Chain Team'] },
 

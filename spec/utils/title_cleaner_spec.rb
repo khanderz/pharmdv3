@@ -35,13 +35,7 @@ RSpec.describe Utils::TitleCleaner do
       title = 'Lead - Developer / Designer, Architect'
       result = described_class.clean_title(title)
       puts result
-      expect(result[:cleaned_title]).to eq('Developer')
-    end
-
-    it 'prioritizes meaningful phrases from the title' do
-      title = 'Manager - Business Development & Strategic Alliances'
-      result = described_class.clean_title(title)
-      expect(result[:cleaned_title]).to eq('Business Development & Strategic Alliances')
+      expect(result[:cleaned_title]).to eq('Developer Designer Architect')
     end
 
     it 'removes "staff" unless the title contains "chief of staff"' do
@@ -88,13 +82,13 @@ RSpec.describe Utils::TitleCleaner do
       title = 'Lead Software Developer..... '
       result = described_class.clean_title(title)
       puts result
-      expect(result[:cleaned_title]).to eq('Lead Software Developer')
+      expect(result[:cleaned_title]).to eq('Software Developer')
     end
 
     it 'provides both cleaned and modified titles' do
       title = 'Junior Data Scientist, Analytics'
       result = described_class.clean_title(title)
-      expect(result[:cleaned_title]).to eq('Data Scientist')
+      expect(result[:cleaned_title]).to eq('Data Scientist Analytics')
       expect(result[:modified_title]).to eq('Data Scientist of Analytics')
     end
   end

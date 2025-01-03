@@ -12,8 +12,8 @@ class Department < ApplicationRecord
   KEYWORD_MAPPINGS = {
     'Business Development' => ['germany', 'japan', 'united kingdom'],
     'Clinical Team' => %w[clinical preclinical provider healthcare veterinary
-                          pharmacy therapeutics clinicians dmpk "occupational therapy" eeg
-                          "developmental therapies" aba ipa therapy nursing],
+                          pharmacy therapeutics clinicians dmpk therapy eeg
+                          therapies aba ipa therapy nursing hematology genetic],
     'Customer Support' => ['customer'],
     'Data Science' => %w[data bioinformatics "causal inference" 'predictive modeling'],
     'Design' => ['creative'],
@@ -31,7 +31,7 @@ class Department < ApplicationRecord
     'Public Relations' => ['community'],
     'Quality' => %w[quality qc],
     'Sales' => %w[sales retail "indirect channels"],
-    'Science' => %w[science genomics clia cmc fusion microbiology chemistry epigenetic],
+    'Science' => %w[science genomics clia cmc fusion microbiology chemistry epigenetic causal],
     'Supply Chain' => %w[packaging warehousing facilities manufacturing production]
   }.freeze
 
