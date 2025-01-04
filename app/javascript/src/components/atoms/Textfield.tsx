@@ -21,6 +21,7 @@ export const TextField = ({
       {tooltipMessage && tooltipMessage.trim() !== "" && (
         <Tooltip
           id={props.id}
+          {...props}
           tooltipMessage={tooltipMessage}
           readMoreLink={readMoreLink}
           slotProps={{

@@ -582,8 +582,8 @@ export function FiltersProvider({ children }: FiltersProviderProps) {
 
     if (selectedJobSettings.length > 0) {
       filtered = filtered.filter(jobPost =>
-        selectedJobSettings.some(
-          setting => jobPost.job_setting_id === setting.id,
+        selectedJobSettings.some(setting =>
+          jobPost.job_setting?.some(js => js === setting.setting_name),
         ),
       );
     }

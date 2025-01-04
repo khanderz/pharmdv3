@@ -58,22 +58,7 @@ export const JobCard = ({
   job_salary_min,
   job_salary_single,
 }: JobCardProps) => {
-  console.log({
-    department,
-    job_description,
-    job_benefits,
-    job_credentials,
-    job_educations,
-    job_experiences,
-    job_locations,
-    job_qualifications,
-    job_responsibilities,
-    job_currency,
-    job_salary_interval,
-    job_salary_max,
-    job_salary_min,
-    job_salary_single,
-  });
+  ("");
   const jobPostDate = job_posted
     ? new Date(job_posted).toLocaleDateString()
     : "";
@@ -110,13 +95,17 @@ export const JobCard = ({
           {company_name || "Unknown Company"}
         </Typography>
         <Attribute label={domainsLabel} value={healthcare_domains} renderChip />
-        {job_setting && <Attribute label="Setting" value={job_setting} />}
-        <Attribute label="Location" value={job_locations || "N/A"} />
+        {job_setting.length != 0 && (
+          <Attribute label="Setting" value={job_setting} />
+        )}
+        {job_locations.length != 0 && (
+          <Attribute label="Location" value={job_locations || "N/A"} />
+        )}
         <Attribute label="Department" value={department} />
 
-        {job_credentials.length != 0 && (
+        {/* {job_credentials.length != 0 && (
           <Attribute label="Credentials" value={job_credentials} />
-        )}
+        )} */}
 
         {job_educations.length != 0 && (
           <Attribute label="Education" value={job_educations} />

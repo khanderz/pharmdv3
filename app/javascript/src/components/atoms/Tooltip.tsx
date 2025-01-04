@@ -22,13 +22,14 @@ export const Tooltip = ({
   children,
   ...props
 }: TooltipProps) => {
+  // console.log(props.open);
   return (
     <MuiTooltip
       {...props}
       data-testid={`${id}-tooltip`}
       arrow
-      open={true}
-      placement="top"
+      // open={props.open}
+      // placement="top"
       title={
         <Box
           flexDirection="row"

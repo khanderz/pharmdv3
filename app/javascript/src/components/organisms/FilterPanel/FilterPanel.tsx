@@ -48,8 +48,8 @@ export const FilterPanel = ({
 
   return (
     <Accordion
-      // expanded={isExpanded}
-      expanded={true}
+      expanded={isExpanded}
+      // expanded={true}
       componentName="filter-panel"
     >
       <AccordionSummary
