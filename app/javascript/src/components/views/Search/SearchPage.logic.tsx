@@ -9,13 +9,22 @@ export const useSearchPageLogic = () => {
   const {
     errors,
     currentlyLoading,
-    jobSettings,
     jobCommitments,
     noMatchingResults,
     getNoResultsMessage,
     filteredJobPosts,
     resetFilters,
     setFilteredJobPosts,
+
+    departments,
+    benefits,
+    credentials,
+    educations,
+    experiences,
+    seniorities,
+    skills,
+    currencies,
+    uniqueLocations,
   } = useFiltersContext();
 
   /* --------------------- States --------------------- */
@@ -63,12 +72,21 @@ export const useSearchPageLogic = () => {
     handlePageChange,
     errors,
     currentlyLoading,
-    jobSettings,
     jobCommitments,
     noMatchingResults,
     getNoResultsMessage,
     filteredJobPosts,
     resetFilters,
     onSortByDate,
+
+    departments,
+    benefits,
+    credentials,
+    educations,
+    experiences,
+    seniorities,
+    skills,
+    currencies,
+    uniqueLocations,
   };
 };

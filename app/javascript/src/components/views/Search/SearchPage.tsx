@@ -26,11 +26,18 @@ export const SearchPage = () => {
     handlePageChange,
     errors,
     currentlyLoading,
-    jobSettings,
     jobCommitments,
     noMatchingResults,
     getNoResultsMessage,
     onSortByDate,
+
+    departments,
+    benefits,
+    credentials,
+    educations,
+    experiences,
+    currencies,
+    uniqueLocations,
   } = useSearchPageLogic();
 
   return (
@@ -74,23 +81,68 @@ export const SearchPage = () => {
                 <>
                   <Grid container spacing={3} data-testid="job-cards-container">
                     {paginatedJobPosts.map(jobPost => {
-                      // console.log(jobPost);
-                      const jobCommitmentType = jobCommitments.find(
-                        commitment =>
-                          commitment.id === jobPost.job_commitment_id,
-                      );
-
-                      const jobSetting = jobSettings.find(
-                        setting => setting.id === jobPost.job_setting_id,
-                      );
+                      const jobCommitmentType = jobPost.job_commitment_id
+                        ? jobCommitments.find(
+                            commitment =>
+                              commitment.id === jobPost.job_commitment_id,
+                          )
+                        : null;
 
                       const domains = jobPost.company.company_domains.map(
                         domain => domain.healthcare_domain["value"],
                       );
 
-                      const locations = Array.isArray(jobPost.job_locations)
-                        ? jobPost.job_locations.map(location => location)
-                        : [jobPost.job_locations];
+                      const department = departments.find(
+                        department => department.id === jobPost.department_id,
+                      )?.dept_name;
+
+                      const job_benefits = jobPost.job_post_benefits?.map(
+                        job_post_benefit =>
+                          benefits.find(
+                            benefit =>
+                              benefit.id === job_post_benefit.benefit_id,
+                          ).benefit_name,
+                      );
+
+                      const job_credentials = jobPost.job_post_credentials?.map(
+                        job_post_credential =>
+                          credentials.find(
+                            credential =>
+                              credential.id ===
+                              job_post_credential.credential_id,
+                          ).credential_name,
+                      );
+
+                      const job_educations = jobPost.job_post_educations?.map(
+                        job_post_education =>
+                          educations.find(
+                            education =>
+                              education.id === job_post_education.education_id,
+                          ).education_name,
+                      );
+
+                      const job_experiences = jobPost.job_post_experiences?.map(
+                        job_post_experience =>
+                          experiences.find(
+                            experience =>
+                              experience.id ===
+                              job_post_experience.experience_id,
+                          ).experience_name,
+                      );
+
+                      const job_currencies = currencies.find(
+                        currency =>
+                          currency.id === jobPost.job_salary_currency_id,
+                      )?.currency_code;
+
+                      const job_post_locations = jobPost.job_post_locations
+                        ?.map(
+                          job_post_location =>
+                            uniqueLocations?.find(
+                              loc => loc.id === job_post_location.location_id,
+                            ).name,
+                        )
+                        .reverse();
 
                       return (
                         <Grid item xs={12} key={jobPost.id}>
@@ -99,10 +151,7 @@ export const SearchPage = () => {
                             company_name={jobPost.company.company_name}
                             job_applyUrl={jobPost.job_url}
                             job_posted={jobPost.job_posted}
-                            job_location={locations}
-                            job_setting={
-                              jobSetting?.setting_name as JobSetting["setting_name"]
-                            }
+                            job_setting={jobPost.job_setting}
                             job_commitment={
                               jobCommitmentType?.commitment_name as JobCommitment["commitment_name"]
                             }
@@ -110,6 +159,19 @@ export const SearchPage = () => {
                             updatedDate={moment(jobPost.updated_at).format(
                               "MMMM Do, YYYY [at] h:mm A",
                             )}
+                            job_locations={job_post_locations}
+                            department={department}
+                            job_description={jobPost.job_description}
+                            job_benefits={job_benefits}
+                            job_credentials={job_credentials}
+                            job_educations={job_educations}
+                            job_experiences={job_experiences}
+                            job_qualifications={jobPost.job_qualifications}
+                            job_responsibilities={jobPost.job_responsibilities}
+                            job_currency={job_currencies}
+                            job_salary_max={jobPost.job_salary_max}
+                            job_salary_min={jobPost.job_salary_min}
+                            job_salary_single={jobPost.job_salary_single}
                           />
                         </Grid>
                       );

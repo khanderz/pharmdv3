@@ -18,7 +18,7 @@ export const Attribute = ({
       <Grid item>
         <Typography variant="key">{label}:</Typography>
       </Grid>
-      <Grid item>
+      <Grid item wrap>
         {renderChip ? (
           <Chip value={value} />
         ) : (
